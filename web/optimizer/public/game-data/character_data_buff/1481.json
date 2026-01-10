@@ -1,0 +1,158 @@
+[
+    {
+        "id": "1481_talent_1",
+        "name": "服务热情保持饱满 - 全抗性穿透",
+        "description": "天赋1: [好评如潮]状态下的角色无视敌人15%全属性伤害抗性。",
+        "source": "TALENT",
+        "target": {
+            "target_teammate": true
+        },
+        "in_combat_stats": {
+            "ALL_RES_SHRED_": 0.15
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": [
+            "好评如潮"
+        ],
+        "max_stacks": 1
+    },
+    {
+        "id": "1481_talent_2_1",
+        "name": "7×24热线畅通 - 失衡易伤",
+        "description": "天赋2: [恶意投诉]效果下敌人进入失衡状态后的失衡易伤倍率额外提升20%",
+        "source": "TALENT",
+        "target": {
+            "target_enemy": true
+        },
+        "in_combat_stats": {
+            "ENEMY_DAZE_VULNERABILITY_": 0.20
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": [
+            "恶意投诉"
+        ],
+        "max_stacks": 1
+    },
+    {
+        "id": "1481_talent_2_2",
+        "name": "7×24热线畅通 - 全伤害易伤",
+        "description": "天赋2: 所有单位对[恶意投诉]效果下的敌人造成的伤害提升15%。",
+        "source": "TALENT",
+        "target": {
+            "target_enemy": true
+        },
+        "in_combat_stats": {
+            "DMG_INC_": 0.15
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": [
+            "恶意投诉"
+        ],
+        "max_stacks": 1
+    },
+    {
+        "id": "1481_talent_4",
+        "name": "往事从不如烟 - 攻击力提升",
+        "description": "天赋4: [好评如潮]效果下，琉音攻击力提升500点。",
+        "source": "TALENT",
+        "target": {
+            "target_self": true
+        },
+        "in_combat_stats": {
+            "ATK_FLAT": 500
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": [
+            "好评如潮"
+        ],
+        "max_stacks": 1
+    },
+    {
+        "id": "1481_talent_6",
+        "name": "真言 - 余音",
+        "description": "天赋6: 通过[核心被动]使其他队友以终结技入场后，该队友获得[余音]效果，攻击命中敌人时琉音对敌人造成额外一次物理属性伤害，等同于琉音480%攻击力，该伤害被视为[强化特殊技]伤害，1秒内最多触发一次，最多触发12次。此效果无法被当前数据模型完全表示。",
+        "source": "TALENT",
+        "target": {
+            "target_enemy": true
+        },
+        "in_combat_stats": {},
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": null,
+        "max_stacks": 1
+    },
+    {
+        "id": "1481_core_passive_1",
+        "name": "五星客服热线 - 冲击力转换",
+        "description": "核心被动: 初始暴击率超过50%时，每超过1%，冲击力提升2点，最多提升100点。当前模型无法表示'超过50%'的条件，此转换将应用于全部暴击率。",
+        "source": "CORE_PASSIVE",
+        "target": {
+            "target_self": true
+        },
+        "in_combat_stats": {},
+        "out_of_combat_stats": {},
+        "conversion": {
+            "from_property": "CRIT_",
+            "to_property": "IMPACT_",
+            "conversion_ratio": 2.0,
+            "max_value": 100
+        },
+        "trigger_conditions": null,
+        "max_stacks": 1
+    },
+    {
+        "id": "1481_core_passive_2",
+        "name": "五星客服热线 - 恶意投诉",
+        "description": "核心被动: [恶意投诉]效果下敌人进入失衡状态后的失衡易伤倍率提升30%。",
+        "source": "CORE_PASSIVE",
+        "target": {
+            "target_enemy": true
+        },
+        "in_combat_stats": {
+            "ENEMY_DAZE_VULNERABILITY_": 0.30
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": [
+            "恶意投诉"
+        ],
+        "max_stacks": 1
+    },
+    {
+        "id": "1481_extra_ability_1",
+        "name": "场外连线 - 强化特殊技暴伤",
+        "description": "额外能力: 队伍中存在[强攻]角色或[命破]角色时，琉音造成的[强化特殊技]伤害的暴击伤害提升50%。",
+        "source": "EXTRA_ABILITY",
+        "target": {
+            "target_self": true
+        },
+        "in_combat_stats": {
+            "CRIT_DMG_": 0.50
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": [
+            "队伍中存在强攻或命破角色"
+        ],
+        "max_stacks": 1
+    },
+    {"id": "1481_extra_ability_2", "name": "场外连线 - 好评如潮", "description": "额外能力: 发动[强化特殊技]或[终结技]时全队角色获得[好评如潮]效果，[好评如潮]状态下的角色造成的伤害提升40%。", "source": "EXTRA_ABILITY", "target": {"target_teammate": true}, "in_combat_stats": {"DMG_": 0.40}, "out_of_combat_stats": {}, "conversion": null, "trigger_conditions": ["发动强化特殊技或终结技"], "max_stacks": 1},
+    {
+        "id": "1481_extra_ability_3",
+        "name": "场外连线 - 额外伤害",
+        "description": "额外能力: [强化特殊技]重击命中时会根据队伍中琉音的上一位队友的特性造成额外伤害（强攻队友320%攻击力，命破队友400%贯穿力）。此效果无法被当前数据模型完全表示。",
+        "source": "EXTRA_ABILITY",
+        "target": {
+            "target_enemy": true
+        },
+        "in_combat_stats": {},
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": null,
+        "max_stacks": 1
+    }
+]

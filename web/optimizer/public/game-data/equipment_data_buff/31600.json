@@ -1,0 +1,51 @@
+{
+  "set_id": "摇摆爵士",
+  "name": "摇摆爵士",
+  "name_cn": "摇摆爵士",
+  "two_piece_effect": "能量自动回复+20%。",
+  "four_piece_effect": "发动[连携技]或[终结技]时，全队角色造成的伤害提升15%，持续12秒，同名被动效果之间不可叠加。",
+  "two_piece_buffs": [
+    {
+      "id": "摇摆爵士_2pc",
+      "name": "摇摆爵士 2件套",
+      "description": "能量自动回复+20%。",
+      "source": "DRIVE_DISK_2PC",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": [],
+      "out_of_combat_stats": {
+        "ENER_REGEN_": 0.2
+      },
+      "in_combat_stats": {}
+    }
+  ],
+  "four_piece_buffs": [
+    {
+      "id": "摇摆爵士_4pc",
+      "name": "摇摆爵士 4件套",
+      "description": "发动[连携技]或[终结技]时，全队角色造成的伤害提升15%，持续12秒，同名被动效果之间不可叠加。",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": true,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "发动[连携技]或[终结技]时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 0.15
+      }
+    }
+  ]
+}

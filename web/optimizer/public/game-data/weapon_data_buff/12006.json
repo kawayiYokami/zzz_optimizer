@@ -1,0 +1,114 @@
+{
+  "wengine_id": "12006",
+  "code_name": "Weapon_B_Common_06",
+  "name": "「残响」-Ⅲ型",
+  "rarity": 2,
+  "weapon_type": "支援",
+  "talents": [
+    {
+      "level": 1,
+      "name": "强音",
+      "description": "发动[连携技]或[终结技]时，全队角色攻击力提升8%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12006_r1",
+          "name": "强音",
+          "description": "发动[连携技]或[终结技]时，全队角色攻击力提升8%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "12006",
+          "target": {
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "ATK_": 0.08
+          },
+          "max_stacks": 1
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "强音",
+      "description": "发动[连携技]或[终结技]时，全队角色攻击力提升9%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12006_r2",
+          "name": "强音",
+          "description": "发动[连携技]或[终结技]时，全队角色攻击力提升9%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "12006",
+          "target": {
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "ATK_": 0.09
+          },
+          "max_stacks": 1
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "强音",
+      "description": "发动[连携技]或[终结技]时，全队角色攻击力提升10%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12006_r3",
+          "name": "强音",
+          "description": "发动[连携技]或[终结技]时，全队角色攻击力提升10%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "12006",
+          "target": {
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "ATK_": 0.1
+          },
+          "max_stacks": 1
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "强音",
+      "description": "发动[连携技]或[终结技]时，全队角色攻击力提升11%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12006_r4",
+          "name": "强音",
+          "description": "发动[连携技]或[终结技]时，全队角色攻击力提升11%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "12006",
+          "target": {
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "ATK_": 0.11
+          },
+          "max_stacks": 1
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "强音",
+      "description": "发动[连携技]或[终结技]时，全队角色攻击力提升12%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12006_r5",
+          "name": "强音",
+          "description": "发动[连携技]或[终结技]时，全队角色攻击力提升12%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "12006",
+          "target": {
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "ATK_": 0.12
+          },
+          "max_stacks": 1
+        }
+      ]
+    }
+  ]
+}

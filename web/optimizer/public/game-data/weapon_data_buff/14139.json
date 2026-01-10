@@ -1,0 +1,144 @@
+{
+  "wengine_id": "14139",
+  "code_name": "Weapon_S_1391",
+  "name": "福虓炉炉",
+  "rarity": 4,
+  "weapon_type": "击破",
+  "talents": [
+    {
+      "level": 1,
+      "name": "虎气融融",
+      "description": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升28%；\n发动[连携技]或[终结技]并造成火属性伤害时，全队角色造成伤害提升10%，最多叠加2层，持续30秒，每层效果单独结算持续时间，同一招式内最多触发一次，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "14139_talent_1_generic",
+          "name": "福虓炉炉-通用",
+          "description": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升28%；\n发动[连携技]或[终结技]并造成火属性伤害时，全队角色造成伤害提升10%，最多叠加2层，持续30秒，每层效果单独结算持续时间，同一招式内最多触发一次，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升28%；\n发动[连携技]或[终结技]并造成火属性伤害时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAZE_INC_": 0.28
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "虎气融融",
+      "description": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升32.2%；\n发动[连携技]或[终结技]并造成火属性伤害时，全队角色造成伤害提升11.5%，最多叠加2层，持续30秒，每层效果单独结算持续时间，同一招式内最多触发一次，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "14139_talent_2_generic",
+          "name": "福虓炉炉-通用",
+          "description": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升32.2%；\n发动[连携技]或[终结技]并造成火属性伤害时，全队角色造成伤害提升11.5%，最多叠加2层，持续30秒，每层效果单独结算持续时间，同一招式内最多触发一次，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升32.2%；\n发动[连携技]或[终结技]并造成火属性伤害时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAZE_INC_": 0.322
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "虎气融融",
+      "description": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升36.4%；\n发动[连携技]或[终结技]并造成火属性伤害时，全队角色造成伤害提升13%，最多叠加2层，持续30秒，每层效果单独结算持续时间，同一招式内最多触发一次，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "14139_talent_3_generic",
+          "name": "福虓炉炉-通用",
+          "description": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升36.4%；\n发动[连携技]或[终结技]并造成火属性伤害时，全队角色造成伤害提升13%，最多叠加2层，持续30秒，每层效果单独结算持续时间，同一招式内最多触发一次，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升36.4%；\n发动[连携技]或[终结技]并造成火属性伤害时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAZE_INC_": 0.364
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "虎气融融",
+      "description": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升40.6%；\n发动[连携技]或[终结技]并造成火属性伤害时，全队角色造成伤害提升14.5%，最多叠加2层，持续30秒，每层效果单独结算持续时间，同一招式内最多触发一次，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "14139_talent_4_generic",
+          "name": "福虓炉炉-通用",
+          "description": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升40.6%；\n发动[连携技]或[终结技]并造成火属性伤害时，全队角色造成伤害提升14.5%，最多叠加2层，持续30秒，每层效果单独结算持续时间，同一招式内最多触发一次，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升40.6%；\n发动[连携技]或[终结技]并造成火属性伤害时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAZE_INC_": 0.406
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "虎气融融",
+      "description": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升44.8%；\n发动[连携技]或[终结技]并造成火属性伤害时，全队角色造成伤害提升16%，最多叠加2层，持续30秒，每层效果单独结算持续时间，同一招式内最多触发一次，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "14139_talent_5_generic",
+          "name": "福虓炉炉-通用",
+          "description": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升44.8%；\n发动[连携技]或[终结技]并造成火属性伤害时，全队角色造成伤害提升16%，最多叠加2层，持续30秒，每层效果单独结算持续时间，同一招式内最多触发一次，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升44.8%；\n发动[连携技]或[终结技]并造成火属性伤害时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAZE_INC_": 0.44799999999999995
+          }
+        }
+      ]
+    }
+  ]
+}

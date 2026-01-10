@@ -1,0 +1,90 @@
+[
+    {
+        "id": "1451_talent_1",
+        "name": "秘密朋友",
+        "description": "[巡梦童谣]状态额外附加造成伤害时无视敌人18%全属性伤害抗性。",
+        "source": "TALENT",
+        "target": { "target_teammate": true, "target_bund": true },
+        "in_combat_stats": { "DEF_IGN_": 0.18 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "拥有[巡梦童谣]状态时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1451_talent_2_1",
+        "name": "魔术大师 - 合唱",
+        "description": "卢西娅处于[以太帷幕·涌泉]内时[合唱]造成的伤害提升15%。",
+        "source": "TALENT",
+        "target": { "target_self": true },
+        "in_combat_stats": { "DMG_": 0.15 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "处于[以太帷幕·涌泉]内发动[合唱]时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1451_talent_2_2",
+        "name": "魔术大师 - 贯穿",
+        "description": "拥有[破暗]状态的代理人处于[以太帷幕·涌泉]内时，额外获得贯穿伤害提升15%效果。",
+        "source": "TALENT",
+        "target": { "target_teammate": true, "target_bund": true },
+        "in_combat_stats": { "PENETRATION_DMG_": 0.15 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "拥有[破暗]状态且处于[以太帷幕·涌泉]内时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1451_talent_6_1",
+        "name": "永不结束的旅途 - 攻击转换",
+        "description": "卢西娅处于任意[以太帷幕]内时，会根据自身初始最大生命值的2%提升自身攻击力。",
+        "source": "TALENT",
+        "target": { "target_self": true },
+        "in_combat_stats": {},
+        "out_of_combat_stats": {},
+        "conversion": {
+            "from_property": "HP_MAX_BASE",
+            "to_property": "ATK",
+            "conversion_ratio": 0.02
+        },
+        "trigger_conditions": "处于任意[以太帷幕]内时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1451_talent_6_2",
+        "name": "永不结束的旅途 - 合唱暴伤",
+        "description": "[合唱]造成暴击时暴击伤害提升30%。",
+        "source": "TALENT",
+        "target": { "target_self": true },
+        "in_combat_stats": { "CRIT_DMG_": 0.30 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "[合唱]造成暴击时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1451_core_passive_1",
+        "name": "迷途夜颂 - 巡梦童谣",
+        "description": "[巡梦童谣]状态下，角色造成的伤害提升20%。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_teammate": true, "target_bund": true },
+        "in_combat_stats": { "DMG_": 0.20 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "拥有[巡梦童谣]状态时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1451_extra_ability_1",
+        "name": "长夜诗篇",
+        "description": "施加[破暗]状态时，额外附加暴击伤害提升30%效果。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_teammate": true, "target_bund": true },
+        "in_combat_stats": { "CRIT_DMG_": 0.30 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "施加[破暗]状态时",
+        "max_stacks": 1
+    }
+]

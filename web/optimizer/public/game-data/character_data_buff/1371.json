@@ -1,0 +1,111 @@
+[
+  {
+    "id": "1371_talent_1",
+    "name": "天赋-清灵道心",
+    "description": "进入战场时，暴击率提升10%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_": 0.10 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "进入战场时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1371_talent_2",
+    "name": "天赋-消灾渡厄",
+    "description": "[终结技]或[强化特殊技]造成伤害时，无视目标15%以太伤害抗性。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "RES_IGN_": 0.15 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "使用[终结技]或[强化特殊技]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1371_talent_4",
+    "name": "天赋-术道归一",
+    "description": "每有一层[静心]效果，下一次[强化特殊技]造成的伤害提升30%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "ENHANCED_SPECIAL_DMG_": 0.30 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[静心]效果",
+    "max_stacks": 2,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1371_talent_6",
+    "name": "天赋-动静相宜",
+    "description": "[凝神]状态下，仪玄的贯穿伤害提高20%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "PENETRATION_DMG_": 0.20 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[凝神]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1371_core_passive_conversion",
+    "name": "核心被动-贯穿力转换",
+    "description": "额外根据自身最大生命值提高贯穿力，每1点最大生命值将提高0.1点贯穿力。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": {
+      "from_property": "HP",
+      "to_property": "SHEER_FORCE",
+      "conversion_ratio": 0.1,
+      "max_value": null
+    },
+    "trigger_conditions": "常驻",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1371_core_passive_dmg",
+    "name": "核心被动-术法宗师",
+    "description": "仪玄施展[普通攻击]、[强化特殊技]、[支援突击]、[连携技]、[终结技]造成的伤害提升60%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "DMG_": 0.60 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "常驻",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1371_additional_ability_daze_dmg",
+    "name": "额外能力-对失衡增伤",
+    "description": "[强化特殊技]命中处于失衡状态下的敌人时，伤害提升30%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "ENHANCED_SPECIAL_DMG_": 0.30 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[强化特殊技]命中失衡敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1371_additional_ability_crit_dmg",
+    "name": "额外能力-凝神暴伤",
+    "description": "[凝神]状态下，仪玄的暴击伤害提升40%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_DMG_": 0.40 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[凝神]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

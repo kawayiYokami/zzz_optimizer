@@ -1,0 +1,144 @@
+{
+  "wengine_id": "13011",
+  "code_name": "Weapon_A_Common_11",
+  "name": "春日融融",
+  "rarity": 3,
+  "weapon_type": "防护",
+  "talents": [
+    {
+      "level": 1,
+      "name": "热泉汤",
+      "description": "受到的伤害降低7.5%；受到敌方攻击时，装备者的能量获得效率提升10%，持续12秒；装备者换回后场时，该增益效果将传递给当前操作中的角色，并刷新持续时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13011_talent_1_generic",
+          "name": "春日融融-通用",
+          "description": "受到的伤害降低7.5%；受到敌方攻击时，装备者的能量获得效率提升10%，持续12秒；装备者换回后场时，该增益效果将传递给当前操作中的角色，并刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "受到的伤害降低7.5%；受到敌方攻击时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.075
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "热泉汤",
+      "description": "受到的伤害降低8.5%；受到敌方攻击时，装备者的能量获得效率提升11.5%，持续12秒；装备者换回后场时，该增益效果将传递给当前操作中的角色，并刷新持续时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13011_talent_2_generic",
+          "name": "春日融融-通用",
+          "description": "受到的伤害降低8.5%；受到敌方攻击时，装备者的能量获得效率提升11.5%，持续12秒；装备者换回后场时，该增益效果将传递给当前操作中的角色，并刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "受到的伤害降低8.5%；受到敌方攻击时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.085
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "热泉汤",
+      "description": "受到的伤害降低9.5%；受到敌方攻击时，装备者的能量获得效率提升13%，持续12秒；装备者换回后场时，该增益效果将传递给当前操作中的角色，并刷新持续时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13011_talent_3_generic",
+          "name": "春日融融-通用",
+          "description": "受到的伤害降低9.5%；受到敌方攻击时，装备者的能量获得效率提升13%，持续12秒；装备者换回后场时，该增益效果将传递给当前操作中的角色，并刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "受到的伤害降低9.5%；受到敌方攻击时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.095
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "热泉汤",
+      "description": "受到的伤害降低10.5%；受到敌方攻击时，装备者的能量获得效率提升14.5%，持续12秒；装备者换回后场时，该增益效果将传递给当前操作中的角色，并刷新持续时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13011_talent_4_generic",
+          "name": "春日融融-通用",
+          "description": "受到的伤害降低10.5%；受到敌方攻击时，装备者的能量获得效率提升14.5%，持续12秒；装备者换回后场时，该增益效果将传递给当前操作中的角色，并刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "受到的伤害降低10.5%；受到敌方攻击时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.105
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "热泉汤",
+      "description": "受到的伤害降低12%；受到敌方攻击时，装备者的能量获得效率提升16%，持续12秒；装备者换回后场时，该增益效果将传递给当前操作中的角色，并刷新持续时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13011_talent_5_generic",
+          "name": "春日融融-通用",
+          "description": "受到的伤害降低12%；受到敌方攻击时，装备者的能量获得效率提升16%，持续12秒；装备者换回后场时，该增益效果将传递给当前操作中的角色，并刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "受到的伤害降低12%；受到敌方攻击时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.12
+          }
+        }
+      ]
+    }
+  ]
+}

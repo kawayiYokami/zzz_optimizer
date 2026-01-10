@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>优化配置功能测试</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #4ec9b0;
+      border-bottom: 2px solid #4ec9b0;
+      padding-bottom: 10px;
+    }
+    .test-section {
+      background: #252526;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    .test-title {
+      color: #569cd6;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .test-result {
+      margin: 5px 0;
+      padding: 5px;
+    }
+    .pass {
+      color: #4ec9b0;
+    }
+    .fail {
+      color: #f48771;
+    }
+    .info {
+      color: #ce9178;
+    }
+    .summary {
+      background: #2d2d30;
+      border: 2px solid #4ec9b0;
+      border-radius: 4px;
+      padding: 20px;
+      margin-top: 30px;
+      font-size: 18px;
+    }
+    button {
+      background: #0e639c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #1177bb;
+    }
+    button:disabled {
+      background: #3e3e42;
+      cursor: not-allowed;
+    }
+    pre {
+      background: #1e1e1e;
+      border: 1px solid #3e3e42;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 优化配置功能测试</h1>
+
+    <div>
+      <button id="runTests">运行所有测试</button>
+      <button id="clearResults">清除结果</button>
+    </div>
+
+    <div id="testResults"></div>
+  </div>
+
+  <script type="module">
+    // 导入测试模块
+    import { runTests } from './src/tests/optimization-config.test.ts';
+
+    const resultsDiv = document.getElementById('testResults');
+    const runButton = document.getElementById('runTests');
+    const clearButton = document.getElementById('clearResults');
+
+    // 重写 console.log 以捕获输出
+    const originalLog = console.log;
+    let testOutput = [];
+
+    function captureConsole() {
+      testOutput = [];
+      console.log = function(...args) {
+        testOutput.push(args.join(' '));
+        originalLog.apply(console, args);
+      };
+    }
+
+    function restoreConsole() {
+      console.log = originalLog;
+    }
+
+    function formatOutput(output) {
+      let html = '';
+      let currentSection = null;
+
+      output.forEach(line => {
+        if (line.includes('='.repeat(60))) {
+          // 分隔线
+          html += '<hr style="border-color: #3e3e42; margin: 20px 0;">';
+        } else if (line.includes('【测试')) {
+          // 测试标题
+          if (currentSection) {
+            html += '</div>';
+          }
+          currentSection = true;
+          html += '<div class="test-section">';
+          html += `<div class="test-title">${line}</div>`;
+        } else if (line.includes('✓ 测试结果:')) {
+          // 测试结果
+          const isPassed = line.includes('通过');
+          const className = isPassed ? 'pass' : 'fail';
+          html += `<div class="test-result ${className}">${line}</div>`;
+        } else if (line.includes('通过:') || line.includes('失败:')) {
+          // 汇总信息
+          html += `<div class="test-result info">${line}</div>`;
+        } else if (line.includes('✅') || line.includes('❌')) {
+          // 最终结果
+          const isPassed = line.includes('✅');
+          const className = isPassed ? 'pass' : 'fail';
+          html += `<div class="summary ${className}">${line}</div>`;
+        } else if (line.trim()) {
+          // 普通输出
+          html += `<div class="test-result">${line}</div>`;
+        }
+      });
+
+      if (currentSection) {
+        html += '</div>';
+      }
+
+      return html;
+    }
+
+    runButton.addEventListener('click', async () => {
+      runButton.disabled = true;
+      resultsDiv.innerHTML = '<div class="info">正在运行测试...</div>';
+
+      try {
+        captureConsole();
+        await runTests();
+        restoreConsole();
+
+        resultsDiv.innerHTML = formatOutput(testOutput);
+      } catch (error) {
+        restoreConsole();
+        resultsDiv.innerHTML = `<div class="fail">测试执行失败: ${error.message}</div><pre>${error.stack}</pre>`;
+      } finally {
+        runButton.disabled = false;
+      }
+    });
+
+    clearButton.addEventListener('click', () => {
+      resultsDiv.innerHTML = '';
+    });
+
+    // 页面加载时显示说明
+    resultsDiv.innerHTML = `
+      <div class="test-section">
+        <div class="test-title">测试说明</div>
+        <div class="test-result info">
+          本测试页面用于验证优化配置功能的正确性，包括：
+        </div>
+        <ul style="color: #ce9178;">
+          <li>角色类型分析和推荐词条</li>
+          <li>智能配置生成</li>
+          <li>配置来源识别</li>
+          <li>默认配置检测</li>
+        </ul>
+        <div class="test-result info">
+          点击"运行所有测试"按钮开始测试。
+        </div>
+      </div>
+    `;
+  </script>
+</body>
+</html>

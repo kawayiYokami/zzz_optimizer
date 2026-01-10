@@ -1,0 +1,144 @@
+{
+  "wengine_id": "13112",
+  "code_name": "Weapon_A_1121",
+  "name": "比格气缸",
+  "rarity": 3,
+  "weapon_type": "防护",
+  "talents": [
+    {
+      "level": 1,
+      "name": "万斤顶",
+      "description": "受到的伤害降低7.5%；受到敌方攻击后，下一次攻击命中敌人时，额外造成装备者600%防御力的伤害，且必定触发暴击，7.5秒内最多触发一次。",
+      "buffs": [
+        {
+          "id": "13112_talent_1_generic",
+          "name": "比格气缸-通用",
+          "description": "受到的伤害降低7.5%；受到敌方攻击后，下一次攻击命中敌人时，额外造成装备者600%防御力的伤害，且必定触发暴击，7.5秒内最多触发一次。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "受到的伤害降低7.5%；受到敌方攻击后，下一次攻击命中敌人时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.075
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "万斤顶",
+      "description": "受到的伤害降低8.5%；受到敌方攻击后，下一次攻击命中敌人时，额外造成装备者690%防御力的伤害，且必定触发暴击，7.5秒内最多触发一次。",
+      "buffs": [
+        {
+          "id": "13112_talent_2_generic",
+          "name": "比格气缸-通用",
+          "description": "受到的伤害降低8.5%；受到敌方攻击后，下一次攻击命中敌人时，额外造成装备者690%防御力的伤害，且必定触发暴击，7.5秒内最多触发一次。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "受到的伤害降低8.5%；受到敌方攻击后，下一次攻击命中敌人时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.085
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "万斤顶",
+      "description": "受到的伤害降低9.5%；受到敌方攻击后，下一次攻击命中敌人时，额外造成装备者780%防御力的伤害，且必定触发暴击，7.5秒内最多触发一次。",
+      "buffs": [
+        {
+          "id": "13112_talent_3_generic",
+          "name": "比格气缸-通用",
+          "description": "受到的伤害降低9.5%；受到敌方攻击后，下一次攻击命中敌人时，额外造成装备者780%防御力的伤害，且必定触发暴击，7.5秒内最多触发一次。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "受到的伤害降低9.5%；受到敌方攻击后，下一次攻击命中敌人时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.095
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "万斤顶",
+      "description": "受到的伤害降低10.5%；受到敌方攻击后，下一次攻击命中敌人时，额外造成装备者870%防御力的伤害，且必定触发暴击，7.5秒内最多触发一次。",
+      "buffs": [
+        {
+          "id": "13112_talent_4_generic",
+          "name": "比格气缸-通用",
+          "description": "受到的伤害降低10.5%；受到敌方攻击后，下一次攻击命中敌人时，额外造成装备者870%防御力的伤害，且必定触发暴击，7.5秒内最多触发一次。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "受到的伤害降低10.5%；受到敌方攻击后，下一次攻击命中敌人时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.105
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "万斤顶",
+      "description": "受到的伤害降低12%；受到敌方攻击后，下一次攻击命中敌人时，额外造成装备者960%防御力的伤害，且必定触发暴击，7.5秒内最多触发一次。",
+      "buffs": [
+        {
+          "id": "13112_talent_5_generic",
+          "name": "比格气缸-通用",
+          "description": "受到的伤害降低12%；受到敌方攻击后，下一次攻击命中敌人时，额外造成装备者960%防御力的伤害，且必定触发暴击，7.5秒内最多触发一次。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "受到的伤害降低12%；受到敌方攻击后，下一次攻击命中敌人时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.12
+          }
+        }
+      ]
+    }
+  ]
+}

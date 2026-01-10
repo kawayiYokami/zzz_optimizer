@@ -1,0 +1,249 @@
+{
+  "wengine_id": "14137",
+  "code_name": "Weapon_S_1371",
+  "name": "青溟笼舍",
+  "rarity": 4,
+  "weapon_type": "命破",
+  "talents": [
+    {
+      "level": 1,
+      "name": "云流运转",
+      "description": "暴击率提升20%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升8%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升10%。",
+      "buffs": [
+        {
+          "id": "14137_talent_1_skill_dmg",
+          "name": "青溟笼舍-技能伤害",
+          "description": "暴击率提升20%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升8%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升10%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ETHER_DMG_": 0.08
+          }
+        },
+        {
+          "id": "14137_talent_1_stats",
+          "name": "青溟笼舍-属性提升",
+          "description": "暴击率提升20%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升8%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升10%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 0.2,
+            "ETHER_DMG_": 0.08
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "云流运转",
+      "description": "暴击率提升23%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升9.2%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升11.5%。",
+      "buffs": [
+        {
+          "id": "14137_talent_2_skill_dmg",
+          "name": "青溟笼舍-技能伤害",
+          "description": "暴击率提升23%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升9.2%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升11.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ETHER_DMG_": 0.092
+          }
+        },
+        {
+          "id": "14137_talent_2_stats",
+          "name": "青溟笼舍-属性提升",
+          "description": "暴击率提升23%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升9.2%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升11.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 0.23,
+            "ETHER_DMG_": 0.092
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "云流运转",
+      "description": "暴击率提升26%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升10.4%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升13%。",
+      "buffs": [
+        {
+          "id": "14137_talent_3_skill_dmg",
+          "name": "青溟笼舍-技能伤害",
+          "description": "暴击率提升26%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升10.4%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升13%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ETHER_DMG_": 0.104
+          }
+        },
+        {
+          "id": "14137_talent_3_stats",
+          "name": "青溟笼舍-属性提升",
+          "description": "暴击率提升26%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升10.4%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升13%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 0.26,
+            "ETHER_DMG_": 0.104
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "云流运转",
+      "description": "暴击率提升29%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升11.6%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升14.5%。",
+      "buffs": [
+        {
+          "id": "14137_talent_4_skill_dmg",
+          "name": "青溟笼舍-技能伤害",
+          "description": "暴击率提升29%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升11.6%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升14.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ETHER_DMG_": 0.116
+          }
+        },
+        {
+          "id": "14137_talent_4_stats",
+          "name": "青溟笼舍-属性提升",
+          "description": "暴击率提升29%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升11.6%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升14.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 0.29,
+            "ETHER_DMG_": 0.116
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "云流运转",
+      "description": "暴击率提升32%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升12.8%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升16%。",
+      "buffs": [
+        {
+          "id": "14137_talent_5_skill_dmg",
+          "name": "青溟笼舍-技能伤害",
+          "description": "暴击率提升32%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升12.8%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升16%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ETHER_DMG_": 0.128
+          }
+        },
+        {
+          "id": "14137_talent_5_stats",
+          "name": "青溟笼舍-属性提升",
+          "description": "暴击率提升32%；装备者释放[强化特殊技]时角色获得1层[青溟同行]效果，最多叠加2层，持续15秒，进入接战状态时直接获得2层，重复触发时刷新持续时间；每层[青溟同行]效果使装备者造成的以太伤害提升12.8%，[终结技]或[强化特殊技]造成的以太贯穿伤害提升16%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 0.32,
+            "ETHER_DMG_": 0.128
+          }
+        }
+      ]
+    }
+  ]
+}

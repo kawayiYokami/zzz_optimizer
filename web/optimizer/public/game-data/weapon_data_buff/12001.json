@@ -1,0 +1,134 @@
+{
+  "wengine_id": "12001",
+  "code_name": "Weapon_B_Common_01",
+  "name": "「月相」-望",
+  "rarity": 2,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "满月",
+      "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升12%。",
+      "buffs": [
+        {
+          "id": "12001_talent_1_1",
+          "name": "「月相」-望-精1",
+          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升12%",
+          "source": "WENGINE_TALENT",
+          "is_permanent": false,
+          "target": {
+            "target_self": true
+          },
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.12,
+            "DASH_ATK_DMG_": 0.12,
+            "DODGE_COUNTER_DMG_": 0.12
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "常驻"
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "满月",
+      "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升14%。",
+      "buffs": [
+        {
+          "id": "12001_talent_2_1",
+          "name": "「月相」-望-精2",
+          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升14%",
+          "source": "WENGINE_TALENT",
+          "is_permanent": false,
+          "target": {
+            "target_self": true
+          },
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.14,
+            "DASH_ATK_DMG_": 0.14,
+            "DODGE_COUNTER_DMG_": 0.14
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "常驻"
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "满月",
+      "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升16%。",
+      "buffs": [
+        {
+          "id": "12001_talent_3_1",
+          "name": "「月相」-望-精3",
+          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升16%",
+          "source": "WENGINE_TALENT",
+          "is_permanent": false,
+          "target": {
+            "target_self": true
+          },
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.16,
+            "DASH_ATK_DMG_": 0.16,
+            "DODGE_COUNTER_DMG_": 0.16
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "常驻"
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "满月",
+      "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升18%。",
+      "buffs": [
+        {
+          "id": "12001_talent_4_1",
+          "name": "「月相」-望-精4",
+          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升18%",
+          "source": "WENGINE_TALENT",
+          "is_permanent": false,
+          "target": {
+            "target_self": true
+          },
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.18,
+            "DASH_ATK_DMG_": 0.18,
+            "DODGE_COUNTER_DMG_": 0.18
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "常驻"
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "满月",
+      "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升20%。",
+      "buffs": [
+        {
+          "id": "12001_talent_5_1",
+          "name": "「月相」-望-精5",
+          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升20%",
+          "source": "WENGINE_TALENT",
+          "is_permanent": false,
+          "target": {
+            "target_self": true
+          },
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.2,
+            "DASH_ATK_DMG_": 0.2,
+            "DODGE_COUNTER_DMG_": 0.2
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "常驻"
+        }
+      ]
+    }
+  ]
+}

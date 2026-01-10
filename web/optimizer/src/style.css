@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@plugin "daisyui" { themes: fantasy --default, halloween --prefersdark; }
+
+:root {
+  --rarity-s-color: #ea580c;
+  --rarity-a-color: #9333ea;
+  --rarity-b-color: #6b7280;
+  --rarity-s-gradient-start: #6E5153;
+  --rarity-s-gradient-end: #E3A755;
+  --rarity-a-gradient-start: #4F2D74;
+  --rarity-a-gradient-end: #6A5983;
+}

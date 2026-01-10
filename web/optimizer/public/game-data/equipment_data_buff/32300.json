@@ -1,0 +1,71 @@
+{
+  "set_id": "混沌重金属",
+  "name": "混沌重金属",
+  "name_cn": "混沌重金属",
+  "two_piece_effect": "以太伤害+10%。",
+  "four_piece_effect": "装备者的暴击伤害提升20%，队伍中任意角色触发[侵蚀]效果的额外伤害时，该增益效果额外提升5.5%，最多叠加6层，持续8秒，重复触发时刷新持续时间。",
+  "two_piece_buffs": [
+    {
+      "id": "混沌重金属_2pc",
+      "name": "混沌重金属 2件套",
+      "description": "以太伤害+10%。",
+      "source": "DRIVE_DISK_2PC",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": [],
+      "out_of_combat_stats": {
+        "ETHER_DMG_": 0.1
+      },
+      "in_combat_stats": {}
+    }
+  ],
+  "four_piece_buffs": [
+    {
+      "id": "混沌重金属_4pc_1",
+      "name": "混沌重金属 4件套 (基础)",
+      "description": "装备者的暴击伤害提升20%",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "无条件",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "CRIT_DMG_": 0.2
+      }
+    },
+    {
+      "id": "混沌重金属_4pc_2",
+      "name": "混沌重金属 4件套 (叠加)",
+      "description": "队伍中任意角色触发[侵蚀]效果的额外伤害时，该增益效果额外提升5.5%，最多叠加6层，持续8秒",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 6,
+      "stack_mode": "linear",
+      "trigger_conditions": "队伍中任意角色触发[侵蚀]效果的额外伤害时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "CRIT_DMG_": 0.055
+      }
+    }
+  ]
+}

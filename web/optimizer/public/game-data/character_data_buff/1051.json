@@ -1,0 +1,132 @@
+[
+  {
+    "id": "1051_talent_1",
+    "name": "过往沉溺于渊下",
+    "description": "伊德海莉的[普通攻击]、[强化特殊技]无视目标20%冰属性伤害抗性。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "RES_IGN_": 0.20
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "使用[普通攻击]或[强化特殊技]时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1051_talent_2",
+    "name": "何人于此遐思",
+    "description": "伊德海莉的暴击伤害提升40%",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {
+      "CRIT_DMG_": 0.40
+    },
+    "conversion": null,
+    "trigger_conditions": "无",
+    "max_stacks": 1
+  },
+  {
+    "id": "1051_talent_4",
+    "name": "在静默中盛放",
+    "description": "处于[以太帷幕·涌泉]中时，伊德海莉的最大生命值额外提升5%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "HP_": 0.05
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[以太帷幕·涌泉]中时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1051_talent_6",
+    "name": "终逢安宁之梦",
+    "description": "[启谛]期间，伊德海莉造成的贯穿伤害提高25%",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "SHEER_DMG_": 0.25
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[启谛]状态期间",
+    "max_stacks": 1
+  },
+  {
+    "id": "1051_core_passive_1",
+    "name": "拾梦空想-贯穿力转换",
+    "description": "伊德海莉会额外根据自身最大生命值提高贯穿力，每1点最大生命值将提高0.1点贯穿力。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": {
+      "from_property": "HP",
+      "to_property": "SHEER_FORCE",
+      "conversion_ratio": 0.1
+    },
+    "trigger_conditions": "无",
+    "max_stacks": 1
+  },
+  {
+    "id": "1051_core_passive_2",
+    "name": "拾梦空想-伤害提升",
+    "description": "伊德海莉的当前生命值百分比越低，招式造成的伤害越高；当伊德海莉生命值低于50%时，获得的增益效果达到最大值，攻击造成的伤害最多提升100%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "COMMON_DMG_": 1.00
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "生命值低于50%时达到最大值",
+    "max_stacks": 1
+  },
+  {
+    "id": "1051_extra_ability_1",
+    "name": "完形叙事-暴伤提升",
+    "description": "伊德海莉生命值低于50%时，暴击伤害提升30%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_DMG_": 0.30
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "生命值低于50%时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1051_extra_ability_2",
+    "name": "完形叙事-减伤",
+    "description": "伊德海莉生命值低于50%时，受到的伤害降低25%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DMG_INC_": -0.25
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "生命值低于50%时",
+    "max_stacks": 1
+  }
+]

@@ -1,0 +1,322 @@
+<template>
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body p-4">
+      <h3 class="font-bold text-sm">战斗配置</h3>
+      <!-- 当前队伍卡片（可点击选择） -->
+      <div v-if="currentTeam" class="mt-2">
+        <TeamCard
+          :team="currentTeam"
+          @click="showTeamSelector = true"
+          :clickable="true"
+        />
+      </div>
+      <div v-else class="mt-2 text-sm text-base-content/60 text-center py-4">
+        暂无队伍，请先创建队伍
+      </div>
+
+      <!-- 技能配置 -->
+      <div class="divider text-xs font-bold text-base-content/50 my-2">技能配置</div>
+      <div class="flex flex-col gap-3">
+        <div v-for="group in groupedSkills" :key="group.agentName" class="flex flex-col gap-1">
+          <div class="text-xs font-bold text-base-content/70 pl-1">{{ group.agentName }}</div>
+          <div class="flex flex-wrap gap-1.5">
+            <div
+              v-for="skill in group.skills"
+              :key="skill.key"
+              class="tooltip tooltip-bottom"
+              :data-tip="formatSkillTooltip(skill)"
+            >
+              <button
+                class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200"
+                :class="skill.isActive ? 'badge-primary font-medium shadow-sm' : 'badge-ghost border-base-300 text-base-content/60'"
+                @click="emit('toggleSkill', skill.key)"
+              >
+                {{ skill.name }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- 未归类技能 (如有) -->
+        <div v-if="ungroupedSkills.length > 0" class="flex flex-col gap-1">
+          <div class="text-xs font-bold text-base-content/70 pl-1">其他</div>
+          <div class="flex flex-wrap gap-1.5">
+            <div
+              v-for="skill in ungroupedSkills"
+              :key="skill.key"
+              class="tooltip tooltip-bottom"
+              :data-tip="formatSkillTooltip(skill)"
+            >
+              <button
+                class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200"
+                :class="skill.isActive ? 'badge-primary font-medium shadow-sm' : 'badge-ghost border-base-300 text-base-content/60'"
+                @click="emit('toggleSkill', skill.key)"
+              >
+                {{ skill.name }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buff 配置 -->
+      <div class="divider text-xs font-bold text-base-content/50 my-2">Buff 配置</div>
+      <div class="flex flex-col gap-3">
+        <div v-for="group in groupedBuffs" :key="group.sourceLabel" class="flex flex-col gap-1">
+          <div class="text-xs font-bold text-base-content/70 pl-1">{{ group.sourceLabel }}</div>
+          <div class="flex flex-wrap gap-1.5">
+            <div
+              v-for="buff in group.buffs"
+              :key="buff.id"
+              class="tooltip tooltip-bottom max-w-full"
+              :data-tip="formatBuffTooltip(buff)"
+            >
+              <button
+                class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200"
+                :class="buff.isActive ? 'badge-primary font-medium shadow-sm' : 'badge-ghost border-base-300 text-base-content/60'"
+                @click="emit('toggleBuff', buff.id)"
+              >
+                {{ buff.name }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 敌人配置 -->
+      <div class="divider text-xs font-bold text-base-content/50 my-2">敌人配置</div>
+      <!-- 当前敌人卡片（可点击选择） -->
+      <div v-if="selectedEnemy" class="mt-2 flex justify-center">
+        <EnemyCard
+          :enemy="selectedEnemy"
+          @click="showEnemySelector = true"
+          :clickable="true"
+        />
+      </div>
+      <div v-else class="mt-2 text-sm text-base-content/60 text-center py-4">
+        暂无敌人，请选择敌人
+      </div>
+      <!-- 敌人选择按钮 -->
+      <button
+        class="btn btn-base-200 w-full mt-2"
+        @click="showEnemySelector = true"
+      >
+        选择敌人
+      </button>
+    </div>
+  </div>
+
+  <!-- 队伍选择弹窗 -->
+  <dialog v-if="showTeamSelector" class="modal modal-open">
+    <div class="modal-box w-150 max-w-full relative flex flex-col max-h-[85vh]">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10" @click="showTeamSelector = false">✕</button>
+      <h3 class="font-bold text-lg mb-4 shrink-0">选择队伍</h3>
+      <div class="flex-1 overflow-y-auto min-h-0 pr-2">
+        <TeamList 
+          @select="(teamId) => { showTeamSelector = false; emit('update:selectedTeamId', teamId); }"
+          @create="() => { showTeamSelector = false; editingTeamId = undefined; showTeamEditModal = true; emit('createTeam'); }"
+        />
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop" @click.prevent="showTeamSelector = false">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <!-- 队伍编辑弹窗 -->
+  <TeamEditModal
+    v-if="showTeamEditModal"
+    :team-id="editingTeamId"
+    :show="showTeamEditModal"
+    @saved="(teamId) => { showTeamEditModal = false; emit('update:selectedTeamId', teamId); }"
+    @deleted="() => { showTeamEditModal = false; emit('update:selectedTeamId', ''); }"
+    @cancel="showTeamEditModal = false"
+  />
+
+  <!-- 敌人选择弹窗 -->
+  <dialog v-if="showEnemySelector" class="modal modal-open">
+    <div class="modal-box w-150 max-w-full relative flex flex-col max-h-[85vh]">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10" @click="showEnemySelector = false">✕</button>
+      <h3 class="font-bold text-lg mb-4 shrink-0">选择敌人</h3>
+      <div class="flex-1 overflow-y-auto min-h-0 pr-2">
+        <EnemyList @select="(enemyId) => { showEnemySelector = false; emit('update:selectedEnemyId', enemyId); }" />
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop" @click.prevent="showEnemySelector = false">
+      <button>close</button>
+    </form>
+  </dialog>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import TeamCard from './TeamCard.vue';
+import TeamEditModal from './TeamEditModal.vue';
+import TeamList from './TeamList.vue';
+import EnemyCard from './EnemyCard.vue';
+import EnemyList from './EnemyList.vue';
+import type { Team } from '../../model/team';
+import type { Enemy } from '../../model/enemy';
+import type { AgentSkillOption } from '../../optimizer/services/optimizer.service';
+import { Buff, BuffSource } from '../../model/buff';
+
+// Props
+interface Props {
+  currentTeam: Team | null;
+  selectedEnemy: Enemy | null;
+  selectedSkills: AgentSkillOption[];
+  unselectedSkills: AgentSkillOption[];
+  selectedBuffs: Buff[];
+  unselectedBuffs: Buff[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  currentTeam: null,
+  selectedEnemy: null,
+  selectedSkills: () => [],
+  unselectedSkills: () => [],
+  selectedBuffs: () => [],
+  unselectedBuffs: () => [],
+});
+
+// Emits
+interface Emits {
+  'update:selectedTeamId': [teamId: string];
+  'update:selectedEnemyId': [enemyId: string];
+  'toggleSkill': [skillKey: string];
+  'toggleBuff': [buffId: string];
+  'createTeam': [];
+}
+
+const emit = defineEmits<Emits>();
+
+// 内部状态
+const showTeamSelector = ref(false);
+const showTeamEditModal = ref(false);
+const editingTeamId = ref<string | undefined>();
+const showEnemySelector = ref(false);
+
+// === 技能分组逻辑 ===
+
+interface SkillWithStatus extends AgentSkillOption {
+  isActive: boolean;
+}
+
+const allSkills = computed(() => {
+  const active = props.selectedSkills.map(s => ({ ...s, isActive: true }));
+  const inactive = props.unselectedSkills.map(s => ({ ...s, isActive: false }));
+  return [...active, ...inactive];
+});
+
+const groupedSkills = computed(() => {
+  if (!props.currentTeam) return [];
+  
+  const groups: { agentName: string; skills: SkillWithStatus[] }[] = [];
+  const processedSkillKeys = new Set<string>();
+
+  // 1. 遍历当前队伍的代理人
+  const agents = [
+    props.currentTeam.frontAgent,
+    ...props.currentTeam.backAgents
+  ].filter(Boolean);
+
+  for (const agent of agents) {
+    if (!agent) continue;
+    
+    // 查找该代理人的技能
+    // 假设 key 包含代理人名字 (例如: "安比·德玛拉_普通攻击_一段")
+    // 或者我们简单地将所有未归类的技能归类到匹配名字的代理人下
+    const agentSkills = allSkills.value.filter(skill => {
+        // 简单匹配：如果 key 包含代理人名字
+        // 注意：这里假设 skill.key 包含中文名，这可能需要根据实际数据调整
+        return skill.key.includes(agent.name_cn);
+    });
+
+    if (agentSkills.length > 0) {
+      groups.push({
+        agentName: agent.name_cn,
+        skills: agentSkills
+      });
+      agentSkills.forEach(s => processedSkillKeys.add(s.key));
+    }
+  }
+
+  return groups;
+});
+
+const ungroupedSkills = computed(() => {
+  const processedKeys = new Set(groupedSkills.value.flatMap(g => g.skills.map(s => s.key)));
+  return allSkills.value.filter(s => !processedKeys.has(s.key));
+});
+
+function formatSkillTooltip(skill: AgentSkillOption) {
+    const parts = [];
+    if (skill.defaultRatio) parts.push(`倍率: ${(skill.defaultRatio * 100).toFixed(0)}%`);
+    if (skill.defaultAnomaly) parts.push(`积蓄: ${skill.defaultAnomaly}`);
+    return parts.join(' | ') || skill.name;
+}
+
+// === Buff 分组逻辑 ===
+
+interface BuffWithStatus extends Buff {
+  isActive: boolean;
+}
+
+const allBuffs = computed(() => {
+  const active = props.selectedBuffs.map(b => Object.assign(Object.create(Object.getPrototypeOf(b)), b, { isActive: true }));
+  const inactive = props.unselectedBuffs.map(b => Object.assign(Object.create(Object.getPrototypeOf(b)), b, { isActive: false }));
+  return [...active, ...inactive] as BuffWithStatus[];
+});
+
+const groupedBuffs = computed(() => {
+  const groups: Record<string, BuffWithStatus[]> = {};
+  
+  for (const buff of allBuffs.value) {
+    const sourceLabel = getBuffSourceCn(buff.source);
+    if (!groups[sourceLabel]) {
+      groups[sourceLabel] = [];
+    }
+    groups[sourceLabel].push(buff);
+  }
+
+  // 定义显示顺序
+  const order = ['角色天赋', '角色被动', '音擎效果', '驱动盘套装', '邦布', '其他增益'];
+  
+  return Object.entries(groups)
+    .sort((a, b) => {
+      const idxA = order.indexOf(a[0]);
+      const idxB = order.indexOf(b[0]);
+      return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+    })
+    .map(([sourceLabel, buffs]) => ({
+      sourceLabel,
+      buffs: buffs.sort((a, b) => {
+          // 激活的排前面
+          if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
+          return 0;
+      })
+    }));
+});
+
+function getBuffSourceCn(source: BuffSource): string {
+  switch (source) {
+    case BuffSource.AGENT_TALENT: return '角色天赋';
+    case BuffSource.AGENT_PASSIVE: return '角色被动';
+    case BuffSource.AGENT_CORE: return '核心技';
+    case BuffSource.WENGINE: return '音擎效果';
+    case BuffSource.WENGINE_TALENT: return '音擎效果';
+    case BuffSource.DRIVE_DISK_2PC: return '驱动盘套装';
+    case BuffSource.DRIVE_DISK_4PC: return '驱动盘套装';
+    case BuffSource.TEAM_MATE: return '队友提供';
+    case BuffSource.CORE_PASSIVE: return '核心被动';
+    case BuffSource.POTENTIAL: return '潜能';
+    default: return '其他增益';
+  }
+}
+
+function formatBuffTooltip(buff: Buff) {
+    // 简单截取描述，避免过长
+    const desc = buff.description.length > 50 ? buff.description.substring(0, 50) + '...' : buff.description;
+    const condition = buff.trigger_conditions ? `\n触发: ${buff.trigger_conditions}` : '';
+    return `${desc}${condition}`;
+}
+</script>

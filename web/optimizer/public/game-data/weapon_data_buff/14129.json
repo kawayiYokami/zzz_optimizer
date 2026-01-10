@@ -1,0 +1,244 @@
+{
+  "wengine_id": "14129",
+  "code_name": "Weapon_S_1291",
+  "name": "千面日陨",
+  "rarity": 4,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "万千非我",
+      "description": "暴击伤害提升45%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视25%防御力。",
+      "buffs": [
+        {
+          "id": "14129_talent_1_skill_dmg",
+          "name": "千面日陨-技能伤害",
+          "description": "暴击伤害提升45%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视25%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.45
+          }
+        },
+        {
+          "id": "14129_talent_1_stats",
+          "name": "千面日陨-属性提升",
+          "description": "暴击伤害提升45%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视25%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.45
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "万千非我",
+      "description": "暴击伤害提升51.75%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视28.75%防御力。",
+      "buffs": [
+        {
+          "id": "14129_talent_2_skill_dmg",
+          "name": "千面日陨-技能伤害",
+          "description": "暴击伤害提升51.75%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视28.75%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.5175
+          }
+        },
+        {
+          "id": "14129_talent_2_stats",
+          "name": "千面日陨-属性提升",
+          "description": "暴击伤害提升51.75%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视28.75%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.5175
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "万千非我",
+      "description": "暴击伤害提升58.5%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视32.5%防御力。",
+      "buffs": [
+        {
+          "id": "14129_talent_3_skill_dmg",
+          "name": "千面日陨-技能伤害",
+          "description": "暴击伤害提升58.5%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视32.5%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.585
+          }
+        },
+        {
+          "id": "14129_talent_3_stats",
+          "name": "千面日陨-属性提升",
+          "description": "暴击伤害提升58.5%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视32.5%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.585
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "万千非我",
+      "description": "暴击伤害提升65.25%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视36.25%防御力。",
+      "buffs": [
+        {
+          "id": "14129_talent_4_skill_dmg",
+          "name": "千面日陨-技能伤害",
+          "description": "暴击伤害提升65.25%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视36.25%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.6525
+          }
+        },
+        {
+          "id": "14129_talent_4_stats",
+          "name": "千面日陨-属性提升",
+          "description": "暴击伤害提升65.25%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视36.25%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.6525
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "万千非我",
+      "description": "暴击伤害提升72%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视40%防御力。",
+      "buffs": [
+        {
+          "id": "14129_talent_5_skill_dmg",
+          "name": "千面日陨-技能伤害",
+          "description": "暴击伤害提升72%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视40%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.72
+          }
+        },
+        {
+          "id": "14129_talent_5_stats",
+          "name": "千面日陨-属性提升",
+          "description": "暴击伤害提升72%；[强化特殊技]、[连携技]、[终结技]造成冰属性伤害时，角色获得[零度处刑宣言]效果，持续3秒；[零度处刑宣言]效果期间，角色命中敌人时无视40%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.72
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+# 依赖
+node_modules/
+__pycache__/
+*.pyc
+
+# 构建产物
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+
+# AI 工具
+.claude/
+.iflow/
+CLAUDE.md
+AGENT.md
+# 环境变量
+.env
+
+# 日志
+.log/
+
+# 临时文件
+*.bak
+.trae/
+
+# 调试数据
+.debug/
+
+# 用户配置
+config/
+
+# 模型文件
+models/
+
+# 执行文件
+*.exe

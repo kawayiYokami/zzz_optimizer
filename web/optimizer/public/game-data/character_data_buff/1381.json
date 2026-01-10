@@ -1,0 +1,116 @@
+[
+  {
+    "id": "1381_talent_2",
+    "name": "天赋-冗余协议",
+    "description": "零号·安比的暴击率提升12%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": { "CRIT_": 0.12 },
+    "conversion": null,
+    "trigger_conditions": "常驻",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_talent_4",
+    "name": "天赋-银白残响",
+    "description": "攻击命中拥有[银星]标记的敌人时，零号·安比无视目标12%电属性伤害抗性。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "RES_IGN_": 0.12 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "攻击拥有[银星]标记的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_potential_6",
+    "name": "潜能-电脉冲",
+    "description": "全队角色[追加攻击]对拥有[银星]标记的敌人造成的伤害提升效果额外提升25% (总计50%)。",
+    "source": "POTENTIAL",
+    "target": { "target_self": true, "target_teammate": true, "target_bund": true },
+    "in_combat_stats": { "ADDL_ATK_DMG_": 0.25 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "当前角色为零号·安比时，对拥有[银星]标记的敌人造成追加攻击伤害",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_core_passive_dmg",
+    "name": "核心被动-对[银星]增伤",
+    "description": "零号·安比对拥有[银星]标记的敌人造成的伤害提升25%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "DMG_": 0.25 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "攻击拥有[银星]标记的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_core_passive_conversion",
+    "name": "核心被动-追加攻击暴伤转化",
+    "description": "受到的[追加攻击]暴击伤害额外提升，提升效果等同于零号·安比暴击伤害的30%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_teammate": true, "target_bund": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": {
+      "from_property": "CRIT_DMG_",
+      "to_property": "CRIT_DMG_",
+      "conversion_ratio": 0.30,
+      "max_value": null
+    },
+    "trigger_conditions": "对拥有[银星]标记的敌人造成追加攻击伤害时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_core_passive_self_conversion",
+    "name": "核心被动-自身追加攻击暴伤转化",
+    "description": "[银星]的[追加攻击]暴击伤害提升效果，额外提升零号·安比暴击伤害的5%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": {
+      "from_property": "CRIT_DMG_",
+      "to_property": "CRIT_DMG_",
+      "conversion_ratio": 0.05,
+      "max_value": null
+    },
+    "trigger_conditions": "对拥有[银星]标记的敌人造成追加攻击伤害时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_additional_ability_crit",
+    "name": "额外能力-暴击率",
+    "description": "零号·安比的暴击率提升10%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": { "CRIT_": 0.10 },
+    "conversion": null,
+    "trigger_conditions": "常驻",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_additional_ability_addl_dmg",
+    "name": "额外能力-追加攻击增伤",
+    "description": "当前操作中的角色为零号·安比时，全队角色[追加攻击]对拥有[银星]标记的敌人造成的伤害提升25%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_teammate": true, "target_bund": true },
+    "in_combat_stats": { "ADDL_ATK_DMG_": 0.25 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "当前角色为零号·安比时，对拥有[银星]标记的敌人造成追加攻击伤害",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

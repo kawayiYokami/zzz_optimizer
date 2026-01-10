@@ -1,0 +1,123 @@
+[
+    {
+        "id": "1461_talent_1",
+        "name": "「冻眠期」",
+        "description": "[普通攻击：落华·崩坠]造成的暴击伤害提升30%。",
+        "source": "TALENT",
+        "target": { "target_self": true },
+        "in_combat_stats": { "NORMAL_ATK_CRIT_DMG_": 0.30 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "发动[普通攻击：落华·崩坠]时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1461_talent_2_1",
+        "name": "「汲光法」 - 防御穿透",
+        "description": "代理人[围杀]状态的增益效果生效时，该代理人造成的伤害无视20%防御力。",
+        "source": "TALENT",
+        "target": { "target_teammate": true, "target_bund": true },
+        "in_combat_stats": { "DEF_IGN_": 0.20 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "拥有[围杀]状态时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1461_talent_2_2",
+        "name": "「汲光法」 - 伤害提升",
+        "description": "[强化特殊技：铁萼雨幕]每消耗5点能量会使本次衔接的[普通攻击：落华·重戮]造成的伤害提升5%。",
+        "source": "TALENT",
+        "target": { "target_self": true },
+        "in_combat_stats": { "NORMAL_ATK_DMG_": 0.05 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "[强化特殊技]每消耗5点能量",
+        "max_stacks": 24,
+        "stack_mode": "linear"
+    },
+    {
+        "id": "1461_talent_4",
+        "name": "「芳香调」",
+        "description": "「席德」[围杀]状态的增益效果生效时，[终结技]造成的伤害提升20%。",
+        "source": "TALENT",
+        "target": { "target_self": true },
+        "in_combat_stats": { "ULTIMATE_SKILL_DMG_": 0.20 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "拥有[围杀]状态时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1461_talent_6",
+        "name": "「有心论」",
+        "description": "「席德」的暴击伤害提升50%。",
+        "source": "TALENT",
+        "target": { "target_self": true },
+        "in_combat_stats": { "CRIT_DMG_": 0.50 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": null,
+        "max_stacks": 1
+    },
+    {
+        "id": "1461_core_passive_1",
+        "name": "花链协议 - 强袭",
+        "description": "获得[强袭]状态，提升「席德」1000点攻击力和30%暴击伤害。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_self": true },
+        "in_combat_stats": { "ATK": 1000, "CRIT_DMG_": 0.30 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "[正兵]释放[强化特殊技]时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1461_core_passive_2",
+        "name": "花链协议 - 明攻",
+        "description": "使[正兵]获得[明攻]状态，提升[正兵]1000点攻击力和30%暴击伤害。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_teammate": true },
+        "in_combat_stats": { "ATK": 1000, "CRIT_DMG_": 0.30 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "「席德」释放[强化特殊技]时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1461_core_passive_3",
+        "name": "花链协议 - 围杀",
+        "description": "[明攻][强袭]同时存在时，「席德」与[正兵]同时获得[围杀]状态，造成的伤害提升25%。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_teammate": true, "target_bund": true },
+        "in_combat_stats": { "DMG_": 0.25 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "[明攻]和[强袭]同时存在时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1461_extra_ability_1",
+        "name": "奇兵轰临 - 伤害提升",
+        "description": "「席德」[普通攻击：落华·重戮]，[普通攻击：落华·崩坠]与[终结技：机芯花园·绽放！]造成的伤害提升30%。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_self": true },
+        "in_combat_stats": { "NORMAL_ATK_DMG_": 0.30, "ULTIMATE_SKILL_DMG_": 0.30 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "发动特定招式时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1461_extra_ability_2",
+        "name": "奇兵轰临 - 电抗穿透",
+        "description": "「席德」[普通攻击：落华·重戮]，[普通攻击：落华·崩坠]与[终结技：机芯花园·绽放！]造成的伤害无视敌人25%电属性伤害抗性。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_self": true },
+        "in_combat_stats": { "ELECTRIC_DMG_PEN_": 0.25 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "发动特定招式时",
+        "max_stacks": 1
+    }
+]

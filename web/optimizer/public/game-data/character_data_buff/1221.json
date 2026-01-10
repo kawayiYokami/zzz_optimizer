@@ -1,0 +1,115 @@
+[
+  {
+    "id": "1221_talent_1",
+    "name": "知己知彼",
+    "description": "拥有1层或以上[洞悉]时，月城柳的异常精通提升80点。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ANOM_MAS": 80
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[洞悉]时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1221_talent_2",
+    "name": "卓越适应性",
+    "description": "[强化特殊技]中，快速突刺累积的电属性异常积蓄值提升20%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ELECTRIC_ANOMALY_BUILDUP_": 0.2
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[强化特殊技]中快速突刺时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1221_talent_4",
+    "name": "掌棋者",
+    "description": "月城柳对敌人造成属性异常伤害时，会为其施加[识破]效果，处于[识破]效果下的敌人受到攻击时，本次攻击的穿透率提升16%。",
+    "source": "TALENT",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "DEF_IGN_": 0.16
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "敌人处于[识破]状态下",
+    "max_stacks": 1
+  },
+  {
+    "id": "1221_talent_6",
+    "name": "非人之血",
+    "description": "[森罗万象]状态持续期间，[强化特殊技]造成的伤害提升20%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "SPECIAL_ATK_DMG_": 0.2
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[森罗万象]状态持续期间",
+    "max_stacks": 1
+  },
+  {
+    "id": "1221_core_passive_1",
+    "name": "月蚀 - 紊乱增伤",
+    "description": "月城柳发动[强化特殊技]后，队伍中任意角色对敌人施加[紊乱]效果时，[紊乱]效果的伤害倍率提升250%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {
+      "DMG_": 0.025
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[强化特殊技]后触发[紊乱]时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1221_core_passive_2",
+    "name": "月蚀 - 电伤增伤",
+    "description": "[强化特殊技]命中敌人时，月城柳对目标造成的电属性伤害提升20%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ELECTRIC_DMG_": 0.2
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[强化特殊技]命中敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1221_extra_ability_1",
+    "name": "月相",
+    "description": "架势切换后，月城柳发动[普通攻击：夜见尊神乐]命中敌人时累积的电属性异常积蓄值提升45%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ELECTRIC_ANOMALY_BUILDUP_": 0.45
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "架势切换后发动普攻命中时",
+    "max_stacks": 1
+  }
+]

@@ -1,0 +1,134 @@
+{
+  "wengine_id": "12004",
+  "code_name": "Weapon_B_Common_04",
+  "name": "「残响」-Ⅰ型",
+  "rarity": 2,
+  "weapon_type": "支援",
+  "talents": [
+    {
+      "level": 1,
+      "name": "潮汐",
+      "description": "发动[强化特殊技]时，全队角色冲击力提升8%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12004_talent_1_1",
+          "name": "「残响」-Ⅰ型-精1",
+          "description": "发动[强化特殊技]时，全队角色冲击力提升8%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "is_permanent": false,
+          "target": {
+            "target_self": true,
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "IMPACT_": 0.08
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "发动[强化特殊技]时"
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "潮汐",
+      "description": "发动[强化特殊技]时，全队角色冲击力提升9%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12004_talent_2_1",
+          "name": "「残响」-Ⅰ型-精2",
+          "description": "发动[强化特殊技]时，全队角色冲击力提升9%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "is_permanent": false,
+          "target": {
+            "target_self": true,
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "IMPACT_": 0.09
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "发动[强化特殊技]时"
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "潮汐",
+      "description": "发动[强化特殊技]时，全队角色冲击力提升10%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12004_talent_3_1",
+          "name": "「残响」-Ⅰ型-精3",
+          "description": "发动[强化特殊技]时，全队角色冲击力提升10%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "is_permanent": false,
+          "target": {
+            "target_self": true,
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "IMPACT_": 0.1
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "发动[强化特殊技]时"
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "潮汐",
+      "description": "发动[强化特殊技]时，全队角色冲击力提升11%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12004_talent_4_1",
+          "name": "「残响」-Ⅰ型-精4",
+          "description": "发动[强化特殊技]时，全队角色冲击力提升11%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "is_permanent": false,
+          "target": {
+            "target_self": true,
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "IMPACT_": 0.11
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "发动[强化特殊技]时"
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "潮汐",
+      "description": "发动[强化特殊技]时，全队角色冲击力提升12%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12004_talent_5_1",
+          "name": "「残响」-Ⅰ型-精5",
+          "description": "发动[强化特殊技]时，全队角色冲击力提升12%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "is_permanent": false,
+          "target": {
+            "target_self": true,
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "IMPACT_": 0.12
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "发动[强化特殊技]时"
+        }
+      ]
+    }
+  ]
+}

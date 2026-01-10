@@ -1,0 +1,142 @@
+[
+  {
+    "id": "1301_talent_1_1",
+    "name": "影画1-豪华猫屋-抗性穿透",
+    "description": "造成的伤害无视15%火属性伤害抗性",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "RES_IGN_": 0.15
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "特定技能",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1301_talent_1_2",
+    "name": "影画1-豪华猫屋-增伤",
+    "description": "拥有[准星聚焦]的代理人攻击造成的伤害提升20%",
+    "source": "TALENT",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "DMG_": 0.20
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[准星聚焦]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1301_talent_2",
+    "name": "影画2-怪味食品清单",
+    "description": "自身的攻击力提升20%",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ATK_": 0.20
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "终结技后",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1301_talent_4",
+    "name": "影画4-粉红色枪套",
+    "description": "[强化特殊技：蓄热充能]或[终结技：与火共舞]造成的伤害提高40%",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ENHANCED_SPECIAL_DMG_": 0.40,
+      "ULTIMATE_ATK_DMG_": 0.40
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动特定技能时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1301_core_passive_1",
+    "name": "核心被动-衔风驭火-暴击",
+    "description": "奥菲丝&「鬼火」的暴击率提升25%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_": 0.25
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "常驻",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1301_core_passive_2",
+    "name": "核心被动-衔风驭火-追击",
+    "description": "[追加攻击]造成的伤害提升85%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ADDL_ATK_DMG_": 0.85
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "常驻",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1301_core_passive_3",
+    "name": "核心被动-衔风驭火-攻击力",
+    "description": "代理人拥有[准星聚焦]效果时，攻击力提升, 总共不超过700点",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "ATK": 700
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[准星聚焦]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1301_additional_ability",
+    "name": "额外能力-熔炉所铸",
+    "description": "拥有[准星聚焦]的代理人攻击造成的[追加攻击]伤害无视25%防御力",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "DEF_IGN_": 0.25
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[准星聚焦]时攻击",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

@@ -1,0 +1,52 @@
+{
+  "set_id": "河豚电音",
+  "name": "河豚电音",
+  "name_cn": "河豚电音",
+  "two_piece_effect": "穿透率+8%。",
+  "four_piece_effect": "[终结技]造成的伤害提升20%；发动[终结技]时，装备者的攻击力提升15%，持续12秒。",
+  "two_piece_buffs": [
+    {
+      "id": "河豚电音_2pc",
+      "name": "河豚电音 2件套",
+      "description": "穿透率+8%。",
+      "source": "DRIVE_DISK_2PC",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": [],
+      "out_of_combat_stats": {
+        "PEN_": 0.08
+      },
+      "in_combat_stats": {}
+    }
+  ],
+  "four_piece_buffs": [
+    {
+      "id": "河豚电音_4pc",
+      "name": "河豚电音 4件套",
+      "description": "[终结技]造成的伤害提升20%；发动[终结技]时，装备者的攻击力提升15%，持续12秒。",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "[终结技]造成的伤害提升20%；发动[终结技]时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "ULTIMATE_ATK_DMG_": 0.2,
+        "ATK_": 0.15
+      }
+    }
+  ]
+}

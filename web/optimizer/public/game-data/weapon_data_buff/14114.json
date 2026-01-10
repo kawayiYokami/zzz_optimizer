@@ -1,0 +1,149 @@
+{
+  "wengine_id": "14114",
+  "code_name": "Weapon_S_1141",
+  "name": "拘缚者",
+  "rarity": 4,
+  "weapon_type": "击破",
+  "talents": [
+    {
+      "level": 1,
+      "name": "束缚枷锁",
+      "description": "攻击命中敌人时，[普通攻击]造成的伤害和失衡值提升6%，最多叠加5层，持续8秒，同一招式内最多触发一次，每层效果单独结算持续时间。",
+      "buffs": [
+        {
+          "id": "14114_talent_1_generic",
+          "name": "拘缚者-通用",
+          "description": "攻击命中敌人时，[普通攻击]造成的伤害和失衡值提升6%，最多叠加5层，持续8秒，同一招式内最多触发一次，每层效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "普通攻击命中时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.06,
+            "DAZE_INC_": 0.06
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "束缚枷锁",
+      "description": "攻击命中敌人时，[普通攻击]造成的伤害和失衡值提升7.5%，最多叠加5层，持续8秒，同一招式内最多触发一次，每层效果单独结算持续时间。",
+      "buffs": [
+        {
+          "id": "14114_talent_2_generic",
+          "name": "拘缚者-通用",
+          "description": "攻击命中敌人时，[普通攻击]造成的伤害和失衡值提升7.5%，最多叠加5层，持续8秒，同一招式内最多触发一次，每层效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "普通攻击命中时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.075,
+            "DAZE_INC_": 0.075
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "束缚枷锁",
+      "description": "攻击命中敌人时，[普通攻击]造成的伤害和失衡值提升9%，最多叠加5层，持续8秒，同一招式内最多触发一次，每层效果单独结算持续时间。",
+      "buffs": [
+        {
+          "id": "14114_talent_3_generic",
+          "name": "拘缚者-通用",
+          "description": "攻击命中敌人时，[普通攻击]造成的伤害和失衡值提升9%，最多叠加5层，持续8秒，同一招式内最多触发一次，每层效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "普通攻击命中时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.09,
+            "DAZE_INC_": 0.09
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "束缚枷锁",
+      "description": "攻击命中敌人时，[普通攻击]造成的伤害和失衡值提升10.5%，最多叠加5层，持续8秒，同一招式内最多触发一次，每层效果单独结算持续时间。",
+      "buffs": [
+        {
+          "id": "14114_talent_4_generic",
+          "name": "拘缚者-通用",
+          "description": "攻击命中敌人时，[普通攻击]造成的伤害和失衡值提升10.5%，最多叠加5层，持续8秒，同一招式内最多触发一次，每层效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "普通攻击命中时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.105,
+            "DAZE_INC_": 0.105
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "束缚枷锁",
+      "description": "攻击命中敌人时，[普通攻击]造成的伤害和失衡值提升12%，最多叠加5层，持续8秒，同一招式内最多触发一次，每层效果单独结算持续时间。",
+      "buffs": [
+        {
+          "id": "14114_talent_5_generic",
+          "name": "拘缚者-通用",
+          "description": "攻击命中敌人时，[普通攻击]造成的伤害和失衡值提升12%，最多叠加5层，持续8秒，同一招式内最多触发一次，每层效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "普通攻击命中时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.12,
+            "DAZE_INC_": 0.12
+          }
+        }
+      ]
+    }
+  ]
+}

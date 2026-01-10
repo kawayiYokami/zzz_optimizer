@@ -1,0 +1,249 @@
+{
+  "wengine_id": "14119",
+  "code_name": "Weapon_S_1191",
+  "name": "深海访客",
+  "rarity": 4,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "诸洋之王",
+      "description": "冰属性伤害提升25%；[普通攻击]命中敌人时，装备者的暴击率提升10%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升10%，持续15秒，每种增益效果单独结算持续时间。",
+      "buffs": [
+        {
+          "id": "14119_talent_1_skill_dmg",
+          "name": "深海访客-技能伤害",
+          "description": "冰属性伤害提升25%；[普通攻击]命中敌人时，装备者的暴击率提升10%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升10%，持续15秒，每种增益效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 0.25
+          }
+        },
+        {
+          "id": "14119_talent_1_stats",
+          "name": "深海访客-属性提升",
+          "description": "冰属性伤害提升25%；[普通攻击]命中敌人时，装备者的暴击率提升10%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升10%，持续15秒，每种增益效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 0.25,
+            "CRIT_": 0.1
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "诸洋之王",
+      "description": "冰属性伤害提升31.5%；[普通攻击]命中敌人时，装备者的暴击率提升12.5%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升12.5%，持续15秒，每种增益效果单独结算持续时间。",
+      "buffs": [
+        {
+          "id": "14119_talent_2_skill_dmg",
+          "name": "深海访客-技能伤害",
+          "description": "冰属性伤害提升31.5%；[普通攻击]命中敌人时，装备者的暴击率提升12.5%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升12.5%，持续15秒，每种增益效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 0.315
+          }
+        },
+        {
+          "id": "14119_talent_2_stats",
+          "name": "深海访客-属性提升",
+          "description": "冰属性伤害提升31.5%；[普通攻击]命中敌人时，装备者的暴击率提升12.5%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升12.5%，持续15秒，每种增益效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 0.315,
+            "CRIT_": 0.125
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "诸洋之王",
+      "description": "冰属性伤害提升38%；[普通攻击]命中敌人时，装备者的暴击率提升15%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升15%，持续15秒，每种增益效果单独结算持续时间。",
+      "buffs": [
+        {
+          "id": "14119_talent_3_skill_dmg",
+          "name": "深海访客-技能伤害",
+          "description": "冰属性伤害提升38%；[普通攻击]命中敌人时，装备者的暴击率提升15%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升15%，持续15秒，每种增益效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 0.38
+          }
+        },
+        {
+          "id": "14119_talent_3_stats",
+          "name": "深海访客-属性提升",
+          "description": "冰属性伤害提升38%；[普通攻击]命中敌人时，装备者的暴击率提升15%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升15%，持续15秒，每种增益效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 0.38,
+            "CRIT_": 0.15
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "诸洋之王",
+      "description": "冰属性伤害提升44.5%；[普通攻击]命中敌人时，装备者的暴击率提升17.5%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升17.5%，持续15秒，每种增益效果单独结算持续时间。",
+      "buffs": [
+        {
+          "id": "14119_talent_4_skill_dmg",
+          "name": "深海访客-技能伤害",
+          "description": "冰属性伤害提升44.5%；[普通攻击]命中敌人时，装备者的暴击率提升17.5%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升17.5%，持续15秒，每种增益效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 0.445
+          }
+        },
+        {
+          "id": "14119_talent_4_stats",
+          "name": "深海访客-属性提升",
+          "description": "冰属性伤害提升44.5%；[普通攻击]命中敌人时，装备者的暴击率提升17.5%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升17.5%，持续15秒，每种增益效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 0.445,
+            "CRIT_": 0.175
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "诸洋之王",
+      "description": "冰属性伤害提升50%；[普通攻击]命中敌人时，装备者的暴击率提升20%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升20%，持续15秒，每种增益效果单独结算持续时间。",
+      "buffs": [
+        {
+          "id": "14119_talent_5_skill_dmg",
+          "name": "深海访客-技能伤害",
+          "description": "冰属性伤害提升50%；[普通攻击]命中敌人时，装备者的暴击率提升20%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升20%，持续15秒，每种增益效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 0.5
+          }
+        },
+        {
+          "id": "14119_talent_5_stats",
+          "name": "深海访客-属性提升",
+          "description": "冰属性伤害提升50%；[普通攻击]命中敌人时，装备者的暴击率提升20%，持续8秒；[冲刺攻击]造成冰属性伤害时，装备者的暴击率额外提升20%，持续15秒，每种增益效果单独结算持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 0.5,
+            "CRIT_": 0.2
+          }
+        }
+      ]
+    }
+  ]
+}

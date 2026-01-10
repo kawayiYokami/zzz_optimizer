@@ -1,0 +1,144 @@
+{
+  "wengine_id": "13142",
+  "code_name": "Weapon_A_1421",
+  "name": "震元奇枢",
+  "rarity": 3,
+  "weapon_type": "防护",
+  "talents": [
+    {
+      "level": 1,
+      "name": "寻经定络",
+      "description": "装备者的[强化特殊技]和[终结技]造成的伤害增加25%；队伍中任意角色受到伤害或回复生命时，为装备者回复2点能量，5秒内最多触发一次；",
+      "buffs": [
+        {
+          "id": "13142_talent_1_generic",
+          "name": "震元奇枢-通用",
+          "description": "装备者的[强化特殊技]和[终结技]造成的伤害增加25%；队伍中任意角色受到伤害或回复生命时，为装备者回复2点能量，5秒内最多触发一次；",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "装备者的[强化特殊技]和[终结技]造成的伤害增加25%；队伍中任意角色受到伤害或回复生命时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 0.25
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "寻经定络",
+      "description": "装备者的[强化特殊技]和[终结技]造成的伤害增加28.7%；队伍中任意角色受到伤害或回复生命时，为装备者回复2.3点能量，5秒内最多触发一次；",
+      "buffs": [
+        {
+          "id": "13142_talent_2_generic",
+          "name": "震元奇枢-通用",
+          "description": "装备者的[强化特殊技]和[终结技]造成的伤害增加28.7%；队伍中任意角色受到伤害或回复生命时，为装备者回复2.3点能量，5秒内最多触发一次；",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "装备者的[强化特殊技]和[终结技]造成的伤害增加28.7%；队伍中任意角色受到伤害或回复生命时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 0.287
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "寻经定络",
+      "description": "装备者的[强化特殊技]和[终结技]造成的伤害增加32.5%；队伍中任意角色受到伤害或回复生命时，为装备者回复2.6点能量，5秒内最多触发一次；",
+      "buffs": [
+        {
+          "id": "13142_talent_3_generic",
+          "name": "震元奇枢-通用",
+          "description": "装备者的[强化特殊技]和[终结技]造成的伤害增加32.5%；队伍中任意角色受到伤害或回复生命时，为装备者回复2.6点能量，5秒内最多触发一次；",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "装备者的[强化特殊技]和[终结技]造成的伤害增加32.5%；队伍中任意角色受到伤害或回复生命时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 0.325
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "寻经定络",
+      "description": "装备者的[强化特殊技]和[终结技]造成的伤害增加36.2%；队伍中任意角色受到伤害或回复生命时，为装备者回复2.9点能量，5秒内最多触发一次；",
+      "buffs": [
+        {
+          "id": "13142_talent_4_generic",
+          "name": "震元奇枢-通用",
+          "description": "装备者的[强化特殊技]和[终结技]造成的伤害增加36.2%；队伍中任意角色受到伤害或回复生命时，为装备者回复2.9点能量，5秒内最多触发一次；",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "装备者的[强化特殊技]和[终结技]造成的伤害增加36.2%；队伍中任意角色受到伤害或回复生命时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 0.36200000000000004
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "寻经定络",
+      "description": "装备者的[强化特殊技]和[终结技]造成的伤害增加40%；队伍中任意角色受到伤害或回复生命时，为装备者回复3.2点能量，5秒内最多触发一次；",
+      "buffs": [
+        {
+          "id": "13142_talent_5_generic",
+          "name": "震元奇枢-通用",
+          "description": "装备者的[强化特殊技]和[终结技]造成的伤害增加40%；队伍中任意角色受到伤害或回复生命时，为装备者回复3.2点能量，5秒内最多触发一次；",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "装备者的[强化特殊技]和[终结技]造成的伤害增加40%；队伍中任意角色受到伤害或回复生命时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 0.4
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "wengine_id": "13135",
+  "code_name": "Weapon_A_1351",
+  "name": "裁纸刀",
+  "rarity": 3,
+  "weapon_type": "击破",
+  "talents": [
+    {
+      "level": 1,
+      "name": "小心手指",
+      "description": "发动[追加攻击]时，装备者造成的物理伤害提升15%，造成的失衡值提升10%，持续10秒。",
+      "buffs": [
+        {
+          "id": "13135_talent_1_skill_dmg",
+          "name": "裁纸刀-技能伤害",
+          "description": "发动[追加攻击]时，装备者造成的物理伤害提升15%，造成的失衡值提升10%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.15
+          }
+        },
+        {
+          "id": "13135_talent_1_stats",
+          "name": "裁纸刀-属性提升",
+          "description": "发动[追加攻击]时，装备者造成的物理伤害提升15%，造成的失衡值提升10%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.15
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "小心手指",
+      "description": "发动[追加攻击]时，装备者造成的物理伤害提升17.3%，造成的失衡值提升11.5%，持续10秒。",
+      "buffs": [
+        {
+          "id": "13135_talent_2_skill_dmg",
+          "name": "裁纸刀-技能伤害",
+          "description": "发动[追加攻击]时，装备者造成的物理伤害提升17.3%，造成的失衡值提升11.5%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.173
+          }
+        },
+        {
+          "id": "13135_talent_2_stats",
+          "name": "裁纸刀-属性提升",
+          "description": "发动[追加攻击]时，装备者造成的物理伤害提升17.3%，造成的失衡值提升11.5%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.173
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "小心手指",
+      "description": "发动[追加攻击]时，装备者造成的物理伤害提升19.5%，造成的失衡值提升13%，持续10秒。",
+      "buffs": [
+        {
+          "id": "13135_talent_3_skill_dmg",
+          "name": "裁纸刀-技能伤害",
+          "description": "发动[追加攻击]时，装备者造成的物理伤害提升19.5%，造成的失衡值提升13%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.195
+          }
+        },
+        {
+          "id": "13135_talent_3_stats",
+          "name": "裁纸刀-属性提升",
+          "description": "发动[追加攻击]时，装备者造成的物理伤害提升19.5%，造成的失衡值提升13%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.195
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "小心手指",
+      "description": "发动[追加攻击]时，装备者造成的物理伤害提升21.8%，造成的失衡值提升14.5%，持续10秒。",
+      "buffs": [
+        {
+          "id": "13135_talent_4_skill_dmg",
+          "name": "裁纸刀-技能伤害",
+          "description": "发动[追加攻击]时，装备者造成的物理伤害提升21.8%，造成的失衡值提升14.5%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.218
+          }
+        },
+        {
+          "id": "13135_talent_4_stats",
+          "name": "裁纸刀-属性提升",
+          "description": "发动[追加攻击]时，装备者造成的物理伤害提升21.8%，造成的失衡值提升14.5%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.218
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "小心手指",
+      "description": "发动[追加攻击]时，装备者造成的物理伤害提升24%，造成的失衡值提升16%，持续10秒。",
+      "buffs": [
+        {
+          "id": "13135_talent_5_skill_dmg",
+          "name": "裁纸刀-技能伤害",
+          "description": "发动[追加攻击]时，装备者造成的物理伤害提升24%，造成的失衡值提升16%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.24
+          }
+        },
+        {
+          "id": "13135_talent_5_stats",
+          "name": "裁纸刀-属性提升",
+          "description": "发动[追加攻击]时，装备者造成的物理伤害提升24%，造成的失衡值提升16%，持续10秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.24
+          }
+        }
+      ]
+    }
+  ]
+}

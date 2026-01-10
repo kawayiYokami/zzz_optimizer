@@ -1,0 +1,144 @@
+{
+  "wengine_id": "12008",
+  "code_name": "Weapon_B_Common_08",
+  "name": "「湍流」-矢型",
+  "rarity": 2,
+  "weapon_type": "击破",
+  "talents": [
+    {
+      "level": 1,
+      "name": "巨浪",
+      "description": "攻击命中敌人时，装备者对主要攻击目标造成的失衡值提升8%。",
+      "buffs": [
+        {
+          "id": "12008_talent_1_generic",
+          "name": "「湍流」-矢型-通用",
+          "description": "攻击命中敌人时，装备者对主要攻击目标造成的失衡值提升8%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "攻击命中敌人时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAZE_INC_": 0.08
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "巨浪",
+      "description": "攻击命中敌人时，装备者对主要攻击目标造成的失衡值提升9%。",
+      "buffs": [
+        {
+          "id": "12008_talent_2_generic",
+          "name": "「湍流」-矢型-通用",
+          "description": "攻击命中敌人时，装备者对主要攻击目标造成的失衡值提升9%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "攻击命中敌人时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAZE_INC_": 0.09
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "巨浪",
+      "description": "攻击命中敌人时，装备者对主要攻击目标造成的失衡值提升10%。",
+      "buffs": [
+        {
+          "id": "12008_talent_3_generic",
+          "name": "「湍流」-矢型-通用",
+          "description": "攻击命中敌人时，装备者对主要攻击目标造成的失衡值提升10%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "攻击命中敌人时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAZE_INC_": 0.1
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "巨浪",
+      "description": "攻击命中敌人时，装备者对主要攻击目标造成的失衡值提升11%。",
+      "buffs": [
+        {
+          "id": "12008_talent_4_generic",
+          "name": "「湍流」-矢型-通用",
+          "description": "攻击命中敌人时，装备者对主要攻击目标造成的失衡值提升11%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "攻击命中敌人时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAZE_INC_": 0.11
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "巨浪",
+      "description": "攻击命中敌人时，装备者对主要攻击目标造成的失衡值提升12%。",
+      "buffs": [
+        {
+          "id": "12008_talent_5_generic",
+          "name": "「湍流」-矢型-通用",
+          "description": "攻击命中敌人时，装备者对主要攻击目标造成的失衡值提升12%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "攻击命中敌人时",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "DAZE_INC_": 0.12
+          }
+        }
+      ]
+    }
+  ]
+}

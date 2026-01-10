@@ -1,0 +1,94 @@
+[
+  {
+    "id": "1311_talent_1",
+    "name": "影画1-「太乙」遗音-增伤",
+    "description": "拥有[声之花]的代理人攻击时，造成的伤害提升20%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "DMG_": 0.20
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[声之花]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1311_talent_2",
+    "name": "影画2-「太素」遗音-声之花",
+    "description": "[声之花]：暴击率提高20%，造成的伤害无视目标20%的防御。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "CRIT_": 0.20,
+      "DEF_IGN_": 0.20
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "摇嘉音离场时能量>=50",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1311_core_passive_1",
+    "name": "核心被动-太上清音-暴伤",
+    "description": "摇嘉音的暴击伤害提高50%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_DMG_": 0.50
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "常驻",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1311_core_passive_2",
+    "name": "核心被动-太上清音-易伤",
+    "description": "受到[雷伤·附加]伤害的敌人，受到的所有伤害提高36%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "DMG_INC_": 0.36
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "受到[雷伤·附加]伤害时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1311_additional_ability_2",
+    "name": "额外能力-太初清音",
+    "description": "摇嘉音的攻击力提高，提升值等于异常精通的100%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": {
+      "source_stat": "ANOM_MAS",
+      "target_stat": "ATK",
+      "ratio": 1.0,
+      "source_is_flat": true,
+      "target_is_flat": true
+    },
+    "trigger_conditions": "常驻",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

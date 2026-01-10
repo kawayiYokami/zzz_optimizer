@@ -1,0 +1,51 @@
+{
+  "set_id": "獠牙重金属",
+  "name": "獠牙重金属",
+  "name_cn": "獠牙重金属",
+  "two_piece_effect": "物理伤害+10%。",
+  "four_piece_effect": "队伍中任意角色对敌人施加[强击]效果时，装备者对目标造成的伤害提升35%，持续12秒。",
+  "two_piece_buffs": [
+    {
+      "id": "獠牙重金属_2pc",
+      "name": "獠牙重金属 2件套",
+      "description": "物理伤害+10%。",
+      "source": "DRIVE_DISK_2PC",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": [],
+      "out_of_combat_stats": {
+        "PHYSICAL_DMG_": 0.1
+      },
+      "in_combat_stats": {}
+    }
+  ],
+  "four_piece_buffs": [
+    {
+      "id": "獠牙重金属_4pc",
+      "name": "獠牙重金属 4件套",
+      "description": "队伍中任意角色对敌人施加[强击]效果时，装备者对目标造成的伤害提升35%，持续12秒。",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "队伍中任意角色对敌人施加[强击]效果时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "DMG_": 0.35
+      }
+    }
+  ]
+}

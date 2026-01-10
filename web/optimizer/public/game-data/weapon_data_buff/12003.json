@@ -1,0 +1,39 @@
+{
+  "wengine_id": "12003",
+  "code_name": "Weapon_B_Common_03",
+  "name": "「月相」-朔",
+  "rarity": 2,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "新月",
+      "description": "发动[强化特殊技]时，装备者回复3点能量，12秒内最多触发一次。",
+      "buffs": []
+    },
+    {
+      "level": 2,
+      "name": "新月",
+      "description": "发动[强化特殊技]时，装备者回复3.5点能量，12秒内最多触发一次。",
+      "buffs": []
+    },
+    {
+      "level": 3,
+      "name": "新月",
+      "description": "发动[强化特殊技]时，装备者回复4点能量，12秒内最多触发一次。",
+      "buffs": []
+    },
+    {
+      "level": 4,
+      "name": "新月",
+      "description": "发动[强化特殊技]时，装备者回复4.5点能量，12秒内最多触发一次。",
+      "buffs": []
+    },
+    {
+      "level": 5,
+      "name": "新月",
+      "description": "发动[强化特殊技]时，装备者回复5点能量，12秒内最多触发一次。",
+      "buffs": []
+    }
+  ]
+}

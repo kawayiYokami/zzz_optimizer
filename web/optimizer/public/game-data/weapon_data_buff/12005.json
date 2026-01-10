@@ -1,0 +1,119 @@
+{
+  "wengine_id": "12005",
+  "code_name": "Weapon_B_Common_05",
+  "name": "「残响」-Ⅱ型",
+  "rarity": 2,
+  "weapon_type": "支援",
+  "talents": [
+    {
+      "level": 1,
+      "name": "音浪",
+      "description": "发动[强化特殊技]或[连携技]时，全队角色异常掌控和异常精通提升10点，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12005_r1",
+          "name": "音浪",
+          "description": "发动[强化特殊技]或[连携技]时，全队角色异常掌控和异常精通提升10点，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "12005",
+          "target": {
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "ANOM_MAS": 10,
+            "ANOM_PROF": 10
+          },
+          "max_stacks": 1
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "音浪",
+      "description": "发动[强化特殊技]或[连携技]时，全队角色异常掌控和异常精通提升12点，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12005_r2",
+          "name": "音浪",
+          "description": "发动[强化特殊技]或[连携技]时，全队角色异常掌控和异常精通提升12点，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "12005",
+          "target": {
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "ANOM_MAS": 12,
+            "ANOM_PROF": 12
+          },
+          "max_stacks": 1
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "音浪",
+      "description": "发动[强化特殊技]或[连携技]时，全队角色异常掌控和异常精通提升13点，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12005_r3",
+          "name": "音浪",
+          "description": "发动[强化特殊技]或[连携技]时，全队角色异常掌控和异常精通提升13点，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "12005",
+          "target": {
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "ANOM_MAS": 13,
+            "ANOM_PROF": 13
+          },
+          "max_stacks": 1
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "音浪",
+      "description": "发动[强化特殊技]或[连携技]时，全队角色异常掌控和异常精通提升15点，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12005_r4",
+          "name": "音浪",
+          "description": "发动[强化特殊技]或[连携技]时，全队角色异常掌控和异常精通提升15点，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "12005",
+          "target": {
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "ANOM_MAS": 15,
+            "ANOM_PROF": 15
+          },
+          "max_stacks": 1
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "音浪",
+      "description": "发动[强化特殊技]或[连携技]时，全队角色异常掌控和异常精通提升16点，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12005_r5",
+          "name": "音浪",
+          "description": "发动[强化特殊技]或[连携技]时，全队角色异常掌控和异常精通提升16点，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "12005",
+          "target": {
+            "target_teammate": true,
+            "target_bund": true
+          },
+          "in_combat_stats": {
+            "ANOM_MAS": 16,
+            "ANOM_PROF": 16
+          },
+          "max_stacks": 1
+        }
+      ]
+    }
+  ]
+}

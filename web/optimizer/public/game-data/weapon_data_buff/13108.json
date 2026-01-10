@@ -1,0 +1,244 @@
+{
+  "wengine_id": "13108",
+  "code_name": "Weapon_A_1081",
+  "name": "仿制星徽引擎",
+  "rarity": 3,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "骑士光波：改",
+      "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升36%，持续8秒。",
+      "buffs": [
+        {
+          "id": "13108_talent_1_skill_dmg",
+          "name": "仿制星徽引擎-技能伤害",
+          "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升36%，持续8秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.36
+          }
+        },
+        {
+          "id": "13108_talent_1_stats",
+          "name": "仿制星徽引擎-属性提升",
+          "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升36%，持续8秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.36
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "骑士光波：改",
+      "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升41%，持续8秒。",
+      "buffs": [
+        {
+          "id": "13108_talent_2_skill_dmg",
+          "name": "仿制星徽引擎-技能伤害",
+          "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升41%，持续8秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.41
+          }
+        },
+        {
+          "id": "13108_talent_2_stats",
+          "name": "仿制星徽引擎-属性提升",
+          "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升41%，持续8秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.41
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "骑士光波：改",
+      "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升46.5%，持续8秒。",
+      "buffs": [
+        {
+          "id": "13108_talent_3_skill_dmg",
+          "name": "仿制星徽引擎-技能伤害",
+          "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升46.5%，持续8秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.465
+          }
+        },
+        {
+          "id": "13108_talent_3_stats",
+          "name": "仿制星徽引擎-属性提升",
+          "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升46.5%，持续8秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.465
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "骑士光波：改",
+      "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升52%，持续8秒。",
+      "buffs": [
+        {
+          "id": "13108_talent_4_skill_dmg",
+          "name": "仿制星徽引擎-技能伤害",
+          "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升52%，持续8秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.52
+          }
+        },
+        {
+          "id": "13108_talent_4_stats",
+          "name": "仿制星徽引擎-属性提升",
+          "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升52%，持续8秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.52
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "骑士光波：改",
+      "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升57.5%，持续8秒。",
+      "buffs": [
+        {
+          "id": "13108_talent_5_skill_dmg",
+          "name": "仿制星徽引擎-技能伤害",
+          "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升57.5%，持续8秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.575
+          }
+        },
+        {
+          "id": "13108_talent_5_stats",
+          "name": "仿制星徽引擎-属性提升",
+          "description": "[普通攻击]或[冲刺攻击]命中6米外的敌人时，装备者对目标造成的物理伤害提升57.5%，持续8秒。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.575
+          }
+        }
+      ]
+    }
+  ]
+}

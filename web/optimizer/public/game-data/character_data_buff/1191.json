@@ -1,0 +1,134 @@
+[
+  {
+    "id": "1191_talent_1",
+    "name": "凛冬前兆",
+    "description": "每消耗1点[急冻充能]，艾莲的暴击率提升2%，持续15秒，最多叠加6层。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_": 0.02
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "消耗[急冻充能]时",
+    "max_stacks": 6,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1191_talent_2",
+    "name": "冰洋掠食者",
+    "description": "发动[强化特殊技]时，每拥有1点[急冻充能]，当前招式造成的暴击伤害提升20%，最多提升60%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_DMG_": 0.2
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[强化特殊技]时，根据[急冻充能]层数",
+    "max_stacks": 3,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1191_talent_6_1",
+    "name": "盛宴时分 - 穿透",
+    "description": "发动[强化特殊技]、[连携技]或获得[快蓄]时，艾莲的穿透率提升20%，持续6秒。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DEF_IGN_": 0.2
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[强化特殊技]、[连携技]或获得[快蓄]时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1191_talent_6_2",
+    "name": "盛宴时分 - 伤害提升",
+    "description": "拥有3层[盛宴]后，在[冲刺攻击：冰渊潜袭]中发动蓄力剪击命中敌人时，消耗所有[盛宴]，使当前招式造成的伤害提升250%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DMG_": 0.025
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有3层[盛宴]后发动蓄力剪击时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1191_potential_1",
+    "name": "极冰带 - 暴伤",
+    "description": "[额外能力：风暴潮]每层暴击伤害提升4.8%。",
+    "source": "POTENTIAL",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_DMG_": 0.048
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[风暴潮]层数时",
+    "max_stacks": 10,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1191_potential_2",
+    "name": "极冰带 - 冰抗穿透",
+    "description": "[风暴潮]叠加至10层时，攻击目标无视10%的冰属性伤害抗性。",
+    "source": "POTENTIAL",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ICE_DMG_PEN_": 0.1
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[风暴潮]叠满10层时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1191_core_passive_1",
+    "name": "凌牙厉齿",
+    "description": "艾莲在[冲刺攻击：冰渊潜袭]中发动蓄力剪击，或消耗[急冻充能]发动[普通攻击：急冻修剪法]时，招式的暴击伤害提升100%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_DMG_": 1.0
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "特定招式发动时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1191_extra_ability_1",
+    "name": "风暴潮",
+    "description": "艾莲造成冰属性伤害时，后继冰属性伤害提升3%，持续10秒，最多叠加10层。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ICE_DMG_": 0.03
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "造成冰属性伤害时",
+    "max_stacks": 10,
+    "stack_mode": "linear"
+  }
+]

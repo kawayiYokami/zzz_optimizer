@@ -1,0 +1,62 @@
+[
+    {
+        "id": "1431_talent_1_1",
+        "name": "梦中身 - 伤害提升",
+        "description": "[核心被动：照破无明]中[合道]效果额外使造成的伤害提升10%。",
+        "source": "TALENT",
+        "target": { "target_self": true },
+        "in_combat_stats": { "DMG_": 0.10 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "拥有[合道]效果时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1431_talent_1_2",
+        "name": "梦中身 - 防御穿透",
+        "description": "[核心被动：照破无明]中[合道]效果无视目标20%防御力。",
+        "source": "TALENT",
+        "target": { "target_self": true },
+        "in_combat_stats": { "DEF_IGN_": 0.20 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "拥有[合道]效果时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1431_talent_2",
+        "name": "光与影",
+        "description": "[强化特殊技：明心境·飞光]和[终结技：斩妄开天]造成的伤害无视目标40%防御力。",
+        "source": "TALENT",
+        "target": { "target_self": true },
+        "in_combat_stats": { "DEF_IGN_": 0.40 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "发动[强化特殊技：明心境·飞光]或[终结技：斩妄开天]时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1431_core_passive_1",
+        "name": "照破无明 - 合道暴击",
+        "description": "进入战场时，获得[合道]效果，暴击率提升30%。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_self": true },
+        "in_combat_stats": { "CRIT_": 0.30 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "进入战场时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1431_core_passive_2",
+        "name": "照破无明 - 合道增伤",
+        "description": "进入战场时，获得[合道]效果，造成的伤害提升25%。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_self": true },
+        "in_combat_stats": { "DMG_": 0.25 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "进入战场时",
+        "max_stacks": 1
+    }
+]

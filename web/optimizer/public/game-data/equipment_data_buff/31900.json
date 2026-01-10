@@ -1,0 +1,51 @@
+{
+  "set_id": "原始朋克",
+  "name": "原始朋克",
+  "name_cn": "原始朋克",
+  "two_piece_effect": "施加的护盾值提升15%。",
+  "four_piece_effect": "队伍中任意角色发动[招架支援]或[回避支援]时，全队角色造成的伤害提升15%，持续10秒，同名被动效果之间不可叠加。",
+  "two_piece_buffs": [
+    {
+      "id": "原始朋克_2pc",
+      "name": "原始朋克 2件套",
+      "description": "施加的护盾值提升15%。",
+      "source": "DRIVE_DISK_2PC",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": [],
+      "out_of_combat_stats": {
+        "SHIELD_": 0.15
+      },
+      "in_combat_stats": {}
+    }
+  ],
+  "four_piece_buffs": [
+    {
+      "id": "原始朋克_4pc",
+      "name": "原始朋克 4件套",
+      "description": "队伍中任意角色发动[招架支援]或[回避支援]时，全队角色造成的伤害提升15%，持续10秒，同名被动效果之间不可叠加。",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": true,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "队伍中任意角色发动[招架支援]或[回避支援]时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 0.15
+      }
+    }
+  ]
+}

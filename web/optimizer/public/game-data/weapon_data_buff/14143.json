@@ -1,0 +1,244 @@
+{
+  "wengine_id": "14143",
+  "code_name": "Weapon_S_1431",
+  "name": "云霓孤光",
+  "rarity": 4,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "玉魄冰心",
+      "description": "装备者造成的伤害无视目标20%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升25%，暴击伤害提升25%，持续40秒，重复触发时刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14143_talent_1_skill_dmg",
+          "name": "云霓孤光-技能伤害",
+          "description": "装备者造成的伤害无视目标20%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升25%，暴击伤害提升25%，持续40秒，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.25
+          }
+        },
+        {
+          "id": "14143_talent_1_stats",
+          "name": "云霓孤光-属性提升",
+          "description": "装备者造成的伤害无视目标20%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升25%，暴击伤害提升25%，持续40秒，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.25
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "玉魄冰心",
+      "description": "装备者造成的伤害无视目标22%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升28.7%，暴击伤害提升28.7%，持续40秒，重复触发时刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14143_talent_2_skill_dmg",
+          "name": "云霓孤光-技能伤害",
+          "description": "装备者造成的伤害无视目标22%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升28.7%，暴击伤害提升28.7%，持续40秒，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.287
+          }
+        },
+        {
+          "id": "14143_talent_2_stats",
+          "name": "云霓孤光-属性提升",
+          "description": "装备者造成的伤害无视目标22%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升28.7%，暴击伤害提升28.7%，持续40秒，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.287
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "玉魄冰心",
+      "description": "装备者造成的伤害无视目标24%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升32.5%，暴击伤害提升32.5%，持续40秒，重复触发时刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14143_talent_3_skill_dmg",
+          "name": "云霓孤光-技能伤害",
+          "description": "装备者造成的伤害无视目标24%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升32.5%，暴击伤害提升32.5%，持续40秒，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.325
+          }
+        },
+        {
+          "id": "14143_talent_3_stats",
+          "name": "云霓孤光-属性提升",
+          "description": "装备者造成的伤害无视目标24%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升32.5%，暴击伤害提升32.5%，持续40秒，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.325
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "玉魄冰心",
+      "description": "装备者造成的伤害无视目标26%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升36.2%，暴击伤害提升36.2%，持续40秒，重复触发时刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14143_talent_4_skill_dmg",
+          "name": "云霓孤光-技能伤害",
+          "description": "装备者造成的伤害无视目标26%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升36.2%，暴击伤害提升36.2%，持续40秒，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.362
+          }
+        },
+        {
+          "id": "14143_talent_4_stats",
+          "name": "云霓孤光-属性提升",
+          "description": "装备者造成的伤害无视目标26%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升36.2%，暴击伤害提升36.2%，持续40秒，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.362
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "玉魄冰心",
+      "description": "装备者造成的伤害无视目标28%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升40%，暴击伤害提升40%，持续40秒，重复触发时刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14143_talent_5_skill_dmg",
+          "name": "云霓孤光-技能伤害",
+          "description": "装备者造成的伤害无视目标28%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升40%，暴击伤害提升40%，持续40秒，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.4
+          }
+        },
+        {
+          "id": "14143_talent_5_stats",
+          "name": "云霓孤光-属性提升",
+          "description": "装备者造成的伤害无视目标28%物理属性伤害抗性；装备者开启[以太帷幕]时，自身造成的伤害提升40%，暴击伤害提升40%，持续40秒，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 0.4
+          }
+        }
+      ]
+    }
+  ]
+}

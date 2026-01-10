@@ -1,0 +1,154 @@
+[
+  {
+    "id": "1341_talent_1",
+    "name": "影画1-凛然裁决",
+    "description": "全队角色造成的伤害无视目标15%全属性伤害抗性",
+    "source": "TALENT",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "ALL_RES_IGN_": 0.15
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "照在后台时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1341_talent_2_self",
+    "name": "影画2-黑枝前辈-自身",
+    "description": "照的生命值回复时，提升20%攻击力",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ATK_": 0.20
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "生命值回复时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1341_talent_2_team",
+    "name": "影画2-黑枝前辈-队友",
+    "description": "照的生命值回复时，使队伍中其他角色提升15%攻击力",
+    "source": "TALENT",
+    "target": {
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "ATK_": 0.15
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "照生命值回复时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1341_talent_4",
+    "name": "影画4-轻盈踏痕",
+    "description": "[终结技]、[连携技]和[普通攻击：最终裁决]的暴击伤害提升40%",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ULTIMATE_ATK_CRIT_DMG_": 0.40,
+      "JOINT_ATK_CRIT_DMG_": 0.40,
+      "BASIC_ATK_CRIT_DMG_": 0.40
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动特定技能时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1341_core_passive_crit_conversion",
+    "name": "核心被动-最佳同事-暴击转化",
+    "description": "根据初始最大生命值提高暴击率，每1000点提高1.75% (天赋6加成后)",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": {
+      "source_stat": "HP",
+      "target_stat": "CRIT_",
+      "ratio": 0.00175,
+      "source_is_flat": true
+    },
+    "trigger_conditions": "常驻",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1341_core_passive_hp_buff",
+    "name": "核心被动-最佳同事-生命加成",
+    "description": "[以太帷幕·涌泉]生效期间，全队角色最大生命值提升5%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "HP_": 0.05
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[以太帷幕·涌泉]期间",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1341_core_passive_atk_buff",
+    "name": "核心被动-最佳同事-攻击加成",
+    "description": "照开启[以太帷幕·涌泉]时，使全队角色的攻击力提升1000点",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "ATK": 1000
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[以太帷幕·涌泉]期间",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1341_additional_ability_dmg_conversion",
+    "name": "额外能力-凝聚力",
+    "description": "照处于任意[以太帷幕]中时，全队增伤10%，生命值高于15000时额外增伤，最高40%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "DMG_": 0.10
+    },
+    "out_of_combat_stats": {},
+    "conversion": {
+      "source_stat": "HP",
+      "target_stat": "DMG_",
+      "ratio": 0.00075,
+      "source_is_flat": true,
+      "min_source_value": 15000,
+      "max_value": 0.30
+    },
+    "trigger_conditions": "[以太帷幕]期间",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

@@ -1,0 +1,244 @@
+{
+  "wengine_id": "14102",
+  "code_name": "Weapon_S_1021",
+  "name": "钢铁肉垫",
+  "rarity": 4,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "合金猫爪",
+      "description": "物理伤害提升20%；从背后攻击命中敌人时，装备者造成的伤害提升25%。",
+      "buffs": [
+        {
+          "id": "14102_talent_1_skill_dmg",
+          "name": "钢铁肉垫-技能伤害",
+          "description": "物理伤害提升20%；从背后攻击命中敌人时，装备者造成的伤害提升25%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.2
+          }
+        },
+        {
+          "id": "14102_talent_1_stats",
+          "name": "钢铁肉垫-属性提升",
+          "description": "物理伤害提升20%；从背后攻击命中敌人时，装备者造成的伤害提升25%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.2
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "合金猫爪",
+      "description": "物理伤害提升25%；从背后攻击命中敌人时，装备者造成的伤害提升31.5%。",
+      "buffs": [
+        {
+          "id": "14102_talent_2_skill_dmg",
+          "name": "钢铁肉垫-技能伤害",
+          "description": "物理伤害提升25%；从背后攻击命中敌人时，装备者造成的伤害提升31.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.25
+          }
+        },
+        {
+          "id": "14102_talent_2_stats",
+          "name": "钢铁肉垫-属性提升",
+          "description": "物理伤害提升25%；从背后攻击命中敌人时，装备者造成的伤害提升31.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.25
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "合金猫爪",
+      "description": "物理伤害提升30%；从背后攻击命中敌人时，装备者造成的伤害提升38%。",
+      "buffs": [
+        {
+          "id": "14102_talent_3_skill_dmg",
+          "name": "钢铁肉垫-技能伤害",
+          "description": "物理伤害提升30%；从背后攻击命中敌人时，装备者造成的伤害提升38%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.3
+          }
+        },
+        {
+          "id": "14102_talent_3_stats",
+          "name": "钢铁肉垫-属性提升",
+          "description": "物理伤害提升30%；从背后攻击命中敌人时，装备者造成的伤害提升38%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.3
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "合金猫爪",
+      "description": "物理伤害提升35%；从背后攻击命中敌人时，装备者造成的伤害提升44%。",
+      "buffs": [
+        {
+          "id": "14102_talent_4_skill_dmg",
+          "name": "钢铁肉垫-技能伤害",
+          "description": "物理伤害提升35%；从背后攻击命中敌人时，装备者造成的伤害提升44%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.35
+          }
+        },
+        {
+          "id": "14102_talent_4_stats",
+          "name": "钢铁肉垫-属性提升",
+          "description": "物理伤害提升35%；从背后攻击命中敌人时，装备者造成的伤害提升44%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.35
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "合金猫爪",
+      "description": "物理伤害提升40%；从背后攻击命中敌人时，装备者造成的伤害提升50%。",
+      "buffs": [
+        {
+          "id": "14102_talent_5_skill_dmg",
+          "name": "钢铁肉垫-技能伤害",
+          "description": "物理伤害提升40%；从背后攻击命中敌人时，装备者造成的伤害提升50%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.4
+          }
+        },
+        {
+          "id": "14102_talent_5_stats",
+          "name": "钢铁肉垫-属性提升",
+          "description": "物理伤害提升40%；从背后攻击命中敌人时，装备者造成的伤害提升50%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "PHYSICAL_DMG_": 0.4
+          }
+        }
+      ]
+    }
+  ]
+}

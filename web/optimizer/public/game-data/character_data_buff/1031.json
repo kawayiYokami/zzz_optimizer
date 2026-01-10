@@ -1,0 +1,68 @@
+[
+  {
+    "id": "1031_talent_1",
+    "name": "增压强化弹",
+    "description": "[强化特殊技]造成的伤害和累积的属性异常积蓄值提升16%；发动[强化特殊技]时，每多蓄力0.1秒，在目标处生成的能量场持续时间提升0.15秒。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ENHANCED_SPECIAL_DMG_": 0.16,
+      "ANOM_BUILDUP_": 0.16
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[强化特殊技]时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1031_talent_6",
+    "name": "侵蚀能量场",
+    "description": "能量场对敌人造成伤害时，所有单位对该目标的暴击率提升1.5%，最多叠加10层，持续12秒，每层效果单独结算持续时间。",
+    "source": "TALENT",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+       "CRIT_": 0.015
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "能量场对敌人造成伤害时",
+    "max_stacks": 10,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1031_core_passive",
+    "name": "机关箱",
+    "description": "强化子弹或能量场命中敌人时，目标的防御力降低40%，持续3.5秒。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "DEF_RED_": 0.40
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "强化子弹或能量场命中敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1031_extra_ability",
+    "name": "狡兔三窟",
+    "description": "队伍中存在与自身属性或阵营相同的角色时触发：妮可通过[核心被动：机关箱]对敌人施加减益效果时，所有单位对目标造成的以太伤害额外提升25%，持续3.5秒。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "ETHER_DMG_": 0.25
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "通过[核心被动：机关箱]对敌人施加减益效果时",
+    "max_stacks": 1
+  }
+]

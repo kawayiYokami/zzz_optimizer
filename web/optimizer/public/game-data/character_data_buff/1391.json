@@ -1,0 +1,91 @@
+[
+  {
+    "id": "1391_talent_1_crit",
+    "name": "天赋-超级可怕小老虎-暴击",
+    "description": "进入战场时，橘福福的暴击率提升12%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_": 0.12 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "进入战场时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1391_talent_1_daze",
+    "name": "天赋-超级可怕小老虎-失衡",
+    "description": "橘福福的[连携技]命中敌人时，目标处于失衡状态下时，失衡易伤倍率提升35%。",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "DAZE_RED_": 0.35 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[连携技]命中失衡的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1391_talent_2",
+    "name": "天赋-神通广大青溟客",
+    "description": "处于[虎啸]状态下角色的暴击伤害额外提升22%。",
+    "source": "TALENT",
+    "target": { "target_self": true, "target_teammate": true, "target_bund": true },
+    "in_combat_stats": { "CRIT_DMG_": 0.22 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[虎啸]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1391_talent_4",
+    "name": "天赋-降妖伏魔虎修者",
+    "description": "橘福福处于[虎啸]状态下时，自身的暴击伤害提升35%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_DMG_": 0.35 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[虎啸]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1391_talent_6",
+    "name": "天赋-知我心中虎啸声",
+    "description": "橘福福的[连携技]造成的伤害提升30%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CHAIN_ATK_DMG_": 0.30 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "常驻",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1391_core_passive_huxiao",
+    "name": "核心被动-[虎啸]状态",
+    "description": "[虎啸]效果：暴击伤害提升20%，[连携技]/[终结技]造成的伤害提升20%/40%，冲击力提升50点。且当初始攻击力大于2800时，每超过100点攻击力使暴击伤害额外提升5% (最多30%)。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_teammate": true, "target_bund": true },
+    "in_combat_stats": {
+      "CRIT_DMG_": 0.20,
+      "CHAIN_ATK_DMG_": 0.20,
+      "ULTIMATE_ATK_DMG_": 0.40,
+      "IMPACT": 50
+    },
+    "out_of_combat_stats": {},
+    "conversion": {
+      "from_property": "ATK_BASE",
+      "to_property": "CRIT_DMG_",
+      "conversion_ratio": 0.0005,
+      "max_value": 0.3,
+      "from_property_threshold": 2800
+    },
+    "trigger_conditions": "处于[虎啸]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

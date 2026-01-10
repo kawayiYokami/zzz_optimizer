@@ -1,0 +1,51 @@
+{
+  "set_id": "雷暴重金属",
+  "name": "雷暴重金属",
+  "name_cn": "雷暴重金属",
+  "two_piece_effect": "电属性伤害+10%。",
+  "four_piece_effect": "当场上存在处于[感电]状态下的敌人时，装备者的攻击力提升28%。",
+  "two_piece_buffs": [
+    {
+      "id": "雷暴重金属_2pc",
+      "name": "雷暴重金属 2件套",
+      "description": "电属性伤害+10%。",
+      "source": "DRIVE_DISK_2PC",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": [],
+      "out_of_combat_stats": {
+        "ELECTRIC_DMG_": 0.1
+      },
+      "in_combat_stats": {}
+    }
+  ],
+  "four_piece_buffs": [
+    {
+      "id": "雷暴重金属_4pc",
+      "name": "雷暴重金属 4件套",
+      "description": "当场上存在处于[感电]状态下的敌人时，装备者的攻击力提升28%。",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "当场上存在处于[感电]状态下的敌人时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "ATK_": 0.28
+      }
+    }
+  ]
+}
