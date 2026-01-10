@@ -1,0 +1,144 @@
+{
+  "wengine_id": "13009",
+  "code_name": "Weapon_A_Common_09",
+  "name": "触电唇彩",
+  "rarity": 3,
+  "weapon_type": "异常",
+  "talents": [
+    {
+      "level": 1,
+      "name": "致命拥吻",
+      "description": "当场上存在处于属性异常状态下的敌人时，装备者的攻击力提升10%，对目标造成的伤害额外提升15%。",
+      "buffs": [
+        {
+          "id": "13009_talent_1_stats",
+          "name": "触电唇彩-属性提升",
+          "description": "当场上存在处于属性异常状态下的敌人时，装备者的攻击力提升10%，对目标造成的伤害额外提升15%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 10.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "致命拥吻",
+      "description": "当场上存在处于属性异常状态下的敌人时，装备者的攻击力提升11.5%，对目标造成的伤害额外提升17.5%。",
+      "buffs": [
+        {
+          "id": "13009_talent_2_stats",
+          "name": "触电唇彩-属性提升",
+          "description": "当场上存在处于属性异常状态下的敌人时，装备者的攻击力提升11.5%，对目标造成的伤害额外提升17.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 11.5
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "致命拥吻",
+      "description": "当场上存在处于属性异常状态下的敌人时，装备者的攻击力提升13%，对目标造成的伤害额外提升20%。",
+      "buffs": [
+        {
+          "id": "13009_talent_3_stats",
+          "name": "触电唇彩-属性提升",
+          "description": "当场上存在处于属性异常状态下的敌人时，装备者的攻击力提升13%，对目标造成的伤害额外提升20%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 13.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "致命拥吻",
+      "description": "当场上存在处于属性异常状态下的敌人时，装备者的攻击力提升14.5%，对目标造成的伤害额外提升22.5%。",
+      "buffs": [
+        {
+          "id": "13009_talent_4_stats",
+          "name": "触电唇彩-属性提升",
+          "description": "当场上存在处于属性异常状态下的敌人时，装备者的攻击力提升14.5%，对目标造成的伤害额外提升22.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 14.5
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "致命拥吻",
+      "description": "当场上存在处于属性异常状态下的敌人时，装备者的攻击力提升16%，对目标造成的伤害额外提升25%。",
+      "buffs": [
+        {
+          "id": "13009_talent_5_stats",
+          "name": "触电唇彩-属性提升",
+          "description": "当场上存在处于属性异常状态下的敌人时，装备者的攻击力提升16%，对目标造成的伤害额外提升25%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 16.0
+          }
+        }
+      ]
+    }
+  ]
+}

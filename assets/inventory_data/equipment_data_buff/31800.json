@@ -1,0 +1,52 @@
+{
+  "set_id": "混沌爵士",
+  "name": "混沌爵士",
+  "name_cn": "混沌爵士",
+  "two_piece_effect": "异常精通+30点。",
+  "four_piece_effect": "火属性伤害和电属性伤害提升15%；位于后场时，[强化特殊技]和[支援攻击]造成的伤害提升20%，换入前场后，该增益效果仍然保留，持续5秒，保留效果7.5秒内最多触发一次。",
+  "two_piece_buffs": [
+    {
+      "id": "混沌爵士_2pc",
+      "name": "混沌爵士 2件套",
+      "description": "异常精通+30点。",
+      "source": "DRIVE_DISK_2PC",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": [],
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 0.0
+      },
+      "in_combat_stats": {}
+    }
+  ],
+  "four_piece_buffs": [
+    {
+      "id": "混沌爵士_4pc",
+      "name": "混沌爵士 4件套",
+      "description": "火属性伤害和电属性伤害提升15%；位于后场时，[强化特殊技]和[支援攻击]造成的伤害提升20%，换入前场后，该增益效果仍然保留，持续5秒，保留效果7.5秒内最多触发一次。",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "火属性伤害和电属性伤害提升15%；位于后场时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "ASSIST_ATK_DMG_": 20.0,
+        "FIRE_DMG_": 15.0
+      }
+    }
+  ]
+}

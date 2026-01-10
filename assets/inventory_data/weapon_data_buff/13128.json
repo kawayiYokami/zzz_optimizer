@@ -1,0 +1,144 @@
+{
+  "wengine_id": "13128",
+  "code_name": "Weapon_A_1281",
+  "name": "轰鸣座驾",
+  "rarity": 3,
+  "weapon_type": "异常",
+  "talents": [
+    {
+      "level": 1,
+      "name": "碰撞势能",
+      "description": "[强化特殊技]命中敌人时，随机触发以下三种效果中的一种，持续5秒，0.3秒内最多触发一次，同类效果不可叠加，重复触发时刷新持续时间，多个效果可以同时存在：装备者的攻击力提升8%；装备者的异常精通提升40点；装备者的属性异常积蓄效率提升25%。",
+      "buffs": [
+        {
+          "id": "13128_talent_1_stats",
+          "name": "轰鸣座驾-属性提升",
+          "description": "[强化特殊技]命中敌人时，随机触发以下三种效果中的一种，持续5秒，0.3秒内最多触发一次，同类效果不可叠加，重复触发时刷新持续时间，多个效果可以同时存在：装备者的攻击力提升8%；装备者的异常精通提升40点；装备者的属性异常积蓄效率提升25%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 8.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "碰撞势能",
+      "description": "[强化特殊技]命中敌人时，随机触发以下三种效果中的一种，持续5秒，0.3秒内最多触发一次，同类效果不可叠加，重复触发时刷新持续时间，多个效果可以同时存在：装备者的攻击力提升9.2%；装备者的异常精通提升46点；装备者的属性异常积蓄效率提升28%。",
+      "buffs": [
+        {
+          "id": "13128_talent_2_stats",
+          "name": "轰鸣座驾-属性提升",
+          "description": "[强化特殊技]命中敌人时，随机触发以下三种效果中的一种，持续5秒，0.3秒内最多触发一次，同类效果不可叠加，重复触发时刷新持续时间，多个效果可以同时存在：装备者的攻击力提升9.2%；装备者的异常精通提升46点；装备者的属性异常积蓄效率提升28%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 9.2
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "碰撞势能",
+      "description": "[强化特殊技]命中敌人时，随机触发以下三种效果中的一种，持续5秒，0.3秒内最多触发一次，同类效果不可叠加，重复触发时刷新持续时间，多个效果可以同时存在：装备者的攻击力提升10.4%；装备者的异常精通提升52点；装备者的属性异常积蓄效率提升32%。",
+      "buffs": [
+        {
+          "id": "13128_talent_3_stats",
+          "name": "轰鸣座驾-属性提升",
+          "description": "[强化特殊技]命中敌人时，随机触发以下三种效果中的一种，持续5秒，0.3秒内最多触发一次，同类效果不可叠加，重复触发时刷新持续时间，多个效果可以同时存在：装备者的攻击力提升10.4%；装备者的异常精通提升52点；装备者的属性异常积蓄效率提升32%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 10.4
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "碰撞势能",
+      "description": "[强化特殊技]命中敌人时，随机触发以下三种效果中的一种，持续5秒，0.3秒内最多触发一次，同类效果不可叠加，重复触发时刷新持续时间，多个效果可以同时存在：装备者的攻击力提升11.6%；装备者的异常精通提升58点；装备者的属性异常积蓄效率提升36%。",
+      "buffs": [
+        {
+          "id": "13128_talent_4_stats",
+          "name": "轰鸣座驾-属性提升",
+          "description": "[强化特殊技]命中敌人时，随机触发以下三种效果中的一种，持续5秒，0.3秒内最多触发一次，同类效果不可叠加，重复触发时刷新持续时间，多个效果可以同时存在：装备者的攻击力提升11.6%；装备者的异常精通提升58点；装备者的属性异常积蓄效率提升36%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 11.6
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "碰撞势能",
+      "description": "[强化特殊技]命中敌人时，随机触发以下三种效果中的一种，持续5秒，0.3秒内最多触发一次，同类效果不可叠加，重复触发时刷新持续时间，多个效果可以同时存在：装备者的攻击力提升12.8%；装备者的异常精通提升64点；装备者的属性异常积蓄效率提升40%。",
+      "buffs": [
+        {
+          "id": "13128_talent_5_stats",
+          "name": "轰鸣座驾-属性提升",
+          "description": "[强化特殊技]命中敌人时，随机触发以下三种效果中的一种，持续5秒，0.3秒内最多触发一次，同类效果不可叠加，重复触发时刷新持续时间，多个效果可以同时存在：装备者的攻击力提升12.8%；装备者的异常精通提升64点；装备者的属性异常积蓄效率提升40%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 12.8
+          }
+        }
+      ]
+    }
+  ]
+}

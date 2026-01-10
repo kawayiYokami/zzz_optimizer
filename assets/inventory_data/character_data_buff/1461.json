@@ -1,0 +1,74 @@
+{
+  "agent_id": "1461",
+  "name": "「席德」",
+  "code_name": "Seed",
+  "rarity": 4,
+  "weapon_type": "强攻",
+  "element_type": "电属性",
+  "core_passive_buffs": [
+    {
+      "id": "1461_core_passive_7_1",
+      "name": "CORE_PASSIVE-BUFF1",
+      "description": "[明攻][强袭]同时存在时，「席德」与[正兵]同时获得[围杀]状态，造成的伤害提升25%",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 25.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1461_core_passive_7_2",
+      "name": "CORE_PASSIVE-BUFF2",
+      "description": "「席德」[普通攻击：落华·重戮]，[普通攻击：落华·崩坠]与[终结技：机芯花园·绽放！]造成的伤害提升30%，且无视敌人25%电属性伤害抗性",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ELECTRIC_DMG_": 30.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [
+    {
+      "id": "1461_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "暴击伤害提升50%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "CRIT_DMG_": 50.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

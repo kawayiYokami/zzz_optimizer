@@ -1,0 +1,45 @@
+{
+  "agent_id": "1051",
+  "name": "伊德海莉",
+  "code_name": "Yidhari",
+  "rarity": 4,
+  "weapon_type": "命破",
+  "element_type": "冰属性",
+  "core_passive_buffs": [
+    {
+      "id": "1051_core_passive_7_2",
+      "name": "CORE_PASSIVE-BUFF2",
+      "description": "队伍中存在[击破]角色或[支援]角色时触发：\n伊德海莉生命值低于50%时，暴击伤害提升30%，受到的伤害降低25%",
+      "source": "CORE_PASSIVE",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "HP_": 50.0
+      },
+      "trigger_conditions": "[击破]角色或[支援]角色",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [],
+  "conversion_buffs": [
+    {
+      "id": "1051_core_passive_7_1",
+      "name": "CORE_PASSIVE-转换BUFF",
+      "description": "伊德海莉会额外根据自身最大生命值提高贯穿力，每1点最大生命值将提高0.1点贯穿力；\n伊德海莉发动招式造成的冰属性伤害均为贯穿伤害，无视敌人防御，使用贯穿力作为招式伤害倍率；伊德海莉进入战场时即可恢复60闪能，在勘域模式中此效果180秒内最多触发一次，\n伊德海莉的当前生命值百分比越低，招式造成的伤害越高；\n当伊德海莉生命值低于50%时，获得的增益效果达到最大值，攻击造成的伤害最多提升100%，伊德海莉生命值重新回到50%后，最大值增益效果仍会持续5秒；\n伊德海莉通过招式命中获得喧响值降低，伊德海莉生命值降低时，获得喧响值，每降低1%生命值会获得10点喧响值。",
+      "source": "CORE_PASSIVE",
+      "from_property": "HP_BASE",
+      "to_property": "SHEER_FORCE",
+      "conversion_ratio": 0.1,
+      "trigger_conditions": "",
+      "is_active": true
+    }
+  ],
+  "potential_buffs": []
+}

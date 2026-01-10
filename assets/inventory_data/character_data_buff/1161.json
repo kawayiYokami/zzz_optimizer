@@ -1,0 +1,12 @@
+{
+  "agent_id": "1161",
+  "name": "莱特",
+  "code_name": "Lighter",
+  "rarity": 4,
+  "weapon_type": "击破",
+  "element_type": "火属性",
+  "core_passive_buffs": [],
+  "talent_buffs": [],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

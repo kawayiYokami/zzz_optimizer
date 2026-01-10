@@ -1,0 +1,33 @@
+{
+  "agent_id": "1271",
+  "name": "赛斯",
+  "code_name": "Seth",
+  "rarity": 3,
+  "weapon_type": "防护",
+  "element_type": "电属性",
+  "core_passive_buffs": [],
+  "talent_buffs": [
+    {
+      "id": "1271_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "赛斯在[普通攻击：雷霆击-感电]中发动终结一击命中敌人时，额外造成自身500%攻击力的伤害，本次攻击必定触发暴击，且暴击伤害提升60%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ATK_": 500.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

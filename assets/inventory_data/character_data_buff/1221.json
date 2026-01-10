@@ -1,0 +1,54 @@
+{
+  "agent_id": "1221",
+  "name": "柳",
+  "code_name": "Yanagi",
+  "rarity": 4,
+  "weapon_type": "异常",
+  "element_type": "电属性",
+  "core_passive_buffs": [
+    {
+      "id": "1221_core_passive_7_1",
+      "name": "CORE_PASSIVE-BUFF1",
+      "description": "[强化特殊技]命中敌人时，月城柳对目标造成的电属性伤害提升20%，持续15秒",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ELECTRIC_DMG_": 20.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [
+    {
+      "id": "1221_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "在[强化特殊技]中发动突刺攻击后，[森罗万象]状态的持续时间提升至30秒，状态持续期间，[强化特殊技]造成的伤害提升20%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 20.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

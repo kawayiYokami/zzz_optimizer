@@ -1,0 +1,45 @@
+{
+  "agent_id": "1341",
+  "name": "照",
+  "code_name": "Zhao",
+  "rarity": 4,
+  "weapon_type": "防护",
+  "element_type": "冰属性",
+  "core_passive_buffs": [],
+  "talent_buffs": [
+    {
+      "id": "1341_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "[核心被动：最佳同事]提高暴击率的效果提升至原本的125%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "CRIT_RATE_": 125.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [
+    {
+      "id": "1341_core_passive_7_1",
+      "name": "CORE_PASSIVE-转换BUFF",
+      "description": "照会额外根据初始最大生命值提高暴击率，每1000点初始最大生命值提高1.4%暴击率；\n进入战场时，照获得100点[霜寒值]，在勘域模式中此效果180秒内最多触发一次，[霜寒值]的上限为100点；\n当前操作中角色攻击命中敌人时，照积攒6点[霜寒值]，每3秒最多触发一次；\n[霜寒值]满时，如果处于接战状态下，将照换入前场可以发动[登场技]；\n照发动[登场技]时，消耗所有[霜寒值]，开启[以太帷幕·涌泉]；\n[以太帷幕·涌泉]生效期间，全队角色最大生命值提升5%，持续40秒，照重复开启[以太帷幕·涌泉]前，将关闭已有的[以太帷幕·涌泉]；\n照开启[以太帷幕·涌泉]时，使全队角色的攻击力提升1000点，持续50秒，重复触发时刷新持续时间。",
+      "source": "CORE_PASSIVE",
+      "from_property": "HP_BASE",
+      "to_property": "ATK",
+      "conversion_ratio": 1.0,
+      "trigger_conditions": "",
+      "is_active": true
+    }
+  ],
+  "potential_buffs": []
+}

@@ -1,0 +1,254 @@
+{
+  "wengine_id": "14134",
+  "code_name": "Weapon_S_1341",
+  "name": "半糖雪兔",
+  "rarity": 4,
+  "weapon_type": "防护",
+  "talents": [
+    {
+      "level": 1,
+      "name": "易碎之甜",
+      "description": "装备者的能量自动回复提升0.46点/秒；全队角色攻击力提升10%，最大生命值提升10%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升30%，持续60秒，重复触发刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14134_talent_1_skill_dmg",
+          "name": "半糖雪兔-技能伤害",
+          "description": "装备者的能量自动回复提升0.46点/秒；全队角色攻击力提升10%，最大生命值提升10%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升30%，持续60秒，重复触发刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 30.0
+          }
+        },
+        {
+          "id": "14134_talent_1_stats",
+          "name": "半糖雪兔-属性提升",
+          "description": "装备者的能量自动回复提升0.46点/秒；全队角色攻击力提升10%，最大生命值提升10%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升30%，持续60秒，重复触发刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 10.0,
+            "HP_": 10.0,
+            "CRIT_DMG_": 30.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "易碎之甜",
+      "description": "装备者的能量自动回复提升0.53点/秒；全队角色攻击力提升11.5%，最大生命值提升11.5%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升34.5%，持续60秒，重复触发刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14134_talent_2_skill_dmg",
+          "name": "半糖雪兔-技能伤害",
+          "description": "装备者的能量自动回复提升0.53点/秒；全队角色攻击力提升11.5%，最大生命值提升11.5%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升34.5%，持续60秒，重复触发刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 34.5
+          }
+        },
+        {
+          "id": "14134_talent_2_stats",
+          "name": "半糖雪兔-属性提升",
+          "description": "装备者的能量自动回复提升0.53点/秒；全队角色攻击力提升11.5%，最大生命值提升11.5%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升34.5%，持续60秒，重复触发刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 11.5,
+            "HP_": 11.5,
+            "CRIT_DMG_": 34.5
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "易碎之甜",
+      "description": "装备者的能量自动回复提升0.6点/秒；全队角色攻击力提升13%，最大生命值提升13%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升39%，持续60秒，重复触发刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14134_talent_3_skill_dmg",
+          "name": "半糖雪兔-技能伤害",
+          "description": "装备者的能量自动回复提升0.6点/秒；全队角色攻击力提升13%，最大生命值提升13%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升39%，持续60秒，重复触发刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 39.0
+          }
+        },
+        {
+          "id": "14134_talent_3_stats",
+          "name": "半糖雪兔-属性提升",
+          "description": "装备者的能量自动回复提升0.6点/秒；全队角色攻击力提升13%，最大生命值提升13%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升39%，持续60秒，重复触发刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 13.0,
+            "HP_": 13.0,
+            "CRIT_DMG_": 39.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "易碎之甜",
+      "description": "装备者的能量自动回复提升0.67点/秒；全队角色攻击力提升14.5%，最大生命值提升14.5%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升43.5%，持续60秒，重复触发刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14134_talent_4_skill_dmg",
+          "name": "半糖雪兔-技能伤害",
+          "description": "装备者的能量自动回复提升0.67点/秒；全队角色攻击力提升14.5%，最大生命值提升14.5%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升43.5%，持续60秒，重复触发刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 43.5
+          }
+        },
+        {
+          "id": "14134_talent_4_stats",
+          "name": "半糖雪兔-属性提升",
+          "description": "装备者的能量自动回复提升0.67点/秒；全队角色攻击力提升14.5%，最大生命值提升14.5%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升43.5%，持续60秒，重复触发刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 14.5,
+            "HP_": 14.5,
+            "CRIT_DMG_": 43.5
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "易碎之甜",
+      "description": "装备者的能量自动回复提升0.74点/秒；全队角色攻击力提升16%，最大生命值提升16%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升48%，持续60秒，重复触发刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14134_talent_5_skill_dmg",
+          "name": "半糖雪兔-技能伤害",
+          "description": "装备者的能量自动回复提升0.74点/秒；全队角色攻击力提升16%，最大生命值提升16%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升48%，持续60秒，重复触发刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 48.0
+          }
+        },
+        {
+          "id": "14134_talent_5_stats",
+          "name": "半糖雪兔-属性提升",
+          "description": "装备者的能量自动回复提升0.74点/秒；全队角色攻击力提升16%，最大生命值提升16%，该效果全队唯一；装备者开启或延长[以太帷幕]时，使全队角色的暴击伤害提升48%，持续60秒，重复触发刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 16.0,
+            "HP_": 16.0,
+            "CRIT_DMG_": 48.0
+          }
+        }
+      ]
+    }
+  ]
+}

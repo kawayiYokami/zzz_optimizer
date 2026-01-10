@@ -1,0 +1,93 @@
+{
+  "agent_id": "1381",
+  "name": "零号·安比",
+  "code_name": "Soldier 0 - Anby",
+  "rarity": 4,
+  "weapon_type": "强攻",
+  "element_type": "电属性",
+  "core_passive_buffs": [
+    {
+      "id": "1381_core_passive_7_1",
+      "name": "CORE_PASSIVE-BUFF1",
+      "description": "零号·安比对拥有[银星]标记的敌人造成的伤害提升25%",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 25.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1381_core_passive_7_2",
+      "name": "CORE_PASSIVE-BUFF2",
+      "description": "敌方单位被施加[银星]标记后，受到的[追加攻击]暴击伤害额外提升，提升效果等同于零号·安比暴击伤害的30%",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "CRIT_DMG_": 30.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1381_core_passive_7_3",
+      "name": "CORE_PASSIVE-BUFF3",
+      "description": "队伍中存在[击破]或[支援]角色时触发：\n零号·安比的暴击率提升10%",
+      "source": "CORE_PASSIVE",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "CRIT_RATE_": 10.0
+      },
+      "trigger_conditions": "[击破]或[支援]角色",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1381_core_passive_7_4",
+      "name": "CORE_PASSIVE-BUFF4",
+      "description": "角色为零号·安比时，全队角色[追加攻击]对拥有[银星]标记的敌人造成的伤害提升25%",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": true,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 25.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

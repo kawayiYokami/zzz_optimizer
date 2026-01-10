@@ -1,0 +1,33 @@
+{
+  "agent_id": "1251",
+  "name": "青衣",
+  "code_name": "QingYi",
+  "rarity": 4,
+  "weapon_type": "击破",
+  "element_type": "电属性",
+  "core_passive_buffs": [],
+  "talent_buffs": [
+    {
+      "id": "1251_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "[普通攻击：醉花月云转]的打断等级大幅提升，招式的暴击伤害额外提升100%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "CRIT_DMG_": 100.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

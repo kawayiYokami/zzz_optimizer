@@ -1,0 +1,74 @@
+{
+  "agent_id": "1131",
+  "name": "苍角",
+  "code_name": "Soukaku",
+  "rarity": 3,
+  "weapon_type": "支援",
+  "element_type": "冰属性",
+  "core_passive_buffs": [
+    {
+      "id": "1131_core_passive_7_1",
+      "name": "CORE_PASSIVE-BUFF1",
+      "description": "苍角发动[展旗]时，自身攻击力提升，提升数值等同于苍角20%初始攻击力，最高不超过500点，持续22秒，发动[展旗]并消耗[涡流]时，该增益效果翻倍，最高不超过1000点",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ATK_": 20.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1131_core_passive_7_2",
+      "name": "CORE_PASSIVE-BUFF2",
+      "description": "队伍中存在与自身属性或阵营相同的角色时触发：\n苍角消耗[涡流]发动[展旗]时，全队角色造成的冰属性伤害提升20%，持续22秒",
+      "source": "CORE_PASSIVE",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": true,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "ICE_DMG_": 20.0
+      },
+      "trigger_conditions": "与自身属性或阵营相同的角色",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [
+    {
+      "id": "1131_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "[霜染刃旗]状态下，强化[普通攻击]和强化[冲刺攻击]的可发动次数提升至12次，且招式造成的伤害提升45%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 45.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

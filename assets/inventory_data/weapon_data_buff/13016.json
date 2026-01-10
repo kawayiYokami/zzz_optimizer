@@ -1,0 +1,134 @@
+{
+  "wengine_id": "13016",
+  "code_name": "Weapon_A_Common_16",
+  "name": "光影刻刀",
+  "rarity": 3,
+  "weapon_type": "防护",
+  "talents": [
+    {
+      "level": 1,
+      "name": "镌刻倏忽",
+      "description": "队伍中角色生命值大于等于50%，受到的伤害降低7.5%，受到的[秽息浸染]值降低10%，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "13016_talent_1_generic",
+          "name": "光影刻刀-通用",
+          "description": "队伍中角色生命值大于等于50%，受到的伤害降低7.5%，受到的[秽息浸染]值降低10%，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "镌刻倏忽",
+      "description": "队伍中角色生命值大于等于50%，受到的伤害降低8.6%，受到的[秽息浸染]值降低11.5%，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "13016_talent_2_generic",
+          "name": "光影刻刀-通用",
+          "description": "队伍中角色生命值大于等于50%，受到的伤害降低8.6%，受到的[秽息浸染]值降低11.5%，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "镌刻倏忽",
+      "description": "队伍中角色生命值大于等于50%，受到的伤害降低9.7%，受到的[秽息浸染]值降低13%，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "13016_talent_3_generic",
+          "name": "光影刻刀-通用",
+          "description": "队伍中角色生命值大于等于50%，受到的伤害降低9.7%，受到的[秽息浸染]值降低13%，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "镌刻倏忽",
+      "description": "队伍中角色生命值大于等于50%，受到的伤害降低10.8%，受到的[秽息浸染]值降低14.5%，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "13016_talent_4_generic",
+          "name": "光影刻刀-通用",
+          "description": "队伍中角色生命值大于等于50%，受到的伤害降低10.8%，受到的[秽息浸染]值降低14.5%，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "镌刻倏忽",
+      "description": "队伍中角色生命值大于等于50%，受到的伤害降低12%，受到的[秽息浸染]值降低16%，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "13016_talent_5_generic",
+          "name": "光影刻刀-通用",
+          "description": "队伍中角色生命值大于等于50%，受到的伤害降低12%，受到的[秽息浸染]值降低16%，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    }
+  ]
+}

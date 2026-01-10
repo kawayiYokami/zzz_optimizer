@@ -1,0 +1,74 @@
+{
+  "agent_id": "1211",
+  "name": "丽娜",
+  "code_name": "Rina",
+  "rarity": 4,
+  "weapon_type": "支援",
+  "element_type": "电属性",
+  "core_passive_buffs": [
+    {
+      "id": "1211_core_passive_7_1",
+      "name": "CORE_PASSIVE-BUFF1",
+      "description": "指派杜苏拉或安娜塔莎进行攻击时，队伍中其他角色的穿透率随丽娜自身的穿透率提升，提升效果等同于丽娜25%穿透率+12%，最高提升30%，杜苏拉和安娜塔莎均返回丽娜身边后，对应增益效果结束",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "PEN_": 25.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1211_core_passive_7_2",
+      "name": "CORE_PASSIVE-BUFF2",
+      "description": "场上存在处于[感电]状态下的敌人时，全队角色造成的电属性伤害提升10%",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": true,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ELECTRIC_DMG_": 10.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [
+    {
+      "id": "1211_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "[强化特殊技]、[连携技]或[终结技]命中敌人时，全队角色造成的电属性伤害提升15%，持续8秒",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": true,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ELECTRIC_DMG_": 15.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

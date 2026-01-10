@@ -1,0 +1,114 @@
+{
+  "agent_id": "1491",
+  "name": "(Test1)千夏",
+  "code_name": "Sunna",
+  "rarity": 4,
+  "weapon_type": "支援",
+  "element_type": "物理",
+  "core_passive_buffs": [
+    {
+      "id": "1491_core_passive_7_1",
+      "name": "CORE_PASSIVE-BUFF1",
+      "description": "(Test1)处于[Fever]状态下的角色的攻击力提升，提升数值等同于千夏30%初始攻击力，最高不超过1000点",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ATK_": 30.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1491_core_passive_7_2",
+      "name": "CORE_PASSIVE-BUFF2",
+      "description": "[异常]角色引爆时，对范围内敌人造成210%攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加100%",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ATK_": 210.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1491_core_passive_7_3",
+      "name": "CORE_PASSIVE-BUFF3",
+      "description": "队伍中存在[强攻]角色时，[以太帷幕·偶像]生效期间，全队角色暴击伤害增加15%",
+      "source": "CORE_PASSIVE",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": true,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "CRIT_DMG_": 15.0
+      },
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [
+    {
+      "id": "1491_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "[大爆发]状态下，千夏发动的攻击必定暴击，并根据自身初始攻击力的0.02%提升自身的暴击伤害，最多提升60%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ATK_": 0.02
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1491_talent_6_2",
+      "name": "TALENT-BUFF2",
+      "description": "[大爆发]状态下，全队触发[陶醉]标记造成的伤害提高20%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 20.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

@@ -1,0 +1,73 @@
+{
+  "agent_id": "1321",
+  "name": "伊芙琳",
+  "code_name": "Evelyn",
+  "rarity": 4,
+  "weapon_type": "强攻",
+  "element_type": "火属性",
+  "core_passive_buffs": [
+    {
+      "id": "1321_core_passive_7_1",
+      "name": "CORE_PASSIVE-BUFF1",
+      "description": "进入[牵缠禁制]时，伊芙琳的暴击率提升25%，退出[牵缠禁制]后，伊芙琳仍可继续保有增益，持续10秒",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "CRIT_RATE_": 25.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1321_core_passive_7_2",
+      "name": "CORE_PASSIVE-BUFF2",
+      "description": "队伍中存在[击破]角色或[支援]角色时触发：\n伊芙琳的[连携技]和[终结技]造成的伤害提升30%",
+      "source": "CORE_PASSIVE",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 30.0
+      },
+      "trigger_conditions": "[击破]角色或[支援]角色",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1321_core_passive_7_3",
+      "name": "CORE_PASSIVE-BUFF3",
+      "description": "暴击率大于等于80%时，[连携技：月辉丝·绊]、[终结技：月辉丝·弦音]和[终结技：月辉丝·弦影]的伤害倍率提升至原本的125%",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "CRIT_RATE_": 80.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

@@ -1,0 +1,45 @@
+{
+  "agent_id": "1441",
+  "name": "真斗",
+  "code_name": "Manato",
+  "rarity": 3,
+  "weapon_type": "命破",
+  "element_type": "火属性",
+  "core_passive_buffs": [],
+  "talent_buffs": [
+    {
+      "id": "1441_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "[支援突击]命中敌人时，造成的火属性伤害提升3%，持续8秒，最多叠加5层，重复触发刷新持续时间",
+      "source": "TALENT",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "FIRE_DMG_": 3.0
+      },
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [
+    {
+      "id": "1441_core_passive_7_1",
+      "name": "CORE_PASSIVE-转换BUFF",
+      "description": "真斗会额外根据自身最大生命值提高贯穿力，每1点最大生命值将提高0.1点贯穿力；\n真斗发动招式造成的火属性伤害均为贯穿伤害，无视敌人防御，使用贯穿力作为招式伤害倍率；\n真斗发动[特殊技：归烬·舍身]或[招架支援]时，会累积[炽心]，最多累积100点；当[炽心]累积至75点时，真斗将进入[熔锋]状态，[熔锋]状态下，真斗每秒消耗3.3点[炽心]，[炽心]耗尽时，退出[熔锋]状态；\n[熔锋]状态下，真斗的[普通攻击]获得强化，并可以发动[强化特殊技：归烬·天坠]；\n真斗在[普通攻击：炽风·胧切]或[支援突击]的连续斩击中消耗生命值时，使此次攻击的暴击伤害提升50%，闪能回复效率提升100%；\n[熔锋]状态下，真斗的暴击率提升10%，火属性伤害提升20%。",
+      "source": "CORE_PASSIVE",
+      "from_property": "HP_BASE",
+      "to_property": "SHEER_FORCE",
+      "conversion_ratio": 0.1,
+      "trigger_conditions": "",
+      "is_active": true
+    }
+  ],
+  "potential_buffs": []
+}

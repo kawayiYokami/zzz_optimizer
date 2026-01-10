@@ -1,0 +1,94 @@
+{
+  "agent_id": "1071",
+  "name": "凯撒",
+  "code_name": "Caesar",
+  "rarity": 4,
+  "weapon_type": "防护",
+  "element_type": "物理",
+  "core_passive_buffs": [
+    {
+      "id": "1071_core_passive_7_1",
+      "name": "CORE_PASSIVE-BUFF1",
+      "description": "[荣光之盾]存在期间，持有者的攻击力提升1000点，[荣光之盾]效果结束后，该增益效果仍然保留，持续5秒",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ATK_": 1000.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1071_core_passive_7_2",
+      "name": "CORE_PASSIVE-BUFF2",
+      "description": "队伍中存在其他可发动[招架支援]的角色或与自身阵营相同的角色时触发：\n凯撒触发[精准格挡]、[防御反击]、[招架支援]或发动[普通攻击：此路不通！]时，对自身附近7米范围内的敌人施加减益效果，使全队角色对其造成的伤害提升25%，持续30秒",
+      "source": "CORE_PASSIVE",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": true,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 25.0
+      },
+      "trigger_conditions": "其他可发动[招架支援]的角色或与自身阵营相同的角色",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [
+    {
+      "id": "1071_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "[强化特殊技：超强力盾击]和[支援突击：支援之锋]必定触发暴击，招式造成的伤害提升50%，对主要目标造成的伤害额外提升50%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 50.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1071_talent_6_2",
+      "name": "TALENT-BUFF2",
+      "description": "凯撒发动[强化特殊技：超强力盾击]或[支援突击：支援之锋]时，自身暴击率提升30%，暴击伤害提升60%，持续15秒",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "CRIT_RATE_": 30.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

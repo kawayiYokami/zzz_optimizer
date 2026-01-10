@@ -1,0 +1,134 @@
+{
+  "wengine_id": "14107",
+  "code_name": "Weapon_S_1071",
+  "name": "奔袭獠牙",
+  "rarity": 4,
+  "weapon_type": "防护",
+  "talents": [
+    {
+      "level": 1,
+      "name": "不破铁骑",
+      "description": "装备者施加的护盾值提升30%；队伍中任意角色触发[破招]或[极限闪避]时，全队角色造成的伤害提升18%，造成的失衡值提升12%，持续20秒，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "14107_talent_1_generic",
+          "name": "奔袭獠牙-通用",
+          "description": "装备者施加的护盾值提升30%；队伍中任意角色触发[破招]或[极限闪避]时，全队角色造成的伤害提升18%，造成的失衡值提升12%，持续20秒，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "不破铁骑",
+      "description": "装备者施加的护盾值提升38%；队伍中任意角色触发[破招]或[极限闪避]时，全队角色造成的伤害提升22.5%，造成的失衡值提升15%，持续20秒，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "14107_talent_2_generic",
+          "name": "奔袭獠牙-通用",
+          "description": "装备者施加的护盾值提升38%；队伍中任意角色触发[破招]或[极限闪避]时，全队角色造成的伤害提升22.5%，造成的失衡值提升15%，持续20秒，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "不破铁骑",
+      "description": "装备者施加的护盾值提升46%；队伍中任意角色触发[破招]或[极限闪避]时，全队角色造成的伤害提升27%，造成的失衡值提升18%，持续20秒，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "14107_talent_3_generic",
+          "name": "奔袭獠牙-通用",
+          "description": "装备者施加的护盾值提升46%；队伍中任意角色触发[破招]或[极限闪避]时，全队角色造成的伤害提升27%，造成的失衡值提升18%，持续20秒，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "不破铁骑",
+      "description": "装备者施加的护盾值提升52%；队伍中任意角色触发[破招]或[极限闪避]时，全队角色造成的伤害提升31.5%，造成的失衡值提升21%，持续20秒，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "14107_talent_4_generic",
+          "name": "奔袭獠牙-通用",
+          "description": "装备者施加的护盾值提升52%；队伍中任意角色触发[破招]或[极限闪避]时，全队角色造成的伤害提升31.5%，造成的失衡值提升21%，持续20秒，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "不破铁骑",
+      "description": "装备者施加的护盾值提升60%；队伍中任意角色触发[破招]或[极限闪避]时，全队角色造成的伤害提升36%，造成的失衡值提升24%，持续20秒，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "14107_talent_5_generic",
+          "name": "奔袭獠牙-通用",
+          "description": "装备者施加的护盾值提升60%；队伍中任意角色触发[破招]或[极限闪避]时，全队角色造成的伤害提升36%，造成的失衡值提升24%，持续20秒，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    }
+  ]
+}
