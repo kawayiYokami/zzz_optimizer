@@ -1,0 +1,33 @@
+{
+  "agent_id": "1181",
+  "name": "格莉丝",
+  "code_name": "Grace",
+  "rarity": 4,
+  "weapon_type": "异常",
+  "element_type": "电属性",
+  "core_passive_buffs": [],
+  "talent_buffs": [
+    {
+      "id": "1181_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "消耗所有[电能]发动[特殊技]或[强化特殊技]时，能够强化招式效果，额外投掷一颗手雷，并使每颗手雷造成的伤害提升至原本的200%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 200.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

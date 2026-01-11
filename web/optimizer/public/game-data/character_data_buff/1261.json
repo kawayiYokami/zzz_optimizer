@@ -1,0 +1,33 @@
+{
+  "agent_id": "1261",
+  "name": "简",
+  "code_name": "Jane",
+  "rarity": 4,
+  "weapon_type": "异常",
+  "element_type": "物理",
+  "core_passive_buffs": [],
+  "talent_buffs": [
+    {
+      "id": "1261_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "[狂热]状态下，简的暴击率提升20%，暴击伤害提升40%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "CRIT_RATE_": 20.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

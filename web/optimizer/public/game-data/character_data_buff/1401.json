@@ -1,0 +1,12 @@
+{
+  "agent_id": "1401",
+  "name": "爱丽丝",
+  "code_name": "Alice",
+  "rarity": 4,
+  "weapon_type": "异常",
+  "element_type": "物理",
+  "core_passive_buffs": [],
+  "talent_buffs": [],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

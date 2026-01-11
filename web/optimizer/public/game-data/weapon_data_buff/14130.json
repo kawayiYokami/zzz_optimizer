@@ -1,0 +1,144 @@
+{
+  "wengine_id": "14130",
+  "code_name": "Weapon_S_1301",
+  "name": "嚣枪喧焰",
+  "rarity": 4,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "喋声吞炎",
+      "description": "暴击率提升20%；装备者发动[追加攻击]造成火属性伤害时，装备者的攻击对敌人造成的伤害无视15%防御力，持续8秒，3秒内最多获得1层，最多叠加2层，重复触发时刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14130_talent_1_stats",
+          "name": "嚣枪喧焰-属性提升",
+          "description": "暴击率提升20%；装备者发动[追加攻击]造成火属性伤害时，装备者的攻击对敌人造成的伤害无视15%防御力，持续8秒，3秒内最多获得1层，最多叠加2层，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 20.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "喋声吞炎",
+      "description": "暴击率提升23%；装备者发动[追加攻击]造成火属性伤害时，装备者的攻击对敌人造成的伤害无视17.2%防御力，持续8秒，3秒内最多获得1层，最多叠加2层，重复触发时刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14130_talent_2_stats",
+          "name": "嚣枪喧焰-属性提升",
+          "description": "暴击率提升23%；装备者发动[追加攻击]造成火属性伤害时，装备者的攻击对敌人造成的伤害无视17.2%防御力，持续8秒，3秒内最多获得1层，最多叠加2层，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 23.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "喋声吞炎",
+      "description": "暴击率提升26%；装备者发动[追加攻击]造成火属性伤害时，装备者的攻击对敌人造成的伤害无视19.5%防御力，持续8秒，3秒内最多获得1层，最多叠加2层，重复触发时刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14130_talent_3_stats",
+          "name": "嚣枪喧焰-属性提升",
+          "description": "暴击率提升26%；装备者发动[追加攻击]造成火属性伤害时，装备者的攻击对敌人造成的伤害无视19.5%防御力，持续8秒，3秒内最多获得1层，最多叠加2层，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 26.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "喋声吞炎",
+      "description": "暴击率提升29%；装备者发动[追加攻击]造成火属性伤害时，装备者的攻击对敌人造成的伤害无视21.7%防御力，持续8秒，3秒内最多获得1层，最多叠加2层，重复触发时刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14130_talent_4_stats",
+          "name": "嚣枪喧焰-属性提升",
+          "description": "暴击率提升29%；装备者发动[追加攻击]造成火属性伤害时，装备者的攻击对敌人造成的伤害无视21.7%防御力，持续8秒，3秒内最多获得1层，最多叠加2层，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 29.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "喋声吞炎",
+      "description": "暴击率提升32%；装备者发动[追加攻击]造成火属性伤害时，装备者的攻击对敌人造成的伤害无视24%防御力，持续8秒，3秒内最多获得1层，最多叠加2层，重复触发时刷新持续时间。",
+      "buffs": [
+        {
+          "id": "14130_talent_5_stats",
+          "name": "嚣枪喧焰-属性提升",
+          "description": "暴击率提升32%；装备者发动[追加攻击]造成火属性伤害时，装备者的攻击对敌人造成的伤害无视24%防御力，持续8秒，3秒内最多获得1层，最多叠加2层，重复触发时刷新持续时间。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 32.0
+          }
+        }
+      ]
+    }
+  ]
+}

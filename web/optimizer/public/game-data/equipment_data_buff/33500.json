@@ -1,0 +1,51 @@
+{
+  "set_id": "沧浪行歌",
+  "name": "沧浪行歌",
+  "name_cn": "沧浪行歌",
+  "two_piece_effect": "物理伤害+10%。",
+  "four_piece_effect": "装备者处于任意[以太帷幕]中时，自身暴击率提高10%，离开[以太帷幕]后，该增益效果仍然保留，持续15秒；装备者为[强攻]角色时，开启[以太帷幕]或延长[以太帷幕]的持续时间会使自身暴击率提升10%和攻击力提升10%，持续30秒，重复触发时刷新持续时间。",
+  "two_piece_buffs": [
+    {
+      "id": "沧浪行歌_2pc",
+      "name": "沧浪行歌 2件套",
+      "description": "物理伤害+10%。",
+      "source": "DRIVE_DISK_2PC",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": [],
+      "out_of_combat_stats": {
+        "PHYSICAL_DMG_": 10.0
+      },
+      "in_combat_stats": {}
+    }
+  ],
+  "four_piece_buffs": [
+    {
+      "id": "沧浪行歌_4pc",
+      "name": "沧浪行歌 4件套",
+      "description": "装备者处于任意[以太帷幕]中时，自身暴击率提高10%，离开[以太帷幕]后，该增益效果仍然保留，持续15秒；装备者为[强攻]角色时，开启[以太帷幕]或延长[以太帷幕]的持续时间会使自身暴击率提升10%和攻击力提升10%，持续30秒，重复触发时刷新持续时间。",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "装备者处于任意[以太帷幕]中时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "ATK_": 10.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "agent_id": "1331",
+  "name": "薇薇安",
+  "code_name": "Vivian",
+  "rarity": 4,
+  "weapon_type": "异常",
+  "element_type": "以太",
+  "core_passive_buffs": [],
+  "talent_buffs": [
+    {
+      "id": "1331_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "以太伤害提升40%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ETHER_DMG_": 40.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1331_talent_6_2",
+      "name": "TALENT-BUFF2",
+      "description": "发动[普通攻击：裙裾浮游·悬落]时会消耗全部[护羽]，下落攻击的范围大幅增加，并在命中时触发一次特殊的[异放]，额外消耗的[护羽]会提高此次[异放]结算的额外异常伤害的比例，最多消耗5点[护羽]，使伤害比例提高至原本的5倍",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ANOMALY_DMG_": 5.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

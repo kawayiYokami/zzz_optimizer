@@ -1,0 +1,33 @@
+{
+  "agent_id": "1391",
+  "name": "橘福福",
+  "code_name": "Ju Fufu",
+  "rarity": 4,
+  "weapon_type": "击破",
+  "element_type": "火属性",
+  "core_passive_buffs": [],
+  "talent_buffs": [
+    {
+      "id": "1391_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "[连携技]造成的伤害提升30%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 30.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

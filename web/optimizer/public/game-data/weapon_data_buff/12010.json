@@ -1,0 +1,134 @@
+{
+  "wengine_id": "12010",
+  "code_name": "Weapon_B_Common_10",
+  "name": "「电磁暴」-壹式",
+  "rarity": 2,
+  "weapon_type": "异常",
+  "talents": [
+    {
+      "level": 1,
+      "name": "紊乱电流",
+      "description": "累积属性异常积蓄值时，装备者的异常掌控提升25点，持续10秒，20秒内最多触发一次。",
+      "buffs": [
+        {
+          "id": "12010_talent_1_generic",
+          "name": "「电磁暴」-壹式-通用",
+          "description": "累积属性异常积蓄值时，装备者的异常掌控提升25点，持续10秒，20秒内最多触发一次。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "紊乱电流",
+      "description": "累积属性异常积蓄值时，装备者的异常掌控提升28点，持续10秒，20秒内最多触发一次。",
+      "buffs": [
+        {
+          "id": "12010_talent_2_generic",
+          "name": "「电磁暴」-壹式-通用",
+          "description": "累积属性异常积蓄值时，装备者的异常掌控提升28点，持续10秒，20秒内最多触发一次。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "紊乱电流",
+      "description": "累积属性异常积蓄值时，装备者的异常掌控提升32点，持续10秒，20秒内最多触发一次。",
+      "buffs": [
+        {
+          "id": "12010_talent_3_generic",
+          "name": "「电磁暴」-壹式-通用",
+          "description": "累积属性异常积蓄值时，装备者的异常掌控提升32点，持续10秒，20秒内最多触发一次。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "紊乱电流",
+      "description": "累积属性异常积蓄值时，装备者的异常掌控提升36点，持续10秒，20秒内最多触发一次。",
+      "buffs": [
+        {
+          "id": "12010_talent_4_generic",
+          "name": "「电磁暴」-壹式-通用",
+          "description": "累积属性异常积蓄值时，装备者的异常掌控提升36点，持续10秒，20秒内最多触发一次。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "紊乱电流",
+      "description": "累积属性异常积蓄值时，装备者的异常掌控提升40点，持续10秒，20秒内最多触发一次。",
+      "buffs": [
+        {
+          "id": "12010_talent_5_generic",
+          "name": "「电磁暴」-壹式-通用",
+          "description": "累积属性异常积蓄值时，装备者的异常掌控提升40点，持续10秒，20秒内最多触发一次。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    }
+  ]
+}

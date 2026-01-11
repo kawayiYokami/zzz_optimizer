@@ -1,0 +1,244 @@
+{
+  "wengine_id": "13013",
+  "code_name": "Weapon_A_Common_13",
+  "name": "鎏金花信",
+  "rarity": 3,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "超规防盗措施",
+      "description": "攻击力提升6%，[强化特殊技]造成的伤害提升15%。",
+      "buffs": [
+        {
+          "id": "13013_talent_1_skill_dmg",
+          "name": "鎏金花信-技能伤害",
+          "description": "攻击力提升6%，[强化特殊技]造成的伤害提升15%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 15.0
+          }
+        },
+        {
+          "id": "13013_talent_1_stats",
+          "name": "鎏金花信-属性提升",
+          "description": "攻击力提升6%，[强化特殊技]造成的伤害提升15%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 6.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "超规防盗措施",
+      "description": "攻击力提升6.9%，[强化特殊技]造成的伤害提升17.2%。",
+      "buffs": [
+        {
+          "id": "13013_talent_2_skill_dmg",
+          "name": "鎏金花信-技能伤害",
+          "description": "攻击力提升6.9%，[强化特殊技]造成的伤害提升17.2%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 17.2
+          }
+        },
+        {
+          "id": "13013_talent_2_stats",
+          "name": "鎏金花信-属性提升",
+          "description": "攻击力提升6.9%，[强化特殊技]造成的伤害提升17.2%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 6.9
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "超规防盗措施",
+      "description": "攻击力提升7.8%，[强化特殊技]造成的伤害提升19.5%。",
+      "buffs": [
+        {
+          "id": "13013_talent_3_skill_dmg",
+          "name": "鎏金花信-技能伤害",
+          "description": "攻击力提升7.8%，[强化特殊技]造成的伤害提升19.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 19.5
+          }
+        },
+        {
+          "id": "13013_talent_3_stats",
+          "name": "鎏金花信-属性提升",
+          "description": "攻击力提升7.8%，[强化特殊技]造成的伤害提升19.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 7.8
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "超规防盗措施",
+      "description": "攻击力提升8.7%，[强化特殊技]造成的伤害提升21.8%。",
+      "buffs": [
+        {
+          "id": "13013_talent_4_skill_dmg",
+          "name": "鎏金花信-技能伤害",
+          "description": "攻击力提升8.7%，[强化特殊技]造成的伤害提升21.8%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 21.8
+          }
+        },
+        {
+          "id": "13013_talent_4_stats",
+          "name": "鎏金花信-属性提升",
+          "description": "攻击力提升8.7%，[强化特殊技]造成的伤害提升21.8%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 8.7
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "超规防盗措施",
+      "description": "攻击力提升9.6%，[强化特殊技]造成的伤害提升24%。",
+      "buffs": [
+        {
+          "id": "13013_talent_5_skill_dmg",
+          "name": "鎏金花信-技能伤害",
+          "description": "攻击力提升9.6%，[强化特殊技]造成的伤害提升24%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 24.0
+          }
+        },
+        {
+          "id": "13013_talent_5_stats",
+          "name": "鎏金花信-属性提升",
+          "description": "攻击力提升9.6%，[强化特殊技]造成的伤害提升24%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 9.6
+          }
+        }
+      ]
+    }
+  ]
+}

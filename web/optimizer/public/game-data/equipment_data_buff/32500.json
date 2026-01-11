@@ -1,0 +1,51 @@
+{
+  "set_id": "极地重金属",
+  "name": "极地重金属",
+  "name_cn": "极地重金属",
+  "two_piece_effect": "冰属性伤害+10%。",
+  "four_piece_effect": "[普通攻击]和[冲刺攻击]造成的伤害提升20%，队伍中任意角色对敌人施加[冻结]或触发[碎冰]效果时，该增益效果额外提升20%，持续12秒。",
+  "two_piece_buffs": [
+    {
+      "id": "极地重金属_2pc",
+      "name": "极地重金属 2件套",
+      "description": "冰属性伤害+10%。",
+      "source": "DRIVE_DISK_2PC",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": [],
+      "out_of_combat_stats": {
+        "ICE_DMG_": 10.0
+      },
+      "in_combat_stats": {}
+    }
+  ],
+  "four_piece_buffs": [
+    {
+      "id": "极地重金属_4pc",
+      "name": "极地重金属 4件套",
+      "description": "[普通攻击]和[冲刺攻击]造成的伤害提升20%，队伍中任意角色对敌人施加[冻结]或触发[碎冰]效果时，该增益效果额外提升20%，持续12秒。",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "[普通攻击]和[冲刺攻击]造成的伤害提升20%，队伍中任意角色对敌人施加[冻结]或触发[碎冰]效果时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "DASH_ATK_DMG_": 20.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "agent_id": "1371",
+  "name": "仪玄",
+  "code_name": "Yixuan",
+  "rarity": 4,
+  "weapon_type": "命破",
+  "element_type": "以太",
+  "core_passive_buffs": [
+    {
+      "id": "1371_core_passive_7_2",
+      "name": "CORE_PASSIVE-BUFF2",
+      "description": "发动[终结技]后，仪玄进入[凝神]状态，[凝神]状态下，仪玄的暴击伤害提升40%，持续15秒",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "CRIT_DMG_": 40.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [],
+  "conversion_buffs": [
+    {
+      "id": "1371_core_passive_7_1",
+      "name": "CORE_PASSIVE-转换BUFF",
+      "description": "仪玄会额外根据自身最大生命值提高贯穿力，每1点最大生命值将提高0.1点贯穿力；\n仪玄发动招式造成的玄墨伤害均为贯穿伤害，无视敌人防御，使用贯穿力作为招式伤害倍率；\n仪玄累积玄墨异常积蓄值时，具有独立的属性异常积蓄槽，触发属性异常效果时，额外回复10点闪能，每10秒最多触发一次；\n仪玄进入战斗时即可恢复全部闪能，在勘域模式中此效果180秒内最多触发一次，触发极限闪避时额外回复5点闪能，每1秒最多触发一次；\n消耗闪能时，仪玄会积累[术法值]，每消耗一点闪能，积累0.667点[术法值]，[术法值]足够时，可额外释放终结技：[终结技：符法千重]，[术法值]上限为120点；\n仪玄施展[普通攻击：玄墨极阵]、[普通攻击：青溟震击]、[强化特殊技]、[支援突击]、[连携技]、[终结技]造成的伤害提升60%；\n释放[终结技：符法千重]后，仪玄获得一点[玄墨值]，仪玄可消耗一点[玄墨值]，释放[普通攻击：玄墨极阵]。",
+      "source": "CORE_PASSIVE",
+      "from_property": "HP_BASE",
+      "to_property": "SHEER_FORCE",
+      "conversion_ratio": 0.1,
+      "trigger_conditions": "",
+      "is_active": true
+    }
+  ],
+  "potential_buffs": []
+}

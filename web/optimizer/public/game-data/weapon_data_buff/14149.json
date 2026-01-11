@@ -1,0 +1,144 @@
+{
+  "wengine_id": "14149",
+  "code_name": "Weapon_S_1491",
+  "name": "(Test1)千夏测试音擎",
+  "rarity": 4,
+  "weapon_type": "支援",
+  "talents": [
+    {
+      "level": 1,
+      "name": "(Test1)千夏测试音擎",
+      "description": "(Test1)装备者的能量自动回复提升0.4点/秒；装备者发动[强化特殊技]造成物理伤害时，使全队获得增益效果：角色造成伤害提升12.5%，效果持续40秒，最多叠加2层，重复触发时刷新持续时间；拥有2层效果时，角色的攻击力额外提升12.5%，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "14149_talent_1_stats",
+          "name": "(Test1)千夏测试音擎-属性提升",
+          "description": "(Test1)装备者的能量自动回复提升0.4点/秒；装备者发动[强化特殊技]造成物理伤害时，使全队获得增益效果：角色造成伤害提升12.5%，效果持续40秒，最多叠加2层，重复触发时刷新持续时间；拥有2层效果时，角色的攻击力额外提升12.5%，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 12.5
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "(Test1)千夏测试音擎",
+      "description": "(Test1)装备者的能量自动回复提升0.46点/秒；装备者发动[强化特殊技]造成物理伤害时，使全队获得增益效果：角色造成伤害提升14.3%，效果持续40秒，最多叠加2层，重复触发时刷新持续时间；拥有2层效果时，角色的攻击力额外提升14.3%，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "14149_talent_2_stats",
+          "name": "(Test1)千夏测试音擎-属性提升",
+          "description": "(Test1)装备者的能量自动回复提升0.46点/秒；装备者发动[强化特殊技]造成物理伤害时，使全队获得增益效果：角色造成伤害提升14.3%，效果持续40秒，最多叠加2层，重复触发时刷新持续时间；拥有2层效果时，角色的攻击力额外提升14.3%，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 14.3
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "(Test1)千夏测试音擎",
+      "description": "(Test1)装备者的能量自动回复提升0.52点/秒；装备者发动[强化特殊技]造成物理伤害时，使全队获得增益效果：角色造成伤害提升16.1%，效果持续40秒，最多叠加2层，重复触发时刷新持续时间；拥有2层效果时，角色的攻击力额外提升16.1%，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "14149_talent_3_stats",
+          "name": "(Test1)千夏测试音擎-属性提升",
+          "description": "(Test1)装备者的能量自动回复提升0.52点/秒；装备者发动[强化特殊技]造成物理伤害时，使全队获得增益效果：角色造成伤害提升16.1%，效果持续40秒，最多叠加2层，重复触发时刷新持续时间；拥有2层效果时，角色的攻击力额外提升16.1%，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 16.1
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "(Test1)千夏测试音擎",
+      "description": "(Test1)装备者的能量自动回复提升0.58点/秒；装备者发动[强化特殊技]造成物理伤害时，使全队获得增益效果：角色造成伤害提升17.9%，效果持续40秒，最多叠加2层，重复触发时刷新持续时间；拥有2层效果时，角色的攻击力额外提升18%，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "14149_talent_4_stats",
+          "name": "(Test1)千夏测试音擎-属性提升",
+          "description": "(Test1)装备者的能量自动回复提升0.58点/秒；装备者发动[强化特殊技]造成物理伤害时，使全队获得增益效果：角色造成伤害提升17.9%，效果持续40秒，最多叠加2层，重复触发时刷新持续时间；拥有2层效果时，角色的攻击力额外提升18%，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 18.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "(Test1)千夏测试音擎",
+      "description": "(Test1)装备者的能量自动回复提升0.65点/秒；装备者发动[强化特殊技]造成物理伤害时，使全队获得增益效果：角色造成伤害提升20%，效果持续40秒，最多叠加2层，重复触发时刷新持续时间；拥有2层效果时，角色的攻击力额外提升20%，该效果全队唯一。",
+      "buffs": [
+        {
+          "id": "14149_talent_5_stats",
+          "name": "(Test1)千夏测试音擎-属性提升",
+          "description": "(Test1)装备者的能量自动回复提升0.65点/秒；装备者发动[强化特殊技]造成物理伤害时，使全队获得增益效果：角色造成伤害提升20%，效果持续40秒，最多叠加2层，重复触发时刷新持续时间；拥有2层效果时，角色的攻击力额外提升20%，该效果全队唯一。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 20.0
+          }
+        }
+      ]
+    }
+  ]
+}

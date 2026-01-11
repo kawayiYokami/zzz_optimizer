@@ -1,0 +1,168 @@
+{
+  "agent_id": "1091",
+  "name": "雅",
+  "code_name": "Miyabi",
+  "rarity": 4,
+  "weapon_type": "异常",
+  "element_type": "冰属性",
+  "core_passive_buffs": [
+    {
+      "id": "1091_core_passive_7_1",
+      "name": "核心被动-霜月伤害提升",
+      "description": "队伍中存在[支援]角色或与自身阵营相同的角色时触发：[普通攻击：霜月]造成的伤害提升60%，无视目标30%冰属性伤害抗性",
+      "source": "CORE_PASSIVE",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 60.0,
+        "ENEMY_RES_RED_": 30.0
+      },
+      "trigger_conditions": "[支援]角色或与自身阵营相同的角色",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [
+    {
+      "id": "1091_talent_1_1",
+      "name": "天赋-无视防御力",
+      "description": "在[霜月架势]期间，每消耗1点[落霜]，[普通攻击：霜月]将无视目标6%防御力，最多叠加6层",
+      "source": "TALENT",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": true,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "DEF_RED_": 6.0
+      },
+      "trigger_conditions": "在[霜月架势]期间",
+      "max_stacks": 6,
+      "stack_mode": "linear"
+    },
+    {
+      "id": "1091_talent_1_2",
+      "name": "天赋-属性异常积蓄效率提升",
+      "description": "在[普通攻击：霜月]中进行三段蓄力，斩击命中处于[霜灼]状态下的敌人时，使全队角色属性异常积蓄效率提升20%，持续10秒",
+      "source": "TALENT",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": true,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "ICE_ANOMALY_BUILDUP_": 20.0
+      },
+      "trigger_conditions": "三段蓄力斩击命中处于[霜灼]状态下的敌人时",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1091_talent_2_1",
+      "name": "天赋-伤害提升",
+      "description": "[普通攻击：风花]和[闪避反击]造成的伤害提升30%",
+      "source": "TALENT",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 30.0
+      },
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1091_talent_2_2",
+      "name": "天赋-暴击率提升",
+      "description": "进入战场时，自身暴击率提升15%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "CRIT_RATE_": 15.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "进入战场时",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1091_talent_4_1",
+      "name": "天赋-霜灼破伤害提升",
+      "description": "[霜灼·破]造成的伤害提升30%",
+      "source": "TALENT",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 30.0
+      },
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1091_talent_6_1",
+      "name": "天赋-极意伤害提升",
+      "description": "在[霜月架势]期间，获得[极意]效果，使[普通攻击：霜月]造成的伤害提升30%",
+      "source": "TALENT",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 30.0
+      },
+      "trigger_conditions": "在[霜月架势]期间获得[极意]效果时",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [
+    {
+      "id": "1091_core_passive_7_2",
+      "name": "转换-暴击率转烈霜异常积蓄效率",
+      "description": "基于暴击率的100%提升烈霜异常积蓄效率，最多提升80%",
+      "source": "CORE_PASSIVE",
+      "from_property": "CRIT_RATE_",
+      "to_property": "ICE_ANOMALY_BUILDUP_",
+      "conversion_ratio": 1.0,
+      "max_value": 80.0,
+      "trigger_conditions": "对附着[冰焰]的敌人累积烈霜异常积蓄值时",
+      "is_active": true
+    }
+  ],
+  "potential_buffs": []
+}

@@ -1,0 +1,134 @@
+{
+  "wengine_id": "13002",
+  "code_name": "Weapon_A_Common_02",
+  "name": "时光切片",
+  "rarity": 3,
+  "weapon_type": "支援",
+  "talents": [
+    {
+      "level": 1,
+      "name": "说「茄子」",
+      "description": "队伍中任意角色发动[闪避反击]/[强化特殊技]/[支援攻击]/[连携技]时，额外获得20/25/30/35点喧响值，并为装备者回复0.7点能量，12秒内最多触发一次，不同招式分别结算冷却时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13002_talent_1_generic",
+          "name": "时光切片-通用",
+          "description": "队伍中任意角色发动[闪避反击]/[强化特殊技]/[支援攻击]/[连携技]时，额外获得20/25/30/35点喧响值，并为装备者回复0.7点能量，12秒内最多触发一次，不同招式分别结算冷却时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "说「茄子」",
+      "description": "队伍中任意角色发动[闪避反击]/[强化特殊技]/[支援攻击]/[连携技]时，额外获得23/28.5/34.5/40点喧响值，并为装备者回复0.8点能量，12秒内最多触发一次，不同招式分别结算冷却时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13002_talent_2_generic",
+          "name": "时光切片-通用",
+          "description": "队伍中任意角色发动[闪避反击]/[强化特殊技]/[支援攻击]/[连携技]时，额外获得23/28.5/34.5/40点喧响值，并为装备者回复0.8点能量，12秒内最多触发一次，不同招式分别结算冷却时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "说「茄子」",
+      "description": "队伍中任意角色发动[闪避反击]/[强化特殊技]/[支援攻击]/[连携技]时，额外获得26/32/39/45点喧响值，并为装备者回复0.9点能量，12秒内最多触发一次，不同招式分别结算冷却时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13002_talent_3_generic",
+          "name": "时光切片-通用",
+          "description": "队伍中任意角色发动[闪避反击]/[强化特殊技]/[支援攻击]/[连携技]时，额外获得26/32/39/45点喧响值，并为装备者回复0.9点能量，12秒内最多触发一次，不同招式分别结算冷却时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "说「茄子」",
+      "description": "队伍中任意角色发动[闪避反击]/[强化特殊技]/[支援攻击]/[连携技]时，额外获得29/35.5/43.5/50点喧响值，并为装备者回复1点能量，12秒内最多触发一次，不同招式分别结算冷却时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13002_talent_4_generic",
+          "name": "时光切片-通用",
+          "description": "队伍中任意角色发动[闪避反击]/[强化特殊技]/[支援攻击]/[连携技]时，额外获得29/35.5/43.5/50点喧响值，并为装备者回复1点能量，12秒内最多触发一次，不同招式分别结算冷却时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "说「茄子」",
+      "description": "队伍中任意角色发动[闪避反击]/[强化特殊技]/[支援攻击]/[连携技]时，额外获得32/40/48/55点喧响值，并为装备者回复1.1点能量，12秒内最多触发一次，不同招式分别结算冷却时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13002_talent_5_generic",
+          "name": "时光切片-通用",
+          "description": "队伍中任意角色发动[闪避反击]/[强化特殊技]/[支援攻击]/[连携技]时，额外获得32/40/48/55点喧响值，并为装备者回复1.1点能量，12秒内最多触发一次，不同招式分别结算冷却时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    }
+  ]
+}

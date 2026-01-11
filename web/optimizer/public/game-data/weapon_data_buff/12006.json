@@ -1,0 +1,144 @@
+{
+  "wengine_id": "12006",
+  "code_name": "Weapon_B_Common_06",
+  "name": "「残响」-Ⅲ型",
+  "rarity": 2,
+  "weapon_type": "支援",
+  "talents": [
+    {
+      "level": 1,
+      "name": "强音",
+      "description": "发动[连携技]或[终结技]时，全队角色攻击力提升8%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12006_talent_1_stats",
+          "name": "「残响」-Ⅲ型-属性提升",
+          "description": "发动[连携技]或[终结技]时，全队角色攻击力提升8%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 8.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "强音",
+      "description": "发动[连携技]或[终结技]时，全队角色攻击力提升9%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12006_talent_2_stats",
+          "name": "「残响」-Ⅲ型-属性提升",
+          "description": "发动[连携技]或[终结技]时，全队角色攻击力提升9%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 9.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "强音",
+      "description": "发动[连携技]或[终结技]时，全队角色攻击力提升10%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12006_talent_3_stats",
+          "name": "「残响」-Ⅲ型-属性提升",
+          "description": "发动[连携技]或[终结技]时，全队角色攻击力提升10%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 10.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "强音",
+      "description": "发动[连携技]或[终结技]时，全队角色攻击力提升11%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12006_talent_4_stats",
+          "name": "「残响」-Ⅲ型-属性提升",
+          "description": "发动[连携技]或[终结技]时，全队角色攻击力提升11%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 11.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "强音",
+      "description": "发动[连携技]或[终结技]时，全队角色攻击力提升12%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "12006_talent_5_stats",
+          "name": "「残响」-Ⅲ型-属性提升",
+          "description": "发动[连携技]或[终结技]时，全队角色攻击力提升12%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ATK_": 12.0
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "wengine_id": "13012",
+  "code_name": "Weapon_A_Common_12",
+  "name": "幻变魔方",
+  "rarity": 3,
+  "weapon_type": "命破",
+  "talents": [
+    {
+      "level": 1,
+      "name": "奇机弄巧",
+      "description": "发动[强化特殊技]时，装备者暴击伤害提升16%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升20%。",
+      "buffs": [
+        {
+          "id": "13012_talent_1_skill_dmg",
+          "name": "幻变魔方-技能伤害",
+          "description": "发动[强化特殊技]时，装备者暴击伤害提升16%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升20%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 20.0,
+            "CRIT_DMG_": 16.0
+          }
+        },
+        {
+          "id": "13012_talent_1_stats",
+          "name": "幻变魔方-属性提升",
+          "description": "发动[强化特殊技]时，装备者暴击伤害提升16%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升20%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 16.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "奇机弄巧",
+      "description": "发动[强化特殊技]时，装备者暴击伤害提升18.4%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升23%。",
+      "buffs": [
+        {
+          "id": "13012_talent_2_skill_dmg",
+          "name": "幻变魔方-技能伤害",
+          "description": "发动[强化特殊技]时，装备者暴击伤害提升18.4%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升23%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 23.0,
+            "CRIT_DMG_": 18.4
+          }
+        },
+        {
+          "id": "13012_talent_2_stats",
+          "name": "幻变魔方-属性提升",
+          "description": "发动[强化特殊技]时，装备者暴击伤害提升18.4%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升23%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 18.4
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "奇机弄巧",
+      "description": "发动[强化特殊技]时，装备者暴击伤害提升20.8%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升26%。",
+      "buffs": [
+        {
+          "id": "13012_talent_3_skill_dmg",
+          "name": "幻变魔方-技能伤害",
+          "description": "发动[强化特殊技]时，装备者暴击伤害提升20.8%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升26%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 26.0,
+            "CRIT_DMG_": 20.8
+          }
+        },
+        {
+          "id": "13012_talent_3_stats",
+          "name": "幻变魔方-属性提升",
+          "description": "发动[强化特殊技]时，装备者暴击伤害提升20.8%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升26%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 20.8
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "奇机弄巧",
+      "description": "发动[强化特殊技]时，装备者暴击伤害提升23.2%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升29%。",
+      "buffs": [
+        {
+          "id": "13012_talent_4_skill_dmg",
+          "name": "幻变魔方-技能伤害",
+          "description": "发动[强化特殊技]时，装备者暴击伤害提升23.2%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升29%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 29.0,
+            "CRIT_DMG_": 23.2
+          }
+        },
+        {
+          "id": "13012_talent_4_stats",
+          "name": "幻变魔方-属性提升",
+          "description": "发动[强化特殊技]时，装备者暴击伤害提升23.2%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升29%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 23.2
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "奇机弄巧",
+      "description": "发动[强化特殊技]时，装备者暴击伤害提升25.6%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升32%。",
+      "buffs": [
+        {
+          "id": "13012_talent_5_skill_dmg",
+          "name": "幻变魔方-技能伤害",
+          "description": "发动[强化特殊技]时，装备者暴击伤害提升25.6%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升32%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 32.0,
+            "CRIT_DMG_": 25.6
+          }
+        },
+        {
+          "id": "13012_talent_5_stats",
+          "name": "幻变魔方-属性提升",
+          "description": "发动[强化特殊技]时，装备者暴击伤害提升25.6%，持续12秒；且若目标当前生命值低于最大值的50%时，[强化特殊技]造成的伤害提升32%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_DMG_": 25.6
+          }
+        }
+      ]
+    }
+  ]
+}

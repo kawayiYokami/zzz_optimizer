@@ -1,0 +1,134 @@
+{
+  "wengine_id": "13127",
+  "code_name": "Weapon_A_1271",
+  "name": "维序者-特化型",
+  "rarity": 3,
+  "weapon_type": "防护",
+  "talents": [
+    {
+      "level": 1,
+      "name": "标准格挡术",
+      "description": "拥有护盾时，装备者的能量自动回复提升0.4点/秒；[强化特殊技]和[支援突击]累积的属性异常积蓄值提升36%。",
+      "buffs": [
+        {
+          "id": "13127_talent_1_generic",
+          "name": "维序者-特化型-通用",
+          "description": "拥有护盾时，装备者的能量自动回复提升0.4点/秒；[强化特殊技]和[支援突击]累积的属性异常积蓄值提升36%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "标准格挡术",
+      "description": "拥有护盾时，装备者的能量自动回复提升0.46点/秒；[强化特殊技]和[支援突击]累积的属性异常积蓄值提升40%。",
+      "buffs": [
+        {
+          "id": "13127_talent_2_generic",
+          "name": "维序者-特化型-通用",
+          "description": "拥有护盾时，装备者的能量自动回复提升0.46点/秒；[强化特殊技]和[支援突击]累积的属性异常积蓄值提升40%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "标准格挡术",
+      "description": "拥有护盾时，装备者的能量自动回复提升0.52点/秒；[强化特殊技]和[支援突击]累积的属性异常积蓄值提升45%。",
+      "buffs": [
+        {
+          "id": "13127_talent_3_generic",
+          "name": "维序者-特化型-通用",
+          "description": "拥有护盾时，装备者的能量自动回复提升0.52点/秒；[强化特殊技]和[支援突击]累积的属性异常积蓄值提升45%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "标准格挡术",
+      "description": "拥有护盾时，装备者的能量自动回复提升0.58点/秒；[强化特殊技]和[支援突击]累积的属性异常积蓄值提升50%。",
+      "buffs": [
+        {
+          "id": "13127_talent_4_generic",
+          "name": "维序者-特化型-通用",
+          "description": "拥有护盾时，装备者的能量自动回复提升0.58点/秒；[强化特殊技]和[支援突击]累积的属性异常积蓄值提升50%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "标准格挡术",
+      "description": "拥有护盾时，装备者的能量自动回复提升0.64点/秒；[强化特殊技]和[支援突击]累积的属性异常积蓄值提升55%。",
+      "buffs": [
+        {
+          "id": "13127_talent_5_generic",
+          "name": "维序者-特化型-通用",
+          "description": "拥有护盾时，装备者的能量自动回复提升0.64点/秒；[强化特殊技]和[支援突击]累积的属性异常积蓄值提升55%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {}
+        }
+      ]
+    }
+  ]
+}

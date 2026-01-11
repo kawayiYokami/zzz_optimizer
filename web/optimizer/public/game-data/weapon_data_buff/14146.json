@@ -1,0 +1,249 @@
+{
+  "wengine_id": "14146",
+  "code_name": "Weapon_S_1461",
+  "name": "机巧心种",
+  "rarity": 4,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "芽生炉心",
+      "description": "暴击率提升15%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升12.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视20%防御力。",
+      "buffs": [
+        {
+          "id": "14146_talent_1_skill_dmg",
+          "name": "机巧心种-技能伤害",
+          "description": "暴击率提升15%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升12.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视20%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ELECTRIC_DMG_": 12.5
+          }
+        },
+        {
+          "id": "14146_talent_1_stats",
+          "name": "机巧心种-属性提升",
+          "description": "暴击率提升15%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升12.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视20%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 15.0,
+            "ELECTRIC_DMG_": 12.5
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "芽生炉心",
+      "description": "暴击率提升17%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升14.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视23%防御力。",
+      "buffs": [
+        {
+          "id": "14146_talent_2_skill_dmg",
+          "name": "机巧心种-技能伤害",
+          "description": "暴击率提升17%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升14.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视23%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ELECTRIC_DMG_": 14.5
+          }
+        },
+        {
+          "id": "14146_talent_2_stats",
+          "name": "机巧心种-属性提升",
+          "description": "暴击率提升17%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升14.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视23%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 17.0,
+            "ELECTRIC_DMG_": 14.5
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "芽生炉心",
+      "description": "暴击率提升19%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升16.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视26%防御力。",
+      "buffs": [
+        {
+          "id": "14146_talent_3_skill_dmg",
+          "name": "机巧心种-技能伤害",
+          "description": "暴击率提升19%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升16.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视26%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ELECTRIC_DMG_": 16.5
+          }
+        },
+        {
+          "id": "14146_talent_3_stats",
+          "name": "机巧心种-属性提升",
+          "description": "暴击率提升19%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升16.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视26%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 19.0,
+            "ELECTRIC_DMG_": 16.5
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "芽生炉心",
+      "description": "暴击率提升21%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升18.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视29%防御力。",
+      "buffs": [
+        {
+          "id": "14146_talent_4_skill_dmg",
+          "name": "机巧心种-技能伤害",
+          "description": "暴击率提升21%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升18.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视29%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ELECTRIC_DMG_": 18.5
+          }
+        },
+        {
+          "id": "14146_talent_4_stats",
+          "name": "机巧心种-属性提升",
+          "description": "暴击率提升21%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升18.5%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视29%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 21.0,
+            "ELECTRIC_DMG_": 18.5
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "芽生炉心",
+      "description": "暴击率提升23%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升20%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视32%防御力。",
+      "buffs": [
+        {
+          "id": "14146_talent_5_skill_dmg",
+          "name": "机巧心种-技能伤害",
+          "description": "暴击率提升23%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升20%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视32%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ELECTRIC_DMG_": 20.0
+          }
+        },
+        {
+          "id": "14146_talent_5_stats",
+          "name": "机巧心种-属性提升",
+          "description": "暴击率提升23%；装备者的[普通攻击]、[强化特殊技]造成伤害时，可分别获得1层增益效果，每层增益效果使装备者造成的电属性伤害提升20%，最多叠加2层，持续40秒，每层效果单独结算持续时间，同一招式内最多触发一次；拥有2层增益效果时，装备者的[普通攻击]和[终结技]对敌人造成的伤害无视32%防御力。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 23.0,
+            "ELECTRIC_DMG_": 20.0
+          }
+        }
+      ]
+    }
+  ]
+}

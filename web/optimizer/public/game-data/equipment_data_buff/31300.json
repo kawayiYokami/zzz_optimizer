@@ -1,0 +1,51 @@
+{
+  "set_id": "自由蓝调",
+  "name": "自由蓝调",
+  "name_cn": "自由蓝调",
+  "two_piece_effect": "异常精通+30点。",
+  "four_piece_effect": "[强化特殊技]命中敌人时，根据装备者的属性类型，使目标对应属性异常积蓄抗性降低20%，持续8秒，相同属性类型的效果不可叠加。",
+  "two_piece_buffs": [
+    {
+      "id": "自由蓝调_2pc",
+      "name": "自由蓝调 2件套",
+      "description": "异常精通+30点。",
+      "source": "DRIVE_DISK_2PC",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": [],
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 0.0
+      },
+      "in_combat_stats": {}
+    }
+  ],
+  "four_piece_buffs": [
+    {
+      "id": "自由蓝调_4pc",
+      "name": "自由蓝调 4件套",
+      "description": "[强化特殊技]命中敌人时，根据装备者的属性类型，使目标对应属性异常积蓄抗性降低20%，持续8秒，相同属性类型的效果不可叠加。",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "[强化特殊技]命中敌人时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "ENHANCED_SPECIAL_DMG_": 20.0
+      }
+    }
+  ]
+}

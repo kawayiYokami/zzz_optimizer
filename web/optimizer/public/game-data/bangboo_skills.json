@@ -1,0 +1,596 @@
+{
+  "企鹅布_主动技能：冰刀舞": {
+    "bangboo_name": "企鹅布",
+    "skill_name": "主动技能：冰刀舞",
+    "dmg_ratio": 4.62,
+    "dmg_ratio_growth": 0.462,
+    "stun_ratio": 2.7,
+    "stun_ratio_growth": 0.27,
+    "anomaly_buildup": 346.0
+  },
+  "企鹅布_连携技：冰暴回旋": {
+    "bangboo_name": "企鹅布",
+    "skill_name": "连携技：冰暴回旋",
+    "dmg_ratio": 9.57,
+    "dmg_ratio_growth": 0.957,
+    "stun_ratio": 1.37,
+    "stun_ratio_growth": 0.137,
+    "anomaly_buildup": 410.0
+  },
+  "招财布_主动技能：一掷千金": {
+    "bangboo_name": "招财布",
+    "skill_name": "主动技能：一掷千金",
+    "dmg_ratio": 4.4,
+    "dmg_ratio_growth": 0.44,
+    "stun_ratio": 2.57,
+    "stun_ratio_growth": 0.257,
+    "anomaly_buildup": 330.0
+  },
+  "扑击布_主动技能：决胜技·岩崩": {
+    "bangboo_name": "扑击布",
+    "skill_name": "主动技能：决胜技·岩崩",
+    "dmg_ratio": 3.23,
+    "dmg_ratio_growth": 0.323,
+    "stun_ratio": 1.89,
+    "stun_ratio_growth": 0.189,
+    "anomaly_buildup": 242.0
+  },
+  "纸壳布_主动技能：诱饵纸装甲": {
+    "bangboo_name": "纸壳布",
+    "skill_name": "主动技能：诱饵纸装甲",
+    "dmg_ratio": 4.62,
+    "dmg_ratio_growth": 0.462,
+    "stun_ratio": 2.7,
+    "stun_ratio_growth": 0.27,
+    "anomaly_buildup": 346.0
+  },
+  "纸壳布_连携技：纸装甲·冲击模式": {
+    "bangboo_name": "纸壳布",
+    "skill_name": "连携技：纸装甲·冲击模式",
+    "dmg_ratio": 6.65,
+    "dmg_ratio_growth": 0.665,
+    "stun_ratio": 0.95,
+    "stun_ratio_growth": 0.095,
+    "anomaly_buildup": 285.0
+  },
+  "纸袋布_主动技能：近一点，再近一点…": {
+    "bangboo_name": "纸袋布",
+    "skill_name": "主动技能：近一点，再近一点…",
+    "dmg_ratio": 3.6,
+    "dmg_ratio_growth": 0.36,
+    "stun_ratio": 2.11,
+    "stun_ratio_growth": 0.211,
+    "anomaly_buildup": 270.0
+  },
+  "纸袋布_连携技：够近了！": {
+    "bangboo_name": "纸袋布",
+    "skill_name": "连携技：够近了！",
+    "dmg_ratio": 7.64,
+    "dmg_ratio_growth": 0.764,
+    "stun_ratio": 1.09,
+    "stun_ratio_growth": 0.109,
+    "anomaly_buildup": 328.0
+  },
+  "泪眼布_主动技能：拉环爆弹": {
+    "bangboo_name": "泪眼布",
+    "skill_name": "主动技能：拉环爆弹",
+    "dmg_ratio": 2.8,
+    "dmg_ratio_growth": 0.28,
+    "stun_ratio": 1.64,
+    "stun_ratio_growth": 0.164,
+    "anomaly_buildup": 210.0
+  },
+  "泪眼布_连携技：惊爆礼物": {
+    "bangboo_name": "泪眼布",
+    "skill_name": "连携技：惊爆礼物",
+    "dmg_ratio": 6.94,
+    "dmg_ratio_growth": 0.694,
+    "stun_ratio": 0.99,
+    "stun_ratio_growth": 0.099,
+    "anomaly_buildup": 298.0
+  },
+  "飞靶布_主动技能：正中红心": {
+    "bangboo_name": "飞靶布",
+    "skill_name": "主动技能：正中红心",
+    "dmg_ratio": 3.2,
+    "dmg_ratio_growth": 0.32,
+    "stun_ratio": 1.87,
+    "stun_ratio_growth": 0.187,
+    "anomaly_buildup": 240.0
+  },
+  "飞靶布_连携技：舍命狂镖": {
+    "bangboo_name": "飞靶布",
+    "skill_name": "连携技：舍命狂镖",
+    "dmg_ratio": 8.75,
+    "dmg_ratio_growth": 0.875,
+    "stun_ratio": 1.25,
+    "stun_ratio_growth": 0.125,
+    "anomaly_buildup": 375.0
+  },
+  "电击布_主动技能：百万伏特！": {
+    "bangboo_name": "电击布",
+    "skill_name": "主动技能：百万伏特！",
+    "dmg_ratio": 3.6,
+    "dmg_ratio_growth": 0.36,
+    "stun_ratio": 2.11,
+    "stun_ratio_growth": 0.211,
+    "anomaly_buildup": 270.0
+  },
+  "电击布_连携技：亿万伏特！": {
+    "bangboo_name": "电击布",
+    "skill_name": "连携技：亿万伏特！",
+    "dmg_ratio": 7.12,
+    "dmg_ratio_growth": 0.712,
+    "stun_ratio": 1.02,
+    "stun_ratio_growth": 0.102,
+    "anomaly_buildup": 305.0
+  },
+  "磁力布_主动技能：磁力锁定": {
+    "bangboo_name": "磁力布",
+    "skill_name": "主动技能：磁力锁定",
+    "dmg_ratio": 4.8,
+    "dmg_ratio_growth": 0.48,
+    "stun_ratio": 2.81,
+    "stun_ratio_growth": 0.281,
+    "anomaly_buildup": 360.0
+  },
+  "鲨牙布_主动技能：旱地猎鲨": {
+    "bangboo_name": "鲨牙布",
+    "skill_name": "主动技能：旱地猎鲨",
+    "dmg_ratio": 3.84,
+    "dmg_ratio_growth": 0.384,
+    "stun_ratio": 1.4,
+    "stun_ratio_growth": 0.14,
+    "anomaly_buildup": 180.0
+  },
+  "鲨牙布_连携技：追猎不休": {
+    "bangboo_name": "鲨牙布",
+    "skill_name": "连携技：追猎不休",
+    "dmg_ratio": 4.61,
+    "dmg_ratio_growth": 0.461,
+    "stun_ratio": 0.93,
+    "stun_ratio_growth": 0.093,
+    "anomaly_buildup": 190.0
+  },
+  "阿全_主动技能：掘进冲刺": {
+    "bangboo_name": "阿全",
+    "skill_name": "主动技能：掘进冲刺",
+    "dmg_ratio": 5.76,
+    "dmg_ratio_growth": 0.576,
+    "stun_ratio": 2.11,
+    "stun_ratio_growth": 0.211,
+    "anomaly_buildup": 270.0
+  },
+  "阿全_连携技：破拆钻击": {
+    "bangboo_name": "阿全",
+    "skill_name": "连携技：破拆钻击",
+    "dmg_ratio": 6.65,
+    "dmg_ratio_growth": 0.665,
+    "stun_ratio": 0.95,
+    "stun_ratio_growth": 0.095,
+    "anomaly_buildup": 285.0
+  },
+  "恶魔布_主动技能：幻惑之吻": {
+    "bangboo_name": "恶魔布",
+    "skill_name": "主动技能：幻惑之吻",
+    "dmg_ratio": 2.0,
+    "dmg_ratio_growth": 0.2,
+    "stun_ratio": 1.17,
+    "stun_ratio_growth": 0.117,
+    "anomaly_buildup": 150.0
+  },
+  "恶魔布_连携技：迷乱狂吻": {
+    "bangboo_name": "恶魔布",
+    "skill_name": "连携技：迷乱狂吻",
+    "dmg_ratio": 0.74,
+    "dmg_ratio_growth": 0.074,
+    "stun_ratio": 0.11,
+    "stun_ratio_growth": 0.011,
+    "anomaly_buildup": 32.0
+  },
+  "巴特勒_连携技：午后甜点": {
+    "bangboo_name": "巴特勒",
+    "skill_name": "连携技：午后甜点",
+    "dmg_ratio": 6.83,
+    "dmg_ratio_growth": 0.683,
+    "stun_ratio": 0.98,
+    "stun_ratio_growth": 0.098,
+    "anomaly_buildup": 293.0
+  },
+  "艾米莉安_主动技能：便携机炮·扫债者": {
+    "bangboo_name": "艾米莉安",
+    "skill_name": "主动技能：便携机炮·扫债者",
+    "dmg_ratio": 8.1,
+    "dmg_ratio_growth": 0.81,
+    "stun_ratio": 0.0,
+    "stun_ratio_growth": 0.0,
+    "anomaly_buildup": 330.0
+  },
+  "艾米莉安_连携技：便携机炮·清债连射": {
+    "bangboo_name": "艾米莉安",
+    "skill_name": "连携技：便携机炮·清债连射",
+    "dmg_ratio": 8.4,
+    "dmg_ratio_growth": 0.84,
+    "stun_ratio": 1.2,
+    "stun_ratio_growth": 0.12,
+    "anomaly_buildup": 360.0
+  },
+  "飚速布_主动技能：Boom!": {
+    "bangboo_name": "飚速布",
+    "skill_name": "主动技能：Boom!",
+    "dmg_ratio": 5.76,
+    "dmg_ratio_growth": 0.576,
+    "stun_ratio": 2.11,
+    "stun_ratio_growth": 0.211,
+    "anomaly_buildup": 270.0
+  },
+  "飚速布_连携技：爆轰速递": {
+    "bangboo_name": "飚速布",
+    "skill_name": "连携技：爆轰速递",
+    "dmg_ratio": 5.43,
+    "dmg_ratio_growth": 0.543,
+    "stun_ratio": 0.78,
+    "stun_ratio_growth": 0.078,
+    "anomaly_buildup": 233.0
+  },
+  "插头布_主动技能：电流狙击": {
+    "bangboo_name": "插头布",
+    "skill_name": "主动技能：电流狙击",
+    "dmg_ratio": 5.12,
+    "dmg_ratio_growth": 0.512,
+    "stun_ratio": 1.87,
+    "stun_ratio_growth": 0.187,
+    "anomaly_buildup": 240.0
+  },
+  "插头布_连携技：高压电阻": {
+    "bangboo_name": "插头布",
+    "skill_name": "连携技：高压电阻",
+    "dmg_ratio": 6.88,
+    "dmg_ratio_growth": 0.688,
+    "stun_ratio": 0.98,
+    "stun_ratio_growth": 0.098,
+    "anomaly_buildup": 295.0
+  },
+  "共鸣布_主动技能：迷你黑洞": {
+    "bangboo_name": "共鸣布",
+    "skill_name": "主动技能：迷你黑洞",
+    "dmg_ratio": 8.96,
+    "dmg_ratio_growth": 0.896,
+    "stun_ratio": 3.28,
+    "stun_ratio_growth": 0.328,
+    "anomaly_buildup": 420.0
+  },
+  "共鸣布_连携技：原初黑洞": {
+    "bangboo_name": "共鸣布",
+    "skill_name": "连携技：原初黑洞",
+    "dmg_ratio": 6.53,
+    "dmg_ratio_growth": 0.653,
+    "stun_ratio": 0.93,
+    "stun_ratio_growth": 0.093,
+    "anomaly_buildup": 280.0
+  },
+  "左轮布_主动技能：幸运左轮": {
+    "bangboo_name": "左轮布",
+    "skill_name": "主动技能：幸运左轮",
+    "dmg_ratio": 11.52,
+    "dmg_ratio_growth": 1.152,
+    "stun_ratio": 4.21,
+    "stun_ratio_growth": 0.421,
+    "anomaly_buildup": 540.0
+  },
+  "左轮布_连携技：幸运扳机": {
+    "bangboo_name": "左轮布",
+    "skill_name": "连携技：幸运扳机",
+    "dmg_ratio": 7.76,
+    "dmg_ratio_growth": 0.776,
+    "stun_ratio": 1.11,
+    "stun_ratio_growth": 0.111,
+    "anomaly_buildup": 333.0
+  },
+  "阿崔巡查_主动技能：呜！汪汪！": {
+    "bangboo_name": "阿崔巡查",
+    "skill_name": "主动技能：呜！汪汪！",
+    "dmg_ratio": 2.77,
+    "dmg_ratio_growth": 0.277,
+    "stun_ratio": 1.01,
+    "stun_ratio_growth": 0.101,
+    "anomaly_buildup": 130.0
+  },
+  "阿崔巡查_连携技：汪汪汪汪！": {
+    "bangboo_name": "阿崔巡查",
+    "skill_name": "连携技：汪汪汪汪！",
+    "dmg_ratio": 8.34,
+    "dmg_ratio_growth": 0.834,
+    "stun_ratio": 1.19,
+    "stun_ratio_growth": 0.119,
+    "anomaly_buildup": 358.0
+  },
+  "赤红莫库斯_主动技能： 驱劲滚轮": {
+    "bangboo_name": "赤红莫库斯",
+    "skill_name": "主动技能： 驱劲滚轮",
+    "dmg_ratio": 9.6,
+    "dmg_ratio_growth": 0.96,
+    "stun_ratio": 3.51,
+    "stun_ratio_growth": 0.351,
+    "anomaly_buildup": 450.0
+  },
+  "赤红莫库斯_连携技：狂飙突进": {
+    "bangboo_name": "赤红莫库斯",
+    "skill_name": "连携技：狂飙突进",
+    "dmg_ratio": 7.53,
+    "dmg_ratio_growth": 0.753,
+    "stun_ratio": 1.08,
+    "stun_ratio_growth": 0.108,
+    "anomaly_buildup": 323.0
+  },
+  "骑士布_连携技：骑士，蹦蹦冲击！": {
+    "bangboo_name": "骑士布",
+    "skill_name": "连携技：骑士，蹦蹦冲击！",
+    "dmg_ratio": 0.86,
+    "dmg_ratio_growth": 0.086,
+    "stun_ratio": 0.12,
+    "stun_ratio_growth": 0.012,
+    "anomaly_buildup": 37.0
+  },
+  "不良布_主动技能： 火箭炮轰": {
+    "bangboo_name": "不良布",
+    "skill_name": "主动技能： 火箭炮轰",
+    "dmg_ratio": 4.0,
+    "dmg_ratio_growth": 0.4,
+    "stun_ratio": 2.34,
+    "stun_ratio_growth": 0.234,
+    "anomaly_buildup": 300.0
+  },
+  "不良布_连携技：火箭爆轰！": {
+    "bangboo_name": "不良布",
+    "skill_name": "连携技：火箭爆轰！",
+    "dmg_ratio": 6.83,
+    "dmg_ratio_growth": 0.683,
+    "stun_ratio": 0.98,
+    "stun_ratio_growth": 0.098,
+    "anomaly_buildup": 293.0
+  },
+  "格列佛探员_主动技能：紧急行动": {
+    "bangboo_name": "格列佛探员",
+    "skill_name": "主动技能：紧急行动",
+    "dmg_ratio": 6.4,
+    "dmg_ratio_growth": 0.64,
+    "stun_ratio": 2.34,
+    "stun_ratio_growth": 0.234,
+    "anomaly_buildup": 300.0
+  },
+  "格列佛探员_连携技：突击时刻": {
+    "bangboo_name": "格列佛探员",
+    "skill_name": "连携技：突击时刻",
+    "dmg_ratio": 7.99,
+    "dmg_ratio_growth": 0.799,
+    "stun_ratio": 1.14,
+    "stun_ratio_growth": 0.114,
+    "anomaly_buildup": 343.0
+  },
+  "格斗布_主动技能：邦布星陨击！": {
+    "bangboo_name": "格斗布",
+    "skill_name": "主动技能：邦布星陨击！",
+    "dmg_ratio": 5.6,
+    "dmg_ratio_growth": 0.56,
+    "stun_ratio": 3.28,
+    "stun_ratio_growth": 0.328,
+    "anomaly_buildup": 420.0
+  },
+  "格斗布_连携技：烈风千击": {
+    "bangboo_name": "格斗布",
+    "skill_name": "连携技：烈风千击",
+    "dmg_ratio": 8.46,
+    "dmg_ratio_growth": 0.846,
+    "stun_ratio": 1.21,
+    "stun_ratio_growth": 0.121,
+    "anomaly_buildup": 363.0
+  },
+  "咔嚓仔_主动技能：咔嚓！看镜头！": {
+    "bangboo_name": "咔嚓仔",
+    "skill_name": "主动技能：咔嚓！看镜头！",
+    "dmg_ratio": 0.0,
+    "dmg_ratio_growth": 0.0,
+    "stun_ratio": 0.0,
+    "stun_ratio_growth": 0.0,
+    "anomaly_buildup": 0.0
+  },
+  "咔嚓仔_连携技：咔嚓！别眨眼！": {
+    "bangboo_name": "咔嚓仔",
+    "skill_name": "连携技：咔嚓！别眨眼！",
+    "dmg_ratio": 7.47,
+    "dmg_ratio_growth": 0.747,
+    "stun_ratio": 1.07,
+    "stun_ratio_growth": 0.107,
+    "anomaly_buildup": 320.0
+  },
+  "罗宾_主动技能：绮幕终落 [红心]": {
+    "bangboo_name": "罗宾",
+    "skill_name": "主动技能：绮幕终落 [红心]",
+    "dmg_ratio": 8.55,
+    "dmg_ratio_growth": 0.855,
+    "stun_ratio": 2.13,
+    "stun_ratio_growth": 0.213,
+    "anomaly_buildup": 312.0
+  },
+  "罗宾_主动技能：绮幕终落 [黑桃]": {
+    "bangboo_name": "罗宾",
+    "skill_name": "主动技能：绮幕终落 [黑桃]",
+    "dmg_ratio": 5.82,
+    "dmg_ratio_growth": 0.582,
+    "stun_ratio": 3.22,
+    "stun_ratio_growth": 0.322,
+    "anomaly_buildup": 273.0
+  },
+  "罗宾_主动技能：绮幕终落 [皇冠]": {
+    "bangboo_name": "罗宾",
+    "skill_name": "主动技能：绮幕终落 [皇冠]",
+    "dmg_ratio": 6.66,
+    "dmg_ratio_growth": 0.666,
+    "stun_ratio": 2.13,
+    "stun_ratio_growth": 0.213,
+    "anomaly_buildup": 412.0
+  },
+  "罗宾_连携技：幻幕拉开！": {
+    "bangboo_name": "罗宾",
+    "skill_name": "连携技：幻幕拉开！",
+    "dmg_ratio": 6.88,
+    "dmg_ratio_growth": 0.688,
+    "stun_ratio": 0.98,
+    "stun_ratio_growth": 0.098,
+    "anomaly_buildup": 295.0
+  },
+  "加班布_主动技能：班味全开！": {
+    "bangboo_name": "加班布",
+    "skill_name": "主动技能：班味全开！",
+    "dmg_ratio": 3.36,
+    "dmg_ratio_growth": 0.336,
+    "stun_ratio": 2.81,
+    "stun_ratio_growth": 0.281,
+    "anomaly_buildup": 360.0
+  },
+  "狮耶_主动技能：舞球摇凤": {
+    "bangboo_name": "狮耶",
+    "skill_name": "主动技能：舞球摇凤",
+    "dmg_ratio": 9.6,
+    "dmg_ratio_growth": 0.96,
+    "stun_ratio": 3.51,
+    "stun_ratio_growth": 0.351,
+    "anomaly_buildup": 450.0
+  },
+  "狮耶_连携技：银狮奔雷": {
+    "bangboo_name": "狮耶",
+    "skill_name": "连携技：银狮奔雷",
+    "dmg_ratio": 9.1,
+    "dmg_ratio_growth": 0.91,
+    "stun_ratio": 1.3,
+    "stun_ratio_growth": 0.13,
+    "anomaly_buildup": 390.0
+  },
+  "艾丝弥小姐_连携技：星辰弹": {
+    "bangboo_name": "艾丝弥小姐",
+    "skill_name": "连携技：星辰弹",
+    "dmg_ratio": 8.63,
+    "dmg_ratio_growth": 0.863,
+    "stun_ratio": 1.23,
+    "stun_ratio_growth": 0.123,
+    "anomaly_buildup": 370.0
+  },
+  "「墨丘利」_主动技能：战术对策一：火线遏制": {
+    "bangboo_name": "「墨丘利」",
+    "skill_name": "主动技能：战术对策一：火线遏制",
+    "dmg_ratio": 8.0,
+    "dmg_ratio_growth": 0.8,
+    "stun_ratio": 2.93,
+    "stun_ratio_growth": 0.293,
+    "anomaly_buildup": 375.0
+  },
+  "「墨丘利」_连携技：战术对策三：爆弹奇袭": {
+    "bangboo_name": "「墨丘利」",
+    "skill_name": "连携技：战术对策三：爆弹奇袭",
+    "dmg_ratio": 8.46,
+    "dmg_ratio_growth": 0.846,
+    "stun_ratio": 1.21,
+    "stun_ratio_growth": 0.121,
+    "anomaly_buildup": 363.0
+  },
+  "圣剑布_主动技能：圣剑解放 [锤击]": {
+    "bangboo_name": "圣剑布",
+    "skill_name": "主动技能：圣剑解放 [锤击]",
+    "dmg_ratio": 4.8,
+    "dmg_ratio_growth": 0.48,
+    "stun_ratio": 2.81,
+    "stun_ratio_growth": 0.281,
+    "anomaly_buildup": 360.0
+  },
+  "圣剑布_主动技能：圣剑解放 [斩击]": {
+    "bangboo_name": "圣剑布",
+    "skill_name": "主动技能：圣剑解放 [斩击]",
+    "dmg_ratio": 3.84,
+    "dmg_ratio_growth": 0.384,
+    "stun_ratio": 2.81,
+    "stun_ratio_growth": 0.281,
+    "anomaly_buildup": 360.0
+  },
+  "圣剑布_连携技：破阵王威": {
+    "bangboo_name": "圣剑布",
+    "skill_name": "连携技：破阵王威",
+    "dmg_ratio": 9.63,
+    "dmg_ratio_growth": 0.963,
+    "stun_ratio": 1.38,
+    "stun_ratio_growth": 0.138,
+    "anomaly_buildup": 413.0
+  },
+  "比克布利克_主动技能：蒙太奇连击A": {
+    "bangboo_name": "比克布利克",
+    "skill_name": "主动技能：蒙太奇连击A",
+    "dmg_ratio": 2.69,
+    "dmg_ratio_growth": 0.269,
+    "stun_ratio": 0.98,
+    "stun_ratio_growth": 0.098,
+    "anomaly_buildup": 126.0
+  },
+  "比克布利克_主动技能：蒙太奇连击B": {
+    "bangboo_name": "比克布利克",
+    "skill_name": "主动技能：蒙太奇连击B",
+    "dmg_ratio": 3.58,
+    "dmg_ratio_growth": 0.358,
+    "stun_ratio": 1.31,
+    "stun_ratio_growth": 0.131,
+    "anomaly_buildup": 168.0
+  },
+  "比克布利克_连携技：战地特写镜头": {
+    "bangboo_name": "比克布利克",
+    "skill_name": "连携技：战地特写镜头",
+    "dmg_ratio": 9.45,
+    "dmg_ratio_growth": 0.945,
+    "stun_ratio": 1.35,
+    "stun_ratio_growth": 0.135,
+    "anomaly_buildup": 405.0
+  },
+  "乐玩布_主动技能：积木跳房子": {
+    "bangboo_name": "乐玩布",
+    "skill_name": "主动技能：积木跳房子",
+    "dmg_ratio": 4.0,
+    "dmg_ratio_growth": 0.4,
+    "stun_ratio": 2.34,
+    "stun_ratio_growth": 0.234,
+    "anomaly_buildup": 300.0
+  },
+  "乐玩布_连携技：城堡躲避球": {
+    "bangboo_name": "乐玩布",
+    "skill_name": "连携技：城堡躲避球",
+    "dmg_ratio": 8.58,
+    "dmg_ratio_growth": 0.858,
+    "stun_ratio": 1.23,
+    "stun_ratio_growth": 0.123,
+    "anomaly_buildup": 368.0
+  },
+  "芽芽_主动技能：六合飞星 [飞剑]": {
+    "bangboo_name": "芽芽",
+    "skill_name": "主动技能：六合飞星 [飞剑]",
+    "dmg_ratio": 7.17,
+    "dmg_ratio_growth": 0.717,
+    "stun_ratio": 3.28,
+    "stun_ratio_growth": 0.328,
+    "anomaly_buildup": 420.0
+  },
+  "芽芽_主动技能：六合飞星 [连斩]": {
+    "bangboo_name": "芽芽",
+    "skill_name": "主动技能：六合飞星 [连斩]",
+    "dmg_ratio": 9.86,
+    "dmg_ratio_growth": 0.986,
+    "stun_ratio": 3.28,
+    "stun_ratio_growth": 0.328,
+    "anomaly_buildup": 420.0
+  },
+  "芽芽_连携技：归一之剑": {
+    "bangboo_name": "芽芽",
+    "skill_name": "连携技：归一之剑",
+    "dmg_ratio": 8.46,
+    "dmg_ratio_growth": 0.846,
+    "stun_ratio": 1.21,
+    "stun_ratio_growth": 0.121,
+    "anomaly_buildup": 363.0
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "agent_id": "1151",
+  "name": "露西",
+  "code_name": "Lucy",
+  "rarity": 3,
+  "weapon_type": "支援",
+  "element_type": "火属性",
+  "core_passive_buffs": [],
+  "talent_buffs": [
+    {
+      "id": "1151_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "处于[加油！]状态下的队友[强化特殊技]命中敌人时，一只亲卫队小猪会从空中落地引发爆炸，造成等同于亲卫队小猪300%攻击力的火属性伤害，并使全队角色、邦布和亲卫队小猪的[加油！]状态的持续时间提升5秒",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": false,
+        "target_enemy": false,
+        "target_teammate": true,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "ATK_": 300.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

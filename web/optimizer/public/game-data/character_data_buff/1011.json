@@ -1,0 +1,33 @@
+{
+  "agent_id": "1011",
+  "name": "安比",
+  "code_name": "Anby",
+  "rarity": 3,
+  "weapon_type": "击破",
+  "element_type": "电属性",
+  "core_passive_buffs": [],
+  "talent_buffs": [
+    {
+      "id": "1011_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "[普通攻击]或[冲刺攻击]命中敌人时，消耗1层充能，使当前招式造成的伤害提升45%",
+      "source": "TALENT",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 45.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

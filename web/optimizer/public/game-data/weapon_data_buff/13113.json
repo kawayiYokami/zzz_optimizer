@@ -1,0 +1,249 @@
+{
+  "wengine_id": "13113",
+  "code_name": "Weapon_A_1131",
+  "name": "含羞恶面",
+  "rarity": 3,
+  "weapon_type": "支援",
+  "talents": [
+    {
+      "level": 1,
+      "name": "饕餮相",
+      "description": "冰属性伤害提升15%；发动[强化特殊技]时，全队角色攻击力提升2%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13113_talent_1_skill_dmg",
+          "name": "含羞恶面-技能伤害",
+          "description": "冰属性伤害提升15%；发动[强化特殊技]时，全队角色攻击力提升2%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 15.0
+          }
+        },
+        {
+          "id": "13113_talent_1_stats",
+          "name": "含羞恶面-属性提升",
+          "description": "冰属性伤害提升15%；发动[强化特殊技]时，全队角色攻击力提升2%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 15.0,
+            "ATK_": 2.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "饕餮相",
+      "description": "冰属性伤害提升17.5%；发动[强化特殊技]时，全队角色攻击力提升2.3%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13113_talent_2_skill_dmg",
+          "name": "含羞恶面-技能伤害",
+          "description": "冰属性伤害提升17.5%；发动[强化特殊技]时，全队角色攻击力提升2.3%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 17.5
+          }
+        },
+        {
+          "id": "13113_talent_2_stats",
+          "name": "含羞恶面-属性提升",
+          "description": "冰属性伤害提升17.5%；发动[强化特殊技]时，全队角色攻击力提升2.3%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 17.5,
+            "ATK_": 2.3
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "饕餮相",
+      "description": "冰属性伤害提升20%；发动[强化特殊技]时，全队角色攻击力提升2.6%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13113_talent_3_skill_dmg",
+          "name": "含羞恶面-技能伤害",
+          "description": "冰属性伤害提升20%；发动[强化特殊技]时，全队角色攻击力提升2.6%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 20.0
+          }
+        },
+        {
+          "id": "13113_talent_3_stats",
+          "name": "含羞恶面-属性提升",
+          "description": "冰属性伤害提升20%；发动[强化特殊技]时，全队角色攻击力提升2.6%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 20.0,
+            "ATK_": 2.6
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "饕餮相",
+      "description": "冰属性伤害提升22%；发动[强化特殊技]时，全队角色攻击力提升2.9%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13113_talent_4_skill_dmg",
+          "name": "含羞恶面-技能伤害",
+          "description": "冰属性伤害提升22%；发动[强化特殊技]时，全队角色攻击力提升2.9%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 22.0
+          }
+        },
+        {
+          "id": "13113_talent_4_stats",
+          "name": "含羞恶面-属性提升",
+          "description": "冰属性伤害提升22%；发动[强化特殊技]时，全队角色攻击力提升2.9%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 22.0,
+            "ATK_": 2.9
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "饕餮相",
+      "description": "冰属性伤害提升24%；发动[强化特殊技]时，全队角色攻击力提升3.2%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+      "buffs": [
+        {
+          "id": "13113_talent_5_skill_dmg",
+          "name": "含羞恶面-技能伤害",
+          "description": "冰属性伤害提升24%；发动[强化特殊技]时，全队角色攻击力提升3.2%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "full_only",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 24.0
+          }
+        },
+        {
+          "id": "13113_talent_5_stats",
+          "name": "含羞恶面-属性提升",
+          "description": "冰属性伤害提升24%；发动[强化特殊技]时，全队角色攻击力提升3.2%，最多叠加4层，持续12秒，重复触发时刷新持续时间，同名被动效果之间不可叠加。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": true,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "ICE_DMG_": 24.0,
+            "ATK_": 3.2
+          }
+        }
+      ]
+    }
+  ]
+}

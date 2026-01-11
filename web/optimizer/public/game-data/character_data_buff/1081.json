@@ -1,0 +1,74 @@
+{
+  "agent_id": "1081",
+  "name": "比利",
+  "code_name": "Billy",
+  "rarity": 3,
+  "weapon_type": "强攻",
+  "element_type": "物理",
+  "core_passive_buffs": [
+    {
+      "id": "1081_core_passive_7_1",
+      "name": "CORE_PASSIVE-BUFF1",
+      "description": "比利在[普通攻击]中进入蹲姿射击后，自身造成的伤害提升50%，进行移动、回到待机、被击退或被击飞时增益效果结束",
+      "source": "CORE_PASSIVE",
+      "context": "OUT_OF_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {
+        "COMMON_DMG_": 50.0
+      },
+      "in_combat_stats": {},
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    },
+    {
+      "id": "1081_core_passive_7_2",
+      "name": "CORE_PASSIVE-BUFF2",
+      "description": "队伍中存在与自身属性或阵营相同的角色时触发：\n比利发动[连携技]后，下次发动[终结技]时，招式造成的伤害提升50%，最多叠加2次，发动[终结技]后效果重置",
+      "source": "CORE_PASSIVE",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 50.0
+      },
+      "trigger_conditions": "与自身属性或阵营相同的角色",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "talent_buffs": [
+    {
+      "id": "1081_talent_6_1",
+      "name": "TALENT-BUFF1",
+      "description": "累计命中敌人10次或触发[极限闪避]时，比利造成的伤害提升6%，最多叠加5层，被敌方击退或击飞后增益效果重置",
+      "source": "TALENT",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 6.0
+      },
+      "trigger_conditions": "",
+      "max_stacks": 1,
+      "stack_mode": "full_only"
+    }
+  ],
+  "conversion_buffs": [],
+  "potential_buffs": []
+}

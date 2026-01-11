@@ -1,0 +1,144 @@
+{
+  "wengine_id": "14105",
+  "code_name": "Weapon_S_1051",
+  "name": "海妖摇篮",
+  "rarity": 4,
+  "weapon_type": "命破",
+  "talents": [
+    {
+      "level": 1,
+      "name": "触抚心拥",
+      "description": "装备者的生命值降低时，造成的冰属性贯穿伤害提升6%，最多叠加3层，持续25秒，每层效果单独结算持续时间，0.5秒内最多触发一次；装备者生命值降低至最大值的50%时，暴击率提升20%。",
+      "buffs": [
+        {
+          "id": "14105_talent_1_stats",
+          "name": "海妖摇篮-属性提升",
+          "description": "装备者的生命值降低时，造成的冰属性贯穿伤害提升6%，最多叠加3层，持续25秒，每层效果单独结算持续时间，0.5秒内最多触发一次；装备者生命值降低至最大值的50%时，暴击率提升20%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 20.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "触抚心拥",
+      "description": "装备者的生命值降低时，造成的冰属性贯穿伤害提升7%，最多叠加3层，持续25秒，每层效果单独结算持续时间，0.5秒内最多触发一次；装备者生命值降低至最大值的50%时，暴击率提升23%。",
+      "buffs": [
+        {
+          "id": "14105_talent_2_stats",
+          "name": "海妖摇篮-属性提升",
+          "description": "装备者的生命值降低时，造成的冰属性贯穿伤害提升7%，最多叠加3层，持续25秒，每层效果单独结算持续时间，0.5秒内最多触发一次；装备者生命值降低至最大值的50%时，暴击率提升23%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 23.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "触抚心拥",
+      "description": "装备者的生命值降低时，造成的冰属性贯穿伤害提升8%，最多叠加3层，持续25秒，每层效果单独结算持续时间，0.5秒内最多触发一次；装备者生命值降低至最大值的50%时，暴击率提升26%。",
+      "buffs": [
+        {
+          "id": "14105_talent_3_stats",
+          "name": "海妖摇篮-属性提升",
+          "description": "装备者的生命值降低时，造成的冰属性贯穿伤害提升8%，最多叠加3层，持续25秒，每层效果单独结算持续时间，0.5秒内最多触发一次；装备者生命值降低至最大值的50%时，暴击率提升26%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 26.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "触抚心拥",
+      "description": "装备者的生命值降低时，造成的冰属性贯穿伤害提升9%，最多叠加3层，持续25秒，每层效果单独结算持续时间，0.5秒内最多触发一次；装备者生命值降低至最大值的50%时，暴击率提升29%。",
+      "buffs": [
+        {
+          "id": "14105_talent_4_stats",
+          "name": "海妖摇篮-属性提升",
+          "description": "装备者的生命值降低时，造成的冰属性贯穿伤害提升9%，最多叠加3层，持续25秒，每层效果单独结算持续时间，0.5秒内最多触发一次；装备者生命值降低至最大值的50%时，暴击率提升29%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 29.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "触抚心拥",
+      "description": "装备者的生命值降低时，造成的冰属性贯穿伤害提升10%，最多叠加3层，持续25秒，每层效果单独结算持续时间，0.5秒内最多触发一次；装备者生命值降低至最大值的50%时，暴击率提升32%。",
+      "buffs": [
+        {
+          "id": "14105_talent_5_stats",
+          "name": "海妖摇篮-属性提升",
+          "description": "装备者的生命值降低时，造成的冰属性贯穿伤害提升10%，最多叠加3层，持续25秒，每层效果单独结算持续时间，0.5秒内最多触发一次；装备者生命值降低至最大值的50%时，暴击率提升32%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 32.0
+          }
+        }
+      ]
+    }
+  ]
+}

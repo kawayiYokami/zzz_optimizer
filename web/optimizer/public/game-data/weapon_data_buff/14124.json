@@ -1,0 +1,144 @@
+{
+  "wengine_id": "14124",
+  "code_name": "Weapon_S_1241",
+  "name": "防暴者Ⅵ型",
+  "rarity": 4,
+  "weapon_type": "强攻",
+  "talents": [
+    {
+      "level": 1,
+      "name": "安全巡查",
+      "description": "暴击率提升15%；发动[强化特殊技]时，为装备者提供8层充能效果，最多叠加8层；[普通攻击]或[冲刺攻击]造成以太伤害时，消耗1层充能，使当前招式造成的伤害提升35%。",
+      "buffs": [
+        {
+          "id": "14124_talent_1_stats",
+          "name": "防暴者Ⅵ型-属性提升",
+          "description": "暴击率提升15%；发动[强化特殊技]时，为装备者提供8层充能效果，最多叠加8层；[普通攻击]或[冲刺攻击]造成以太伤害时，消耗1层充能，使当前招式造成的伤害提升35%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 15.0
+          }
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "安全巡查",
+      "description": "暴击率提升18.8%；发动[强化特殊技]时，为装备者提供8层充能效果，最多叠加8层；[普通攻击]或[冲刺攻击]造成以太伤害时，消耗1层充能，使当前招式造成的伤害提升43.5%。",
+      "buffs": [
+        {
+          "id": "14124_talent_2_stats",
+          "name": "防暴者Ⅵ型-属性提升",
+          "description": "暴击率提升18.8%；发动[强化特殊技]时，为装备者提供8层充能效果，最多叠加8层；[普通攻击]或[冲刺攻击]造成以太伤害时，消耗1层充能，使当前招式造成的伤害提升43.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 18.8
+          }
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "安全巡查",
+      "description": "暴击率提升22.6%；发动[强化特殊技]时，为装备者提供8层充能效果，最多叠加8层；[普通攻击]或[冲刺攻击]造成以太伤害时，消耗1层充能，使当前招式造成的伤害提升52%。",
+      "buffs": [
+        {
+          "id": "14124_talent_3_stats",
+          "name": "防暴者Ⅵ型-属性提升",
+          "description": "暴击率提升22.6%；发动[强化特殊技]时，为装备者提供8层充能效果，最多叠加8层；[普通攻击]或[冲刺攻击]造成以太伤害时，消耗1层充能，使当前招式造成的伤害提升52%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 22.6
+          }
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "安全巡查",
+      "description": "暴击率提升26.4%；发动[强化特殊技]时，为装备者提供8层充能效果，最多叠加8层；[普通攻击]或[冲刺攻击]造成以太伤害时，消耗1层充能，使当前招式造成的伤害提升60.5%。",
+      "buffs": [
+        {
+          "id": "14124_talent_4_stats",
+          "name": "防暴者Ⅵ型-属性提升",
+          "description": "暴击率提升26.4%；发动[强化特殊技]时，为装备者提供8层充能效果，最多叠加8层；[普通攻击]或[冲刺攻击]造成以太伤害时，消耗1层充能，使当前招式造成的伤害提升60.5%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 26.4
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "name": "安全巡查",
+      "description": "暴击率提升30%；发动[强化特殊技]时，为装备者提供8层充能效果，最多叠加8层；[普通攻击]或[冲刺攻击]造成以太伤害时，消耗1层充能，使当前招式造成的伤害提升70%。",
+      "buffs": [
+        {
+          "id": "14124_talent_5_stats",
+          "name": "防暴者Ⅵ型-属性提升",
+          "description": "暴击率提升30%；发动[强化特殊技]时，为装备者提供8层充能效果，最多叠加8层；[普通攻击]或[冲刺攻击]造成以太伤害时，消耗1层充能，使当前招式造成的伤害提升70%。",
+          "source": "WENGINE_TALENT",
+          "context": "IN_COMBAT",
+          "target": {
+            "target_self": true,
+            "target_enemy": false,
+            "target_teammate": false,
+            "target_bund": false
+          },
+          "max_stacks": 1,
+          "stack_mode": "linear",
+          "trigger_conditions": "",
+          "out_of_combat_stats": {},
+          "in_combat_stats": {
+            "CRIT_": 30.0
+          }
+        }
+      ]
+    }
+  ]
+}
