@@ -13,10 +13,10 @@
  * - 存档是持久化数据，应该直接从localStorage读取
  *
  * 数据流：
- * 1. 存档（SaveData.toDict） → localStorage（持久化）
- * 2. localStorage → 存档（SaveData.fromDict） → 实例对象（运行时计算）
+ * 1. 存档（原始ZOD格式） → localStorage（持久化）
+ * 2. localStorage → 原始ZOD数据 → 实例对象（运行时计算）
  * 3. 导出时：直接从localStorage读取存档数据，不使用实例对象
- * 4. 导出ZOD时：从实例对象转换格式（因为实例对象有完整的游戏数据引用）
+ * 4. 导出ZOD时：直接从localStorage读取存档数据，不使用实例对象
  */
 
 import { defineStore } from 'pinia';
@@ -31,6 +31,7 @@ const CURRENT_SAVE_KEY = 'zzz_optimizer_current_save';
 export const useSaveStore = defineStore('save', () => {
   // 状态
   const saves = ref<Map<string, SaveData>>(new Map());
+  const rawSaves = ref<Map<string, SaveDataZod>>(new Map());
   const currentSaveName = ref<string | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
@@ -40,7 +41,24 @@ export const useSaveStore = defineStore('save', () => {
     if (currentSaveName.value === null) {
       return null;
     }
-    return saves.value.get(currentSaveName.value) ?? null;
+    let save = saves.value.get(currentSaveName.value);
+    if (!save) {
+      // 如果实例不存在，从rawSaves生成
+      const rawSave = rawSaves.value.get(currentSaveName.value);
+      if (rawSave) {
+        // 异步生成实例，这里我们直接返回null，让调用者处理
+        // 实际使用中应该有专门的机制来处理这种情况
+        console.warn(`Instance for save ${currentSaveName.value} not found, need to generate from raw data`);
+      }
+    }
+    return save ?? null;
+  });
+
+  const currentRawSave = computed(() => {
+    if (currentSaveName.value === null) {
+      return null;
+    }
+    return rawSaves.value.get(currentSaveName.value) ?? null;
   });
 
   const agents = computed(() => {
@@ -56,7 +74,11 @@ export const useSaveStore = defineStore('save', () => {
   });
 
   const saveNames = computed(() => {
-    return Array.from(saves.value.keys());
+    return Array.from(rawSaves.value.keys());
+  });
+
+  const rawSaveData = computed(() => {
+    return Object.fromEntries(rawSaves.value.entries());
   });
 
   /**
@@ -68,24 +90,37 @@ export const useSaveStore = defineStore('save', () => {
       if (savedData) {
         const parsed = JSON.parse(savedData);
         const newSaves = new Map<string, SaveData>();
+        const newRawSaves = new Map<string, SaveDataZod>();
 
         for (const [name, data] of Object.entries(parsed)) {
           try {
-            let saveData: SaveData;
             if (isZodSaveData(data)) {
               const normalized = normalizeZodData(data as SaveDataZod);
-              saveData = await SaveData.fromZod(name, normalized, dataLoaderService);
+              // 直接保存原始ZOD数据到rawSaves
+              newRawSaves.set(name, normalized);
+              // 从原始ZOD数据生成实例
+              const saveData = await SaveData.fromZod(name, normalized, dataLoaderService);
+              newSaves.set(name, saveData);
             } else {
-              saveData = await SaveData.fromDict(data as any, dataLoaderService);
+              // 非ZOD格式数据，暂时保留原有逻辑
+              const saveData = await SaveData.fromDict(data as any, dataLoaderService);
+              newSaves.set(name, saveData);
+              // 转换为ZOD格式保存到rawSaves
+              const zodData = saveData.toZodData();
+              newRawSaves.set(name, zodData);
             }
-            newSaves.set(name, saveData);
           } catch (err) {
             console.error(`加载存档失败 [${name}]:`, err);
             // 继续加载其他存档，不中断整个加载过程
+            // 如果是ZOD数据，仍然保存原始数据，便于调试
+            if (isZodSaveData(data)) {
+              newRawSaves.set(name, data as SaveDataZod);
+            }
           }
         }
 
         saves.value = newSaves;
+        rawSaves.value = newRawSaves;
       }
 
       const currentSave = localStorage.getItem(CURRENT_SAVE_KEY);
@@ -103,11 +138,8 @@ export const useSaveStore = defineStore('save', () => {
    */
   function saveToStorage(): void {
     try {
-      const dataToSave: Record<string, SaveDataZod> = {};
-
-      for (const [name, saveData] of saves.value.entries()) {
-        dataToSave[name] = saveData.toZodData();
-      }
+      // 直接保存rawSaves到localStorage，不从实例转换
+      const dataToSave = Object.fromEntries(rawSaves.value.entries());
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
 
@@ -127,14 +159,18 @@ export const useSaveStore = defineStore('save', () => {
    * 创建新存档
    */
   function createSave(name: string): SaveData {
-    if (saves.value.has(name)) {
+    if (saves.value.has(name) || rawSaves.value.has(name)) {
       throw new Error(`Save "${name}" already exists`);
     }
 
     const newSave = new SaveData(name);
     saves.value.set(name, newSave);
+    
+    // 初始化rawSaves
+    const zodData = newSave.toZodData();
+    rawSaves.value.set(name, zodData);
+    
     currentSaveName.value = name;
-
     saveToStorage();
 
     return newSave;
@@ -144,15 +180,16 @@ export const useSaveStore = defineStore('save', () => {
    * 删除存档
    */
   function deleteSave(name: string): boolean {
-    if (!saves.value.has(name)) {
+    if (!saves.value.has(name) && !rawSaves.value.has(name)) {
       return false;
     }
 
     saves.value.delete(name);
+    rawSaves.value.delete(name);
 
     // 如果删除的是当前存档，切换到其他存档
     if (currentSaveName.value === name) {
-      const remainingNames = Array.from(saves.value.keys());
+      const remainingNames = Array.from(rawSaves.value.keys());
       if (remainingNames.length > 0) {
         currentSaveName.value = remainingNames[0];
       } else {
@@ -169,8 +206,24 @@ export const useSaveStore = defineStore('save', () => {
    * 切换存档
    */
   function switchSave(name: string): boolean {
-    if (!saves.value.has(name)) {
+    if (!rawSaves.value.has(name)) {
       return false;
+    }
+
+    // 清空当前实例缓存，确保重新生成实例
+    saves.value.clear();
+    
+    // 从rawSaves重新生成当前存档实例
+    const rawSave = rawSaves.value.get(name);
+    if (rawSave) {
+      // 异步生成实例
+      SaveData.fromZod(name, rawSave, dataLoaderService)
+        .then(saveData => {
+          saves.value.set(name, saveData);
+        })
+        .catch(err => {
+          console.error(`Failed to create instance for save ${name}:`, err);
+        });
     }
 
     currentSaveName.value = name;
@@ -192,11 +245,18 @@ export const useSaveStore = defineStore('save', () => {
         throw new Error('Invalid ZOD data');
       }
       const normalized = normalizeZodData(data as SaveDataZod);
+      
+      // 直接保存原始ZOD数据到rawSaves
+      rawSaves.value.set(name, normalized);
+      
+      // 从原始ZOD数据生成实例
       const newSave = await SaveData.fromZod(name, normalized, dataLoaderService);
-
-      // 保存
       saves.value.set(name, newSave);
+      
+      // 设置当前存档
       currentSaveName.value = name;
+      
+      // 保存到localStorage（直接保存rawSaves，不修改原始数据）
       saveToStorage();
 
       return newSave;
@@ -247,24 +307,37 @@ export const useSaveStore = defineStore('save', () => {
   }
 
   /**
-   * 导出为ZOD格式（从实例对象转换）
+   * 导出为ZOD格式（直接从原始数据读取）
    *
    * ⚠️ 重要说明：
-   * - 实例对象（Agent、WEngine、DriveDisk）是从存档中生成的运行时对象，用于计算
-   * - 实例对象包含计算缓存（self_properties、base_stats等）和游戏数据引用
-   * - 存档是持久化数据，存储在localStorage中
+   * - 直接从rawSaves或localStorage读取原始ZOD数据
+   * - 不使用实例对象转换，确保导出的数据与导入的数据格式一致
+   * - 存档是持久化数据，存储在localStorage中，是数据的"真相"
    *
-   * 此方法从实例对象转换为ZOD格式，用于与其他工具兼容
-   * 注意：这是唯一一个从实例对象导出的方法，因为需要访问游戏数据引用
-   *
-   * 数据流：实例对象 → 转换为ZOD格式 → 导出
+   * 数据流：rawSaves → 导出
    */
   function exportAsZod(): string {
-    if (!currentSave.value) {
+    if (!currentSaveName.value) {
       throw new Error('No current save to export');
     }
 
-    return JSON.stringify(currentSave.value.toZodData(), null, 2);
+    // 优先从rawSaves读取
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (rawSave) {
+      return JSON.stringify(rawSave, null, 2);
+    }
+
+    // 如果rawSaves中没有，从localStorage读取
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      const saveData = parsed[currentSaveName.value];
+      if (saveData) {
+        return JSON.stringify(saveData, null, 2);
+      }
+    }
+
+    throw new Error(`Save "${currentSaveName.value}" not found in storage`);
   }
 
   /**
@@ -289,15 +362,11 @@ export const useSaveStore = defineStore('save', () => {
   }
 
   /**
-   * 导出所有存档（内部实例格式，仅用于调试）
+   * 导出所有存档（直接从原始数据读取）
    */
   function exportAllSaves(): string {
-    const dataToSave: Record<string, SaveDataZod> = {};
-
-    for (const [name, saveData] of saves.value.entries()) {
-      dataToSave[name] = saveData.toZodData();
-    }
-
+    // 直接从rawSaves读取所有原始数据
+    const dataToSave = Object.fromEntries(rawSaves.value.entries());
     return JSON.stringify(dataToSave, null, 2);
   }
 
@@ -306,6 +375,7 @@ export const useSaveStore = defineStore('save', () => {
    */
   function reset(): void {
     saves.value = new Map();
+    rawSaves.value = new Map();
     currentSaveName.value = null;
     isLoading.value = false;
     error.value = null;
@@ -406,26 +476,202 @@ export const useSaveStore = defineStore('save', () => {
 
   function keyNormalizer(value: string): string {
     return value
-      ? value.replace(/[\s']/g, '').toLowerCase()
+      ? value.replace(/[\s'\-]/g, '').toLowerCase()
       : '';
   }
 
   // 不在模块初始化时自动加载，由应用显式控制加载顺序
   // loadFromStorage();
 
+  /**
+   * 装备音擎
+   */
+  function equipWengine(agentId: string, wengineId: string | null): boolean {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!save || !rawSave) {
+      return false;
+    }
+
+    const agent = save.getAgent(agentId);
+    if (!agent) {
+      return false;
+    }
+
+    // 修改实例对象
+    agent.equipped_wengine = wengineId;
+
+    // 更新rawSaves中的数据
+    const character = rawSave.characters?.find(c => c.id === agentId);
+    if (character) {
+      character.equippedWengine = wengineId || '';
+      
+      // 更新音擎的装备状态
+      if (agent.equipped_wengine) {
+        // 查找并更新之前装备的音擎
+        const oldWengine = rawSave.wengines?.find(w => w.location === agentId);
+        if (oldWengine) {
+          oldWengine.location = '';
+        }
+        
+        // 更新新装备的音擎
+        const newWengine = rawSave.wengines?.find(w => w.id === wengineId);
+        if (newWengine) {
+          newWengine.location = agentId;
+        }
+      }
+    }
+
+    // 保存到localStorage
+    saveToStorage();
+    return true;
+  }
+
+  /**
+   * 装备驱动盘
+   */
+  function equipDriveDisk(agentId: string, diskId: string | null, slot: number): boolean {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!save || !rawSave) {
+      return false;
+    }
+
+    const agent = save.getAgent(agentId);
+    if (!agent) {
+      return false;
+    }
+
+    // 检查slot是否有效
+    if (slot < 0 || slot >= 6) {
+      return false;
+    }
+
+    // 修改实例对象
+    agent.equipped_drive_disks[slot] = diskId;
+
+    // 更新rawSaves中的数据
+    const character = rawSave.characters?.find(c => c.id === agentId);
+    if (character) {
+      // ZOD格式使用字符串键："1"到"6"
+      const slotKey = (slot + 1).toString();
+      character.equippedDiscs[slotKey] = diskId || '';
+      
+      // 更新驱动盘的装备状态
+      if (agent.equipped_drive_disks[slot]) {
+        // 查找并更新之前装备的驱动盘
+        const oldDisk = rawSave.discs?.find(d => d.location === agentId && d.slotKey === slotKey);
+        if (oldDisk) {
+          oldDisk.location = '';
+        }
+        
+        // 更新新装备的驱动盘
+        const newDisk = rawSave.discs?.find(d => d.id === diskId);
+        if (newDisk) {
+          newDisk.location = agentId;
+        }
+      }
+    }
+
+    // 保存到localStorage
+    saveToStorage();
+    return true;
+  }
+
+  /**
+   * 同步实例数据到rawSaves
+   * 确保rawSaves始终与实例数据保持一致
+   */
+  function syncInstanceToRawSave(): void {
+    if (!currentSaveName.value) {
+      return;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!save || !rawSave) {
+      return;
+    }
+
+    // 同步角色数据
+    save.getAllAgents().forEach(agent => {
+      const character = rawSave.characters?.find(c => c.id === agent.id);
+      if (character) {
+        // 更新角色基本信息
+        character.level = agent.level;
+        character.promotion = agent.breakthrough;
+        character.mindscape = agent.cinema;
+        character.core = agent.core_skill;
+        character.basic = agent.skills.normal;
+        character.dodge = agent.skills.dodge;
+        character.assist = agent.skills.assist;
+        character.special = agent.skills.special;
+        character.chain = agent.skills.chain;
+        
+        // 更新装备信息
+        character.equippedWengine = agent.equipped_wengine || '';
+        
+        // 更新驱动盘装备
+        const discs: Record<string, string> = {
+          '1': agent.equipped_drive_disks[0] || '',
+          '2': agent.equipped_drive_disks[1] || '',
+          '3': agent.equipped_drive_disks[2] || '',
+          '4': agent.equipped_drive_disks[3] || '',
+          '5': agent.equipped_drive_disks[4] || '',
+          '6': agent.equipped_drive_disks[5] || '',
+        };
+        character.equippedDiscs = discs;
+      }
+    });
+
+    // 同步音擎数据
+    save.getAllWEngines().forEach(wengine => {
+      const rawWengine = rawSave.wengines?.find(w => w.id === wengine.id);
+      if (rawWengine) {
+        rawWengine.level = wengine.level;
+        rawWengine.modification = wengine.refinement;
+        rawWengine.promotion = wengine.breakthrough;
+        rawWengine.location = wengine.equipped_agent || '';
+      }
+    });
+
+    // 同步驱动盘数据
+    save.getAllDriveDisks().forEach(disk => {
+      const rawDisk = rawSave.discs?.find(d => d.id === disk.id);
+      if (rawDisk) {
+        rawDisk.level = disk.level;
+        rawDisk.location = disk.equipped_agent || '';
+      }
+    });
+
+    // 保存到localStorage
+    saveToStorage();
+  }
+
   return {
     // 状态
     saves,
+    rawSaves,
     currentSaveName,
     isLoading,
     error,
 
     // 计算属性
     currentSave,
+    currentRawSave,
     agents,
     driveDisks,
     wengines,
     saveNames,
+    rawSaveData,
 
     // 方法
     loadFromStorage,
@@ -435,9 +681,12 @@ export const useSaveStore = defineStore('save', () => {
     switchSave,
     importZodData,           // 导入ZOD格式数据
     exportSaveData,           // 导出实例格式（直接从localStorage读取）
-    exportAsZod,              // 导出ZOD格式（转换格式）
+    exportAsZod,              // 导出ZOD格式（直接从原始数据读取）
     exportSaveDataAsInstance, // 导出实例格式（从实例生成，调试用）
-    exportAllSaves,           // 导出所有存档（实例格式）
+    exportAllSaves,           // 导出所有存档（直接从原始数据读取）
     reset,
+    equipWengine,             // 装备音擎
+    equipDriveDisk,           // 装备驱动盘
+    syncInstanceToRawSave,    // 同步实例数据到rawSaves
   };
 });

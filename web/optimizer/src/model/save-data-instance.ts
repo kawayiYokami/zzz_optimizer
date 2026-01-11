@@ -73,6 +73,10 @@ export class SaveData {
   private zodDriveDiskKeyMap: Map<string, string>;
   private zodDriveDiskTrashMap: Map<string, boolean>;
 
+  // 缓存管理
+  private _cache: Map<string, any>;
+  private _isCacheValid: boolean;
+
   constructor(name: string) {
     this.name = name;
     this.created_at = new Date();
@@ -98,6 +102,31 @@ export class SaveData {
     this.zodWenginePhaseMap = new Map();
     this.zodDriveDiskKeyMap = new Map();
     this.zodDriveDiskTrashMap = new Map();
+    
+    // 初始化缓存
+    this._cache = new Map();
+    this._isCacheValid = true;
+  }
+
+  /**
+   * 使缓存失效
+   */
+  private _invalidateCache(): void {
+    this._cache.clear();
+    this._isCacheValid = false;
+  }
+
+  /**
+   * 获取缓存值（带缓存机制）
+   */
+  private _getCachedValue<T>(key: string, computeFn: () => T): T {
+    if (!this._isCacheValid || !this._cache.has(key)) {
+      const value = computeFn();
+      this._cache.set(key, value);
+      this._isCacheValid = true;
+      return value;
+    }
+    return this._cache.get(key) as T;
   }
 
   /**
@@ -495,6 +524,21 @@ export class SaveData {
       this.zodCharacterPotentialMap.set(agent.id, 0);
     }
     this.updated_at = new Date();
+    // 触发缓存失效
+    this._invalidateCache();
+  }
+
+  /**
+   * 更新角色
+   */
+  updateAgent(agentId: string, updates: Partial<Agent>): void {
+    const agent = this.getAgent(agentId);
+    if (agent) {
+      Object.assign(agent, updates);
+      this.updated_at = new Date();
+      // 触发缓存失效
+      this._invalidateCache();
+    }
   }
 
   /**
@@ -512,6 +556,21 @@ export class SaveData {
       this.zodDriveDiskTrashMap.set(disk.id, false);
     }
     this.updated_at = new Date();
+    // 触发缓存失效
+    this._invalidateCache();
+  }
+
+  /**
+   * 更新驱动盘
+   */
+  updateDriveDisk(diskId: string, updates: Partial<DriveDisk>): void {
+    const disk = this.getDriveDisk(diskId);
+    if (disk) {
+      Object.assign(disk, updates);
+      this.updated_at = new Date();
+      // 触发缓存失效
+      this._invalidateCache();
+    }
   }
 
   /**
@@ -532,6 +591,21 @@ export class SaveData {
       this.zodWenginePhaseMap.set(wengine.id, wengine.breakthrough);
     }
     this.updated_at = new Date();
+    // 触发缓存失效
+    this._invalidateCache();
+  }
+
+  /**
+   * 更新音擎
+   */
+  updateWEngine(wengineId: string, updates: Partial<WEngine>): void {
+    const wengine = this.getWEngine(wengineId);
+    if (wengine) {
+      Object.assign(wengine, updates);
+      this.updated_at = new Date();
+      // 触发缓存失效
+      this._invalidateCache();
+    }
   }
 
   /**
@@ -543,6 +617,8 @@ export class SaveData {
       this.zodCharacterKeyMap.delete(agentId);
       this.zodCharacterPotentialMap.delete(agentId);
       this.updated_at = new Date();
+      // 触发缓存失效
+      this._invalidateCache();
     }
     return result;
   }
@@ -556,6 +632,8 @@ export class SaveData {
       this.zodDriveDiskKeyMap.delete(diskId);
       this.zodDriveDiskTrashMap.delete(diskId);
       this.updated_at = new Date();
+      // 触发缓存失效
+      this._invalidateCache();
     }
     return result;
   }
@@ -570,6 +648,8 @@ export class SaveData {
       this.zodWengineLockMap.delete(wengineId);
       this.zodWenginePhaseMap.delete(wengineId);
       this.updated_at = new Date();
+      // 触发缓存失效
+      this._invalidateCache();
     }
     return result;
   }

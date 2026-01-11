@@ -97,8 +97,8 @@
             <thead>
               <tr>
                 <th>实例ID</th>
+                <th>GameID</th>
                 <th>套装名</th>
-                <th>中文名</th>
                 <th>位置</th>
                 <th>等级</th>
                 <th>装备角色</th>
@@ -108,8 +108,8 @@
             <tbody>
               <tr v-for="disk in driveDisks" :key="disk.id">
                 <td>{{ disk.id }}</td>
+                <td>{{ disk.game_id }}</td>
                 <td>{{ disk.set_name }}</td>
-                <td>{{ disk.set_name_cn }}</td>
                 <td>{{ disk.position }}</td>
                 <td>{{ disk.level }}</td>
                 <td>{{ getCharacterNameByInstanceId(disk.equipped_agent) }}</td>
@@ -307,7 +307,7 @@ function getDiskNameByInstanceId(diskId: string | null): string {
   if (!diskId) return '';
   const disk = driveDisks.value.find(d => d.id === diskId);
   if (!disk) return '';
-  return disk.set_name_cn || disk.set_name;
+  return disk.set_name;
 }
 
 // 获取装备显示名称
@@ -316,7 +316,7 @@ function getEquipmentDisplayName(item: any): string {
     return (item as WEngine).name;
   } else {
     const disk = item as DriveDisk;
-    return disk.set_name_cn || disk.set_name;
+    return disk.set_name;
   }
 }
 
@@ -410,8 +410,8 @@ function showDriveDiskStats(disk: DriveDisk) {
   try {
     const stats = disk.getStats();
     const statsJson = stats.toJSON();
-    console.log(`驱动盘 ${disk.set_name_cn} 的属性:`, statsJson);
-    alert(`驱动盘 ${disk.set_name_cn} 的属性已输出到控制台\n\nJSON:\n${JSON.stringify(statsJson, null, 2)}`);
+    console.log(`驱动盘 ${disk.set_name} 的属性:`, statsJson);
+    alert(`驱动盘 ${disk.set_name} 的属性已输出到控制台\n\nJSON:\n${JSON.stringify(statsJson, null, 2)}`);
   } catch (error) {
     console.error('获取属性失败:', error);
     alert('获取属性失败: ' + (error instanceof Error ? error.message : String(error)));

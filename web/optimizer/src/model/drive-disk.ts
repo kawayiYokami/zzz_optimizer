@@ -113,8 +113,7 @@ export class DriveDisk {
   game_id: string;
 
   // 套装信息（从游戏数据加载）
-  set_name: string = '';
-  set_name_cn: string = '';
+  set_name: string = ''; // 套装中文名
 
   // 位置
   position: DriveDiskPosition;
@@ -294,7 +293,9 @@ export class DriveDisk {
       for (const [propKey, statData] of Object.entries(data.sub_stats)) {
         const propType = PropertyType[propKey as keyof typeof PropertyType];
         if (propType !== undefined) {
-          subStats.set(propType, new StatValue(statData.value, statData.isPercent));
+          // 添加类型断言，确保statData是包含value和isPercent属性的对象
+          const typedStatData = statData as { value: number; isPercent: boolean };
+          subStats.set(propType, new StatValue(typedStatData.value, typedStatData.isPercent));
         }
       }
     }
@@ -318,8 +319,7 @@ export class DriveDisk {
     // 从游戏数据加载套装名称
     const equipInfo = dataLoader.equipmentData?.get(data.game_id);
     if (equipInfo) {
-      disk.set_name = equipInfo.EN?.name || '';
-      disk.set_name_cn = equipInfo.CHS?.name || '';
+      disk.set_name = equipInfo.CHS?.name || equipInfo.EN?.name || '';
     }
 
     // 加载套装Buff数据
@@ -431,8 +431,7 @@ export class DriveDisk {
 
     // 8. 设置实例数据
     const equipmentInfo = equipmentMap!.get(gameEquipId)!;
-    disk.set_name = equipmentInfo.EN?.name || zodData.setKey;
-    disk.set_name_cn = equipmentInfo.CHS?.name || disk.set_name;
+    disk.set_name = equipmentInfo.CHS?.name || equipmentInfo.EN?.name || zodData.setKey;
     disk.equipped_agent = zodData.location || null;
     disk.locked = zodData.lock;
 

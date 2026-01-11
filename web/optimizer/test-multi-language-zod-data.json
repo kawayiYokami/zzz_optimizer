@@ -1,0 +1,110 @@
+{
+  "format": "ZOD",
+  "dbVersion": 1,
+  "source": "Test",
+  "version": 1,
+  "characters": [
+    {
+      "key": "Astra",
+      "level": 60,
+      "core": 5,
+      "mindscape": 0,
+      "dodge": 10,
+      "basic": 10,
+      "chain": 10,
+      "special": 10,
+      "assist": 10,
+      "promotion": 5,
+      "potential": 0,
+      "equippedDiscs": {},
+      "equippedWengine": "",
+      "id": "test_agent_1"
+    },
+    {
+      "key": "耀世",
+      "level": 60,
+      "core": 5,
+      "mindscape": 0,
+      "dodge": 10,
+      "basic": 10,
+      "chain": 10,
+      "special": 10,
+      "assist": 10,
+      "promotion": 5,
+      "potential": 0,
+      "equippedDiscs": {},
+      "equippedWengine": "",
+      "id": "test_agent_2"
+    },
+    {
+      "key": "葉瞬光",
+      "level": 60,
+      "core": 5,
+      "mindscape": 0,
+      "dodge": 10,
+      "basic": 10,
+      "chain": 10,
+      "special": 10,
+      "assist": 10,
+      "promotion": 5,
+      "potential": 0,
+      "equippedDiscs": {},
+      "equippedWengine": "",
+      "id": "test_agent_3"
+    }
+  ],
+  "wengines": [
+    {
+      "key": "Azure Pledge",
+      "level": 60,
+      "modification": 5,
+      "promotion": 5,
+      "location": "",
+      "id": "test_wengine_1"
+    },
+    {
+      "key": "苍蓝誓约",
+      "level": 60,
+      "modification": 5,
+      "promotion": 5,
+      "location": "",
+      "id": "test_wengine_2"
+    }
+  ],
+  "discs": [
+    {
+      "setKey": "White Water Ballad",
+      "rarity": "SR",
+      "level": 20,
+      "slotKey": "Slot1",
+      "mainStatKey": "ATK",
+      "substats": [
+        {
+          "key": "CRIT_RATE_",
+          "upgrades": 3
+        }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "test_disc_1"
+    },
+    {
+      "setKey": "白水仙歌",
+      "rarity": "SR",
+      "level": 20,
+      "slotKey": "Slot2",
+      "mainStatKey": "HP",
+      "substats": [
+        {
+          "key": "ATK_",
+          "upgrades": 3
+        }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "test_disc_2"
+    }
+  ]
+}

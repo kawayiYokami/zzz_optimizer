@@ -121,6 +121,9 @@ export class WEngine {
   base_stats: PropertyCollection = new PropertyCollection(); // 基础属性集（局外）
   talents: WEngineTalent[] = []; // 天赋buff列表（局内）
   buffs: Buff[] = []; // 当前精炼等级的buff列表（缓存）
+  
+  // 懒加载标志位
+  private _isBaseStatsLoaded: boolean = false;
 
   constructor(id: string, wengineId: string, name: string) {
     this.id = id;
@@ -165,6 +168,10 @@ export class WEngine {
    * 获取当前等级的基础属性集（局外）
    */
   getBaseStats(): PropertyCollection {
+    if (!this._isBaseStatsLoaded || this.base_stats.out_of_combat.size === 0) {
+      this.base_stats = this.getStatsAtLevel(this.level, this.breakthrough);
+      this._isBaseStatsLoaded = true;
+    }
     return this.base_stats;
   }
 

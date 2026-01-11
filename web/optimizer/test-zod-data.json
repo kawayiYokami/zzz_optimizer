@@ -1,0 +1,42 @@
+{
+  "format": "ZOD",
+  "dbVersion": 1,
+  "source": "Test",
+  "version": 1,
+  "characters": [
+    {
+      "key": "Astra",
+      "level": 60,
+      "core": 5,
+      "mindscape": 0,
+      "dodge": 10,
+      "basic": 10,
+      "chain": 10,
+      "special": 10,
+      "assist": 10,
+      "promotion": 5,
+      "potential": 0,
+      "equippedDiscs": {},
+      "equippedWengine": "",
+      "id": "test_agent_1"
+    },
+    {
+      "key": "Astra Yao",
+      "level": 60,
+      "core": 5,
+      "mindscape": 0,
+      "dodge": 10,
+      "basic": 10,
+      "chain": 10,
+      "special": 10,
+      "assist": 10,
+      "promotion": 5,
+      "potential": 0,
+      "equippedDiscs": {},
+      "equippedWengine": "",
+      "id": "test_agent_2"
+    }
+  ],
+  "wengines": [],
+  "discs": []
+}

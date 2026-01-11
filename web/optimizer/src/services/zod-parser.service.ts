@@ -15,7 +15,7 @@ import { dataLoaderService } from './data-loader.service';
  * ZOD 格式的驱动盘数据
  */
 export interface ZodDiscData {
-  setKey: string;
+  setKey: string; // 套装的codename，如 "Flow"、"Miasma"
   rarity: string;
   level: number;
   slotKey: string;
@@ -168,11 +168,14 @@ export class ZodParserService {
       }
 
       // 获取套装信息
-      const gameId = await this.getEquipmentId(data.setKey);
-
-      return new DriveDisk(
+      const equipmentInfo = await this.getEquipmentInfo(data.setKey);
+      const gameId = equipmentInfo?.id || data.setKey;
+      const setNameCn = equipmentInfo?.CHS || data.setKey;
+      
+      // 创建驱动盘实例
+      const disk = new DriveDisk(
         data.id,
-        gameId || '',
+        gameId,
         parseInt(data.slotKey) as DriveDiskPosition,
         rarity,
         data.level,
@@ -180,6 +183,15 @@ export class ZodParserService {
         mainStatValue,
         subStats
       );
+      
+      // 设置装备信息
+      disk.set_name = setNameCn;
+      
+      // 设置装备状态
+      disk.equipped_agent = data.location || null;
+      disk.locked = data.lock;
+      
+      return disk;
     } catch (error) {
       console.error(`Failed to parse disc ${data.id}:`, error);
       return null;
@@ -205,11 +217,13 @@ export class ZodParserService {
 
       // 获取角色游戏信息
       const gameInfo = await this.getCharacterInfo(data.key);
+      const characterName = gameInfo?.CHS || data.key;
+      const gameId = gameInfo?.id || data.key;
 
       const agent = new Agent(
         data.id,
-        gameInfo?.id || data.key,
-        gameInfo?.CHS || data.key,
+        gameId,
+        characterName,
         data.level,
         gameInfo ? Rarity[gameInfo.rank as keyof typeof Rarity] : Rarity.S,
         gameInfo ? ElementType[gameInfo.element as keyof typeof ElementType] : ElementType.PHYSICAL,
@@ -241,11 +255,102 @@ export class ZodParserService {
         return null;
       }
 
-      return new WEngine(
+      // 创建音擎实例
+      const wengine = new WEngine(
         data.id,
         gameInfo.id,
         gameInfo.CHS || data.key
       );
+
+      // 设置实例数据
+      wengine.level = data.level;
+      wengine.refinement = data.modification; // ZOD的modification对应refinement
+      wengine.breakthrough = data.promotion;
+      wengine.equipped_agent = data.location || null;
+
+      // 加载音擎详细数据和Buff数据
+      try {
+        const wengineDetail = await dataLoaderService.getWeaponDetail(gameInfo.id);
+        const wengineBuffData = await dataLoaderService.getWeaponBuff(gameInfo.id);
+
+        // 设置基础属性（从 BaseProperty.Value 获取）
+        if (wengineDetail.BaseProperty && wengineDetail.BaseProperty.Value !== undefined) {
+          wengine.base_atk = wengineDetail.BaseProperty.Value;
+        }
+
+        // 设置副属性类型（从 RandProperty.Name 推断）
+        if (wengineDetail.RandProperty) {
+          const randPropName = wengineDetail.RandProperty.Name || wengineDetail.RandProperty.Name2;
+          // 根据名称推断属性类型
+          if (randPropName.includes('攻击力') && randPropName.includes('%')) {
+            wengine.rand_stat_type = PropertyType.ATK_;
+          } else if (randPropName.includes('攻击力')) {
+            wengine.rand_stat_type = PropertyType.ATK;
+          } else if (randPropName.includes('生命值') && randPropName.includes('%')) {
+            wengine.rand_stat_type = PropertyType.HP_;
+          } else if (randPropName.includes('生命值')) {
+            wengine.rand_stat_type = PropertyType.HP;
+          } else if (randPropName.includes('防御力') && randPropName.includes('%')) {
+            wengine.rand_stat_type = PropertyType.DEF_;
+          } else if (randPropName.includes('防御力')) {
+            wengine.rand_stat_type = PropertyType.DEF;
+          } else if (randPropName.includes('暴击率')) {
+            wengine.rand_stat_type = PropertyType.CRIT_;
+          } else if (randPropName.includes('暴击伤害')) {
+            wengine.rand_stat_type = PropertyType.CRIT_DMG_;
+          } else if (randPropName.includes('穿透')) {
+            wengine.rand_stat_type = PropertyType.PEN_;
+          } else if (randPropName.includes('异常精通')) {
+            wengine.rand_stat_type = PropertyType.ANOM_PROF;
+          }
+        }
+
+        // 设置副属性基础值
+        if (wengineDetail.RandProperty && wengineDetail.RandProperty.Value !== undefined) {
+          // 如果 Format 包含%，则是百分比属性，需要除以100
+          const isPercent = wengineDetail.RandProperty.Format && wengineDetail.RandProperty.Format.includes('%');
+          wengine.rand_stat = isPercent ? wengineDetail.RandProperty.Value / 100 : wengineDetail.RandProperty.Value;
+        }
+
+        // 设置等级成长数据（从 Level 获取）
+        if (wengineDetail.Level) {
+          for (const [level, levelData] of Object.entries(wengineDetail.Level)) {
+            wengine.level_data.set(
+              parseInt(level),
+              { 
+                level: parseInt(level),
+                exp: (levelData as any).Exp || 0,
+                rate: (levelData as any).Rate || 0
+              } as any
+            );
+          }
+        }
+
+        // 加载天赋数据（从 wengineBuffData.talents 获取）
+        if (wengineBuffData.talents) {
+          for (const talentData of wengineBuffData.talents) {
+            wengine.talents.push({
+              level: talentData.level,
+              name: talentData.name,
+              description: talentData.description || '',
+              buffs: (talentData.buffs || []).map((b: any) => ({
+                id: b.id,
+                name: b.name,
+                description: b.description || '',
+                is_active: true,
+                target_type: 0,
+                out_of_combat: new Map(),
+                in_combat: new Map(),
+                dependencies: []
+              } as any))
+            } as any);
+          }
+        }
+      } catch (err) {
+        console.warn(`加载音擎数据失败: ${data.key}`, err);
+      }
+
+      return wengine;
     } catch (error) {
       console.error(`Failed to parse wengine ${data.id}:`, error);
       return null;
@@ -406,14 +511,21 @@ export class ZodParserService {
       return null;
     }
 
-    // 标准化英文名（去掉空格和特殊字符）
-    const normalizedKey = key.replace(/[\s-]/g, '').toLowerCase();
+    // 标准化输入key（去掉空格和特殊字符）
+    const normalizedKey = key.replace(/[\s'\-]/g, '').toLowerCase();
 
     // 遍历查找匹配的角色
     for (const [id, char] of characterData) {
-      const normalizedEn = char.EN.replace(/[\s-]/g, '').toLowerCase();
-      if (normalizedEn === normalizedKey) {
-        return char;
+      // 检查所有语言字段
+      const languageFields: (keyof typeof char)[] = ['EN', 'CHS', 'JP', 'KR', 'code'];
+      for (const langField of languageFields) {
+        const langValue = char[langField];
+        if (langValue) {
+          const normalizedLangValue = langValue.replace(/[\s'\-]/g, '').toLowerCase();
+          if (normalizedLangValue === normalizedKey) {
+            return { ...char, id };
+          }
+        }
       }
     }
 
@@ -423,21 +535,27 @@ export class ZodParserService {
   /**
    * 获取音擎信息
    */
-  private async getWeaponInfo(key: string): Promise<any> {
+  private async getWeaponInfo(key: string): Promise<{ id: string; EN: string; CHS: string } | null> {
     const weaponData = dataLoaderService.weaponData;
     if (!weaponData) {
       return null;
     }
 
-    // 将驼峰命名转换为空格分隔
-    const spacedKey = key.replace(/([a-z])([A-Z])/g, '$1 $2');
-    const normalizedKey = key.replace(/[\s']/g, '').toLowerCase();
+    // 标准化输入key（去掉空格和特殊字符）
+    const normalizedKey = key.replace(/[\s'\-]/g, '').toLowerCase();
 
     // 遍历查找匹配的音擎
     for (const [id, weapon] of weaponData) {
-      const normalizedEn = weapon.EN.replace(/[\s']/g, '').toLowerCase();
-      if (weapon.EN === key || weapon.EN === spacedKey || normalizedEn === normalizedKey) {
-        return weapon;
+      // 检查所有语言字段
+      const languageFields: (keyof typeof weapon)[] = ['EN', 'CHS', 'JP', 'KR'];
+      for (const langField of languageFields) {
+        const langValue = weapon[langField];
+        if (langValue) {
+          const normalizedLangValue = langValue.replace(/[\s'\-]/g, '').toLowerCase();
+          if (normalizedLangValue === normalizedKey) {
+            return { ...weapon, id };
+          }
+        }
       }
     }
 
@@ -445,17 +563,16 @@ export class ZodParserService {
   }
 
   /**
-   * 获取驱动盘套装ID
+   * 获取驱动盘套装信息
    */
-  private async getEquipmentId(setKey: string): Promise<string | null> {
+  private async getEquipmentInfo(setKey: string): Promise<{ id: string; CHS: string } | null> {
     const equipmentData = dataLoaderService.equipmentData;
     if (!equipmentData) {
       return null;
     }
 
-    // 将驼峰命名转换为空格分隔
-    const spacedKey = setKey.replace(/([a-z])([A-Z])/g, '$1 $2');
-    const normalizedKey = setKey.replace(/[\s']/g, '').toLowerCase();
+    // 标准化输入setKey（去掉空格和特殊字符）
+    const normalizedKey = setKey.replace(/[\s'\-]/g, '').toLowerCase();
 
     // 遍历查找匹配的套装
     for (const [id, equip] of equipmentData) {
@@ -463,10 +580,13 @@ export class ZodParserService {
       for (const langKey of ['EN', 'CHS', 'JA', 'KO']) {
         if (equip[langKey] && equip[langKey].name) {
           const langName = equip[langKey].name;
-          const normalizedLangName = langName.replace(/[\s']/g, '').toLowerCase();
+          const normalizedLangName = langName.replace(/[\s'\-]/g, '').toLowerCase();
 
-          if (langName === setKey || langName === spacedKey || normalizedLangName === normalizedKey) {
-            return id;
+          if (normalizedLangName === normalizedKey) {
+            return { 
+              id, 
+              CHS: equip.CHS?.name || equip.EN?.name || setKey 
+            };
           }
         }
       }
