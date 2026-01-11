@@ -652,6 +652,12 @@ export const useSaveStore = defineStore('save', () => {
       }
     });
 
+    // 同步队伍数据
+    rawSave.teams = save.getAllTeams();
+    
+    // 同步战场数据
+    rawSave.battles = save.getAllBattles();
+
     // 保存到localStorage
     saveToStorage();
   }

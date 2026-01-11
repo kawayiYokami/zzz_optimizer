@@ -49,6 +49,27 @@ export interface ZodDiscData {
 }
 
 /**
+ * 队伍数据
+ */
+export interface ZodTeamData {
+  id: string;
+  name: string;
+  frontCharacterId: string;    // 前台角色ID
+  backCharacter1Id: string;    // 后台角色1ID
+  backCharacter2Id: string;    // 后台角色2ID
+}
+
+/**
+ * 战场数据
+ */
+export interface ZodBattleData {
+  id: string;
+  name: string;
+  teamId: string;              // 队伍ID
+  enemyId: string;             // 敌人ID
+}
+
+/**
  * 存档数据（完全ZOD格式）
  */
 export interface SaveDataZod {
@@ -63,4 +84,6 @@ export interface SaveDataZod {
   characters: ZodCharacterData[];
   wengines: ZodWengineData[];
   discs: ZodDiscData[];
+  teams: ZodTeamData[];
+  battles: ZodBattleData[];
 }

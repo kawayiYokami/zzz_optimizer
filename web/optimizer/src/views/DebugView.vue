@@ -54,6 +54,7 @@ import BattleSimulator from '../components/debug/BattleSimulator.vue';
 import GameWiki from '../components/debug/GameWiki.vue';
 import SkillsData from '../components/debug/SkillsData.vue';
 import BuffDataInspector from '../components/debug/BuffDataInspector.vue';
+import TeamManager from '../components/debug/TeamManager.vue';
 
 const gameDataStore = useGameDataStore();
 const saveStore = useSaveStore();
@@ -61,6 +62,7 @@ const saveStore = useSaveStore();
 const tabs = [
   { id: 'import-export', label: '存档管理', component: DataImportExport },
   { id: 'inspector', label: '存档查看', component: DataInspector },
+  { id: 'teams', label: '队伍管理', component: TeamManager },
   { id: 'wiki', label: '游戏WIKI', component: GameWiki },
   { id: 'skills', label: '技能数据', component: SkillsData },
   { id: 'buff', label: 'Buff数据', component: BuffDataInspector },

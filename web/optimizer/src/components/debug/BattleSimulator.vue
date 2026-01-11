@@ -2,59 +2,58 @@
   <div class="battle-simulator">
     <h2 class="text-2xl font-bold mb-4">战场模拟</h2>
 
-    <!-- 角色选择区 -->
+    <!-- 队伍选择区 -->
     <div class="card bg-base-200 shadow-xl mb-6">
       <div class="card-body">
         <h3 class="card-title">队伍配置</h3>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- 前台角色 -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text font-bold text-primary">前台角色</span>
-            </label>
-            <select v-model="frontCharacterId" class="select select-bordered select-primary w-full">
-              <option value="">请选择前台角色...</option>
-              <option v-for="char in availableCharacters" :key="char.id" :value="char.id">
-                {{ char.name }} (Lv.{{ char.level }})
-              </option>
-            </select>
-          </div>
+        <!-- 队伍选择 -->
+        <div class="mb-4">
+          <label class="label">
+            <span class="label-text font-bold">选择队伍</span>
+          </label>
+          <select v-model="selectedTeamId" class="select select-bordered w-full">
+            <option value="">请选择队伍...</option>
+            <option v-for="team in availableTeams" :key="team.id" :value="team.id">
+              {{ team.name }}
+            </option>
+          </select>
+        </div>
 
-          <!-- 后台角色1 -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text font-bold">后台角色1</span>
-            </label>
-            <select v-model="backCharacter1Id" class="select select-bordered w-full">
-              <option value="">请选择后台角色...</option>
-              <option
-                v-for="char in availableCharacters"
-                :key="char.id"
-                :value="char.id"
-                :disabled="char.id === frontCharacterId || char.id === backCharacter2Id"
-              >
-                {{ char.name }} (Lv.{{ char.level }})
-              </option>
-            </select>
+        <!-- 队伍详情 -->
+        <div v-if="selectedTeam" class="bg-base-100 rounded-lg p-4">
+          <div class="flex justify-between items-center mb-3">
+            <h4 class="text-lg font-bold">{{ selectedTeam.name }}</h4>
           </div>
-
-          <!-- 后台角色2 -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text font-bold">后台角色2</span>
-            </label>
-            <select v-model="backCharacter2Id" class="select select-bordered w-full">
-              <option value="">请选择后台角色...</option>
-              <option
-                v-for="char in availableCharacters"
-                :key="char.id"
-                :value="char.id"
-                :disabled="char.id === frontCharacterId || char.id === backCharacter1Id"
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- 前台角色 -->
+            <div class="text-center p-4 bg-primary/10 rounded-lg">
+              <div class="font-semibold text-primary mb-1">前台角色</div>
+              <div class="text-xl font-bold mb-2">{{ getCharacterName(selectedTeam.frontCharacterId) }}</div>
+              <div class="text-sm text-gray-500 mb-2">当前为前台</div>
+            </div>
+            <!-- 后台角色1 -->
+            <div class="text-center p-4 bg-base-200 rounded-lg">
+              <div class="font-semibold mb-1">后台角色1</div>
+              <div class="text-xl font-bold mb-2">{{ getCharacterName(selectedTeam.backCharacter1Id) }}</div>
+              <button 
+                @click="setFrontCharacter(selectedTeam.backCharacter1Id)" 
+                class="btn btn-xs btn-primary"
               >
-                {{ char.name }} (Lv.{{ char.level }})
-              </option>
-            </select>
+                设置为前台
+              </button>
+            </div>
+            <!-- 后台角色2 -->
+            <div class="text-center p-4 bg-base-200 rounded-lg">
+              <div class="font-semibold mb-1">后台角色2</div>
+              <div class="text-xl font-bold mb-2">{{ getCharacterName(selectedTeam.backCharacter2Id) }}</div>
+              <button 
+                @click="setFrontCharacter(selectedTeam.backCharacter2Id)" 
+                class="btn btn-xs btn-primary"
+              >
+                设置为前台
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -526,6 +525,8 @@
         </div>
       </div>
     </div>
+
+
   </div>
 </template>
 
@@ -537,9 +538,13 @@ import { dataLoaderService } from '../../services/data-loader.service';
 import { Agent } from '../../model/agent';
 import { PropertyCollection } from '../../model/property-collection';
 import type { CombatStats } from '../../model/combat-stats';
+import type { ZodTeamData } from '../../model/save-data-zod';
 
 const saveStore = useSaveStore();
 const gameDataStore = useGameDataStore();
+
+// 队伍选择
+const selectedTeamId = ref<string>('');
 
 const frontCharacterId = ref<string>('');
 const frontAgent = ref<Agent | null>(null); // 前台角色实例
@@ -566,21 +571,27 @@ const availableCharacters = computed(() => {
   }));
 });
 
+// 可用队伍列表
+const availableTeams = computed(() => {
+  return saveStore.currentSave ? saveStore.currentSave.getAllTeams() : [];
+});
+
+// 当前存档
+const currentSave = computed(() => saveStore.currentSave);
+
+// 当前选中的队伍
+const selectedTeam = computed(() => {
+  return availableTeams.value.find(t => t.id === selectedTeamId.value) || null;
+});
+
+
+
 // 获取角色名称
-const frontCharacterName = computed(() => {
-  const char = availableCharacters.value.find(c => c.id === frontCharacterId.value);
-  return char?.name || '';
-});
-
-const backCharacter1Name = computed(() => {
-  const char = availableCharacters.value.find(c => c.id === backCharacter1Id.value);
-  return char?.name || '';
-});
-
-const backCharacter2Name = computed(() => {
-  const char = availableCharacters.value.find(c => c.id === backCharacter2Id.value);
-  return char?.name || '';
-});
+function getCharacterName(agentId: string): string {
+  if (!agentId) return '未选择';
+  const agent = availableCharacters.value.find(c => c.id === agentId);
+  return agent?.name || agentId;
+}
 
 // 可用敌人列表
 const availableEnemies = computed(() => {
@@ -613,6 +624,27 @@ const displayedResistances = computed(() => {
     .filter(res => res.value !== 0);
 });
 
+// 前台角色名称
+const frontCharacterName = computed(() => {
+  if (!frontCharacterId.value) return '';
+  const agent = availableCharacters.value.find(c => c.id === frontCharacterId.value);
+  return agent?.name || '';
+});
+
+// 后台角色1名称
+const backCharacter1Name = computed(() => {
+  if (!backCharacter1Id.value) return '';
+  const agent = availableCharacters.value.find(c => c.id === backCharacter1Id.value);
+  return agent?.name || '';
+});
+
+// 后台角色2名称
+const backCharacter2Name = computed(() => {
+  if (!backCharacter2Id.value) return '';
+  const agent = availableCharacters.value.find(c => c.id === backCharacter2Id.value);
+  return agent?.name || '';
+});
+
 // 前台角色的技能数据
 const frontCharacterSkills = computed(() => {
   if (!frontCharacterId.value) return null;
@@ -626,6 +658,80 @@ const frontCharacterSkills = computed(() => {
   // 从dataLoaderService获取技能数据
   return dataLoaderService.getAgentSkills(agentName);
 });
+
+// 监听队伍选择变化
+watch(selectedTeamId, (newTeamId) => {
+  if (newTeamId) {
+    const team = availableTeams.value.find(t => t.id === newTeamId);
+    if (team) {
+      frontCharacterId.value = team.frontCharacterId;
+      backCharacter1Id.value = team.backCharacter1Id;
+      backCharacter2Id.value = team.backCharacter2Id;
+    }
+  }
+});
+
+// 设置前台角色
+function setFrontCharacter(newFrontCharId: string) {
+  if (!selectedTeamId.value || !currentSave.value) return;
+  
+  const team = availableTeams.value.find(t => t.id === selectedTeamId.value);
+  if (!team) return;
+  
+  // 获取当前队伍的三个角色ID
+  const currentChars = [team.frontCharacterId, team.backCharacter1Id, team.backCharacter2Id];
+  
+  // 确保新前台角色是队伍中的一员
+  if (!currentChars.includes(newFrontCharId)) return;
+  
+  // 确定新的角色分配，保持角色顺序
+  let newFront = newFrontCharId;
+  let newBack1 = '';
+  let newBack2 = '';
+  
+  // 找到新前台角色在当前顺序中的索引
+  const newFrontIndex = currentChars.indexOf(newFrontCharId);
+  
+  if (newFrontIndex === 0) {
+    // 没有变化
+    return;
+  } else {
+    // 重新排列角色顺序，保持原有顺序不变
+    const reorderedChars = [
+      ...currentChars.slice(newFrontIndex),
+      ...currentChars.slice(0, newFrontIndex)
+    ];
+    
+    newFront = reorderedChars[0];
+    newBack1 = reorderedChars[1];
+    newBack2 = reorderedChars[2];
+  }
+  
+  // 更新队伍数据
+  const updatedTeam = {
+    ...team,
+    frontCharacterId: newFront,
+    backCharacter1Id: newBack1,
+    backCharacter2Id: newBack2
+  };
+  
+  // 删除旧队伍，添加新队伍
+  currentSave.value.deleteTeam(team.id);
+  currentSave.value.addTeam(updatedTeam);
+  
+  // 同步实例数据到rawSaves
+  saveStore.syncInstanceToRawSave();
+  
+  // 保存到存储
+  saveStore.saveToStorage();
+  
+  // 更新当前选中的角色ID
+  frontCharacterId.value = newFront;
+  backCharacter1Id.value = newBack1;
+  backCharacter2Id.value = newBack2;
+}
+
+
 
 // 属性快照（computed，直接使用实例）
 const combatStatsSnapshot = computed(() => {
@@ -671,12 +777,9 @@ const combatStatsSnapshot = computed(() => {
     const processedSets = new Set<string>();
     for (const disk of driveDisks) {
       if (!disk!.set_name) continue;
+      processedSets.add(disk!.set_name);
 
-      const setName = disk!.set_name;
-      if (processedSets.has(setName)) continue;
-      processedSets.add(setName);
-
-      const count = setCounts[setName] || 0;
+      const count = setCounts[disk!.set_name] || 0;
       if (count >= 2 && disk!.two_piece_buffs.length > 0) {
         for (const buff of disk!.two_piece_buffs) {
           equipmentStats.push(buff.toPropertyCollection());

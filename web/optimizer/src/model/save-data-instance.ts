@@ -7,7 +7,7 @@ import { DriveDisk } from './drive-disk';
 import { WEngine } from './wengine';
 import { PropertyType, Rarity } from './base';
 import type { dataLoaderService } from '../services/data-loader.service';
-import type { SaveDataZod, ZodCharacterData, ZodDiscData, ZodWengineData } from './save-data-zod';
+import type { SaveDataZod, ZodCharacterData, ZodDiscData, ZodWengineData, ZodTeamData, ZodBattleData } from './save-data-zod';
 import { zodParserService } from '../services/zod-parser.service';
 
 /**
@@ -49,12 +49,16 @@ export class SaveData {
   agents: Map<string, Agent>;
   drive_disks: Map<string, DriveDisk>;
   wengines: Map<string, WEngine>;
+  teams: Map<string, ZodTeamData>;
+  battles: Map<string, ZodBattleData>;
 
   // 元数据：ID分配信息
   _metadata: {
     next_agent_id: number;
     next_drive_disk_id: number;
     next_wengine_id: number;
+    next_team_id: number;
+    next_battle_id: number;
   };
 
   // ZOD元信息（用于保持导入/导出的字段一致）
@@ -84,10 +88,14 @@ export class SaveData {
     this.agents = new Map();
     this.drive_disks = new Map();
     this.wengines = new Map();
+    this.teams = new Map();
+    this.battles = new Map();
     this._metadata = {
       next_agent_id: 10001,
       next_drive_disk_id: 20001,
       next_wengine_id: 30001,
+      next_team_id: 40001,
+      next_battle_id: 50001,
     };
     this.zodMetadata = {
       format: 'ZOD',
@@ -102,10 +110,8 @@ export class SaveData {
     this.zodWenginePhaseMap = new Map();
     this.zodDriveDiskKeyMap = new Map();
     this.zodDriveDiskTrashMap = new Map();
-    
-    // 初始化缓存
     this._cache = new Map();
-    this._isCacheValid = true;
+    this._isCacheValid = false;
   }
 
   /**
@@ -146,6 +152,8 @@ export class SaveData {
       wengines: Object.fromEntries(
         Array.from(this.wengines.entries()).map(([k, v]) => [k, this._wengineToDict(v)])
       ),
+      teams: Object.fromEntries(this.teams.entries()),
+      battles: Object.fromEntries(this.battles.entries()),
       _metadata: this._metadata,
     };
   }
@@ -205,6 +213,8 @@ export class SaveData {
       characters: [],
       wengines: [],
       discs: [],
+      teams: Array.from(this.teams.values()),
+      battles: Array.from(this.battles.values()),
     };
 
     for (const agent of this.getAllAgents()) {
@@ -479,6 +489,16 @@ export class SaveData {
       }
     }
 
+    // 添加队伍数据
+    (zodData.teams ?? []).forEach((team) => {
+      save.addTeam(team);
+    });
+
+    // 添加战场数据
+    (zodData.battles ?? []).forEach((battle) => {
+      save.addBattle(battle);
+    });
+
     return save;
   }
 
@@ -506,6 +526,24 @@ export class SaveData {
   getNextWEngineId(): string {
     const id = this._metadata.next_wengine_id.toString();
     this._metadata.next_wengine_id++;
+    return id;
+  }
+
+  /**
+   * 获取下一个队伍ID
+   */
+  getNextTeamId(): string {
+    const id = this._metadata.next_team_id.toString();
+    this._metadata.next_team_id++;
+    return id;
+  }
+
+  /**
+   * 获取下一个战场ID
+   */
+  getNextBattleId(): string {
+    const id = this._metadata.next_battle_id.toString();
+    this._metadata.next_battle_id++;
     return id;
   }
 
@@ -694,5 +732,81 @@ export class SaveData {
    */
   getAllWEngines(): WEngine[] {
     return Array.from(this.wengines.values());
+  }
+
+  /**
+   * 添加队伍
+   */
+  addTeam(team: ZodTeamData): void {
+    if (!team.id) {
+      team.id = this.getNextTeamId();
+    }
+    this.teams.set(team.id, team);
+    this.updated_at = new Date();
+    this._invalidateCache();
+  }
+
+  /**
+   * 删除队伍
+   */
+  deleteTeam(teamId: string): void {
+    this.teams.delete(teamId);
+    // 删除关联的战场数据
+    for (const [battleId, battle] of this.battles.entries()) {
+      if (battle.teamId === teamId) {
+        this.battles.delete(battleId);
+      }
+    }
+    this.updated_at = new Date();
+    this._invalidateCache();
+  }
+
+  /**
+   * 获取队伍
+   */
+  getTeam(teamId: string): ZodTeamData | undefined {
+    return this.teams.get(teamId);
+  }
+
+  /**
+   * 获取所有队伍
+   */
+  getAllTeams(): ZodTeamData[] {
+    return Array.from(this.teams.values());
+  }
+
+  /**
+   * 添加战场数据
+   */
+  addBattle(battle: ZodBattleData): void {
+    if (!battle.id) {
+      battle.id = this.getNextBattleId();
+    }
+    this.battles.set(battle.id, battle);
+    this.updated_at = new Date();
+    this._invalidateCache();
+  }
+
+  /**
+   * 删除战场数据
+   */
+  deleteBattle(battleId: string): void {
+    this.battles.delete(battleId);
+    this.updated_at = new Date();
+    this._invalidateCache();
+  }
+
+  /**
+   * 获取战场数据
+   */
+  getBattle(battleId: string): ZodBattleData | undefined {
+    return this.battles.get(battleId);
+  }
+
+  /**
+   * 获取所有战场数据
+   */
+  getAllBattles(): ZodBattleData[] {
+    return Array.from(this.battles.values());
   }
 }
