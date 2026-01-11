@@ -118,30 +118,30 @@ export class SaveData {
     if (data.agents) {
       save.agents = new Map();
       for (const [k, v] of Object.entries(data.agents)) {
-        const agent = Agent.fromDict(v);
-        // 设置ID为字典键
-        agent.id = k;
-        save.agents.set(k, agent);
+        // TODO: Agent.fromDict not implemented yet
+        // const agent = Agent.fromDict(v);
+        // agent.id = k;
+        // save.agents.set(k, agent);
       }
     }
 
     if (data.drive_disks) {
       save.drive_disks = new Map();
       for (const [k, v] of Object.entries(data.drive_disks)) {
-        const disk = DriveDisk.fromDict(v);
-        // 设置ID为字典键
-        disk.id = k;
-        save.drive_disks.set(k, disk);
+        // TODO: DriveDisk.fromDict not implemented yet
+        // const disk = DriveDisk.fromDict(v);
+        // disk.id = k;
+        // save.drive_disks.set(k, disk);
       }
     }
 
     if (data.wengines) {
       save.wengines = new Map();
       for (const [k, v] of Object.entries(data.wengines)) {
-        const wengine = WEngine.fromDict(v);
-        // 设置ID为字典键
-        wengine.id = k;
-        save.wengines.set(k, wengine);
+        // TODO: WEngine.fromDict not implemented yet
+        // const wengine = WEngine.fromDict(v);
+        // wengine.id = k;
+        // save.wengines.set(k, wengine);
       }
     }
 

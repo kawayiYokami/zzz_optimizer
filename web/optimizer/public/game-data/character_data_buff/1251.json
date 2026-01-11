@@ -1,33 +1,93 @@
-{
-  "agent_id": "1251",
-  "name": "青衣",
-  "code_name": "QingYi",
-  "rarity": 4,
-  "weapon_type": "击破",
-  "element_type": "电属性",
-  "core_passive_buffs": [],
-  "talent_buffs": [
-    {
-      "id": "1251_talent_6_1",
-      "name": "TALENT-BUFF1",
-      "description": "[普通攻击：醉花月云转]的打断等级大幅提升，招式的暴击伤害额外提升100%",
-      "source": "TALENT",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "CRIT_DMG_": 100.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1251_COREPASSIVE_1_1",
+    "name": "千秋岁-失衡易伤提升",
+    "description": "每层[羁服]能够使目标的失衡易伤倍率提升4%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "IMBALANCE_VULNERABILITY": 0.04 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "对敌人施加[羁服]效果时",
+    "max_stacks": 20,
+    "stack_mode": "additive"
+  },
+  {
+    "id": "1251_COREPASSIVE_2_1",
+    "name": "阳关三叠-攻击力提升",
+    "description": "若青衣的冲击力高于120点，每超过1点冲击力会使自身的攻击力提升6点，通过这种方式最多使自身的攻击力提升600点",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": { "from": "impact", "to": "atk", "rate": 6.0, "min_impact": 121, "max_bonus": 600.0 },
+    "trigger_conditions": "青衣的冲击力高于120点时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1251_TALENT_1_1",
+    "name": "介电击穿-防御力降低",
+    "description": "发动[普通攻击：醉花月云转]时，若[闪络电压]已累积至上限，则使本次招式命中的敌人防御力降低15%",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "DEFENSE_REDUCTION": 0.15 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[普通攻击：醉花月云转]且[闪络电压]已累积至上限时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1251_TALENT_1_2",
+    "name": "介电击穿-暴击率提升",
+    "description": "若[闪络电压]已累积至上限，自身对该目标的暴击率提升20%，持续15秒",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_RATE": 0.2 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[普通攻击：醉花月云转]且[闪络电压]已累积至上限时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1251_TALENT_2_1",
+    "name": "四两拨千斤-失衡易伤倍率提升",
+    "description": "[核心被动：千秋岁]中每层[羁服]提供的失衡易伤倍率提升效果提升至原本的135%",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "IMBALANCE_VULNERABILITY": 0.35 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "每层[羁服]提供的失衡易伤倍率提升效果",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1251_TALENT_6_1",
+    "name": "奇经八脉-暴击伤害提升",
+    "description": "[普通攻击：醉花月云转]的暴击伤害额外提升100%",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_DMG": 1.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[普通攻击：醉花月云转]命中敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1251_TALENT_6_2",
+    "name": "奇经八脉-全属性抗性降低",
+    "description": "[普通攻击：醉花月云转]命中敌人时，目标的全属性伤害抗性降低20%，持续15秒",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "ALL_RESISTANCE_PENETRATION": 0.2 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[普通攻击：醉花月云转]命中敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

@@ -1,53 +1,67 @@
-{
-  "agent_id": "1041",
-  "name": "「11号」",
-  "code_name": "Soldier 11",
-  "rarity": 4,
-  "weapon_type": "强攻",
-  "element_type": "火属性",
-  "core_passive_buffs": [
-    {
-      "id": "1041_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "「11号」在[普通攻击]或[冲刺攻击]中触发[火力镇压]时，招式造成的伤害提升70%",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "COMMON_DMG_": 70.0
-      },
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    },
-    {
-      "id": "1041_core_passive_7_2",
-      "name": "CORE_PASSIVE-BUFF2",
-      "description": "队伍中存在与自身属性或阵营相同的角色时触发：\n「11号」造成的火属性伤害提升10%，攻击处于失衡状态下的敌人时，该增益效果额外提升22.5%",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "FIRE_DMG_": 10.0
-      },
-      "trigger_conditions": "与自身属性或阵营相同的角色",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1041_core_passive_0_1",
+    "name": "热浪",
+    "description": "「11号」在普通攻击或冲刺攻击中触发火力镇压时，招式造成的伤害提升35%，满级提升至70%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "COMMON_DMG_": 0.35 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "普通攻击或冲刺攻击中触发火力镇压时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1041_talent_2_1",
+    "name": "高温汇聚",
+    "description": "触发火力镇压时，普通攻击、冲刺攻击、闪避反击造成的伤害提升3%，最多叠加12层，持续15秒，每层效果单独结算持续时间。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "COMMON_DMG_": 0.03 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "触发火力镇压时",
+    "max_stacks": 12,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1041_talent_6_1",
+    "name": "炽热心流",
+    "description": "发动强化特殊技、连携技或终结技时，「11号」获得8层充能（上限8层）；触发火力镇压时，消耗1层充能，使当前招式无视目标25%火属性伤害抗性。",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "FIRE_RES_": -0.25 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "触发火力镇压并消耗充能层数时",
+    "max_stacks": 8,
+    "stack_mode": "consume"
+  },
+  {
+    "id": "1041_extra_ability_0_1",
+    "name": "燎原",
+    "description": "队伍中存在与自身属性或阵营相同的角色时触发：「11号」造成的火属性伤害提升10%，攻击处于失衡状态下的敌人时，该增益效果额外提升22.5%（共32.5%）。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "FIRE_DMG_": 0.325 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "队伍中存在同属性或同阵营角色时，对失衡敌人造成伤害",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1041_potential_0_1",
+    "name": "绝焰",
+    "description": "额外能力：燎原中，「11号」自身暴击伤害提升16%（满级48%）。",
+    "source": "POTENTIAL",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_DMG_": 0.16 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "额外能力：燎原激活时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

@@ -1,73 +1,41 @@
-{
-  "agent_id": "1201",
-  "name": "悠真",
-  "code_name": "Harumasa",
-  "rarity": 4,
-  "weapon_type": "强攻",
-  "element_type": "电属性",
-  "core_passive_buffs": [
-    {
-      "id": "1201_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "[冲刺攻击：飞弦·斩]的暴击率提升25%，悠真的[冲刺攻击：飞弦·斩]命中敌人并触发暴击时，将获得1层[锋芒]，同一招式内最多获得3层，[锋芒]最多叠加6层，持续5秒，重复触发时刷新持续时间",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "CRIT_RATE_": 25.0
-      },
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    },
-    {
-      "id": "1201_core_passive_7_2",
-      "name": "CORE_PASSIVE-BUFF2",
-      "description": "每层[锋芒]会使[冲刺攻击：飞弦·斩]造成的暴击伤害提升12%",
-      "source": "CORE_PASSIVE",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "CRIT_DMG_": 12.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    },
-    {
-      "id": "1201_core_passive_7_3",
-      "name": "CORE_PASSIVE-BUFF3",
-      "description": "队伍中存在[击破]角色或[异常]角色时触发：\n悠真攻击命中处于失衡状态或属性异常状态下的敌人时，自身造成的伤害提升40%",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "COMMON_DMG_": 40.0
-      },
-      "trigger_conditions": "[击破]角色或[异常]角色",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1201_core_passive_7_1",
+    "name": "飞弦斩暴击",
+    "description": "冲刺攻击：飞弦·斩的暴击率提升25%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_RATE_": 25.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "冲刺攻击：飞弦·斩",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1201_core_passive_7_2",
+    "name": "锋芒",
+    "description": "每层锋芒会使冲刺攻击：飞弦·斩造成的暴击伤害提升12%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_DMG_": 12.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "冲刺攻击命中并触发暴击时获得锋芒",
+    "max_stacks": 6,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1201_core_passive_extra_1",
+    "name": "超频",
+    "description": "队伍中存在击破角色或异常角色时触发：悠真攻击命中处于失衡状态或属性异常状态下的敌人时，自身造成的伤害提升40%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "COMMON_DMG_": 40.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "击破角色或异常角色存在时，攻击失衡或异常状态下的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

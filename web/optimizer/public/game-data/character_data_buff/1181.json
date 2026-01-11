@@ -1,33 +1,28 @@
-{
-  "agent_id": "1181",
-  "name": "格莉丝",
-  "code_name": "Grace",
-  "rarity": 4,
-  "weapon_type": "异常",
-  "element_type": "电属性",
-  "core_passive_buffs": [],
-  "talent_buffs": [
-    {
-      "id": "1181_talent_6_1",
-      "name": "TALENT-BUFF1",
-      "description": "消耗所有[电能]发动[特殊技]或[强化特殊技]时，能够强化招式效果，额外投掷一颗手雷，并使每颗手雷造成的伤害提升至原本的200%",
-      "source": "TALENT",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "COMMON_DMG_": 200.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1181_talent_6_1",
+    "name": "电能强化",
+    "description": "消耗所有电能发动特殊技或强化特殊技时，能够强化招式效果，额外投掷一颗手雷，并使每颗手雷造成的伤害提升至原本的200%",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "COMMON_DMG_": 200.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "消耗所有电能发动特殊技或强化特殊技时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1181_core_passive_extra_1",
+    "name": "过载协议",
+    "description": "队伍中存在与自身属性或阵营相同的角色时触发：格莉丝对处于感电状态下的敌人造成的伤害提升25%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "COMMON_DMG_": 25.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "与自身属性或阵营相同的角色存在时，且攻击感电状态下的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

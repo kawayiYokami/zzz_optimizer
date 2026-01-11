@@ -2,7 +2,7 @@
  * 角色模型
  */
 
-import { Rarity, ElementType, WeaponType } from './base';
+import { Rarity, ElementType, WeaponType, PropertyType } from './base';
 import { PropertyCollection } from './property-collection';
 import { CombatStats } from './combat-stats';
 import { Buff, ConversionBuff } from './buff';
@@ -215,11 +215,18 @@ export class Agent {
     dataLoader: typeof dataLoaderService
   ): Promise<Agent> {
     // 1. 根据key (CodeName) 查找游戏数据中的角色ID
+    // zodData.key 通常是 EN 名称（如 "Astra Yao"），需要同时匹配 EN 和 code 字段
     let gameCharId: string | null = null;
     const charMap = dataLoader.characterData;
     if (charMap) {
       for (const [id, data] of charMap.entries()) {
-        if (data.code === zodData.key) {
+        // 先尝试匹配 EN 字段（忽略大小写）
+        if (data.EN && data.EN.trim().toLowerCase() === zodData.key.trim().toLowerCase()) {
+          gameCharId = id;
+          break;
+        }
+        // 如果 EN 不匹配，再尝试 code 字段（忽略大小写）
+        if (data.code && data.code.trim().toLowerCase() === zodData.key.trim().toLowerCase()) {
           gameCharId = id;
           break;
         }
@@ -258,28 +265,22 @@ export class Agent {
     if (charDetail && charDetail.Stats) {
       const stats = charDetail.Stats;
       const level = zodData.level;
-      const promotion = zodData.promotion; // 0-5 (对应1-6阶突破? 需确认)
+      const promotion = zodData.promotion;
 
       // 基础属性公式：(Base + (Level - 1) * Growth / 10000)
       const calcBase = (base: number, growth: number) => {
         return base + ((level - 1) * growth) / 10000;
       };
 
-      const hp = calcBase(stats.HpMax, stats.HpGrowth);
-      const atk = calcBase(stats.Attack, stats.AttackGrowth);
-      const def = calcBase(stats.Defence, stats.DefenceGrowth);
+      // 计算基础属性值（HP/ATK/DEF 需要加上突破和核心技加成）
+      const baseHp = calcBase(stats.HpMax, stats.HpGrowth);
+      const baseAtk = calcBase(stats.Attack, stats.AttackGrowth);
+      const baseDef = calcBase(stats.Defence, stats.DefenceGrowth);
 
       // 突破加成
-      // 假设 promotion 0对应Level 1, promotion 1对应Level 2...
-      // character.json中Level key是 "1"..."6"
-      // 通常 promotion=0 是1-10级，不需要额外突破加成? 或者对应Level "1"?
-      // 观察数据：Level "1" 全是0。Level "2" (10-20级) 开始有值。
-      // 假设 zodData.promotion 是 0-5。
       let promotionHp = 0;
       let promotionAtk = 0;
       let promotionDef = 0;
-
-      // 简单的映射逻辑：promotion 1 -> Level "2"
       if (promotion > 0 && charDetail.Level) {
         const levelKey = (promotion + 1).toString();
         const levelData = charDetail.Level[levelKey];
@@ -291,37 +292,77 @@ export class Agent {
       }
 
       // 核心技加成
-      // ExtraLevel keys "1"..."6"。对应 core_skill 1-6 (A-F)
       let coreHp = 0;
       let coreAtk = 0;
       let coreDef = 0;
       let coreImpact = 0;
-      
       if (charDetail.ExtraLevel) {
-          // 累加到当前核心技等级的所有加成？通常ExtraLevel里已经是累计值还是增量值？
-          // 看数据： "6": { "Value": 75 }， "5": { "Value": 50 }。看起来是累计值（达到该等级后的总加成）。
-          const coreKey = zodData.core.toString(); // 0-6
-          const extraData = charDetail.ExtraLevel[coreKey];
-          if (extraData && extraData.Extra) {
-              for (const bonus of Object.values(extraData.Extra) as any[]) {
-                  if (bonus.Name === '基础攻击力') coreAtk += bonus.Value;
-                  if (bonus.Name === '基础生命值') coreHp += bonus.Value; // 猜测名字
-                  if (bonus.Name === '基础防御力') coreDef += bonus.Value; // 猜测名字
-                  if (bonus.Name === '冲击力') coreImpact += bonus.Value;
-              }
+        const coreKey = zodData.core.toString();
+        const extraData = charDetail.ExtraLevel[coreKey];
+        if (extraData && extraData.Extra) {
+          for (const bonus of Object.values(extraData.Extra) as any[]) {
+            if (bonus.Name === '基础攻击力') coreAtk += bonus.Value;
+            if (bonus.Name === '基础生命值') coreHp += bonus.Value;
+            if (bonus.Name === '基础防御力') coreDef += bonus.Value;
+            if (bonus.Name === '冲击力') coreImpact += bonus.Value;
           }
+        }
       }
 
-      // 写入base_stats
-      agent.base_stats.add('生命值', hp + promotionHp + coreHp);
-      agent.base_stats.add('攻击力', atk + promotionAtk + coreAtk);
-      agent.base_stats.add('防御力', def + promotionDef + coreDef);
-      agent.base_stats.add('冲击力', stats.BreakStun + coreImpact); // BreakStun 是基础冲击力吗？118? 好像有点低，通常是100左右。Stats里只有BreakStun。
-      agent.base_stats.add('暴击率', stats.Crit / 10000); // 500 -> 5%
-      agent.base_stats.add('暴击伤害', stats.CritDamage / 10000); // 5000 -> 50%
-      agent.base_stats.add('异常掌控', stats.ElementAbnormalPower);
-      agent.base_stats.add('异常精通', stats.ElementMystery);
-      agent.base_stats.add('能量自动回复', stats.SpRecover / 100); // 120 -> 1.2? 或是120%? 通常是1.2/s
+      // 动态填充所有不为 0 的属性
+      // 属性名映射：stats 字段名 -> PropertyType -> 转换因子
+      const propertyMapping: Record<string, { propType: PropertyType | null; divisor?: number }> = {
+        // 基础属性（需要加上突破和核心技加成）
+        'HpMax': { propType: PropertyType.HP },
+        'Attack': { propType: PropertyType.ATK },
+        'Defence': { propType: PropertyType.DEF },
+
+        // 其他属性（不需要额外加成）
+        'BreakStun': { propType: PropertyType.IMPACT },
+        'Crit': { propType: PropertyType.CRIT_, divisor: 10000 },
+        'CritDamage': { propType: PropertyType.CRIT_DMG_, divisor: 10000 },
+        'CritRes': { propType: PropertyType.CRIT_RATE_, divisor: 10000 },
+        'CritDmgRes': { propType: null }, // 暂无对应枚举
+        'ElementAbnormalPower': { propType: PropertyType.ANOM_MAS },
+        'ElementMystery': { propType: PropertyType.ANOM_PROF },
+        'SpRecover': { propType: PropertyType.ENER_REGEN, divisor: 100 },
+        'SpBarPoint': { propType: null }, // 暂无对应枚举
+        'PenDelta': { propType: PropertyType.PEN },
+        'PenRate': { propType: PropertyType.PEN_, divisor: 100 },
+        'Armor': { propType: null }, // 暂无对应枚举
+        'Shield': { propType: PropertyType.SHIELD_ },
+        'Endurance': { propType: null }, // 暂无对应枚举
+        'Stun': { propType: null }, // 暂无对应枚举
+        'Rbl': { propType: null }, // 暂无对应枚举
+      };
+
+      for (const [key, value] of Object.entries(stats)) {
+        // 跳过 Growth 字段和其他非数值字段
+        if (key.includes('Growth')) continue;
+        if (typeof value !== 'number' || value === 0) continue;
+
+        const mapping = propertyMapping[key];
+        if (!mapping || mapping.propType === null) continue;
+
+        // 计算最终值
+        let finalValue = value;
+        if (key === 'HpMax') {
+          finalValue = baseHp + promotionHp + coreHp;
+        } else if (key === 'Attack') {
+          finalValue = baseAtk + promotionAtk + coreAtk;
+        } else if (key === 'Defence') {
+          finalValue = baseDef + promotionDef + coreDef;
+        } else if (key === 'BreakStun') {
+          finalValue = value + coreImpact;
+        } else if (mapping.divisor) {
+          finalValue = value / mapping.divisor;
+        }
+
+        // 只添加不为 0 的属性
+        if (finalValue !== 0) {
+          agent.base_stats.out_of_combat.set(mapping.propType, finalValue);
+        }
+      }
     }
 
     // 技能等级

@@ -2,7 +2,16 @@
  * Buff增益模型 - 战斗核心数据定义
  */
 
-import { PropertyType, isPercentageProperty } from './base';
+import { PropertyType, isPercentageProperty, getPropertyCnName } from './base';
+import { PropertyCollection } from './property-collection';
+
+/**
+ * Buff生效环境
+ */
+export enum BuffContext {
+  OUT_OF_COMBAT = 1, // 局外（面板显示）
+  IN_COMBAT = 2,     // 局内（战斗中）
+}
 
 /**
  * Buff生效目标
@@ -103,10 +112,10 @@ export class Buff {
     this.target = target ?? new BuffTarget();
     this.in_combat_stats = inCombatStats instanceof Map
       ? new Map(inCombatStats)
-      : new Map(Object.entries(inCombatStats || {}) as [PropertyType, number][]);
+      : new Map(Object.entries(inCombatStats || {}) as unknown as [PropertyType, number][]);
     this.out_of_combat_stats = outOfCombatStats instanceof Map
       ? new Map(outOfCombatStats)
-      : new Map(Object.entries(outOfCombatStats || {}) as [PropertyType, number][]);
+      : new Map(Object.entries(outOfCombatStats || {}) as unknown as [PropertyType, number][]);
     this.conversion = conversion;
     this.trigger_conditions = triggerConditions;
     this.max_stacks = maxStacks;
@@ -124,12 +133,24 @@ export class Buff {
   /** 计算转换值 */
   calculateConversion(sourceValue: number): number {
     if (!this.conversion) return 0;
-    
+
     let value = sourceValue * this.conversion.conversion_ratio;
     if (this.conversion.max_value !== undefined && value > this.conversion.max_value) {
       value = this.conversion.max_value;
     }
     return value;
+  }
+
+  /**
+   * 转换为 PropertyCollection
+   *
+   * @returns 属性集合
+   */
+  toPropertyCollection(): PropertyCollection {
+    return new PropertyCollection(
+      this.out_of_combat_stats,
+      this.in_combat_stats
+    );
   }
 
   /** 计算叠层后的属性值 */
@@ -207,6 +228,13 @@ export class Buff {
     );
   }
 
+  /**
+   * 从游戏数据创建 Buff（fromDict 的别名）
+   */
+  static fromBuffData(data: any): Buff {
+    return Buff.fromDict(data);
+  }
+
   toDict(): any {
     const inCombatStats: Record<string, number> = {};
     for (const [prop, value] of this.in_combat_stats.entries()) {
@@ -242,5 +270,129 @@ export class Buff {
       stack_mode: this.stack_mode,
       is_active: this.is_active,
     };
+  }
+
+  /**
+   * 格式化输出Buff信息（只输出有意义的值）
+   *
+   * @param indent 缩进空格数
+   * @returns 格式化字符串
+   */
+  format(indent: number = 0): string {
+    const lines: string[] = [];
+    const prefix = ' '.repeat(indent);
+
+    // 基本信息
+    if (this.name) {
+      lines.push(`${prefix}${this.name}`);
+    }
+    if (this.description) {
+      lines.push(`${prefix}  ${this.description}`);
+    }
+
+    // 属性加成
+    const allStats = new Map<PropertyType, number>();
+    for (const [prop, value] of this.in_combat_stats.entries()) {
+      allStats.set(prop, value);
+    }
+    for (const [prop, value] of this.out_of_combat_stats.entries()) {
+      allStats.set(prop, (allStats.get(prop) ?? 0) + value);
+    }
+
+    if (allStats.size > 0) {
+      lines.push(`${prefix}  属性加成:`);
+      for (const [prop, value] of allStats.entries()) {
+        const cnName = getPropertyCnName(prop);
+        if (isPercentageProperty(prop)) {
+          lines.push(`${prefix}    ${cnName}: ${(value * 100).toFixed(2)}%`);
+        } else {
+          lines.push(`${prefix}    ${cnName}: ${value.toFixed(2)}`);
+        }
+      }
+    }
+
+    return lines.join('\n');
+  }
+}
+
+/**
+ * 转换类 Buff - 专门用于属性转换的 Buff
+ */
+export class ConversionBuff extends Buff {
+  // 转换详情
+  conversion: Conversion;
+
+  constructor(
+    conversion: Conversion,
+    source: BuffSource = BuffSource.AGENT_PASSIVE,
+    target?: BuffTarget,
+    maxStacks: number = 1,
+    stackMode: 'linear' | 'full_only' = 'linear',
+    isActive: boolean = true,
+    id: string = '',
+    name: string = '',
+    description: string = '',
+    triggerConditions: string = ''
+  ) {
+    super(
+      source,
+      undefined, // 转换Buff通常不直接提供属性加成
+      undefined,
+      conversion,
+      target,
+      maxStacks,
+      stackMode,
+      isActive,
+      id,
+      name,
+      description,
+      triggerConditions
+    );
+    this.conversion = conversion;
+  }
+
+  /**
+   * 从 Buff 数据创建 ConversionBuff 实例
+   */
+  static fromBuffData(data: any): ConversionBuff {
+    // 解析 conversion
+    const conversion = new Conversion(
+      (PropertyType as any)[data.conversion.from_property],
+      (PropertyType as any)[data.conversion.to_property],
+      data.conversion.conversion_ratio,
+      data.conversion.max_value
+    );
+
+    // 解析 target
+    const targetData = data.target ?? {};
+    const target = new BuffTarget();
+    target.target_self = targetData.target_self ?? true;
+    target.target_enemy = targetData.target_enemy ?? false;
+    target.target_teammate = targetData.target_teammate ?? false;
+    target.target_bund = targetData.target_bund ?? false;
+
+    return new ConversionBuff(
+      conversion,
+      typeof data.source === 'string' ? (BuffSource as any)[data.source] : data.source,
+      target,
+      data.max_stacks ?? 1,
+      data.stack_mode ?? 'linear',
+      data.is_active ?? true,
+      data.id ?? '',
+      data.name ?? '',
+      data.description ?? '',
+      data.trigger_conditions ?? ''
+    );
+  }
+
+  /**
+   * 计算转换值
+   */
+  calculateConversion(sourceValue: number): number {
+    let value = sourceValue * this.conversion.conversion_ratio;
+    if (this.conversion.max_value !== undefined && value > this.conversion.max_value) {
+      value = this.conversion.max_value;
+    }
+    return value;
   }
 }

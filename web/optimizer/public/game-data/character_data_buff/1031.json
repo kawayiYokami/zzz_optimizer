@@ -1,74 +1,54 @@
-{
-  "agent_id": "1031",
-  "name": "妮可",
-  "code_name": "Nicole",
-  "rarity": 3,
-  "weapon_type": "支援",
-  "element_type": "以太",
-  "core_passive_buffs": [
-    {
-      "id": "1031_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "强化子弹或能量场命中敌人时，目标的防御力降低40%，持续3.5秒",
-      "source": "CORE_PASSIVE",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "DEF_": 40.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    },
-    {
-      "id": "1031_core_passive_7_2",
-      "name": "CORE_PASSIVE-BUFF2",
-      "description": "队伍中存在与自身属性或阵营相同的角色时触发：\n妮可通过[核心被动：机关箱]对敌人施加减益效果时，所有单位对目标造成的以太伤害额外提升25%，持续3.5秒",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "ETHER_DMG_": 25.0
-      },
-      "trigger_conditions": "与自身属性或阵营相同的角色",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [
-    {
-      "id": "1031_talent_6_1",
-      "name": "TALENT-BUFF1",
-      "description": "能量场对敌人造成伤害时，所有单位对该目标的暴击率提升1.5%，最多叠加10层，持续12秒，每层效果单独结算持续时间",
-      "source": "TALENT",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "CRIT_RATE_": 1.5
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1031_core_passive_0_1",
+    "name": "机关箱",
+    "description": "妮可在特殊技、强化特殊技、连携技、终结技等招式中，上弹并强化普通攻击与冲刺攻击；强化子弹或能量场命中敌人时，目标的防御力降低40%，持续3.5秒。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "DEF_": -0.40 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "强化子弹或能量场命中敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1031_talent_0_1",
+    "name": "增压强化弹",
+    "description": "强化特殊技造成的伤害和累积的属性异常积蓄值提升16%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "COMMON_DMG_": 0.16 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动强化特殊技时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1031_talent_6_1",
+    "name": "侵蚀能量场",
+    "description": "能量场对敌人造成伤害时，所有单位对该目标的暴击率提升1.5%，最多叠加10层，持续12秒，每层效果单独结算持续时间。",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "CRIT_RATE_": 0.015 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "能量场对敌人造成伤害时",
+    "max_stacks": 10,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1031_extra_ability_0_1",
+    "name": "狡兔三窟",
+    "description": "妮可通过核心被动：机关箱对敌人施加减益效果时，所有单位对目标造成的以太伤害额外提升25%，持续3.5秒。",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "ETHER_DMG_": 0.25 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "对敌人施加减益效果时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

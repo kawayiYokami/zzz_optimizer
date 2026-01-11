@@ -13,7 +13,7 @@
  * - Buff - Buff本身
  */
 
-import { PropertyType, isPercentageProperty, getPropertyCnName } from './base';
+import { PropertyType, isPercentageProperty, getPropertyCnName, getPropertyTypeByCnName } from './base';
 
 /**
  * 属性集合
@@ -31,6 +31,26 @@ export class PropertyCollection {
   ) {
     this.out_of_combat = outOfCombat instanceof Map ? new Map(outOfCombat) : new Map(Object.entries(outOfCombat || {}) as unknown as [PropertyType, number][]);
     this.in_combat = inCombat instanceof Map ? new Map(inCombat) : new Map(Object.entries(inCombat || {}) as unknown as [PropertyType, number][]);
+  }
+
+  /**
+   * 添加单个属性值（局外属性）
+   *
+   * @param prop 属性类型（可以是 PropertyType 或字符串）
+   * @param value 属性值
+   * @returns self (方便链式调用)
+   */
+  addProperty(prop: PropertyType | string, value: number): PropertyCollection {
+    let propType: PropertyType;
+    if (typeof prop === 'string') {
+      // 优先通过中文名称映射查找
+      propType = getPropertyTypeByCnName(prop) || (PropertyType as any)[prop];
+    } else {
+      propType = prop;
+    }
+    const currentValue = this.out_of_combat.get(propType) || 0;
+    this.out_of_combat.set(propType, currentValue + value);
+    return this;
   }
 
   /**
@@ -98,6 +118,24 @@ export class PropertyCollection {
    */
   getTotal(prop: PropertyType, defaultValue: number = 0.0): number {
     return this.getOutOfCombat(prop, 0) + this.getInCombat(prop, defaultValue);
+  }
+
+  /**
+   * 获取属性值（支持字符串参数，兼容旧代码）
+   *
+   * @param prop 属性类型（可以是 PropertyType 或字符串）
+   * @param defaultValue 默认值
+   * @returns 属性总值
+   */
+  getValue(prop: PropertyType | string, defaultValue: number = 0.0): number {
+    let propType: PropertyType;
+    if (typeof prop === 'string') {
+      // 优先通过中文名称映射查找
+      propType = getPropertyTypeByCnName(prop) || (PropertyType as any)[prop];
+    } else {
+      propType = prop;
+    }
+    return this.getTotal(propType, defaultValue);
   }
 
   /**

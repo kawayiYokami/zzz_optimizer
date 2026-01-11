@@ -3,10 +3,84 @@
  */
 
 import { Rarity, PropertyType, StatValue } from './base';
-import { Buff, BuffSource, BuffContext } from './buff';
+import { Buff } from './buff';
 import { PropertyCollection } from './property-collection';
 import type { ZodDiscData } from './save-data-simple';
 import type { dataLoaderService } from '../services/data-loader.service';
+
+/**
+ * 驱动盘数值计算数据
+ */
+const DriveDiskStats = {
+  // 主词条满级数值表 {稀有度: {键名: 数值}}
+  MAIN_STAT_MAX_VALUES: {
+    'S': {
+      'atk_': 0.30, 'hp_': 0.30, 'def_': 0.48,
+      'crit_': 0.24, 'crit_dmg_': 0.48, 'pen_': 0.24,
+      'atk': 316, 'hp': 2200, 'def': 184, 'anomProf': 92,
+      'fire_dmg_': 0.30, 'ice_dmg_': 0.30, 'electric_dmg_': 0.30,
+      'physical_dmg_': 0.30, 'ether_dmg_': 0.30,
+      'anomMas_': 0.30, 'impact_': 0.18, 'enerRegen_': 0.60,
+      'energyRegen_': 0.60,
+      'impact': 100,
+    },
+    'A': {
+      'atk_': 0.20, 'hp_': 0.20, 'def_': 0.32,
+      'crit_': 0.16, 'crit_dmg_': 0.32, 'pen_': 0.16,
+      'atk': 212, 'hp': 1468, 'def': 124, 'anomProf': 60,
+      'fire_dmg_': 0.20, 'ice_dmg_': 0.20, 'electric_dmg_': 0.20,
+      'physical_dmg_': 0.20, 'ether_dmg_': 0.20,
+      'anomMas_': 0.20, 'impact_': 0.12, 'enerRegen_': 0.40,
+      'energyRegen_': 0.40,
+      'impact': 66,
+    },
+    'B': {
+      'atk_': 0.10, 'hp_': 0.10, 'def_': 0.16,
+      'crit_': 0.08, 'crit_dmg_': 0.16, 'pen_': 0.08,
+      'atk': 104, 'hp': 734, 'def': 60, 'anomProf': 32,
+      'fire_dmg_': 0.10, 'ice_dmg_': 0.10, 'electric_dmg_': 0.10,
+      'physical_dmg_': 0.10, 'ether_dmg_': 0.10,
+      'anomMas_': 0.10, 'impact_': 0.06, 'enerRegen_': 0.20,
+      'energyRegen_': 0.20,
+      'impact': 33,
+    }
+  },
+
+  // 副词条基础数值表（每次强化）{稀有度: {键名: 数值}}
+  SUB_STAT_BASE_VALUES: {
+    'S': {
+      'atk': 19, 'hp': 112, 'def': 15, 'pen': 9, 'anomProf': 9,
+      'atk_': 0.03, 'hp_': 0.03, 'def_': 0.048,
+      'crit_': 0.024, 'crit_dmg_': 0.048
+    },
+    'A': {
+      'atk': 15, 'hp': 79, 'def': 10, 'pen': 6, 'anomProf': 6,
+      'atk_': 0.02, 'hp_': 0.02, 'def_': 0.032,
+      'crit_': 0.016, 'crit_dmg_': 0.032
+    },
+    'B': {
+      'atk': 7, 'hp': 39, 'def': 5, 'pen': 3, 'anomProf': 3,
+      'atk_': 0.01, 'hp_': 0.01, 'def_': 0.016,
+      'crit_': 0.008, 'crit_dmg_': 0.016
+    }
+  },
+
+  // 最大等级
+  MAX_LEVELS: { 'S': 15, 'A': 12, 'B': 9 },
+
+  // 计算主词条数值
+  calculateMainStatValue(rarityStr: 'S' | 'A' | 'B', statKey: string, level: number): number {
+    const maxVal = (this.MAIN_STAT_MAX_VALUES[rarityStr] as any)[statKey];
+    const maxLevel = this.MAX_LEVELS[rarityStr];
+    return maxVal * (0.25 + (0.75 * level) / maxLevel);
+  },
+
+  // 计算副词条数值
+  calculateSubStatValue(rarityStr: 'S' | 'A' | 'B', statKey: string, rolls: number): number {
+    const baseVal = (this.SUB_STAT_BASE_VALUES[rarityStr] as any)[statKey];
+    return baseVal * rolls;
+  }
+};
 
 /**
  * 驱动盘位置
@@ -87,6 +161,37 @@ export class DriveDisk {
   }
 
   /**
+   * 将 PropertyType 转换为键名
+   */
+  private propertyTypeToKey(propType: PropertyType): string {
+    const mapping: Record<number, string> = {
+      [PropertyType.HP]: 'hp',
+      [PropertyType.HP_]: 'hp_',
+      [PropertyType.ATK]: 'atk',
+      [PropertyType.ATK_]: 'atk_',
+      [PropertyType.DEF]: 'def',
+      [PropertyType.DEF_]: 'def_',
+      [PropertyType.PEN]: 'pen',
+      [PropertyType.PEN_]: 'pen_',
+      [PropertyType.CRIT_]: 'crit_',
+      [PropertyType.CRIT_RATE_]: 'crit_',
+      [PropertyType.CRIT_DMG_]: 'crit_dmg_',
+      [PropertyType.ANOM_PROF]: 'anomProf',
+      [PropertyType.ANOM_MAS_]: 'anomMas_',
+      [PropertyType.IMPACT]: 'impact',
+      [PropertyType.IMPACT_]: 'impact_',
+      [PropertyType.ENER_REGEN]: 'energyRegen',
+      [PropertyType.ENER_REGEN_]: 'energyRegen_',
+      [PropertyType.PHYSICAL_DMG_]: 'physical_dmg_',
+      [PropertyType.FIRE_DMG_]: 'fire_dmg_',
+      [PropertyType.ICE_DMG_]: 'ice_dmg_',
+      [PropertyType.ELECTRIC_DMG_]: 'electric_dmg_',
+      [PropertyType.ETHER_DMG_]: 'ether_dmg_',
+    };
+    return mapping[propType] || '';
+  }
+
+  /**
    * 获取属性（主词条+副词条）
    *
    * @returns 属性集合
@@ -95,18 +200,26 @@ export class DriveDisk {
     const outOfCombat = new Map<PropertyType, number>();
     const inCombat = new Map<PropertyType, number>();
 
-    // 主词条
-    if (this.main_stat_value.value !== 0) {
-      const value = this.main_stat_value.isPercent
-        ? this.main_stat_value.value / 100.0
-        : this.main_stat_value.value;
-      outOfCombat.set(this.main_stat, value);
+    // 获取稀有度字符串
+    const rarityStr = Rarity[this.rarity];
+
+    // 1. 计算主词条数值
+    const mainStatKey = this.propertyTypeToKey(this.main_stat);
+    const rarity = rarityStr as 'S' | 'A' | 'B';
+    if (mainStatKey && (DriveDiskStats.MAIN_STAT_MAX_VALUES[rarity] as any)[mainStatKey] !== undefined) {
+      const mainStatValue = DriveDiskStats.calculateMainStatValue(rarity, mainStatKey, this.level);
+      outOfCombat.set(this.main_stat, mainStatValue);
     }
 
-    // 副词条
+    // 2. 计算副词条数值
     for (const [prop, statValue] of this.sub_stats.entries()) {
-      const value = statValue.isPercent ? statValue.value / 100.0 : statValue.value;
-      outOfCombat.set(prop, (outOfCombat.get(prop) ?? 0) + value);
+      const subStatKey = this.propertyTypeToKey(prop);
+      if (subStatKey && (DriveDiskStats.SUB_STAT_BASE_VALUES[rarity] as any)[subStatKey] !== undefined) {
+        // statValue.value 存储的是强化次数（rolls）
+        const rolls = statValue.value;
+        const subStatValue = DriveDiskStats.calculateSubStatValue(rarity, subStatKey, rolls);
+        outOfCombat.set(prop, (outOfCombat.get(prop) ?? 0) + subStatValue);
+      }
     }
 
     return new PropertyCollection(outOfCombat, inCombat);
@@ -219,15 +332,16 @@ export class DriveDisk {
     // 4. 解析主词条类型（mainStatKey: "CRIT_" -> PropertyType.CRIT_RATE）
     const mainStat = parsePropertyType(zodData.mainStatKey);
 
-    // 5. 计算主词条数值（需要根据稀有度、等级、属性类型计算）
-    const mainStatValue = calculateMainStatValue(mainStat, rarity, zodData.level);
+    // 5. 主词条数值将在 getStats() 中动态计算，这里使用占位值
+    const mainStatValue = new StatValue(0, false);
 
     // 6. 解析副词条
     const subStats = new Map<PropertyType, StatValue>();
     if (zodData.substats) {
       for (const substat of zodData.substats) {
         const propType = parsePropertyType(substat.key);
-        const statValue = calculateSubStatValue(propType, rarity, substat.upgrades);
+        // value 存储强化次数（rolls），而不是实际数值
+        const statValue = new StatValue(substat.upgrades, false);
         subStats.set(propType, statValue);
       }
     }
@@ -282,20 +396,31 @@ export class DriveDisk {
 function parsePropertyType(key: string): PropertyType {
   // ZOD的key可能是简写形式，需要映射到PropertyType
   const keyMap: Record<string, PropertyType> = {
-    'HP_': PropertyType.HP_PERCENT,
-    'ATK_': PropertyType.ATK_PERCENT,
-    'DEF_': PropertyType.DEF_PERCENT,
-    'CRIT_': PropertyType.CRIT_RATE,
-    'CRIT_DMG_': PropertyType.CRIT_DMG,
-    'PEN_': PropertyType.PEN_PERCENT,
-    'ANOMALY_PROFICIENCY': PropertyType.ANOMALY_PROFICIENCY,
-    'PHYSICAL_DMG_': PropertyType.PHYSICAL_DMG_PERCENT,
-    'FIRE_DMG_': PropertyType.FIRE_DMG_PERCENT,
-    'ICE_DMG_': PropertyType.ICE_DMG_PERCENT,
-    'ELECTRIC_DMG_': PropertyType.ELECTRIC_DMG_PERCENT,
-    'ETHER_DMG_': PropertyType.ETHER_DMG_PERCENT,
-    'ENERGY_REGEN': PropertyType.ENERGY_REGEN,
-    'IMPACT': PropertyType.IMPACT_PERCENT,
+    'HP_': PropertyType.HP_,
+    'ATK_': PropertyType.ATK_,
+    'DEF_': PropertyType.DEF_,
+    'CRIT_': PropertyType.CRIT_,
+    'CRIT_DMG_': PropertyType.CRIT_DMG_,
+    'PEN_': PropertyType.PEN_,
+    'ANOMALY_PROFICIENCY': PropertyType.ANOM_PROF,
+    'PHYSICAL_DMG_': PropertyType.PHYSICAL_DMG_,
+    'FIRE_DMG_': PropertyType.FIRE_DMG_,
+    'ICE_DMG_': PropertyType.ICE_DMG_,
+    'ELECTRIC_DMG_': PropertyType.ELECTRIC_DMG_,
+    'ETHER_DMG_': PropertyType.ETHER_DMG_,
+    'ENERGY_REGEN': PropertyType.ENER_REGEN,
+    'IMPACT': PropertyType.IMPACT,
+    // 添加缺失的映射（小写形式）
+    'hp': PropertyType.HP,
+    'hp_': PropertyType.HP_,
+    'atk': PropertyType.ATK,
+    'atk_': PropertyType.ATK_,
+    'def': PropertyType.DEF,
+    'def_': PropertyType.DEF_,
+    'pen': PropertyType.PEN,
+    'pen_': PropertyType.PEN_,
+    'crit_': PropertyType.CRIT_,
+    'crit_dmg_': PropertyType.CRIT_DMG_,
   };
 
   const mapped = keyMap[key];
@@ -310,82 +435,5 @@ function parsePropertyType(key: string): PropertyType {
   }
 
   console.warn(`未知的属性类型: ${key}`);
-  return PropertyType.HP_BASE;
-}
-
-/**
- * 计算主词条数值
- */
-function calculateMainStatValue(
-  propType: PropertyType,
-  rarity: Rarity,
-  level: number
-): StatValue {
-  // 简化实现：根据属性类型判断是否为百分比
-  const isPercent = [
-    PropertyType.HP_PERCENT,
-    PropertyType.ATK_PERCENT,
-    PropertyType.DEF_PERCENT,
-    PropertyType.CRIT_RATE,
-    PropertyType.CRIT_DMG,
-    PropertyType.PEN_PERCENT,
-    PropertyType.PHYSICAL_DMG_PERCENT,
-    PropertyType.FIRE_DMG_PERCENT,
-    PropertyType.ICE_DMG_PERCENT,
-    PropertyType.ELECTRIC_DMG_PERCENT,
-    PropertyType.ETHER_DMG_PERCENT,
-    PropertyType.IMPACT_PERCENT,
-    PropertyType.ENERGY_REGEN,
-  ].includes(propType);
-
-  // 基础值（根据稀有度）
-  let baseValue = 0;
-  if (rarity === Rarity.S) {
-    baseValue = isPercent ? 30.0 : 150;
-  } else if (rarity === Rarity.A) {
-    baseValue = isPercent ? 24.0 : 120;
-  } else {
-    baseValue = isPercent ? 18.0 : 90;
-  }
-
-  // 成长系数（每级增长约4%）
-  const growthRate = 0.04;
-  const value = baseValue * (1 + growthRate * level);
-
-  return new StatValue(value, isPercent);
-}
-
-/**
- * 计算副词条数值
- */
-function calculateSubStatValue(
-  propType: PropertyType,
-  rarity: Rarity,
-  upgrades: number
-): StatValue {
-  // 简化实现：根据属性类型判断是否为百分比
-  const isPercent = [
-    PropertyType.HP_PERCENT,
-    PropertyType.ATK_PERCENT,
-    PropertyType.DEF_PERCENT,
-    PropertyType.CRIT_RATE,
-    PropertyType.CRIT_DMG,
-    PropertyType.PEN_PERCENT,
-    PropertyType.ANOMALY_PROFICIENCY,
-  ].includes(propType);
-
-  // 基础值（根据稀有度）
-  let baseValue = 0;
-  if (rarity === Rarity.S) {
-    baseValue = isPercent ? 3.0 : 30;
-  } else if (rarity === Rarity.A) {
-    baseValue = isPercent ? 2.4 : 24;
-  } else {
-    baseValue = isPercent ? 1.8 : 18;
-  }
-
-  // 每次强化增加一次基础值
-  const value = baseValue * (1 + upgrades);
-
-  return new StatValue(value, isPercent);
+  return PropertyType.HP;
 }

@@ -1,53 +1,80 @@
-{
-  "agent_id": "1241",
-  "name": "朱鸢",
-  "code_name": "Zhu Yuan",
-  "rarity": 4,
-  "weapon_type": "强攻",
-  "element_type": "以太",
-  "core_passive_buffs": [
-    {
-      "id": "1241_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "朱鸢在[压制模式]下，消耗[强化霰弹]进行攻击时，招式造成的伤害提升40%，攻击处于失衡状态下的敌人时，该增益效果额外提升40%",
-      "source": "CORE_PASSIVE",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "COMMON_DMG_": 40.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    },
-    {
-      "id": "1241_core_passive_7_2",
-      "name": "CORE_PASSIVE-BUFF2",
-      "description": "队伍中存在[支援]角色或与自身阵营相同的角色时触发：\n朱鸢发动[强化特殊技]、[连携技]或[终结技]时，自身暴击率提升30%，持续10秒",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "CRIT_RATE_": 30.0
-      },
-      "trigger_conditions": "[支援]角色或与自身阵营相同的角色",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1241_COREPASSIVE_1_1",
+    "name": "特种弹药-压制模式伤害提升",
+    "description": "朱鸢在[压制模式]下，消耗[强化霰弹]进行攻击时，招式造成的伤害提升40%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "DMG_BONUS": 0.4 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "在[压制模式]下消耗[强化霰弹]进行攻击时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1241_COREPASSIVE_1_2",
+    "name": "特种弹药-失衡目标额外伤害",
+    "description": "攻击处于失衡状态下的敌人时，该增益效果额外提升40%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "DMG_BONUS": 0.4 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "攻击处于失衡状态下的敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1241_COREPASSIVE_2_1",
+    "name": "武装协同-暴击率提升",
+    "description": "朱鸢发动[强化特殊技]、[连携技]或[终结技]时，自身暴击率提升30%，持续10秒",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_RATE": 0.3 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[强化特殊技]、[连携技]或[终结技]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1241_TALENT_2_1",
+    "name": "以太余烬-以太伤害提升",
+    "description": "消耗[强化霰弹]攻击命中敌人时，[普通攻击：请勿抵抗]与[冲刺攻击：火力压制]造成的以太伤害提升10%，最多叠加5层，持续5秒",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "ETHER_DMG_BONUS": 0.1 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "消耗[强化霰弹]攻击命中敌人时",
+    "max_stacks": 5,
+    "stack_mode": "additive"
+  },
+  {
+    "id": "1241_TALENT_4_1",
+    "name": "以太侵彻-以太抗性穿透",
+    "description": "消耗[强化霰弹]攻击命中敌人时，[普通攻击：请勿抵抗]与[冲刺攻击：火力压制]无视目标25%以太伤害抗性",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "ETHER_RESISTANCE_PENETRATION": 0.25 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "消耗[强化霰弹]攻击命中敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1241_TALENT_6_1",
+    "name": "扩容能源包-额外子弹伤害",
+    "description": "额外发射的以太鹿弹将造成朱鸢220%攻击力的伤害",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": { "from": "atk", "to": "flat_damage", "rate": 2.2 },
+    "trigger_conditions": "发动[强化特殊技]并消耗[以太余温]效果时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

@@ -41,7 +41,14 @@
                 <th>等级</th>
                 <th>突破</th>
                 <th>影画</th>
-                <th>装备音擎</th>
+                <th>音擎</th>
+                <th>1号位</th>
+                <th>2号位</th>
+                <th>3号位</th>
+                <th>4号位</th>
+                <th>5号位</th>
+                <th>6号位</th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
@@ -52,7 +59,30 @@
                 <td>{{ char.level }}</td>
                 <td>{{ char.promotion }}</td>
                 <td>M{{ char.mindscape }}</td>
-                <td>{{ getWeaponNameByLocation(char.equippedWengine) }}</td>
+                <td>
+                  <button
+                    @click="openEquipmentDialog(char, 'wengine')"
+                    class="btn btn-xs btn-outline"
+                  >
+                    {{ getWeaponNameByLocation(char.equippedWengine) || '未装备' }}
+                  </button>
+                </td>
+                <td v-for="slot in 6" :key="slot">
+                  <button
+                    @click="openEquipmentDialog(char, 'disk', slot)"
+                    class="btn btn-xs btn-outline"
+                  >
+                    {{ getDiskNameByLocation(char.equippedDiscs, slot) || '未装备' }}
+                  </button>
+                </td>
+                <td>
+                  <button
+                    @click="showCharacterBuff(char)"
+                    class="btn btn-sm btn-outline"
+                  >
+                    查看属性
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -72,6 +102,7 @@
                 <th>位置</th>
                 <th>等级</th>
                 <th>装备角色</th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
@@ -82,6 +113,14 @@
                 <td>{{ disk.slotKey }}</td>
                 <td>{{ disk.level }}</td>
                 <td>{{ getCharacterNameByLocation(disk.location) }}</td>
+                <td>
+                  <button
+                    @click="showDriveDiskStats(disk)"
+                    class="btn btn-sm btn-outline"
+                  >
+                    查看属性
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -101,6 +140,7 @@
                 <th>等级</th>
                 <th>精炼</th>
                 <th>装备角色</th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
@@ -111,19 +151,67 @@
                 <td>{{ wengine.level }}</td>
                 <td>R{{ wengine.modification }}</td>
                 <td>{{ getCharacterNameByLocation(wengine.location) }}</td>
+                <td>
+                  <button
+                    @click="showWengineStats(wengine)"
+                    class="btn btn-sm btn-outline"
+                  >
+                    查看属性
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
+
+    <!-- 装备选择对话框 -->
+    <dialog id="equipment-dialog" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">选择{{ equipmentDialogTitle }}</h3>
+        <div class="max-h-96 overflow-y-auto">
+          <table class="table table-zebra table-sm">
+            <thead>
+              <tr>
+                <th>名称</th>
+                <th>等级</th>
+                <th>当前装备者</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in availableEquipment" :key="item.id">
+                <td>{{ getEquipmentDisplayName(item) }}</td>
+                <td>{{ item.level }}</td>
+                <td>{{ getEquipmentEquippedBy(item) }}</td>
+                <td>
+                  <button
+                    @click="selectEquipment(item)"
+                    class="btn btn-sm btn-primary"
+                  >
+                    装备
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-action">
+          <form method="dialog">
+            <button class="btn">取消</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useSaveStore } from '../../stores/save.store-simple';
 import { useGameDataStore } from '../../stores/game-data.store';
+import { dataLoaderService } from '../../services/data-loader.service';
 
 const saveStore = useSaveStore();
 const gameDataStore = useGameDataStore();
@@ -142,6 +230,30 @@ const currentSave = computed(() => saveStore.currentSave);
 const characters = computed(() => saveStore.characters);
 const driveDisks = computed(() => saveStore.driveDisks);
 const wengines = computed(() => saveStore.wengines);
+
+// 装备选择对话框状态
+const equipmentDialogState = ref({
+  character: null as any,
+  type: '' as 'wengine' | 'disk',
+  slot: 0,
+});
+
+const availableEquipment = computed(() => {
+  if (equipmentDialogState.value.type === 'wengine') {
+    return wengines.value;
+  } else {
+    const slot = equipmentDialogState.value.slot;
+    return driveDisks.value.filter(d => parseInt(d.slotKey) === slot);
+  }
+});
+
+const equipmentDialogTitle = computed(() => {
+  if (equipmentDialogState.value.type === 'wengine') {
+    return '音擎';
+  } else {
+    return `${equipmentDialogState.value.slot}号位驱动盘`;
+  }
+});
 
 // 导出当前存档
 function exportCurrentSave() {
@@ -200,14 +312,161 @@ function getCharacterNameByLocation(location: string | null): string {
 
 // 通过音擎实例ID获取音擎中文名
 function getWeaponNameByLocation(wengineId: string | null): string {
-  if (!wengineId) return '-';
+  if (!wengineId) return '';
 
   // 在ZOD数据中找对应的音擎
   const wengine = wengines.value.find(w => w.id === wengineId);
-  if (!wengine) return wengineId;
+  if (!wengine) return '';
 
   // 再通过key获取中文名
   return getWeaponName(wengine.key);
+}
+
+// 通过驱动盘实例ID获取驱动盘中文名
+function getDiskNameByLocation(equippedDiscs: Record<string, string>, slot: number): string {
+  const diskId = equippedDiscs?.[slot.toString()];
+  if (!diskId) return '';
+
+  const disk = driveDisks.value.find(d => d.id === diskId);
+  if (!disk) return '';
+
+  return getEquipmentName(disk.setKey);
+}
+
+// 获取装备显示名称
+function getEquipmentDisplayName(item: any): string {
+  if (equipmentDialogState.value.type === 'wengine') {
+    return getWeaponName(item.key);
+  } else {
+    return getEquipmentName(item.setKey);
+  }
+}
+
+// 获取装备当前装备者
+function getEquipmentEquippedBy(item: any): string {
+  if (equipmentDialogState.value.type === 'wengine') {
+    const char = characters.value.find(c => c.equippedWengine === item.id);
+    return char ? getCharacterName(char.key) : '未装备';
+  } else {
+    for (const char of characters.value) {
+      if (char.equippedDiscs?.[equipmentDialogState.value.slot.toString()] === item.id) {
+        return getCharacterName(char.key);
+      }
+    }
+    return '未装备';
+  }
+}
+
+// 打开装备选择对话框
+function openEquipmentDialog(char: any, type: 'wengine' | 'disk', slot?: number) {
+  equipmentDialogState.value = {
+    character: char,
+    type,
+    slot: slot || 0,
+  };
+  const dialog = document.getElementById('equipment-dialog') as HTMLDialogElement;
+  dialog.showModal();
+}
+
+// 选择装备
+function selectEquipment(item: any) {
+  const char = equipmentDialogState.value.character;
+  const type = equipmentDialogState.value.type;
+  const slot = equipmentDialogState.value.slot;
+
+  // 卸下原装备
+  if (type === 'wengine') {
+    if (char.equippedWengine) {
+      const oldWengine = wengines.value.find(w => w.id === char.equippedWengine);
+      if (oldWengine) oldWengine.location = null;
+    }
+    char.equippedWengine = item.id;
+    item.location = char.id;
+  } else {
+    if (char.equippedDiscs?.[slot.toString()]) {
+      const oldDisk = driveDisks.value.find(d => d.id === char.equippedDiscs[slot.toString()]);
+      if (oldDisk) oldDisk.location = null;
+    }
+    if (!char.equippedDiscs) char.equippedDiscs = {};
+    char.equippedDiscs[slot.toString()] = item.id;
+    item.location = char.id;
+  }
+
+  // 保存到store
+  saveStore.saveToStorage();
+
+  // 关闭对话框
+  const dialog = document.getElementById('equipment-dialog') as HTMLDialogElement;
+  dialog.close();
+}
+
+// 查看角色自身属性
+async function showCharacterBuff(char: any) {
+  try {
+    // 1. 创建 Agent 对象
+    const { Agent } = await import('../../model/agent');
+
+    const agent = await Agent.fromZodData(char, dataLoaderService);
+
+    // 2. 获取基础属性（局外属性）
+    const bareStats = agent.getBareStats();
+
+    // 3. 转换为JSON对象
+    const statsJson = bareStats.toJSON();
+
+    // 4. 输出JSON到控制台和弹窗
+    console.log(`角色 ${char.key} 的自身属性:`, statsJson);
+    alert(`角色 ${char.key} 的自身属性已输出到控制台\n\nJSON:\n${JSON.stringify(statsJson, null, 2)}`);
+  } catch (error) {
+    console.error('获取自身属性失败:', error);
+    alert('获取自身属性失败: ' + (error instanceof Error ? error.message : String(error)));
+  }
+}
+
+// 查看驱动盘属性
+async function showDriveDiskStats(disk: any) {
+  try {
+    // 1. 创建 DriveDisk 对象
+    const { DriveDisk } = await import('../../model/drive-disk');
+
+    const driveDisk = await DriveDisk.fromZodData(disk, dataLoaderService);
+
+    // 2. 获取属性
+    const stats = driveDisk.getStats();
+
+    // 3. 转换为JSON对象
+    const statsJson = stats.toJSON();
+
+    // 4. 输出JSON到控制台和弹窗
+    console.log(`驱动盘 ${disk.setKey} 的属性:`, statsJson);
+    alert(`驱动盘 ${disk.setKey} 的属性已输出到控制台\n\nJSON:\n${JSON.stringify(statsJson, null, 2)}`);
+  } catch (error) {
+    console.error('获取驱动盘属性失败:', error);
+    alert('获取驱动盘属性失败: ' + (error instanceof Error ? error.message : String(error)));
+  }
+}
+
+// 查看音擎属性
+async function showWengineStats(wengine: any) {
+  try {
+    // 1. 创建 WEngine 对象
+    const { WEngine } = await import('../../model/wengine');
+
+    const engine = await WEngine.fromZodData(wengine, dataLoaderService);
+
+    // 2. 获取属性
+    const stats = engine.getBaseStats();
+
+    // 3. 转换为JSON对象
+    const statsJson = stats.toJSON();
+
+    // 4. 输出JSON到控制台和弹窗
+    console.log(`音擎 ${wengine.key} 的属性:`, statsJson);
+    alert(`音擎 ${wengine.key} 的属性已输出到控制台\n\nJSON:\n${JSON.stringify(statsJson, null, 2)}`);
+  } catch (error) {
+    console.error('获取音擎属性失败:', error);
+    alert('获取音擎属性失败: ' + (error instanceof Error ? error.message : String(error)));
+  }
 }
 </script>
 

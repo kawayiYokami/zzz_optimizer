@@ -1,93 +1,132 @@
-{
-  "agent_id": "1381",
-  "name": "零号·安比",
-  "code_name": "Soldier 0 - Anby",
-  "rarity": 4,
-  "weapon_type": "强攻",
-  "element_type": "电属性",
-  "core_passive_buffs": [
-    {
-      "id": "1381_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "零号·安比对拥有[银星]标记的敌人造成的伤害提升25%",
-      "source": "CORE_PASSIVE",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "COMMON_DMG_": 25.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    },
-    {
-      "id": "1381_core_passive_7_2",
-      "name": "CORE_PASSIVE-BUFF2",
-      "description": "敌方单位被施加[银星]标记后，受到的[追加攻击]暴击伤害额外提升，提升效果等同于零号·安比暴击伤害的30%",
-      "source": "CORE_PASSIVE",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "CRIT_DMG_": 30.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    },
-    {
-      "id": "1381_core_passive_7_3",
-      "name": "CORE_PASSIVE-BUFF3",
-      "description": "队伍中存在[击破]或[支援]角色时触发：\n零号·安比的暴击率提升10%",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "CRIT_RATE_": 10.0
-      },
-      "trigger_conditions": "[击破]或[支援]角色",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    },
-    {
-      "id": "1381_core_passive_7_4",
-      "name": "CORE_PASSIVE-BUFF4",
-      "description": "角色为零号·安比时，全队角色[追加攻击]对拥有[银星]标记的敌人造成的伤害提升25%",
-      "source": "CORE_PASSIVE",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": true,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "COMMON_DMG_": 25.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1381_core_passive_1",
+    "name": "电位差-银星目标伤害提升",
+    "description": "零号·安比对拥有[银星]标记的敌人造成的伤害提升25%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "dmg_percent_vs_marked": 0.25 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "攻击拥有[银星]标记的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_core_passive_2",
+    "name": "电位差-追加攻击暴击伤害",
+    "description": "敌方被施加[银星]标记后，受到的[追加攻击]暴击伤害额外提升，等同于零号·安比暴击伤害的35%（30%+5%）。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_enemy": true, "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "additional_attack_crit_dmg_percent": 0.35 },
+    "out_of_combat_stats": {},
+    "conversion": { "from": "crit_dmg", "to": "additional_attack_crit_dmg", "rate": 0.35 },
+    "trigger_conditions": "敌方被施加[银星]标记",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_core_passive_3",
+    "name": "电位差-银星充能",
+    "description": "[银星]标记期间，受到来自队友的[追加攻击]伤害会为敌方单位累积[银星]充能。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "队友[追加攻击]命中拥有[银星]标记的敌人（5秒冷却）",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_core_passive_4",
+    "name": "电极化-暴击率提升",
+    "description": "零号·安比的暴击率提升10%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "crit_rate": 0.1 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "队伍中存在[击破]或[支援]角色",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_core_passive_5",
+    "name": "电极化-追加攻击伤害提升",
+    "description": "全队角色[追加攻击]对拥有[银星]标记的敌人造成的伤害提升25%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "additional_attack_dmg_percent": 0.25 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "当前操作角色为零号·安比，攻击拥有[银星]标记的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_potential_1",
+    "name": "潜能觉醒-追加攻击伤害提升",
+    "description": "[额外能力：电极化]中，全队角色[追加攻击]对拥有[银星]标记的敌人造成的伤害提升效果提升至34%。",
+    "source": "POTENTIAL",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "additional_attack_dmg_percent": 0.34 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "当前操作角色为零号·安比，攻击拥有[银星]标记的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_potential_2",
+    "name": "潜能觉醒-追加攻击伤害提升",
+    "description": "[额外能力：电极化]中，全队角色[追加攻击]对拥有[银星]标记的敌人造成的伤害提升效果提升至38%。",
+    "source": "POTENTIAL",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "additional_attack_dmg_percent": 0.38 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "当前操作角色为零号·安比，攻击拥有[银星]标记的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_potential_3",
+    "name": "潜能觉醒-追加攻击伤害提升",
+    "description": "[额外能力：电极化]中，全队角色[追加攻击]对拥有[银星]标记的敌人造成的伤害提升效果提升至42%。",
+    "source": "POTENTIAL",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "additional_attack_dmg_percent": 0.42 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "当前操作角色为零号·安比，攻击拥有[银星]标记的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_potential_4",
+    "name": "潜能觉醒-追加攻击伤害提升",
+    "description": "[额外能力：电极化]中，全队角色[追加攻击]对拥有[银星]标记的敌人造成的伤害提升效果提升至46%。",
+    "source": "POTENTIAL",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "additional_attack_dmg_percent": 0.46 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "当前操作角色为零号·安比，攻击拥有[银星]标记的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1381_potential_5",
+    "name": "潜能觉醒-追加攻击伤害提升",
+    "description": "[额外能力：电极化]中，全队角色[追加攻击]对拥有[银星]标记的敌人造成的伤害提升效果提升至50%。",
+    "source": "POTENTIAL",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "additional_attack_dmg_percent": 0.5 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "当前操作角色为零号·安比，攻击拥有[银星]标记的敌人",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

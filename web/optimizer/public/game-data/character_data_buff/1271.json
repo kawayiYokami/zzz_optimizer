@@ -1,33 +1,54 @@
-{
-  "agent_id": "1271",
-  "name": "赛斯",
-  "code_name": "Seth",
-  "rarity": 3,
-  "weapon_type": "防护",
-  "element_type": "电属性",
-  "core_passive_buffs": [],
-  "talent_buffs": [
-    {
-      "id": "1271_talent_6_1",
-      "name": "TALENT-BUFF1",
-      "description": "赛斯在[普通攻击：雷霆击-感电]中发动终结一击命中敌人时，额外造成自身500%攻击力的伤害，本次攻击必定触发暴击，且暴击伤害提升60%",
-      "source": "TALENT",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "ATK_": 500.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1271_COREPASSIVE_1_1",
+    "name": "守望者-异常精通提升",
+    "description": "拥有[匪石之盾]时，持有者的异常精通提升100点",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "ANOMALY_MASTERY": 100.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[匪石之盾]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1271_COREPASSIVE_2_1",
+    "name": "意气风发-异常积蓄抗性降低",
+    "description": "赛斯发动[连携技：最终制裁]命中敌人或在[普通攻击：雷霆击-感电]中发动终结一击命中敌人时，目标的全属性异常积蓄抗性降低20%，持续20秒",
+    "source": "CORE_PASSIVE",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "ANOMALY_RESISTANCE_REDUCTION": 0.2 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[连携技：最终制裁]或终结一击命中敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1271_TALENT_6_1",
+    "name": "理想主义-额外伤害",
+    "description": "在[普通攻击：雷霆击-感电]中发动终结一击命中敌人时，额外造成自身500%攻击力的伤害",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": { "from": "atk", "to": "flat_damage", "rate": 5.0 },
+    "trigger_conditions": "在[普通攻击：雷霆击-感电]中发动终结一击命中敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1271_TALENT_6_2",
+    "name": "理想主义-暴击伤害提升",
+    "description": "终结一击命中敌人时，暴击伤害提升60%",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_DMG": 0.6 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "在[普通攻击：雷霆击-感电]中发动终结一击命中敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

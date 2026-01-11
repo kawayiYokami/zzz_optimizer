@@ -273,6 +273,23 @@ export function getPropertyCnName(propertyType: PropertyType): string {
 }
 
 /**
+ * 中文名称到 PropertyType 的反向映射
+ */
+export const CN_NAME_TO_PROPERTY: Record<string, PropertyType> = {};
+for (const [propType, cnName] of Object.entries(PROPERTY_CN_NAMES)) {
+  if (cnName) {
+    CN_NAME_TO_PROPERTY[cnName] = propType as unknown as PropertyType;
+  }
+}
+
+/**
+ * 根据中文名称获取 PropertyType
+ */
+export function getPropertyTypeByCnName(cnName: string): PropertyType | undefined {
+  return CN_NAME_TO_PROPERTY[cnName];
+}
+
+/**
  * 判断是否为百分比属性
  */
 export function isPercentageProperty(propertyType: PropertyType): boolean {

@@ -250,25 +250,55 @@ export class WEngine {
       const wengineDetail = await dataLoader.getWeaponDetail(gameWengineId);
       const wengineBuffData = await dataLoader.getWeaponBuff(gameWengineId);
 
-      // 设置基础属性
-      if (wengineDetail.base_atk) {
-        wengine.base_atk = wengineDetail.base_atk;
+      // 设置基础属性（从 BaseProperty.Value 获取）
+      if (wengineDetail.BaseProperty && wengineDetail.BaseProperty.Value !== undefined) {
+        wengine.base_atk = wengineDetail.BaseProperty.Value;
       }
 
-      if (wengineDetail.rand_stat_type) {
-        wengine.rand_stat_type = wengineDetail.rand_stat_type as PropertyType;
+      // 设置副属性类型（从 RandProperty.Name 推断）
+      if (wengineDetail.RandProperty) {
+        const randPropName = wengineDetail.RandProperty.Name || wengineDetail.RandProperty.Name2;
+        // 根据名称推断属性类型
+        if (randPropName.includes('攻击力') && randPropName.includes('%')) {
+          wengine.rand_stat_type = PropertyType.ATK_;
+        } else if (randPropName.includes('攻击力')) {
+          wengine.rand_stat_type = PropertyType.ATK;
+        } else if (randPropName.includes('生命值') && randPropName.includes('%')) {
+          wengine.rand_stat_type = PropertyType.HP_;
+        } else if (randPropName.includes('生命值')) {
+          wengine.rand_stat_type = PropertyType.HP;
+        } else if (randPropName.includes('防御力') && randPropName.includes('%')) {
+          wengine.rand_stat_type = PropertyType.DEF_;
+        } else if (randPropName.includes('防御力')) {
+          wengine.rand_stat_type = PropertyType.DEF;
+        } else if (randPropName.includes('暴击率')) {
+          wengine.rand_stat_type = PropertyType.CRIT_;
+        } else if (randPropName.includes('暴击伤害')) {
+          wengine.rand_stat_type = PropertyType.CRIT_DMG_;
+        } else if (randPropName.includes('穿透')) {
+          wengine.rand_stat_type = PropertyType.PEN_;
+        } else if (randPropName.includes('异常精通')) {
+          wengine.rand_stat_type = PropertyType.ANOM_PROF;
+        }
       }
 
-      if (wengineDetail.rand_stat) {
-        wengine.rand_stat = wengineDetail.rand_stat;
+      // 设置副属性基础值
+      if (wengineDetail.RandProperty && wengineDetail.RandProperty.Value !== undefined) {
+        // 如果 Format 包含%，则是百分比属性，需要除以100
+        const isPercent = wengineDetail.RandProperty.Format && wengineDetail.RandProperty.Format.includes('%');
+        wengine.rand_stat = isPercent ? wengineDetail.RandProperty.Value / 100 : wengineDetail.RandProperty.Value;
       }
 
-      // 设置等级成长数据
-      if (wengineDetail.level_data) {
-        for (const [level, data] of Object.entries(wengineDetail.level_data)) {
+      // 设置等级成长数据（从 Level 获取）
+      if (wengineDetail.Level) {
+        for (const [level, data] of Object.entries(wengineDetail.Level)) {
           wengine.level_data.set(
             parseInt(level),
-            WEngineLevelData.fromDict(data)
+            new WEngineLevelData(
+              parseInt(level),
+              (data as any).Exp || 0,
+              (data as any).Rate || 0
+            )
           );
         }
       }
@@ -276,7 +306,7 @@ export class WEngine {
       // 计算当前等级的基础属性
       wengine.base_stats = wengine.getStatsAtLevel(zodData.level, zodData.promotion);
 
-      // 加载天赋数据
+      // 加载天赋数据（从 wengineBuffData.talents 获取）
       if (wengineBuffData.talents) {
         for (const talentData of wengineBuffData.talents) {
           const buffs = (talentData.buffs || []).map((b: any) => Buff.fromBuffData(b));
