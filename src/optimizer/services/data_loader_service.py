@@ -225,7 +225,6 @@ class DataLoaderService:
             name_cn = en_name or "未知角色"  # 默认使用英文名
 
             if not result:
-                print(f"警告: 未找到角色 key={en_name} (game_id={agent_game_id}) 的游戏数据")
                 # 使用默认值
                 rarity = Rarity.S
                 element = ElementType.PHYSICAL
@@ -263,7 +262,6 @@ class DataLoaderService:
 
             return agent
         except Exception as e:
-            print(f"解析角色数据失败: {e}, 数据: {data}")
             return None
 
     def _parse_drive_disk(self, data: Dict) -> Optional[DriveDisk]:
@@ -344,11 +342,10 @@ class DataLoaderService:
                         ]
 
                 except Exception as buff_e:
-                    print(f"加载驱动盘套装 {set_key} 的BUFF数据失败: {buff_e}")
+                    pass
 
             return disk
         except Exception as e:
-            print(f"解析驱动盘数据失败: {e}, 数据: {data}")
             return None
 
     def _parse_wengine(self, data: Dict) -> Optional[WEngine]:
@@ -376,13 +373,11 @@ class DataLoaderService:
                     break
 
             if not wengine_game_id:
-                print(f"警告: 未找到音擎 {wengine_key} 的游戏ID")
                 return None
 
             # 从缓存读取详细数据
             wengine_raw = self._weapon_detail_cache.get(wengine_game_id)
             if not wengine_raw:
-                print(f"警告: 缓存中未找到音擎 {wengine_game_id} 的详细数据")
                 return None
 
             # ===== 解析基础属性 =====
@@ -433,7 +428,7 @@ class DataLoaderService:
                         )
                         talents.append(talent)
                 except Exception as e:
-                    print(f"解析音擎 {wengine_game_id} 的buff数据失败: {e}")
+                    pass
 
             # ===== 创建WEngine对象 =====
             from optimizer.zzz_models.wengine import WEngine as WEngineModel
@@ -457,9 +452,6 @@ class DataLoaderService:
 
             return wengine
         except Exception as e:
-            print(f"解析音擎数据失败: {e}")
-            import traceback
-            traceback.print_exc()
             return None
 
     def _parse_skill_level(self, skill_str: str) -> int:
@@ -662,7 +654,7 @@ class DataLoaderService:
                         field_name, scale = CORE_PROP_MAP[prop_id]
                         bonuses[field_name] = raw_value * scale
                     else:
-                        print(f"警告: 未知的核心属性 {prop_id} ({prop_data.get('Name', '')})")
+                        pass
 
                 core_bonuses.append(bonuses)
 
@@ -807,12 +799,10 @@ class DataLoaderService:
                         ]
 
                 except Exception as buff_e:
-                    print(f"加载角色 {agent.game_id} 的BUFF数据失败: {buff_e}")
+                    pass
 
         except Exception as e:
-            print(f"加载角色 {agent.game_id} 的详细属性失败: {e}")
-            import traceback
-            traceback.print_exc()
+            pass
 
     def _load_agent_skill_set(self, agent: Agent) -> None:
         """加载角色技能集
@@ -975,7 +965,7 @@ class DataLoaderService:
                         self._weapon_detail_cache[wengine_id] = json.load(f)
                     loaded_count += 1
                 except Exception as e:
-                    print(f"加载音擎 {wengine_id} 详细数据失败: {e}")
+                    pass
 
             # 加载音擎buff数据
             buff_file = weapon_buff_dir / f"{wengine_id}.json"
@@ -984,7 +974,7 @@ class DataLoaderService:
                     with open(buff_file, 'r', encoding='utf-8') as f:
                         self._weapon_buff_cache[wengine_id] = json.load(f)
                 except Exception as e:
-                    print(f"加载音擎 {wengine_id} buff数据失败: {e}")
+                    pass
 
     def _preload_character_details(self) -> None:
         """预加载所有角色详细数据到缓存"""
@@ -1008,7 +998,7 @@ class DataLoaderService:
                         self._character_detail_cache[character_id] = json.load(f)
                     loaded_count += 1
                 except Exception as e:
-                    print(f"加载角色 {character_id} 详细数据失败: {e}")
+                    pass
 
             # 加载角色buff数据
             buff_file = character_buff_dir / f"{character_id}.json"
@@ -1017,7 +1007,7 @@ class DataLoaderService:
                     with open(buff_file, 'r', encoding='utf-8') as f:
                         self._character_buff_cache[character_id] = json.load(f)
                 except Exception as e:
-                    print(f"加载角色 {character_id} buff数据失败: {e}")
+                    pass
 
     def _preload_equipment_details(self) -> None:
         """预加载所有驱动盘详细数据到缓存"""
@@ -1030,7 +1020,6 @@ class DataLoaderService:
         if not equipment_dir.exists():
             return
 
-        print(f"预加载驱动盘详细数据...")
         loaded_count = 0
 
         # 遍历所有驱动盘ID
@@ -1043,7 +1032,7 @@ class DataLoaderService:
                         self._equipment_detail_cache[equipment_id] = json.load(f)
                     loaded_count += 1
                 except Exception as e:
-                    print(f"加载驱动盘 {equipment_id} 详细数据失败: {e}")
+                    pass
 
             # 加载驱动盘buff数据
             buff_file = equipment_buff_dir / f"{equipment_id}.json"
@@ -1052,9 +1041,7 @@ class DataLoaderService:
                     with open(buff_file, 'r', encoding='utf-8') as f:
                         self._equipment_buff_cache[equipment_id] = json.load(f)
                 except Exception as e:
-                    print(f"加载驱动盘 {equipment_id} buff数据失败: {e}")
-
-        print(f"预加载完成：{loaded_count} 个驱动盘详细数据")
+                    pass
 
     def _preload_csv_data(self) -> None:
         """预加载所有CSV数据到缓存"""
@@ -1064,30 +1051,22 @@ class DataLoaderService:
         if not csv_dir.exists():
             return
 
-        print(f"预加载CSV数据...")
         csv_loader = CsvDataLoaderService(csv_dir)
 
         # 加载代理人技能数据
         self._agent_skill_sets = csv_loader.load_agent_skills()
-        print(f"  - 代理人技能: {len(self._agent_skill_sets)} 个")
 
         # 加载邦布属性数据
         self._bangboo_stats = csv_loader.load_bangboo_stats()
-        print(f"  - 邦布属性: {len(self._bangboo_stats)} 个")
 
         # 加载邦布技能数据
         self._bangboo_skills = csv_loader.load_bangboo_skills()
-        print(f"  - 邦布技能: {len(self._bangboo_skills)} 个")
 
         # 加载敌人属性数据
         self._enemies = csv_loader.load_enemies()
-        print(f"  - 敌人属性: {len(self._enemies)} 个")
 
         # 加载异常条数据
         self._anomaly_bars = csv_loader.load_anomaly_bars()
-        print(f"  - 异常条: {len(self._anomaly_bars)} 个")
-
-        print(f"预加载完成：所有CSV数据")
 
     def _load_wengine_game_data(self, wengine: WEngine) -> None:
         """从缓存中加载音擎基础属性
@@ -1103,7 +1082,6 @@ class DataLoaderService:
         # 从缓存中获取音擎详细数据
         wengine_raw = self._weapon_detail_cache.get(wengine.wengine_id)
         if not wengine_raw:
-            print(f"警告: 缓存中未找到音擎 {wengine.wengine_id} 的详细数据")
             return
 
         try:
@@ -1157,15 +1135,13 @@ class DataLoaderService:
                         )
                         wengine.talents.append(talent)
                 except Exception as e:
-                    print(f"解析音擎 {wengine.wengine_id} 的buff数据失败: {e}")
+                    pass
 
             # ===== 5. 计算当前等级的属性并缓存到 base_stats =====
             wengine.base_stats = wengine.get_stats_at_level(wengine.level, wengine.breakthrough)
 
         except Exception as e:
-            print(f"加载音擎 {wengine.wengine_id} 的游戏数据失败: {e}")
-            import traceback
-            traceback.print_exc()
+            pass
 
 
     def _map_wengine_stat_name(self, stat_name: str) -> Optional[PropertyType]:

@@ -108,20 +108,11 @@ class BattleService:
         if not self.enemy:
             raise ValueError("请先设置敌人")
 
-        print("\n" + "="*60)
-        print("  BattleService.start_battle() 调试日志")
-        print("="*60)
-
         # 配置流水线
         self.configure_pipeline()
 
         self.is_battle_started = True
         self.is_battle_paused = False
-
-        print(f"\n[状态]")
-        print(f"  is_battle_started: {self.is_battle_started}")
-        print(f"  pipeline_steps: {len(self._pipeline_config)}")
-        print("="*60 + "\n")
 
     def pause_battle(self):
         """暂停战斗（停止计算，保留状态）"""
@@ -210,17 +201,11 @@ class BattleService:
         zones = ZoneCollection()
         zones.combat_stats = agent_stats
 
-        print(f"\n[DEBUG] execute_pipeline 开始执行流水线，共 {len(self._pipeline_config)} 个步骤")
-
         # 执行流水线步骤
         for i, step in enumerate(self._pipeline_config):
             func = step['func']
             args = step.get('args', [])
             step_name = step['name']
-
-            print(f"\n[DEBUG] 步骤 {i+1}/{len(self._pipeline_config)}: {step_name}")
-            print(f"  函数: {func.__name__}")
-            print(f"  参数: {args}")
 
             # 构建参数
             kwargs = {}
@@ -245,29 +230,23 @@ class BattleService:
                 # 创建倍率集
                 result = func(**kwargs)
                 zones.ratios = result
-                print(f"  返回值: RatioSet(atk_ratio={result.atk_ratio:.4f}, pen_ratio={result.pen_ratio:.4f})")
             elif 'zones' in func.__code__.co_varnames:
                 # 需要传入 zones 参数
                 kwargs['zones'] = zones
                 zones = func(**kwargs)
-                print(f"  返回值: ZoneCollection 对象")
             else:
                 # 其他步骤，直接调用函数
                 result = func(**kwargs)
                 if hasattr(zones, step_name):
                     setattr(zones, step_name, result)
-                    print(f"  返回值: {result:.4f}")
-                result = func(**kwargs)
-                if hasattr(zones, step_name):
-                    setattr(zones, step_name, result)
-        
+
         # 如果有异常伤害，执行异常流水线
         if anomaly_ratio > 0:
             # 异常乘区
             zones = DamageCalculatorService.calculate_anomaly_zones(
                 agent_stats, enemy_stats, anomaly_type, anomaly_buildup, zones
             )
-        
+
         return zones
 
     # ==================== 伤害计算 ====================
@@ -331,19 +310,6 @@ class BattleService:
             crit_dmg=agent_stats.crit_dmg,
         )
 
-        # 打包直伤结果
-        direct_result = DamageCalculatorService.pack_direct_damage_result(
-            zones=zones,
-            base_damage=zones.atk_zone * zones.ratio_zone,  # 向后兼容
-            skill_ratio=skill_damage_ratio,
-            element=skill_element,
-            is_penetration=is_penetration,
-            crit_rate=agent_stats.crit_rate,
-            crit_dmg=agent_stats.crit_dmg,
-        )
-
-        # 打包异常伤害结果（如果有）
-        anomaly_result = None
         # 修改判断条件：如果有异常积蓄，就计算异常伤害
         if skill_anomaly_buildup > 0:
             anomaly_threshold = enemy_stats.get_anomaly_threshold(skill_element)
@@ -403,72 +369,30 @@ class BattleService:
                     trigger_expect=trigger_expect,
                 )
 
-            anomaly_result = DamageCalculatorService.pack_anomaly_damage_result(
-                zones=zones,
-                anomaly_type=skill_element,
-                anomaly_ratio=anomaly_effect.get_total_ratio(),
-                anomaly_buildup=skill_anomaly_buildup,
-                anomaly_threshold=anomaly_threshold,
-                anomaly_crit_rate=anomaly_crit_rate,
-            )
-
         # 调用总伤害最终值计算窗口
         zones = DamageCalculatorService.calculate_total_damage_values(zones=zones)
 
-        # 打包总伤害结果
-        result = DamageCalculatorService.pack_total_damage_result(
-            zones=zones, direct_result=direct_result, anomaly_result=anomaly_result,
-        )
-
-        # 返回字典（向后兼容）
-        return {
-            'normal_damage_no_crit': result.total_damage_no_crit - (result.anomaly_result.damage_no_crit if result.anomaly_result else 0),
-            'normal_damage_crit': result.total_damage_crit - (result.anomaly_result.damage_crit if result.anomaly_result else 0),
-            'normal_damage_expected': result.total_damage_expected - (result.anomaly_result.damage_expected if result.anomaly_result else 0),
-            'anomaly_damage_no_crit': result.anomaly_result.damage_no_crit if result.anomaly_result else 0,
-            'anomaly_damage_crit': result.anomaly_result.damage_crit if result.anomaly_result else 0,
-            'anomaly_damage_expected': result.anomaly_result.damage_expected if result.anomaly_result else 0,
-            'total_damage_no_crit': result.total_damage_no_crit,
-            'total_damage_crit': result.total_damage_crit,
-            'total_damage_expected': result.total_damage_expected,
-        }
-
-        # 输出调试信息
-        print("\n" + "="*60)
-        print("  BattleService.calculate_skill_damage() 调试日志")
-        print("="*60)
-        print(f"\n[输入参数]")
-        print(f"  skill_damage_ratio: {skill_damage_ratio:.4f} ({skill_damage_ratio*100:.1f}%)")
-        print(f"  skill_anomaly_buildup: {skill_anomaly_buildup:.2f}")
-        print(f"  skill_anomaly_ratio: {skill_anomaly_ratio:.4f}")
-        print(f"  skill_element: {skill_element}")
-        print(f"  is_penetration: {is_penetration}")
-
-        print(result.format(indent=2))
-        print("="*60 + "\n")
-
-        # 构建返回字典，兼容旧接口
+        # 构建返回字典，直接从 ZoneCollection 提取数据
         return_dict = {
-            'normal_damage_no_crit': result.direct_result.damage_no_crit if result.direct_result else 0.0,
-            'normal_damage_crit': result.direct_result.damage_crit if result.direct_result else 0.0,
-            'normal_damage_expected': result.direct_result.damage_expected if result.direct_result else 0.0,
-            'anomaly_damage_no_crit': result.anomaly_result.damage_no_crit if result.anomaly_result else 0.0,
-            'anomaly_damage_crit': result.anomaly_result.damage_crit if result.anomaly_result else 0.0,
-            'anomaly_damage_expected': result.anomaly_result.damage_expected if result.anomaly_result else 0.0,
-            'total_damage_expected': result.total_damage_expected,
-            'result': result,
+            'normal_damage_no_crit': zones.direct_damage_no_crit,
+            'normal_damage_crit': zones.direct_damage_crit,
+            'normal_damage_expected': zones.direct_damage_expected,
+            'anomaly_damage_no_crit': zones.anomaly_prof_damage_no_crit,
+            'anomaly_damage_crit': zones.anomaly_prof_damage_crit,
+            'anomaly_damage_expected': zones.anomaly_prof_damage_expected,
+            'total_damage_expected': zones.total_damage_expected,
+            'zones': zones,
         }
 
         # 添加兼容字段（用于 test_battle_verify.py）
-        if result.direct_result:
-            return_dict['atk_zone'] = result.direct_result.atk_zone
-            return_dict['ratio_zone'] = skill_damage_ratio
-            return_dict['dmg_bonus'] = result.direct_result.dmg_bonus
-            return_dict['crit_zone'] = result.direct_result.crit_zone
-            return_dict['def_mult'] = result.direct_result.def_mult
-            return_dict['res_mult'] = result.direct_result.res_mult
-            return_dict['dmg_taken_mult'] = result.direct_result.dmg_taken_mult
-            return_dict['stun_vuln_mult'] = result.direct_result.stun_vuln_mult
+        return_dict['atk_zone'] = zones.atk_zone
+        return_dict['ratio_zone'] = skill_damage_ratio
+        return_dict['dmg_bonus'] = zones.dmg_bonus
+        return_dict['crit_zone'] = zones.crit_zone
+        return_dict['def_mult'] = zones.def_mult
+        return_dict['res_mult'] = zones.res_mult
+        return_dict['dmg_taken_mult'] = zones.dmg_taken_mult
+        return_dict['stun_vuln_mult'] = zones.stun_vuln_mult
 
         return return_dict
 

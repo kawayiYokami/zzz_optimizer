@@ -19,7 +19,6 @@ from optimizer.zzz_models.combat_stats import (
     ASSAULT,
 )
 from optimizer.zzz_models.zone_collection import ZoneCollection
-from optimizer.zzz_models.damage_result import DirectDamageResult, AnomalyDamageResult, TotalDamageResult
 from optimizer.services.damage.data import EnemyStats, SkillDamageParams
 from optimizer.services.combat_stats_factory import create_combat_stats_from_agent
 from optimizer.services.combat_stats_factory import create_combat_stats_from_agent
@@ -1317,16 +1316,6 @@ class DamageCalculatorService:
         Returns:
             更新后的 ZoneCollection 对象
         """
-        print(f"\n[DEBUG] calculate_direct_damage_values 开始")
-        print(f"  combat_stats.atk: {zones.combat_stats.get_final_atk():.2f}")
-        print(f"  combat_stats.defense: {zones.combat_stats.get_final_def():.2f}")
-        print(f"  combat_stats.hp: {zones.combat_stats.get_final_hp():.2f}")
-        print(f"  combat_stats.penetration: {zones.combat_stats.get_final_penetration():.2f}")
-        print(f"  ratios.atk_ratio: {zones.ratios.atk_ratio:.4f}")
-        print(f"  ratios.def_ratio: {zones.ratios.def_ratio:.4f}")
-        print(f"  ratios.hp_ratio: {zones.ratios.hp_ratio:.4f}")
-        print(f"  ratios.pen_ratio: {zones.ratios.pen_ratio:.4f}")
-
         # 获取倍率集
         ratios = zones.ratios
 
@@ -1363,17 +1352,11 @@ class DamageCalculatorService:
                 * zones.distance_mult
             )
 
-        print(f"  直伤乘区（不含暴击）: {direct_mult:.4f}")
-
         # 计算暴击乘区
         crit_mult = 1.0 + crit_dmg
 
         # 计算暴击期望乘区
         crit_expectation_mult = 1.0 + crit_rate * crit_dmg
-
-        print(f"  暴击率: {crit_rate:.4f}")
-        print(f"  暴击伤害: {crit_dmg:.4f}")
-        print(f"  暴击期望乘区: {crit_expectation_mult:.4f}")
 
         # 计算各属性的伤害贡献（非暴击）
         atk_damage = atk * ratios.atk_ratio * direct_mult
@@ -1381,50 +1364,26 @@ class DamageCalculatorService:
         hp_damage = hp * ratios.hp_ratio * direct_mult
         pen_damage = penetration * ratios.pen_ratio * direct_mult
 
-        print(f"\n[DEBUG] 各属性伤害贡献（非暴击）:")
-        print(f"  攻击力伤害: {atk:.2f} × {ratios.atk_ratio:.4f} × {direct_mult:.4f} = {atk_damage:.2f}")
-        print(f"  防御力伤害: {defense:.2f} × {ratios.def_ratio:.4f} × {direct_mult:.4f} = {def_damage:.2f}")
-        print(f"  生命值伤害: {hp:.2f} × {ratios.hp_ratio:.4f} × {direct_mult:.4f} = {hp_damage:.2f}")
-        print(f"  贯穿力伤害: {penetration:.2f} × {ratios.pen_ratio:.4f} × {direct_mult:.4f} = {pen_damage:.2f}")
-
         # 存储各属性伤害贡献（期望）
         zones.atk_damage = math.ceil(atk_damage * crit_expectation_mult)
         zones.def_damage = math.ceil(def_damage * crit_expectation_mult)
         zones.hp_damage = math.ceil(hp_damage * crit_expectation_mult)
         zones.pen_damage = math.ceil(pen_damage * crit_expectation_mult)
-        
-        print(f"\n[DEBUG] 各属性伤害贡献（期望）:")
-        print(f"  攻击力伤害（期望）: {atk_damage:.2f} × {crit_expectation_mult:.4f} = {zones.atk_damage:.2f}")
-        print(f"  防御力伤害（期望）: {def_damage:.2f} × {crit_expectation_mult:.4f} = {zones.def_damage:.2f}")
-        print(f"  生命值伤害（期望）: {hp_damage:.2f} × {crit_expectation_mult:.4f} = {zones.hp_damage:.2f}")
-        print(f"  贯穿力伤害（期望）: {pen_damage:.2f} × {crit_expectation_mult:.4f} = {zones.pen_damage:.2f}")
 
         # 计算总伤害（累加各属性）
         damage_no_crit = atk_damage + def_damage + hp_damage + pen_damage
         damage_crit = damage_no_crit * crit_mult
         damage_expected = damage_no_crit * crit_expectation_mult
-        
-        print(f"\n[DEBUG] 直伤最终值:")
-        print(f"  非暴击: {damage_no_crit:.2f}")
-        print(f"  暴击: {damage_crit:.2f}")
-        print(f"  期望: {damage_expected:.2f}")
 
         # 向上取整
         damage_no_crit = math.ceil(damage_no_crit)
         damage_crit = math.ceil(damage_crit)
         damage_expected = math.ceil(damage_expected)
-        
-        print(f"\n[DEBUG] 直伤最终值（向上取整）:")
-        print(f"  非暴击: {damage_no_crit:.2f}")
-        print(f"  暴击: {damage_crit:.2f}")
-        print(f"  期望: {damage_expected:.2f}")
 
         # 存入 ZoneCollection
         zones.direct_damage_no_crit = damage_no_crit
         zones.direct_damage_crit = damage_crit
         zones.direct_damage_expected = damage_expected
-        
-        print(f"\n[DEBUG] calculate_direct_damage_values 完成")
 
         return zones
 
@@ -1456,11 +1415,6 @@ class DamageCalculatorService:
         if anomaly_atk_ratio <= 0:
             return zones
 
-        print(f"\n[DEBUG] calculate_anomaly_attack_damage_values 开始")
-        print(f"  异常直伤倍率: {anomaly_atk_ratio:.4f} ({anomaly_atk_ratio * 100:.1f}%)")
-        print(f"  base_properties.atk: {zones.combat_stats.get_final_atk():.2f}")
-        print(f"  触发期望: {trigger_expect:.4f}")
-
         # ==================== 计算直伤乘区 ====================
         # 直伤乘区 = 增伤区 × 防御区 × 抗性区 × 减易伤区 × 失衡易伤区
         direct_mult = (
@@ -1471,17 +1425,8 @@ class DamageCalculatorService:
             * zones.stun_vuln_mult
         )
 
-        print(f"  增伤区: {zones.dmg_bonus:.4f}")
-        print(f"  防御区: {zones.def_mult:.4f}")
-        print(f"  抗性区: {zones.res_mult:.4f}")
-        print(f"  减易伤区: {zones.dmg_taken_mult:.4f}")
-        print(f"  失衡易伤区: {zones.stun_vuln_mult:.4f}")
-        print(f"  直伤乘区: {direct_mult:.4f}")
-
         # ==================== 计算基础伤害 ====================
         base_damage = zones.combat_stats.get_final_atk() * anomaly_atk_ratio * direct_mult * trigger_expect
-
-        print(f"  基础伤害: {zones.combat_stats.get_final_atk():.2f} × {anomaly_atk_ratio:.4f} × {direct_mult:.4f} × {trigger_expect:.4f} = {base_damage:.2f}")
 
         # ==================== 应用暴击 ====================
         # 非暴击伤害
@@ -1494,23 +1439,10 @@ class DamageCalculatorService:
         crit_expectation = 1.0 + zones.combat_stats.crit_rate * zones.combat_stats.crit_dmg
         damage_expected = base_damage * crit_expectation
 
-        print(f"  暴击率: {zones.combat_stats.crit_rate:.4f}")
-        print(f"  暴击伤害: {zones.combat_stats.crit_dmg:.4f}")
-        print(f"  暴击期望乘区: {crit_expectation:.4f}")
-        print(f"\n[DEBUG] 异常直伤最终值:")
-        print(f"  非暴击: {damage_no_crit:.2f}")
-        print(f"  暴击: {damage_crit:.2f}")
-        print(f"  期望: {damage_expected:.2f}")
-
         # 向上取整
         damage_no_crit = math.ceil(damage_no_crit)
         damage_crit = math.ceil(damage_crit)
         damage_expected = math.ceil(damage_expected)
-
-        print(f"\n[DEBUG] 异常直伤最终值（向上取整）:")
-        print(f"  非暴击: {damage_no_crit:.2f}")
-        print(f"  暴击: {damage_crit:.2f}")
-        print(f"  期望: {damage_expected:.2f}")
 
         # 存入 ZoneCollection
         zones.anomaly_attack_damage_no_crit = damage_no_crit
@@ -1550,16 +1482,8 @@ class DamageCalculatorService:
         if anomaly_prof_ratio <= 0:
             return zones
 
-        print(f"\n[DEBUG] calculate_anomaly_proficiency_damage_values 开始")
-        print(f"  异常倍率: {anomaly_prof_ratio:.4f} ({anomaly_prof_ratio * 100:.1f}%)")
-        print(f"  base_properties.atk: {zones.combat_stats.get_final_atk():.2f}")
-        print(f"  base_properties.anomaly_prof: {zones.combat_stats.base_anomaly_proficiency + zones.combat_stats.anomaly_proficiency_flat:.2f}")
-        print(f"  触发期望: {trigger_expect:.4f}")
-
         # ==================== 计算异常精通区 ====================
         anomaly_prof_zone = zones.combat_stats.base_anomaly_proficiency + zones.combat_stats.anomaly_proficiency_flat / 100.0
-
-        print(f"  异常精通区: {zones.combat_stats.base_anomaly_proficiency + zones.combat_stats.anomaly_proficiency_flat:.2f} / 100 = {anomaly_prof_zone:.4f}")
 
         # ==================== 计算异常乘区 ====================
         # 异常乘区 = 增伤区 × 防御区 × 抗性区 × 减易伤区 × 失衡易伤区 × 等级区 × 异常增伤区
@@ -1573,15 +1497,6 @@ class DamageCalculatorService:
             * zones.anomaly_dmg_mult
         )
 
-        print(f"  增伤区: {zones.dmg_bonus:.4f}")
-        print(f"  防御区: {zones.def_mult:.4f}")
-        print(f"  抗性区: {zones.res_mult:.4f}")
-        print(f"  减易伤区: {zones.dmg_taken_mult:.4f}")
-        print(f"  失衡易伤区: {zones.stun_vuln_mult:.4f}")
-        print(f"  等级区: {zones.level_mult:.4f}")
-        print(f"  异常增伤区: {zones.anomaly_dmg_mult:.4f}")
-        print(f"  异常乘区: {anomaly_mult:.4f}")
-
         # ==================== 计算基础伤害 ====================
         base_damage = (
             zones.combat_stats.get_final_atk()
@@ -1590,8 +1505,6 @@ class DamageCalculatorService:
             * anomaly_mult
             * trigger_expect
         )
-
-        print(f"  基础伤害: {zones.combat_stats.get_final_atk():.2f} × {anomaly_prof_ratio:.4f} × {anomaly_prof_zone:.4f} × {anomaly_mult:.4f} × {trigger_expect:.4f} = {base_damage:.2f}")
 
         # ==================== 应用异常暴击 ====================
         # 非暴击伤害
@@ -1604,23 +1517,10 @@ class DamageCalculatorService:
         anomaly_crit_expectation = 1.0 + zones.combat_stats.anomaly_crit_rate * zones.combat_stats.anomaly_crit_dmg
         damage_expected = base_damage * anomaly_crit_expectation
 
-        print(f"  异常暴击率: {zones.combat_stats.anomaly_crit_rate:.4f}")
-        print(f"  异常暴击伤害: {zones.combat_stats.anomaly_crit_dmg:.4f}")
-        print(f"  异常暴击期望乘区: {anomaly_crit_expectation:.4f}")
-        print(f"\n[DEBUG] 异常精通伤害最终值:")
-        print(f"  非暴击: {damage_no_crit:.2f}")
-        print(f"  暴击: {damage_crit:.2f}")
-        print(f"  期望: {damage_expected:.2f}")
-
         # 向上取整
         damage_no_crit = math.ceil(damage_no_crit)
         damage_crit = math.ceil(damage_crit)
         damage_expected = math.ceil(damage_expected)
-
-        print(f"\n[DEBUG] 异常精通伤害最终值（向上取整）:")
-        print(f"  非暴击: {damage_no_crit:.2f}")
-        print(f"  暴击: {damage_crit:.2f}")
-        print(f"  期望: {damage_expected:.2f}")
 
         # 存入 ZoneCollection
         zones.anomaly_prof_damage_no_crit = damage_no_crit
@@ -1658,10 +1558,6 @@ class DamageCalculatorService:
         if disorder_ratio <= 0:
             return zones
 
-        print(f"\n[DEBUG] calculate_disorder_damage_values 开始")
-        print(f"  紊乱倍率: {disorder_ratio:.4f} ({disorder_ratio * 100:.1f}%)")
-        print(f"  触发期望: {trigger_expect:.4f}")
-
         # ==================== 计算异常精通区 ====================
         anomaly_prof_zone = zones.combat_stats.base_anomaly_proficiency + zones.combat_stats.anomaly_proficiency_flat / 100.0
 
@@ -1685,8 +1581,6 @@ class DamageCalculatorService:
             * trigger_expect
         )
 
-        print(f"  基础伤害: {zones.combat_stats.get_final_atk():.2f} × {disorder_ratio:.4f} × {anomaly_prof_zone:.4f} × {anomaly_mult:.4f} × {trigger_expect:.4f} = {base_damage:.2f}")
-
         # ==================== 应用异常暴击 ====================
         damage_no_crit = base_damage
         damage_crit = base_damage * (1.0 + zones.combat_stats.anomaly_crit_dmg)
@@ -1694,20 +1588,10 @@ class DamageCalculatorService:
         anomaly_crit_expectation = 1.0 + zones.combat_stats.anomaly_crit_rate * zones.combat_stats.anomaly_crit_dmg
         damage_expected = base_damage * anomaly_crit_expectation
 
-        print(f"\n[DEBUG] 紊乱伤害最终值:")
-        print(f"  非暴击: {damage_no_crit:.2f}")
-        print(f"  暴击: {damage_crit:.2f}")
-        print(f"  期望: {damage_expected:.2f}")
-
         # 向上取整
         damage_no_crit = math.ceil(damage_no_crit)
         damage_crit = math.ceil(damage_crit)
         damage_expected = math.ceil(damage_expected)
-
-        print(f"\n[DEBUG] 紊乱伤害最终值（向上取整）:")
-        print(f"  非暴击: {damage_no_crit:.2f}")
-        print(f"  暴击: {damage_crit:.2f}")
-        print(f"  期望: {damage_expected:.2f}")
 
         # 存入 ZoneCollection
         zones.disorder_damage_no_crit = damage_no_crit
@@ -1754,145 +1638,3 @@ class DamageCalculatorService:
         zones.total_damage_expected = total_expected
 
         return zones
-
-    # ==================== 打包方法 ====================
-
-    @staticmethod
-    def pack_direct_damage_result(zones: ZoneCollection, base_damage: float, skill_ratio: float, element: str, is_penetration: bool, crit_rate: float, crit_dmg: float) -> DirectDamageResult:
-        """打包直伤结果（打包方法）
-
-        从 ZoneCollection 读取乘区和最终伤害值，复制到 DirectDamageResult 对象。
-        不执行任何计算。
-
-        Args:
-            zones: ZoneCollection 对象
-            base_damage: 基础伤害（攻击力 × 倍率）
-            skill_ratio: 技能倍率
-            element: 元素类型
-            is_penetration: 是否贯穿伤害
-            crit_rate: 暴击率
-            crit_dmg: 暴击伤害
-
-        Returns:
-            DirectDamageResult 对象
-        """
-        from ..zzz_models.damage_result import DirectDamageResult
-
-        return DirectDamageResult(
-            damage_no_crit=zones.direct_damage_no_crit,
-            damage_crit=zones.direct_damage_crit,
-            damage_expected=zones.direct_damage_expected,
-            base_damage=base_damage,
-            skill_ratio=skill_ratio,
-            element=element,
-            atk_zone=zones.atk_zone,
-            dmg_bonus=zones.dmg_bonus,
-            crit_rate=crit_rate,
-            crit_dmg=crit_dmg,
-            crit_zone=zones.crit_zone,
-            def_mult=zones.def_mult,
-            res_mult=zones.res_mult,
-            dmg_taken_mult=zones.dmg_taken_mult,
-            stun_vuln_mult=zones.stun_vuln_mult,
-            distance_mult=zones.distance_mult,
-            is_penetration=is_penetration,
-            penetration_dmg_bonus=zones.penetration_dmg_bonus if is_penetration else 0.0,
-        )
-
-    @staticmethod
-    def pack_anomaly_damage_result(zones: ZoneCollection, anomaly_type: str, anomaly_ratio: float, anomaly_buildup: float, anomaly_threshold: float, anomaly_crit_rate: float) -> AnomalyDamageResult:
-        """打包异常伤害结果（打包方法）
-
-        从 ZoneCollection 读取乘区，计算最终伤害值，创建 AnomalyDamageResult 对象。
-
-        Args:
-            zones: ZoneCollection 对象
-            anomaly_type: 异常类型
-            anomaly_ratio: 异常伤害倍率
-            anomaly_buildup: 异常积蓄值
-            anomaly_threshold: 异常条阈值
-            anomaly_crit_rate: 异常暴击率
-
-        Returns:
-            AnomalyDamageResult 对象
-        """
-        from ..zzz_models.damage_result import AnomalyDamageResult
-
-        # 计算基础异常伤害（不含暴击）
-        base_anomaly_damage = (
-            zones.atk_zone
-            * anomaly_ratio
-            * zones.dmg_bonus
-            * zones.anomaly_prof_mult
-            * zones.anomaly_dmg_mult
-            * zones.level_mult
-            * zones.def_mult
-            * zones.res_mult
-            * zones.dmg_taken_mult
-            * zones.stun_vuln_mult
-        )
-
-        # 非暴击异常伤害
-        damage_no_crit = base_anomaly_damage
-
-        # 暴击异常伤害
-        damage_crit = base_anomaly_damage * zones.anomaly_crit_mult
-
-        # 期望异常伤害 = 基础 × 触发期望 × (1 + 异常暴击率 × 异常暴击伤害)
-        anomaly_crit_dmg = zones.anomaly_crit_mult - 1.0
-        damage_expected = zones.trigger_expect * base_anomaly_damage * (1.0 + anomaly_crit_rate * anomaly_crit_dmg)
-
-        # 向上取整
-        damage_no_crit = math.ceil(damage_no_crit)
-        damage_crit = math.ceil(damage_crit)
-        damage_expected = math.ceil(damage_expected)
-
-        return AnomalyDamageResult(
-            damage_no_crit=damage_no_crit,
-            damage_crit=damage_crit,
-            damage_expected=damage_expected,
-            anomaly_type=anomaly_type,
-            anomaly_ratio=anomaly_ratio,
-            anomaly_buildup=anomaly_buildup,
-            anomaly_threshold=anomaly_threshold,
-            atk_zone=zones.atk_zone,
-            dmg_bonus=zones.dmg_bonus,
-            anomaly_prof_mult=zones.anomaly_prof_mult,
-            anomaly_dmg_bonus=zones.anomaly_dmg_mult - 1.0,
-            anomaly_dmg_mult=zones.anomaly_dmg_mult,
-            anomaly_crit_rate=anomaly_crit_rate,
-            anomaly_crit_dmg=zones.anomaly_crit_mult - 1.0,
-            anomaly_crit_mult=zones.anomaly_crit_mult,
-            level_mult=zones.level_mult,
-            accumulate_zone=zones.accumulate_zone,
-            trigger_expect=zones.trigger_expect,
-            def_mult=zones.def_mult,
-            res_mult=zones.res_mult,
-            dmg_taken_mult=zones.dmg_taken_mult,
-            stun_vuln_mult=zones.stun_vuln_mult,
-        )
-
-    @staticmethod
-    def pack_total_damage_result(zones: ZoneCollection, direct_result: Optional[DirectDamageResult] = None, anomaly_result: Optional[AnomalyDamageResult] = None) -> TotalDamageResult:
-        """打包总伤害结果（打包方法）
-
-        从 ZoneCollection 读取总伤害值，创建 TotalDamageResult 对象。
-        不执行任何计算。
-
-        Args:
-            zones: ZoneCollection 对象
-            direct_result: 直伤结果（可选）
-            anomaly_result: 异常伤害结果（可选）
-
-        Returns:
-            TotalDamageResult 对象
-        """
-        from ..zzz_models.damage_result import TotalDamageResult
-
-        return TotalDamageResult(
-            direct_result=direct_result,
-            anomaly_result=anomaly_result,
-            total_damage_no_crit=zones.total_damage_no_crit,
-            total_damage_crit=zones.total_damage_crit,
-            total_damage_expected=zones.total_damage_expected,
-        )
