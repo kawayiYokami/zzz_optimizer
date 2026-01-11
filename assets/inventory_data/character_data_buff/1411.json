@@ -1,33 +1,119 @@
-{
-  "agent_id": "1411",
-  "name": "柚叶",
-  "code_name": "Yuzuha",
-  "rarity": 4,
-  "weapon_type": "支援",
-  "element_type": "物理",
-  "core_passive_buffs": [
-    {
-      "id": "1411_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "[狸之愿]效果会提供等同于柚叶的40%初始攻击力的攻击力加成，最多提升1200点，并使拥有者造成的伤害提升15%，持续40秒，重复触发时刷新持续时间",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "ATK_": 40.0
-      },
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1411_talent_1_1",
+    "name": "幸运体质-甜蜜惊吓抗性降低",
+    "description": "处于[甜蜜惊吓]状态下的敌人全属性伤害抗性降低10%。",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "all_resist_percent": -0.1 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "目标处于[甜蜜惊吓]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1411_talent_1_2",
+    "name": "幸运体质-异常伤害增益提升",
+    "description": "[额外能力]中属性异常伤害和[紊乱]伤害增益效果提升至原本的130%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "anomaly_dmg_percent": 0.3, "disorder_dmg_percent": 0.3 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "永久生效",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1411_talent_2_1",
+    "name": "趣友云集-全队伤害提升",
+    "description": "全队角色造成的伤害提升15%，持续40秒。",
+    "source": "TALENT",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "dmg_percent": 0.15 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "柚叶的强化特殊技或终结技攻击命中敌人",
+    "max_stacks": 1,
+    "stack_mode": "duration_refresh"
+  },
+  {
+    "id": "1411_talent_4_1",
+    "name": "坠落魔法-支援突击伤害提升",
+    "description": "柚叶的[支援突击：夹心硬糖射击]和[支援突击：来块曲奇]造成的伤害提升30%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "assist_attack_dmg_percent": 0.3 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[支援突击]",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1411_talent_6_1",
+    "name": "落地生根-强力炮弹伤害",
+    "description": "每颗追加强力炮弹攻击造成柚叶300%攻击力的物理伤害。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": { "from": "attack", "to": "flat_dmg", "rate": 3.0 },
+    "trigger_conditions": "蓄能发射强力炮弹",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1411_talent_6_2",
+    "name": "落地生根-紊乱伤害倍率提升",
+    "description": "全队角色[紊乱]效果的伤害倍率提升105%，最多叠加3层，每层单独结算持续时间。",
+    "source": "TALENT",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "disorder_dmg_percent": 3.15 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "强力炮弹命中敌人",
+    "max_stacks": 3,
+    "stack_mode": "duration_refresh"
+  },
+  {
+    "id": "1411_core_passive_1",
+    "name": "奇巧缤纷-狸之愿攻击力",
+    "description": "[狸之愿]效果提供等同于柚叶40%初始攻击力的攻击力加成，最多1200点。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "attack_flat": 1200 },
+    "out_of_combat_stats": {},
+    "conversion": { "from": "attack", "to": "attack_flat", "rate": 0.4, "max": 1200 },
+    "trigger_conditions": "柚叶的强化特殊技或终结技攻击命中敌人",
+    "max_stacks": 1,
+    "stack_mode": "duration_refresh"
+  },
+  {
+    "id": "1411_core_passive_2",
+    "name": "奇巧缤纷-狸之愿伤害提升",
+    "description": "拥有[狸之愿]效果的角色的造成的伤害提升15%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "dmg_percent": 0.15 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[狸之愿]效果",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1411_core_passive_3",
+    "name": "人多乐趣大-异常掌控增益",
+    "description": "若柚叶的异常掌控大于100点，每超过1点异常掌控会使拥有[狸之愿]效果的角色的属性异常积蓄效率提升0.2%，属性异常伤害和紊乱伤害提升0.2%，最多提升20%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "anomaly_dmg_percent": 0.2, "disorder_dmg_percent": 0.2, "anomaly_efficiency_percent": 0.2 },
+    "out_of_combat_stats": {},
+    "conversion": { "from": "anomaly_control", "to": "bonus", "rate": 0.002, "max": 0.2 },
+    "trigger_conditions": "异常掌控超过100点，且队伍存在[异常]角色或同阵营角色",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

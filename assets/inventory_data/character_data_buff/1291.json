@@ -1,73 +1,158 @@
-{
-  "agent_id": "1291",
-  "name": "雨果",
-  "code_name": "Hugo",
-  "rarity": 4,
-  "weapon_type": "强攻",
-  "element_type": "冰属性",
-  "core_passive_buffs": [
-    {
-      "id": "1291_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "[连携技：命运戏法]命中敌人或雨果的攻击使敌人失衡时，雨果获得[暗渊回响]状态，持续6秒，重复触发时刷新持续时间，该状态下雨果的暴击率提升12%，暴击伤害提升25%",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "CRIT_RATE_": 12.0
-      },
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    },
-    {
-      "id": "1291_core_passive_7_2",
-      "name": "CORE_PASSIVE-BUFF2",
-      "description": "队伍中存在其他1/2名[击破]角色时，雨果的攻击力提升300/900点",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "ATK_": 1.0
-      },
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    },
-    {
-      "id": "1291_core_passive_7_3",
-      "name": "CORE_PASSIVE-BUFF3",
-      "description": "队伍中存在其他[击破]角色或与自身属性相同的角色时触发：\n[连携技：命运戏法]造成的伤害提升15%，对普通敌人造成的伤害额外提升35%",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "COMMON_DMG_": 15.0
-      },
-      "trigger_conditions": "其他[击破]角色或与自身属性相同的角色",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1291_COREPASSIVE_1_1",
+    "name": "终末裁决-暗渊回响暴击率",
+    "description": "[暗渊回响]状态下雨果的暴击率提升12%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_RATE": 0.12 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[暗渊回响]状态时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_COREPASSIVE_1_2",
+    "name": "终末裁决-暗渊回响暴击伤害",
+    "description": "[暗渊回响]状态下雨果的暴击伤害提升25%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_DMG": 0.25 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[暗渊回响]状态时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_COREPASSIVE_1_3",
+    "name": "终末裁决-击破角色攻击力提升",
+    "description": "队伍中存在其他1/2名[击破]角色时，雨果的攻击力提升300/900点",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "atk": 300.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "队伍中存在其他1名[击破]角色时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_COREPASSIVE_1_4",
+    "name": "终末裁决-决算伤害倍率提升",
+    "description": "[决算]效果使得招式的终结一击伤害倍率提升1000%，此外根据敌人剩余失衡时间进一步提升",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": { "from": "imbalance_remaining_time", "to": "damage_mult", "rate": 2.8, "base_value": 10.0 },
+    "trigger_conditions": "触发[决算]效果时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_COREPASSIVE_2_1",
+    "name": "终焉序曲-连携技伤害提升",
+    "description": "[连携技：命运戏法]造成的伤害提升15%，对普通敌人造成的伤害额外提升35%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "DMG_BONUS": 0.15 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "队伍中存在其他[击破]角色或与自身属性相同的角色时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_COREPASSIVE_2_2",
+    "name": "终焉序曲-决算伤害提升",
+    "description": "触发[决算]时，招式造成的伤害提升40%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "DMG_BONUS": 0.4 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "触发[决算]效果时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_TALENT_1_1",
+    "name": "仇恨之子-决算暴击率提升",
+    "description": "[暗渊回响]状态下，触发[决算]效果时招式的暴击率额外提升12%",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_RATE": 0.12 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[暗渊回响]状态并触发[决算]效果时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_TALENT_1_2",
+    "name": "仇恨之子-决算暴击伤害提升",
+    "description": "[暗渊回响]状态下，触发[决算]效果时暴击伤害额外提升30%",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_DMG": 0.3 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[暗渊回响]状态并触发[决算]效果时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_TALENT_2_1",
+    "name": "内在小孩-决算防御力穿透",
+    "description": "触发[决算]效果时招式将会无视其15%防御力",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "DEFENSE_PENETRATION": 0.15 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "触发[决算]效果时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_TALENT_4_1",
+    "name": "拟剧论-冰属性抗性穿透",
+    "description": "蓄力射击命中敌人后，雨果的攻击对该目标无视12%冰属性伤害抗性，持续15秒",
+    "source": "TALENT",
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "ICE_RESISTANCE_PENETRATION": 0.12 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "蓄力射击命中敌人后",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_TALENT_6_1",
+    "name": "荆棘王冠-决算伤害提升",
+    "description": "任意招式触发[决算]效果时，此次伤害额外提升60%",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "DMG_BONUS": 0.6 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "任意招式触发[决算]效果时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1291_TALENT_6_2",
+    "name": "荆棘王冠-强化特殊技决算倍率提升",
+    "description": "[强化特殊技：魂狩·惩戒]的终结一击命中非失衡状态下的敌人时也可触发[决算]效果，使得招式的终结一击伤害倍率固定提升1000%",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": { "from": "base", "to": "damage_mult", "rate": 10.0 },
+    "trigger_conditions": "[强化特殊技：魂狩·惩戒]终结一击命中非失衡状态下的敌人并触发[决算]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

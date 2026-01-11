@@ -1,33 +1,41 @@
-{
-  "agent_id": "1281",
-  "name": "派派",
-  "code_name": "Piper",
-  "rarity": 3,
-  "weapon_type": "异常",
-  "element_type": "物理",
-  "core_passive_buffs": [
-    {
-      "id": "1281_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "队伍中存在与自身属性或阵营相同的角色时触发：\n派派拥有20层或以上[动力]时，全队角色造成的伤害提升18%",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": true,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "COMMON_DMG_": 18.0
-      },
-      "trigger_conditions": "与自身属性或阵营相同的角色",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1281_COREPASSIVE_1_1",
+    "name": "动力蓄能-物理异常积蓄效率",
+    "description": "每拥有一层[动力]，派派的物理异常积蓄效率提升4%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "PHYSICAL_ANOMALY_ACCUMULATION_EFFICIENCY": 0.04 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "每拥有一层[动力]时",
+    "max_stacks": 20,
+    "stack_mode": "additive"
+  },
+  {
+    "id": "1281_COREPASSIVE_2_1",
+    "name": "同步疾驰-全队伤害提升",
+    "description": "派派拥有20层或以上[动力]时，全队角色造成的伤害提升18%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "DMG_BONUS": 0.18 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有20层或以上[动力]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1281_TALENT_2_1",
+    "name": "上进心-物理伤害提升",
+    "description": "在[特殊技：有亿点重]、[强化特殊技：非常重]和[终结技]中发动下砸攻击命中敌人时，招式造成的物理伤害提升10%，每拥有1层[动力]，该增益效果额外提升1%",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "PHYSICAL_DMG_BONUS": 0.1 },
+    "out_of_combat_stats": {},
+    "conversion": { "from": "momentum_stacks", "to": "physical_dmg_bonus", "rate": 0.01 },
+    "trigger_conditions": "发动下砸攻击命中敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

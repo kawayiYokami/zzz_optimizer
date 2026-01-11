@@ -1,54 +1,54 @@
-{
-  "agent_id": "1351",
-  "name": "波可娜",
-  "code_name": "Pulchra",
-  "rarity": 3,
-  "weapon_type": "击破",
-  "element_type": "物理",
-  "core_passive_buffs": [
-    {
-      "id": "1351_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "被施加[困迹]效果后，所有单位发动[追加攻击]对目标造成的伤害提升30%",
-      "source": "CORE_PASSIVE",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "COMMON_DMG_": 30.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [
-    {
-      "id": "1351_talent_6_1",
-      "name": "TALENT-BUFF1",
-      "description": "[特殊技：噬爪·噩梦袭影]造成的伤害提升15%，重复攻击的可触发次数额外提升2次",
-      "source": "TALENT",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "COMMON_DMG_": 15.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1351_talent_1_1",
+    "name": "利己主义-暴击率提升",
+    "description": "对被施加[困迹]效果的敌人造成伤害时，自身暴击率提升10%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "crit_rate": 0.1 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "对被施加[困迹]效果的敌人造成伤害",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1351_talent_2_1",
+    "name": "借势而为-攻击力提升",
+    "description": "处于[猎步]状态时，波可娜的攻击力额外提升10%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "attack_percent": 0.1 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[猎步]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1351_talent_6_1",
+    "name": "面具之下-特殊技伤害提升",
+    "description": "[特殊技：噬爪·噩梦袭影]造成的伤害提升15%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "skill_dmg_percent": 0.15 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[特殊技：噬爪·噩梦袭影]",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1351_core_passive_1",
+    "name": "困迹-追加攻击伤害提升",
+    "description": "被施加[困迹]效果后，所有单位发动[追加攻击]对目标造成的伤害提升30%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_enemy": true, "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "additional_attack_dmg_percent": 0.3 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "目标被施加[困迹]效果",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

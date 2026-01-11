@@ -1,33 +1,28 @@
-{
-  "agent_id": "1151",
-  "name": "露西",
-  "code_name": "Lucy",
-  "rarity": 3,
-  "weapon_type": "支援",
-  "element_type": "火属性",
-  "core_passive_buffs": [],
-  "talent_buffs": [
-    {
-      "id": "1151_talent_6_1",
-      "name": "TALENT-BUFF1",
-      "description": "处于[加油！]状态下的队友[强化特殊技]命中敌人时，一只亲卫队小猪会从空中落地引发爆炸，造成等同于亲卫队小猪300%攻击力的火属性伤害，并使全队角色、邦布和亲卫队小猪的[加油！]状态的持续时间提升5秒",
-      "source": "TALENT",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": false,
-        "target_enemy": false,
-        "target_teammate": true,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "ATK_": 300.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1151_talent_4_1",
+    "name": "无规则球赛",
+    "description": "处于加油状态下，暴击伤害额外提升10%",
+    "source": "TALENT",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "CRIT_DMG_": 10.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于加油状态下",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1151_core_passive_extra_1",
+    "name": "击球准备",
+    "description": "队伍中存在与自身属性或阵营相同的角色或命破角色时触发：亲卫队小猪可以继承露西的暴击率和暴击伤害",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_RATE_": 0, "CRIT_DMG_": 0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "与自身属性或阵营相同的角色或命破角色存在时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

@@ -1,54 +1,41 @@
-{
-  "agent_id": "1141",
-  "name": "莱卡恩",
-  "code_name": "Lycaon",
-  "rarity": 4,
-  "weapon_type": "击破",
-  "element_type": "冰属性",
-  "core_passive_buffs": [
-    {
-      "id": "1141_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "[强化特殊技：狂猎时刻]或[支援突击：复仇反扑]命中敌人时，目标的冰属性伤害抗性降低25%，持续30秒",
-      "source": "CORE_PASSIVE",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "ICE_DMG_": 25.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [
-    {
-      "id": "1141_talent_6_1",
-      "name": "TALENT-BUFF1",
-      "description": "蓄力攻击命中敌人时，莱卡恩对目标造成的伤害提升10%，最多叠加5层，持续12秒",
-      "source": "TALENT",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "COMMON_DMG_": 10.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1141_core_passive_7_1",
+    "name": "冰属性抗性降低",
+    "description": "强化特殊技：狂猎时刻或支援突击：复仇反扑命中敌人时，目标的冰属性伤害抗性降低25%，持续30秒",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_enemy": true },
+    "in_combat_stats": { "ICE_RESISTANCE_": -25.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "强化特殊技或支援突击命中敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1141_core_passive_extra_1",
+    "name": "优雅猎群",
+    "description": "队伍中存在与自身属性或阵营相同的角色时触发：莱卡恩攻击命中处于失衡状态下的敌人时，目标的失衡易伤倍率提升35%",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_enemy": true },
+    "in_combat_stats": { "STUN_VULNERABILITY_": 35.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "与自身属性或阵营相同的角色，且攻击命中失衡状态下的敌人时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1141_talent_6_1",
+    "name": "冷酷猎手",
+    "description": "蓄力攻击命中敌人时，莱卡恩对目标造成的伤害提升10%，最多叠加5层，持续12秒，同一招式内最多叠加1层，重复触发时刷新持续时间",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "COMMON_DMG_": 10.0 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "蓄力攻击命中敌人时",
+    "max_stacks": 5,
+    "stack_mode": "linear"
+  }
+]

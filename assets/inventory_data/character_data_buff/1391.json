@@ -1,33 +1,93 @@
-{
-  "agent_id": "1391",
-  "name": "橘福福",
-  "code_name": "Ju Fufu",
-  "rarity": 4,
-  "weapon_type": "击破",
-  "element_type": "火属性",
-  "core_passive_buffs": [],
-  "talent_buffs": [
-    {
-      "id": "1391_talent_6_1",
-      "name": "TALENT-BUFF1",
-      "description": "[连携技]造成的伤害提升30%",
-      "source": "TALENT",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "COMMON_DMG_": 30.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1391_talent_1_1",
+    "name": "超级可怕小老虎-暴击率提升",
+    "description": "进入战场时，橘福福的暴击率提升12%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "crit_rate": 0.12 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "进入战场",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1391_talent_2_1",
+    "name": "神通广大青溟客-虎啸暴击伤害",
+    "description": "处于[虎啸]状态下角色的暴击伤害额外提升22%。",
+    "source": "TALENT",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "crit_dmg_percent": 0.22 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[虎啸]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1391_talent_4_1",
+    "name": "降妖伏魔虎修者-自身暴击伤害",
+    "description": "橘福福处于[虎啸]状态下时，自身的暴击伤害提升35%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "crit_dmg_percent": 0.35 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "橘福福处于[虎啸]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1391_talent_6_1",
+    "name": "知我心中虎啸声-连携技伤害提升",
+    "description": "橘福福的[连携技]造成的伤害提升30%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "chain_attack_dmg_percent": 0.3 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[连携技]",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1391_talent_6_2",
+    "name": "知我心中虎啸声-爆米花伤害",
+    "description": "消耗[威势]命中敌人时，发射3个爆米花，每个爆米花造成福福攻击力160%的伤害。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": { "from": "attack", "to": "flat_dmg", "rate": 1.6 },
+    "trigger_conditions": "高速旋转状态下消耗[威势]命中敌人",
+    "max_stacks": 3,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1391_core_passive_1",
+    "name": "虎虎生威-虎啸暴击伤害",
+    "description": "全队角色获得[虎啸]效果：暴击伤害提升20%，攻击力超过2800时每超100点额外提升5%，最多30%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "crit_dmg_percent": 0.5 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[连携技：虎釜震煞]",
+    "max_stacks": 1,
+    "stack_mode": "duration_refresh"
+  },
+  {
+    "id": "1391_core_passive_2",
+    "name": "虎虎生威-连携技终结技伤害",
+    "description": "[虎啸]状态下，角色的[连携技]/[终结技]造成的伤害提升20%/40%。",
+    "source": "CORE_PASSIVE",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "chain_attack_dmg_percent": 0.2, "ultimate_dmg_percent": 0.4 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "处于[虎啸]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]

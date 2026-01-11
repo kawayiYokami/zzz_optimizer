@@ -1,12 +1,54 @@
-{
-  "agent_id": "1361",
-  "name": "「扳机」",
-  "code_name": "Trigger",
-  "rarity": 4,
-  "weapon_type": "击破",
-  "element_type": "电属性",
-  "core_passive_buffs": [],
-  "talent_buffs": [],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1361_talent_2_1",
+    "name": "以太视域-暴击伤害提升",
+    "description": "每拥有1层[猎眸]，全队角色暴击伤害提升6%，最多叠加4层，持续10秒。",
+    "source": "TALENT",
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "crit_dmg_percent": 0.24 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[追加攻击]或[终结一击]获得[猎眸]",
+    "max_stacks": 4,
+    "stack_mode": "duration_refresh"
+  },
+  {
+    "id": "1361_talent_4_1",
+    "name": "匿息隐踪-断离额外伤害",
+    "description": "下一次[普通攻击：协奏狙杀]或[普通攻击：协奏狙杀·冥狱]命中敌人时触发[断离]效果，额外造成「扳机」200%攻击力的伤害。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": { "from": "attack", "to": "flat_dmg", "rate": 2.0 },
+    "trigger_conditions": "队伍中其他角色触发[普通攻击：协奏狙杀]或[普通攻击：协奏狙杀·冥狱]",
+    "max_stacks": 1,
+    "stack_mode": "consume"
+  },
+  {
+    "id": "1361_talent_6_1",
+    "name": "冥河彼岸-破甲凶弹伤害提升",
+    "description": "[破甲凶弹]造成的伤害额外提升50%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": { "armor_pierce_bullet_dmg_percent": 0.5 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[破甲凶弹]命中目标",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1361_talent_6_2",
+    "name": "冥河彼岸-破甲凶弹电伤害",
+    "description": "消耗[破甲凶弹]时，额外对目标造成「扳机」1200%攻击力的电属性伤害。",
+    "source": "TALENT",
+    "target": { "target_self": true },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": { "from": "attack", "to": "electric_flat_dmg", "rate": 12.0 },
+    "trigger_conditions": "消耗[破甲凶弹]命中目标",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  }
+]
