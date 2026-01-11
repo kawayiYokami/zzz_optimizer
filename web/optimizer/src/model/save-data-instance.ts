@@ -5,6 +5,7 @@
 import { Agent } from './agent';
 import { DriveDisk } from './drive-disk';
 import { WEngine } from './wengine';
+import type { dataLoaderService } from '../services/data-loader.service';
 
 /**
  * 单个存档数据
@@ -103,8 +104,17 @@ export class SaveData {
 
   /**
    * 从字典反序列化
+   *
+   * @param data 字典数据
+   * @param dataLoader 数据加载服务
+   * @returns SaveData实例
    */
-  static fromDict(data: any): SaveData {
+  static async fromDict(data: any, dataLoader: typeof dataLoaderService): Promise<SaveData> {
+    // 检查 dataLoader 是否已初始化
+    if (!dataLoader.characterData || !dataLoader.weaponData || !dataLoader.equipmentData) {
+      throw new Error('DataLoaderService 未初始化，无法加载存档。请先调用 gameDataStore.initialize()');
+    }
+
     const save = new SaveData(data.name);
     save.created_at = new Date(data.created_at);
     save.updated_at = new Date(data.updated_at);
@@ -114,34 +124,30 @@ export class SaveData {
       save._metadata = data._metadata;
     }
 
-    // 反序列化对象
+    // 反序列化角色
     if (data.agents) {
       save.agents = new Map();
       for (const [k, v] of Object.entries(data.agents)) {
-        // TODO: Agent.fromDict not implemented yet
-        // const agent = Agent.fromDict(v);
-        // agent.id = k;
-        // save.agents.set(k, agent);
+        const agent = await Agent.fromDict(v, k, dataLoader);
+        save.agents.set(k, agent);
       }
     }
 
+    // 反序列化驱动盘
     if (data.drive_disks) {
       save.drive_disks = new Map();
       for (const [k, v] of Object.entries(data.drive_disks)) {
-        // TODO: DriveDisk.fromDict not implemented yet
-        // const disk = DriveDisk.fromDict(v);
-        // disk.id = k;
-        // save.drive_disks.set(k, disk);
+        const disk = await DriveDisk.fromDict(v, k, dataLoader);
+        save.drive_disks.set(k, disk);
       }
     }
 
+    // 反序列化音擎
     if (data.wengines) {
       save.wengines = new Map();
       for (const [k, v] of Object.entries(data.wengines)) {
-        // TODO: WEngine.fromDict not implemented yet
-        // const wengine = WEngine.fromDict(v);
-        // wengine.id = k;
-        // save.wengines.set(k, wengine);
+        const wengine = await WEngine.fromDict(v, dataLoader);
+        save.wengines.set(k, wengine);
       }
     }
 

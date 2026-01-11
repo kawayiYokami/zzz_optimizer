@@ -46,6 +46,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
 import { useGameDataStore } from '../stores/game-data.store';
+import { useSaveStore } from '../stores/save.store';
 import DataImportExport from '../components/debug/DataImportExport-simple.vue';
 import DataInspector from '../components/debug/DataInspector-simple.vue';
 import ApiTester from '../components/debug/ApiTester.vue';
@@ -55,6 +56,7 @@ import SkillsData from '../components/debug/SkillsData.vue';
 import BuffDataInspector from '../components/debug/BuffDataInspector.vue';
 
 const gameDataStore = useGameDataStore();
+const saveStore = useSaveStore();
 
 const tabs = [
   { id: 'import-export', label: '存档管理', component: DataImportExport },
@@ -74,9 +76,18 @@ const activeComponent = computed(() => {
 
 onMounted(async () => {
   try {
+    // 1. 先加载游戏数据 ZOD
+    console.log('1. 开始加载游戏数据...');
     await gameDataStore.initialize();
+    console.log('2. 游戏数据加载完成');
+
+    // 2. 再加载存档数据（此时 dataLoader 已完全初始化）
+    console.log('3. 开始加载存档...');
+    await saveStore.loadFromStorage();
+    console.log('4. 存档加载完成');
+
   } catch (error) {
-    console.error('Failed to initialize game data:', error);
+    console.error('Failed to initialize:', error);
   }
 });
 </script>

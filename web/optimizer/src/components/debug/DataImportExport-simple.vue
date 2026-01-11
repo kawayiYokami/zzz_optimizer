@@ -109,7 +109,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useSaveStore } from '../../stores/save.store-simple';
+import { useSaveStore } from '../../stores/save.store';
 
 const saveStore = useSaveStore();
 const importError = ref<string | null>(null);
@@ -124,9 +124,9 @@ function getSaveStats(name: string) {
   if (!save) return { characters: 0, wengines: 0, discs: 0 };
 
   return {
-    characters: save.characters?.length || 0,
-    wengines: save.wengines?.length || 0,
-    discs: save.discs?.length || 0,
+    characters: save.getAllAgents().length,
+    wengines: save.getAllWEngines().length,
+    discs: save.getAllDriveDisks().length,
   };
 }
 

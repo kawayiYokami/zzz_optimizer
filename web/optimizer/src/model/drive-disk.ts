@@ -5,7 +5,7 @@
 import { Rarity, PropertyType, StatValue } from './base';
 import { Buff } from './buff';
 import { PropertyCollection } from './property-collection';
-import type { ZodDiscData } from './save-data-simple';
+import type { ZodDiscData } from './save-data-zod';
 import type { dataLoaderService } from '../services/data-loader.service';
 
 /**
@@ -273,6 +273,77 @@ export class DriveDisk {
       equipped_agent: this.equipped_agent,
       locked: this.locked,
     };
+  }
+
+  /**
+   * 从字典创建DriveDisk实例（用于反序列化）
+   *
+   * @param data 字典数据
+   * @param id 实例ID
+   * @param dataLoader 数据加载服务
+   * @returns DriveDisk实例
+   */
+  static async fromDict(
+    data: any,
+    id: string,
+    dataLoader: typeof dataLoaderService
+  ): Promise<DriveDisk> {
+    // 恢复副词条Map
+    const subStats = new Map<PropertyType, StatValue>();
+    if (data.sub_stats) {
+      for (const [propKey, statData] of Object.entries(data.sub_stats)) {
+        const propType = PropertyType[propKey as keyof typeof PropertyType];
+        if (propType !== undefined) {
+          subStats.set(propType, new StatValue(statData.value, statData.isPercent));
+        }
+      }
+    }
+
+    // 创建实例
+    const disk = new DriveDisk(
+      id,
+      data.game_id,
+      data.position,
+      data.rarity,
+      data.level,
+      data.main_stat,
+      new StatValue(data.main_stat_value.value, data.main_stat_value.isPercent),
+      subStats
+    );
+
+    // 恢复装备状态
+    disk.equipped_agent = data.equipped_agent;
+    disk.locked = data.locked || false;
+
+    // 从游戏数据加载套装名称
+    const equipInfo = dataLoader.equipmentData?.get(data.game_id);
+    if (equipInfo) {
+      disk.set_name = equipInfo.EN?.name || '';
+      disk.set_name_cn = equipInfo.CHS?.name || '';
+    }
+
+    // 加载套装Buff数据
+    try {
+      const equipBuffData = await dataLoader.getEquipmentBuff(data.game_id);
+
+      // 2件套Buff
+      if (equipBuffData.two_piece_buffs) {
+        disk.two_piece_buffs = equipBuffData.two_piece_buffs.map((b: any) =>
+          Buff.fromBuffData(b)
+        );
+      }
+
+      // 4件套Buff
+      if (equipBuffData.four_piece_buffs) {
+        disk.four_piece_buffs = equipBuffData.four_piece_buffs.map((b: any) =>
+          Buff.fromBuffData(b)
+        );
+      }
+    } catch (err) {
+      console.warn(`加载驱动盘套装Buff数据失败: ${data.game_id}`, err);
+    }
+
+    return disk;
   }
 
   /**

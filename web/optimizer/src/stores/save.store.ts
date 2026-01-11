@@ -6,7 +6,8 @@
 
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { SaveData } from '../model/save-data';
+import { SaveData } from '../model/save-data-instance';
+import { dataLoaderService } from '../services/data-loader.service';
 
 const STORAGE_KEY = 'zzz_optimizer_saves';
 const CURRENT_SAVE_KEY = 'zzz_optimizer_current_save';
@@ -45,7 +46,7 @@ export const useSaveStore = defineStore('save', () => {
   /**
    * 从localStorage加载存档
    */
-  function loadFromStorage(): void {
+  async function loadFromStorage(): Promise<void> {
     try {
       const savedData = localStorage.getItem(STORAGE_KEY);
       if (savedData) {
@@ -53,7 +54,8 @@ export const useSaveStore = defineStore('save', () => {
         const newSaves = new Map<string, SaveData>();
 
         for (const [name, data] of Object.entries(parsed)) {
-          newSaves.set(name, SaveData.fromDict(data as any));
+          const saveData = await SaveData.fromDict(data as any, dataLoaderService);
+          newSaves.set(name, saveData);
         }
 
         saves.value = newSaves;
@@ -235,8 +237,8 @@ export const useSaveStore = defineStore('save', () => {
     localStorage.removeItem(CURRENT_SAVE_KEY);
   }
 
-  // 初始化时从localStorage加载
-  loadFromStorage();
+  // 不在模块初始化时自动加载，由应用显式控制加载顺序
+  // loadFromStorage();
 
   return {
     // 状态

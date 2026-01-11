@@ -6,7 +6,7 @@
 
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { SaveDataZod, ZodCharacterData, ZodWengineData, ZodDiscData } from '../model/save-data-simple';
+import type { SaveDataZod, ZodCharacterData, ZodWengineData, ZodDiscData } from '../model/save-data-zod';
 
 const STORAGE_KEY = 'zzz_optimizer_saves';
 const CURRENT_SAVE_KEY = 'zzz_optimizer_current_save';

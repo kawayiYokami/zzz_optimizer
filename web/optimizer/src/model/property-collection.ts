@@ -18,12 +18,13 @@ import { PropertyType, isPercentageProperty, getPropertyCnName, getPropertyTypeB
 /**
  * 属性集合
  *
- * 统一的数据格式，包含局外和局内两部分属性。
+ * 统一的数据格式，包含局外、局内和最终三部分属性。
  * 相同 PropertyType 的值会累加。
  */
 export class PropertyCollection {
   out_of_combat: Map<PropertyType, number>;
   in_combat: Map<PropertyType, number>;
+  final: Map<PropertyType, number>; // 最终面板（局外+局内计算后的结果）
 
   constructor(
     outOfCombat?: Map<PropertyType, number> | Record<PropertyType, number>,
@@ -31,6 +32,7 @@ export class PropertyCollection {
   ) {
     this.out_of_combat = outOfCombat instanceof Map ? new Map(outOfCombat) : new Map(Object.entries(outOfCombat || {}) as unknown as [PropertyType, number][]);
     this.in_combat = inCombat instanceof Map ? new Map(inCombat) : new Map(Object.entries(inCombat || {}) as unknown as [PropertyType, number][]);
+    this.final = new Map();
   }
 
   /**
@@ -136,6 +138,92 @@ export class PropertyCollection {
       propType = prop;
     }
     return this.getTotal(propType, defaultValue);
+  }
+
+  /**
+   * 获取最终面板属性值
+   *
+   * @param prop 属性类型
+   * @param defaultValue 默认值
+   * @returns 最终属性值
+   */
+  getFinal(prop: PropertyType, defaultValue: number = 0.0): number {
+    return this.final.get(prop) ?? defaultValue;
+  }
+
+  /**
+   * 计算最终面板
+   *
+   * 将 out_of_combat 和 in_combat 合并计算成 final
+   *
+   * 计算规则：
+   * 1. 四大基础属性（ATK/HP/DEF/IMPACT）：
+   *    - 局外最终 = base × (1 + percent) + flat
+   *    - 局内最终 = 局外最终 × (1 + 局内percent) + 局内flat
+   * 2. 其他属性：直接累加 out_of_combat + in_combat
+   */
+  calculateFinal(): void {
+    this.final.clear();
+
+    // 1. 处理四大基础属性（ATK/HP/DEF/IMPACT）
+    const fourBasicProps = [
+      { base: PropertyType.ATK_BASE, percent: PropertyType.ATK_, flat: PropertyType.ATK },
+      { base: PropertyType.HP_BASE, percent: PropertyType.HP_, flat: PropertyType.HP },
+      { base: PropertyType.DEF_BASE, percent: PropertyType.DEF_, flat: PropertyType.DEF },
+      { base: PropertyType.IMPACT, percent: PropertyType.IMPACT_, flat: null }, // IMPACT 没有 flat
+    ];
+
+    for (const { base, percent, flat } of fourBasicProps) {
+      // 计算局外最终值
+      const out_base = this.getOutOfCombat(base, 0);
+      const out_percent = this.getOutOfCombat(percent, 0) / 100.0;
+      const out_flat = flat ? this.getOutOfCombat(flat, 0) : 0;
+      const out_final = out_base * (1 + out_percent) + out_flat;
+
+      // 计算局内最终值（局外最终作为局内基础）
+      const in_percent = this.getInCombat(percent, 0) / 100.0;
+      const in_flat = flat ? this.getInCombat(flat, 0) : 0;
+      const final_value = out_final * (1 + in_percent) + in_flat;
+
+      this.final.set(base, final_value);
+    }
+
+    // 2. 处理其他所有属性（直接累加）
+    const allProps = new Set<PropertyType>();
+
+    // 收集所有属性类型
+    for (const prop of this.out_of_combat.keys()) {
+      allProps.add(prop);
+    }
+    for (const prop of this.in_combat.keys()) {
+      allProps.add(prop);
+    }
+
+    // 对于非四大基础属性，直接累加
+    for (const prop of allProps) {
+      // 跳过四大基础属性的 base/percent/flat（已经处理过）
+      if (
+        prop === PropertyType.ATK_BASE ||
+        prop === PropertyType.HP_BASE ||
+        prop === PropertyType.DEF_BASE ||
+        prop === PropertyType.IMPACT ||
+        prop === PropertyType.ATK_ ||
+        prop === PropertyType.HP_ ||
+        prop === PropertyType.DEF_ ||
+        prop === PropertyType.IMPACT_ ||
+        prop === PropertyType.ATK ||
+        prop === PropertyType.HP ||
+        prop === PropertyType.DEF
+      ) {
+        continue;
+      }
+
+      // 直接累加
+      const total = this.getOutOfCombat(prop, 0) + this.getInCombat(prop, 0);
+      if (total !== 0) {
+        this.final.set(prop, total);
+      }
+    }
   }
 
   /**

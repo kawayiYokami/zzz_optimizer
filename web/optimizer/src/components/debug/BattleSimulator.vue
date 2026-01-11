@@ -174,136 +174,45 @@
         </div>
 
         <div v-show="isStatsSnapshotExpanded" class="mt-4">
-          <div v-if="combatStatsSnapshot" class="space-y-4">
-            <!-- 基础属性 vs 最终属性对比 -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <!-- 局内基础属性 -->
-              <div class="card bg-base-100">
-                <div class="card-body p-4">
-                  <h4 class="font-bold mb-3">局内基础属性</h4>
-                  <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                      <span class="text-gray-500">攻击力</span>
-                      <span class="font-mono">{{ combatStatsSnapshot.base.atk.toFixed(1) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-gray-500">生命值</span>
-                      <span class="font-mono">{{ combatStatsSnapshot.base.hp.toFixed(0) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-gray-500">防御力</span>
-                      <span class="font-mono">{{ combatStatsSnapshot.base.def.toFixed(1) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-gray-500">冲击力</span>
-                      <span class="font-mono">{{ combatStatsSnapshot.base.impact.toFixed(1) }}</span>
-                    </div>
-                    <div class="divider my-2"></div>
-                    <div class="flex justify-between">
-                      <span class="text-gray-500">暴击率</span>
-                      <span class="font-mono">{{ (combatStatsSnapshot.base.critRate * 100).toFixed(2) }}%</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-gray-500">暴击伤害</span>
-                      <span class="font-mono">{{ (combatStatsSnapshot.base.critDmg * 100).toFixed(2) }}%</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-gray-500">伤害加成</span>
-                      <span class="font-mono">{{ (combatStatsSnapshot.base.dmgBonus * 100).toFixed(2) }}%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 局内最终属性 -->
-              <div class="card bg-primary text-primary-content">
-                <div class="card-body p-4">
-                  <h4 class="font-bold mb-3">局内最终属性</h4>
-                  <div class="space-y-2 text-sm">
-                    <div class="flex justify-between items-center">
-                      <span>攻击力</span>
-                      <div class="flex items-center gap-2">
-                        <span class="font-mono font-bold">{{ combatStatsSnapshot.final.atk.toFixed(1) }}</span>
-                        <span v-if="combatStatsSnapshot.diff.atk > 0" class="badge badge-success badge-sm">
-                          +{{ combatStatsSnapshot.diff.atk.toFixed(1) }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                      <span>生命值</span>
-                      <div class="flex items-center gap-2">
-                        <span class="font-mono font-bold">{{ combatStatsSnapshot.final.hp.toFixed(0) }}</span>
-                        <span v-if="combatStatsSnapshot.diff.hp > 0" class="badge badge-success badge-sm">
-                          +{{ combatStatsSnapshot.diff.hp.toFixed(0) }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                      <span>防御力</span>
-                      <div class="flex items-center gap-2">
-                        <span class="font-mono font-bold">{{ combatStatsSnapshot.final.def.toFixed(1) }}</span>
-                        <span v-if="combatStatsSnapshot.diff.def > 0" class="badge badge-success badge-sm">
-                          +{{ combatStatsSnapshot.diff.def.toFixed(1) }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                      <span>冲击力</span>
-                      <div class="flex items-center gap-2">
-                        <span class="font-mono font-bold">{{ combatStatsSnapshot.final.impact.toFixed(1) }}</span>
-                        <span v-if="combatStatsSnapshot.diff.impact > 0" class="badge badge-success badge-sm">
-                          +{{ combatStatsSnapshot.diff.impact.toFixed(1) }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="divider my-2"></div>
-                    <div class="flex justify-between">
-                      <span>暴击率</span>
-                      <span class="font-mono font-bold">{{ (combatStatsSnapshot.final.critRate * 100).toFixed(2) }}%</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span>暴击伤害</span>
-                      <span class="font-mono font-bold">{{ (combatStatsSnapshot.final.critDmg * 100).toFixed(2) }}%</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span>伤害加成</span>
-                      <span class="font-mono font-bold">{{ (combatStatsSnapshot.final.dmgBonus * 100).toFixed(2) }}%</span>
-                    </div>
-                  </div>
-                </div>
+          <div v-if="combatStatsSnapshot && frontAgent" class="space-y-4">
+            <!-- Debug信息 -->
+            <div class="card bg-warning text-warning-content">
+              <div class="card-body p-4">
+                <h4 class="font-bold mb-3">Debug - 原始数据</h4>
+                <pre class="text-xs overflow-auto bg-base-200 text-base-content p-4 rounded">{{ JSON.stringify({
+                  self_properties_out: Array.from(frontAgent.getBareStats().out_of_combat.entries()),
+                  self_properties_in: Array.from(frontAgent.getBareStats().in_combat.entries()),
+                }, null, 2) }}</pre>
               </div>
             </div>
 
-            <!-- Buff贡献详情 -->
-            <div v-if="combatStatsSnapshot.buffContribution" class="card bg-base-100">
+            <!-- 最终战斗属性 -->
+            <div class="card bg-base-100">
               <div class="card-body p-4">
-                <h4 class="font-bold mb-3">Buff贡献</h4>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                  <div v-if="combatStatsSnapshot.buffContribution.atkPercent > 0" class="stat bg-base-200 rounded p-2">
-                    <div class="stat-title text-xs">攻击力%</div>
-                    <div class="stat-value text-sm text-success">+{{ (combatStatsSnapshot.buffContribution.atkPercent * 100).toFixed(1) }}%</div>
-                  </div>
-                  <div v-if="combatStatsSnapshot.buffContribution.atkFlat > 0" class="stat bg-base-200 rounded p-2">
-                    <div class="stat-title text-xs">攻击力</div>
-                    <div class="stat-value text-sm text-success">+{{ combatStatsSnapshot.buffContribution.atkFlat.toFixed(0) }}</div>
-                  </div>
-                  <div v-if="combatStatsSnapshot.buffContribution.critRate > 0" class="stat bg-base-200 rounded p-2">
-                    <div class="stat-title text-xs">暴击率</div>
-                    <div class="stat-value text-sm text-success">+{{ (combatStatsSnapshot.buffContribution.critRate * 100).toFixed(2) }}%</div>
-                  </div>
-                  <div v-if="combatStatsSnapshot.buffContribution.critDmg > 0" class="stat bg-base-200 rounded p-2">
-                    <div class="stat-title text-xs">暴击伤害</div>
-                    <div class="stat-value text-sm text-success">+{{ (combatStatsSnapshot.buffContribution.critDmg * 100).toFixed(2) }}%</div>
-                  </div>
-                  <div v-if="combatStatsSnapshot.buffContribution.dmgBonus > 0" class="stat bg-base-200 rounded p-2">
-                    <div class="stat-title text-xs">伤害加成</div>
-                    <div class="stat-value text-sm text-success">+{{ (combatStatsSnapshot.buffContribution.dmgBonus * 100).toFixed(2) }}%</div>
-                  </div>
+                <h4 class="font-bold mb-3">最终战斗属性</h4>
+                <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ combatStatsSnapshot.format() }}</pre>
+              </div>
+            </div>
+
+            <!-- 裸属性 (角色自身) -->
+            <div class="card bg-base-100">
+              <div class="card-body p-4">
+                <h4 class="font-bold mb-3">裸属性 (角色自身，不含装备)</h4>
+                <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ frontAgent.getBareStats().format() }}</pre>
+              </div>
+            </div>
+
+            <!-- 装备信息 -->
+            <div class="card bg-base-100">
+              <div class="card-body p-4">
+                <h4 class="font-bold mb-3">装备信息</h4>
+                <div class="text-sm space-y-2">
+                  <div>引擎ID: {{ frontAgent.equipped_wengine || '无' }}</div>
+                  <div>驱动盘: {{ frontAgent.equipped_drive_disks.filter(d => d).length }}/6</div>
                 </div>
               </div>
             </div>
           </div>
-
           <div v-else class="text-center text-gray-500 py-8">
             无法加载属性数据
           </div>
@@ -622,10 +531,12 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, type Ref } from 'vue';
-import { useSaveStore } from '../../stores/save.store-simple';
+import { useSaveStore } from '../../stores/save.store';
 import { useGameDataStore } from '../../stores/game-data.store';
 import { dataLoaderService } from '../../services/data-loader.service';
 import { Agent } from '../../model/agent';
+import { PropertyCollection } from '../../model/property-collection';
+import type { CombatStats } from '../../model/combat-stats';
 
 const saveStore = useSaveStore();
 const gameDataStore = useGameDataStore();
@@ -645,17 +556,14 @@ const isBuffListExpanded = ref<boolean>(true);
 const isSkillListExpanded = ref<boolean>(true);
 const isStatsSnapshotExpanded = ref<boolean>(true);
 
-// 可用角色列表
+// 可用角色列表（直接使用实例）
 const availableCharacters = computed(() => {
-  return saveStore.characters.map(char => {
-    const gameChar = gameDataStore.getCharacterByCode(char.key);
-    return {
-      id: char.id,
-      name: gameChar?.CHS || char.key,
-      level: char.level,
-      zodData: char,
-    };
-  });
+  return saveStore.agents.map(agent => ({
+    id: agent.id,
+    name: agent.name_cn || agent.name_en,
+    level: agent.level,
+    agent: agent, // 直接存储实例
+  }));
 });
 
 // 获取角色名称
@@ -712,20 +620,73 @@ const frontCharacterSkills = computed(() => {
   const char = availableCharacters.value.find(c => c.id === frontCharacterId.value);
   if (!char) return null;
 
-  // 从gameDataStore获取角色名称
-  const gameChar = gameDataStore.getCharacterByCode(char.zodData.key);
-  const agentName = gameChar?.CHS || char.zodData.key;
+  // 从agent获取名称
+  const agentName = char.agent.name_cn || char.agent.name_en;
 
   // 从dataLoaderService获取技能数据
   return dataLoaderService.getAgentSkills(agentName);
 });
 
-// 属性快照计算
+// 属性快照（computed，直接使用实例）
 const combatStatsSnapshot = computed(() => {
-  if (!frontAgent.value) return null;
+  if (!frontAgent.value || !frontCharacterId.value) {
+    return null;
+  }
 
-  // 直接获取战斗属性（包含基础属性+自身Buff）
-  return frontAgent.value.getCombatStats();
+  const char = availableCharacters.value.find(c => c.id === frontCharacterId.value);
+  if (!char) {
+    return null;
+  }
+
+  const equipmentStats: PropertyCollection[] = [];
+
+  // 1. 获取音擎属性
+  if (char.agent.equipped_wengine) {
+    const wengine = saveStore.wengines.find(w => w.id === char.agent.equipped_wengine);
+    if (wengine) {
+      const wengineStats = wengine.getStatsAtLevel(wengine.level, wengine.breakthrough);
+      equipmentStats.push(wengineStats);
+    }
+  }
+
+  // 2. 获取驱动盘属性
+  const driveDisks = char.agent.equipped_drive_disks
+    .map(diskId => diskId ? saveStore.driveDisks.find(d => d.id === diskId) : null)
+    .filter(d => d !== null && d !== undefined);
+
+  for (const disk of driveDisks) {
+    const diskStats = disk!.getStats();
+    equipmentStats.push(diskStats);
+  }
+
+  // 3. 计算套装效果（2件套）
+  if (driveDisks.length > 0) {
+    const setCounts: Record<string, number> = {};
+    for (const disk of driveDisks) {
+      if (disk!.set_name) {
+        setCounts[disk!.set_name] = (setCounts[disk!.set_name] || 0) + 1;
+      }
+    }
+
+    const processedSets = new Set<string>();
+    for (const disk of driveDisks) {
+      if (!disk!.set_name) continue;
+
+      const setName = disk!.set_name;
+      if (processedSets.has(setName)) continue;
+      processedSets.add(setName);
+
+      const count = setCounts[setName] || 0;
+      if (count >= 2 && disk!.two_piece_buffs.length > 0) {
+        for (const buff of disk!.two_piece_buffs) {
+          equipmentStats.push(buff.toPropertyCollection());
+        }
+      }
+    }
+  }
+
+  // 计算基础战斗属性（角色+装备，不含buff）
+  return frontAgent.value.getCombatStats(equipmentStats);
 });
 
 // Buff数据结构
@@ -757,44 +718,9 @@ async function loadCharacterBuffs(characterId: string, isOnField: boolean): Prom
 
   try {
     // 1. 加载角色自身的Buff
-    const gameCharCode = char.zodData.key; // CodeName like "Anby"
+    const gameCharId = char.agent.game_id; // 直接使用实例的game_id
 
-    // 调试日志
-    console.log(`查找角色: ${gameCharCode}`, char.zodData);
-
-    // 从dataLoaderService直接查找ID
-    // zodData.key对应的是EN字段，而不是code字段
-    let gameCharId: string | null = null;
-    const charMap = dataLoaderService.characterData;
-    if (charMap) {
-      for (const [id, data] of charMap.entries()) {
-        // 先尝试匹配EN字段（zodData.key通常是EN名称）
-        if (data.EN && data.EN.trim().toLowerCase() === gameCharCode.trim().toLowerCase()) {
-          gameCharId = id;
-          console.log(`通过EN字段匹配到: ${id}`, data);
-          break;
-        }
-        // 如果EN不匹配，再尝试code字段
-        if (data.code && data.code.trim().toLowerCase() === gameCharCode.trim().toLowerCase()) {
-          gameCharId = id;
-          console.log(`通过code字段匹配到: ${id}`, data);
-          break;
-        }
-      }
-    }
-
-    if (!gameCharId) {
-      console.error(`未找到角色ID: ${gameCharCode}`);
-      console.log('可用的角色列表:', Array.from(charMap?.entries() || []).slice(0, 5).map(([id, data]) => ({
-        id,
-        code: data.code,
-        EN: data.EN,
-        CHS: data.CHS
-      })));
-      return [];
-    }
-
-    console.log(`加载角色Buff: ${gameCharCode}, ID: ${gameCharId}`);
+    console.log(`加载角色Buff: ${char.agent.name_cn}, ID: ${gameCharId}`);
 
     const charBuffData = await gameDataStore.getCharacterBuff(gameCharId);
 
@@ -848,144 +774,139 @@ async function loadCharacterBuffs(characterId: string, isOnField: boolean): Prom
       }
 
     // 2. 加载音擎Buff
-    if (char.zodData.equippedWengine) {
-      const wengine = saveStore.wengines.find(w => w.id === char.zodData.equippedWengine);
+    if (char.agent.equipped_wengine) {
+      const wengine = saveStore.wengines.find(w => w.id === char.agent.equipped_wengine);
       if (wengine) {
-        // 从dataLoaderService查找音擎ID
-        let gameWengineId: string | null = null;
-        const weaponMap = dataLoaderService.weaponData;
-        if (weaponMap) {
-          for (const [id, data] of weaponMap.entries()) {
-            const normalized = wengine.key.replace(/[\s']/g, '').toLowerCase();
-            const dataEN = (data.EN || '').replace(/[\s']/g, '').toLowerCase();
-            if (data.EN === wengine.key || dataEN === normalized) {
-              gameWengineId = id;
-              break;
-            }
-          }
-        }
+        const gameWengineId = wengine.wengine_id; // 直接使用实例的wengine_id
 
-        if (gameWengineId) {
-          console.log(`加载音擎Buff: ${wengine.key}, ID: ${gameWengineId}`);
-          const wengineBuffData = await gameDataStore.getWeaponBuff(gameWengineId);
+        console.log(`加载音擎Buff: ${wengine.name}, ID: ${gameWengineId}`);
+        const wengineBuffData = await gameDataStore.getWeaponBuff(gameWengineId);
 
-          // 提取音擎Buff
-          const allWengineBuffs = wengineBuffData.talents?.flatMap((t: any) => t.buffs || []) || [];
+        // 提取音擎Buff
+        const allWengineBuffs = wengineBuffData.talents?.flatMap((t: any) => t.buffs || []) || [];
 
-          for (const buff of allWengineBuffs) {
-            const targetSelf = buff.target?.target_self || false;
-            const targetTeammate = buff.target?.target_teammate || false;
+        for (const buff of allWengineBuffs) {
+          const targetSelf = buff.target?.target_self || false;
+          const targetTeammate = buff.target?.target_teammate || false;
 
-            if (isOnField && targetSelf) {
-              buffs.push({
-                id: buff.id,
-                name: buff.name,
-                description: buff.description || '',
-                source: 'weapon',
-                sourceType: '音擎',
-                context: buff.context || '',
-                stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-                target: buff.target,
-                isActive: true,
-              });
-            } else if (!isOnField && targetTeammate) {
-              buffs.push({
-                id: buff.id,
-                name: buff.name,
-                description: buff.description || '',
-                source: 'weapon',
-                sourceType: '音擎',
-                context: buff.context || '',
-                stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-                target: buff.target,
-                isActive: true,
-              });
-            }
+          if (isOnField && targetSelf) {
+            buffs.push({
+              id: buff.id,
+              name: buff.name,
+              description: buff.description || '',
+              source: 'weapon',
+              sourceType: '音擎',
+              context: buff.context || '',
+              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
+              target: buff.target,
+              isActive: true,
+            });
+          } else if (!isOnField && targetTeammate) {
+            buffs.push({
+              id: buff.id,
+              name: buff.name,
+              description: buff.description || '',
+              source: 'weapon',
+              sourceType: '音擎',
+              context: buff.context || '',
+              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
+              target: buff.target,
+              isActive: true,
+            });
           }
         }
       }
     }
 
     // 3. 加载驱动盘Buff
-    const equippedDiscs = char.zodData.equippedDiscs || {};
-    const discSetKeys = new Set(Object.values(equippedDiscs).filter(Boolean));
+    const equippedDisks = char.agent.equipped_drive_disks.filter(id => id !== null);
+    const diskInstances = equippedDisks
+      .map(id => saveStore.driveDisks.find(d => d.id === id))
+      .filter(d => d !== undefined);
 
-    // 统计每个套装的数量
+    // 统计每个套装的数量（按game_id）
     const setCount: Record<string, number> = {};
-    for (const setKey of discSetKeys) {
-      setCount[setKey] = Object.values(equippedDiscs).filter(s => s === setKey).length;
+    for (const disk of diskInstances) {
+      const gameId = disk!.game_id;
+      if (gameId) {
+        setCount[gameId] = (setCount[gameId] || 0) + 1;
+      }
     }
 
-    for (const [setKey, count] of Object.entries(setCount)) {
-      const gameEquip = gameDataStore.getEquipmentBySetKey(setKey);
-      if (gameEquip) {
-        const equipBuffData = await gameDataStore.getEquipmentBuff(gameEquip.id);
+    // 处理套装buff（去重）
+    const processedSets = new Set<string>();
+    for (const disk of diskInstances) {
+      const gameId = disk!.game_id;
+      if (!gameId || processedSets.has(gameId)) continue;
+      processedSets.add(gameId);
 
-        // 2件套效果
-        if (count >= 2 && equipBuffData.two_piece_buffs) {
-          for (const buff of equipBuffData.two_piece_buffs) {
-            const targetSelf = buff.target?.target_self || false;
-            const targetTeammate = buff.target?.target_teammate || false;
+      const count = setCount[gameId] || 0;
+      const equipBuffData = await gameDataStore.getEquipmentBuff(gameId);
 
-            if (isOnField && targetSelf) {
-              buffs.push({
-                id: buff.id,
-                name: buff.name,
-                description: buff.description || '',
-                source: 'equipment',
-                sourceType: '驱动盘2件套',
-                context: buff.context || '',
-                stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-                target: buff.target,
-                isActive: true,
-              });
-            } else if (!isOnField && targetTeammate) {
-              buffs.push({
-                id: buff.id,
-                name: buff.name,
-                description: buff.description || '',
-                source: 'equipment',
-                sourceType: '驱动盘2件套',
-                context: buff.context || '',
-                stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-                target: buff.target,
-                isActive: true,
-              });
-            }
+      // 2件套效果
+      if (count >= 2 && equipBuffData.two_piece_buffs) {
+        for (const buff of equipBuffData.two_piece_buffs) {
+          const targetSelf = buff.target?.target_self || false;
+          const targetTeammate = buff.target?.target_teammate || false;
+
+          if (isOnField && targetSelf) {
+            buffs.push({
+              id: buff.id,
+              name: buff.name,
+              description: buff.description || '',
+              source: 'equipment',
+              sourceType: '驱动盘2件套',
+              context: buff.context || '',
+              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
+              target: buff.target,
+              isActive: true,
+            });
+          } else if (!isOnField && targetTeammate) {
+            buffs.push({
+              id: buff.id,
+              name: buff.name,
+              description: buff.description || '',
+              source: 'equipment',
+              sourceType: '驱动盘2件套',
+              context: buff.context || '',
+              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
+              target: buff.target,
+              isActive: true,
+            });
           }
         }
+      }
 
-        // 4件套效果
-        if (count >= 4 && equipBuffData.four_piece_buffs) {
-          for (const buff of equipBuffData.four_piece_buffs) {
-            const targetSelf = buff.target?.target_self || false;
-            const targetTeammate = buff.target?.target_teammate || false;
+      // 4件套效果
+      if (count >= 4 && equipBuffData.four_piece_buffs) {
+        for (const buff of equipBuffData.four_piece_buffs) {
+          const targetSelf = buff.target?.target_self || false;
+          const targetTeammate = buff.target?.target_teammate || false;
 
-            if (isOnField && targetSelf) {
-              buffs.push({
-                id: buff.id,
-                name: buff.name,
-                description: buff.description || '',
-                source: 'equipment',
-                sourceType: '驱动盘4件套',
-                context: buff.context || '',
-                stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-                target: buff.target,
-                isActive: true,
-              });
-            } else if (!isOnField && targetTeammate) {
-              buffs.push({
-                id: buff.id,
-                name: buff.name,
-                description: buff.description || '',
-                source: 'equipment',
-                sourceType: '驱动盘4件套',
-                context: buff.context || '',
-                stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-                target: buff.target,
-                isActive: true,
-              });
-            }
+          if (isOnField && targetSelf) {
+            buffs.push({
+              id: buff.id,
+              name: buff.name,
+              description: buff.description || '',
+              source: 'equipment',
+              sourceType: '驱动盘4件套',
+              context: buff.context || '',
+              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
+              target: buff.target,
+              isActive: true,
+            });
+          } else if (!isOnField && targetTeammate) {
+            buffs.push({
+              id: buff.id,
+              name: buff.name,
+              description: buff.description || '',
+              source: 'equipment',
+              sourceType: '驱动盘4件套',
+              context: buff.context || '',
+              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
+              target: buff.target,
+              isActive: true,
+            });
           }
         }
       }
@@ -1017,17 +938,10 @@ watch(
 watch(frontCharacterId, async (newId) => {
   if (newId) {
     frontCharacterBuffs.value = await loadCharacterBuffs(newId, true);
-    
-    // 创建Agent实例并计算基础属性
+
+    // 直接使用Agent实例
     const char = availableCharacters.value.find(c => c.id === newId);
-    if (char) {
-      try {
-        frontAgent.value = await Agent.fromZodData(char.zodData, dataLoaderService);
-      } catch (e) {
-        console.error('Failed to create agent:', e);
-        frontAgent.value = null;
-      }
-    }
+    frontAgent.value = char ? char.agent : null;
   } else {
     frontCharacterBuffs.value = [];
     frontAgent.value = null;

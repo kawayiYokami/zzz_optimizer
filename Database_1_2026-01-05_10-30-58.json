@@ -1,0 +1,7515 @@
+{
+  "format": "ZOD",
+  "dbVersion": 2,
+  "source": "Zenless Optimizer",
+  "version": 1,
+  "characters": [
+    {
+      "equippedDiscs": { "1": "", "2": "", "3": "", "4": "", "5": "", "6": "" },
+      "equippedWengine": "",
+      "key": "Alice",
+      "level": 60,
+      "core": 6,
+      "mindscape": 0,
+      "dodge": 1,
+      "basic": 1,
+      "chain": 1,
+      "special": 1,
+      "assist": 1,
+      "promotion": 5,
+      "potential": 0,
+      "id": "Alice"
+    },
+    {
+      "equippedDiscs": { "1": "", "2": "", "3": "", "4": "", "5": "", "6": "" },
+      "equippedWengine": "zzz_wengine_1",
+      "key": "YeShunguang",
+      "level": 60,
+      "core": 6,
+      "mindscape": 1,
+      "dodge": 12,
+      "basic": 12,
+      "chain": 12,
+      "special": 12,
+      "assist": 12,
+      "promotion": 5,
+      "potential": 0,
+      "id": "YeShunguang"
+    }
+  ],
+  "discs": [
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_392"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_36"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_60"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk", "upgrades": 4 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_225"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [{ "key": "def_", "upgrades": 1 }],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_387"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_295"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "def", "upgrades": 2 },
+        { "key": "def_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_16"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_385"
+    },
+    {
+      "setKey": "ThunderMetal",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_438"
+    },
+    {
+      "setKey": "WoodpeckerElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "hp", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_250"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_284"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_11"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_321"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_71"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_120"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_190"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_292"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "def", "upgrades": 5 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_151"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [{ "key": "hp", "upgrades": 1 }],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_426"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "atk", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_153"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_319"
+    },
+    {
+      "setKey": "PolarMetal",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "hp", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_439"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_175"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_184"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_427"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_189"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_327"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_415"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_69"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_314"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "pen", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_86"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_262"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_216"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "def_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_224"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_113"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "hp", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_80"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_257"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_383"
+    },
+    {
+      "setKey": "ShockstarDisco",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_277"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_43"
+    },
+    {
+      "setKey": "ThunderMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_363"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_261"
+    },
+    {
+      "setKey": "ThunderMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_361"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_356"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_8"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_413"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_418"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "def_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_31"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_391"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_304"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_2"
+    },
+    {
+      "setKey": "FangedMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_375"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_154"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk", "upgrades": 1 },
+        { "key": "def_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_135"
+    },
+    {
+      "setKey": "ShockstarDisco",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "hp", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_279"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_414"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_163"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_102"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_425"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_42"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "hp", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_266"
+    },
+    {
+      "setKey": "ShockstarDisco",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_273"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_104"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 3,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_378"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 5 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_328"
+    },
+    {
+      "setKey": "WoodpeckerElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "pen", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_248"
+    },
+    {
+      "setKey": "FangedMetal",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_440"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 4 },
+        { "key": "def_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_139"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "hp", "upgrades": 4 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_341"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def", "upgrades": 4 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_351"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 5 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_138"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_412"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_145"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_133"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_204"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_235"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_423"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_119"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_393"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_84"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_6"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_150"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_263"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_312"
+    },
+    {
+      "setKey": "ThunderMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_362"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_100"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_161"
+    },
+    {
+      "setKey": "ShockstarDisco",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "def_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_276"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 4 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_210"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_214"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_111"
+    },
+    {
+      "setKey": "WoodpeckerElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "def_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_247"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_270"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "hp", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_320"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_44"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "hp", "upgrades": 4 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_134"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_342"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_177"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_309"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_178"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_54"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_149"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_300"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_187"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_57"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_122"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_157"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_29"
+    },
+    {
+      "setKey": "ThunderMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_359"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_192"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_200"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "atk", "upgrades": 1 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_339"
+    },
+    {
+      "setKey": "FangedMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_370"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_129"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_13"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_90"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_330"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_52"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_358"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_140"
+    },
+    {
+      "setKey": "FangedMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_371"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "hp", "upgrades": 4 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "def_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_286"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_24"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_294"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_61"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_46"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "def", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_317"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_394"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_254"
+    },
+    {
+      "setKey": "WoodpeckerElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "def_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_251"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 4 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_109"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_76"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_173"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_51"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "def_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_389"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "atk_", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_332"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_27"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_234"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_269"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_78"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_108"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_136"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "hp", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_217"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "def", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_352"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_207"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_21"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_170"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_350"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "hp", "upgrades": 1 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_92"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "pen", "upgrades": 3 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "atk", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_237"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_17"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_400"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_77"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "def_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_220"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "pen", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_323"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_409"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_1"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "pen", "upgrades": 5 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_127"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_244"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "hp", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_424"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_209"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_384"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_246"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_10"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_420"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_67"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_85"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_56"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_168"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_410"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_147"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_421"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_123"
+    },
+    {
+      "setKey": "WoodpeckerElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "def", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_252"
+    },
+    {
+      "setKey": "FangedMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_377"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 3,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_379"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_401"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp", "upgrades": 1 },
+        { "key": "pen", "upgrades": 4 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_345"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_118"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "pen", "upgrades": 5 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_239"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_282"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_117"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_34"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_87"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_152"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_289"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 4 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_307"
+    },
+    {
+      "setKey": "WoodpeckerElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk", "upgrades": 3 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_253"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_238"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_245"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_390"
+    },
+    {
+      "setKey": "InfernoMetal",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_437"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_219"
+    },
+    {
+      "setKey": "PolarMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 4 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_368"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_397"
+    },
+    {
+      "setKey": "PolarMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_366"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_434"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_349"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "hp", "upgrades": 3 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_130"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_194"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_211"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_96"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 4 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_298"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_308"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "pen", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_174"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "def", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_132"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_176"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_215"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_399"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_430"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 5 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_146"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_241"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_227"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_144"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_290"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_408"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_322"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_196"
+    },
+    {
+      "setKey": "FangedMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "def_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_376"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_97"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_82"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_148"
+    },
+    {
+      "setKey": "FangedMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_372"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_179"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_281"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_335"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_25"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_9"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_388"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_218"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_258"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_197"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_343"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_158"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_272"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_75"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_288"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_268"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_305"
+    },
+    {
+      "setKey": "WoodpeckerElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_249"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_431"
+    },
+    {
+      "setKey": "ShockstarDisco",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_278"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_336"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [{ "key": "hp_", "upgrades": 1 }],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_398"
+    },
+    {
+      "setKey": "PolarMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 5 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_364"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_66"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_26"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_329"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_206"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_260"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "def", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_316"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_156"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_347"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_188"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "def_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_48"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "def", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "def_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_344"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_114"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_12"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_131"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_324"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_259"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_142"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_41"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_223"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_302"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "def", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_14"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_236"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "hp", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_128"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_271"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_301"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_221"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 5 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_3"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_436"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_267"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_404"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_59"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_205"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_70"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_79"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_4"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_19"
+    },
+    {
+      "setKey": "ShockstarDisco",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_280"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_105"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_428"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_143"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_313"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_165"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_167"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_357"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_169"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_201"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_35"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_72"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_334"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_166"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "def", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_296"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_226"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "def_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_433"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_58"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_45"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_22"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_422"
+    },
+    {
+      "setKey": "FangedMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "hp", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_373"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_242"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_230"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_15"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_126"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_81"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_208"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_39"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_88"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_160"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "atk_", "upgrades": 4 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_180"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_310"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_405"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_53"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_64"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_83"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_315"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_382"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_94"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_195"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_265"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_299"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_419"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_231"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_202"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_285"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_185"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_243"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_256"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "pen", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_37"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "hp", "upgrades": 3 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_68"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "hp", "upgrades": 1 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_255"
+    },
+    {
+      "setKey": "PolarMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "def_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_367"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_396"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "def_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_103"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_229"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "pen", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_291"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "def_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_40"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_33"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_213"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_74"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "hp", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_395"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_432"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_47"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_63"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_403"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "pen", "upgrades": 4 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_115"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_141"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 3,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_380"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_49"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_331"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_340"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_186"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_212"
+    },
+    {
+      "setKey": "ShockstarDisco",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_275"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def", "upgrades": 4 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_93"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_73"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_228"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_20"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_337"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_181"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_18"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_172"
+    },
+    {
+      "setKey": "FangedMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 4 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_369"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 5 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_171"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_183"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 3 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_91"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "def", "upgrades": 2 },
+        { "key": "def_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_283"
+    },
+    {
+      "setKey": "PolarMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_365"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_407"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "atk", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_101"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_198"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_325"
+    },
+    {
+      "setKey": "FangedMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_374"
+    },
+    {
+      "setKey": "PufferElectro",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_264"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_326"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_346"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_411"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_193"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_98"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 4 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_232"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "def_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_354"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "pen", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "hp", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_233"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "hp", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_124"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "hp", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_55"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "atk", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_28"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_106"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk", "upgrades": 1 },
+        { "key": "def_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_381"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_159"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "def", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_297"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 2 },
+        { "key": "hp", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_333"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_5"
+    },
+    {
+      "setKey": "ThunderMetal",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_360"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_338"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 4 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_306"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "hp", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_287"
+    },
+    {
+      "setKey": "ShockstarDisco",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_274"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "pen", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_110"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "anomProf",
+      "substats": [
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "atk", "upgrades": 3 },
+        { "key": "hp_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_125"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_199"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_311"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "pen", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_318"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "pen", "upgrades": 3 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_182"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "atk", "upgrades": 1 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 4 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_62"
+    },
+    {
+      "setKey": "WhiteWaterBallad",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_7"
+    },
+    {
+      "setKey": "FreedomBlues",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_293"
+    },
+    {
+      "setKey": "ShadowHarmony",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_dmg_",
+      "substats": [
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_155"
+    },
+    {
+      "setKey": "HormonePunk",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "def", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 4 },
+        { "key": "crit_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_303"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "crit_dmg_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_116"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_65"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_23"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "pen", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_416"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "pen", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_32"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_406"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 3 },
+        { "key": "pen", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_137"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def_", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_191"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 2 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "crit_", "upgrades": 3 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_203"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "atk", "upgrades": 3 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "def", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_38"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "pen_",
+      "substats": [
+        { "key": "hp", "upgrades": 2 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 2 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_240"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "1",
+      "mainStatKey": "hp",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "def_", "upgrades": 3 },
+        { "key": "crit_", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 2 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_99"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "def_", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_402"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "atk", "upgrades": 1 },
+        { "key": "crit_dmg_", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_429"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "3",
+      "mainStatKey": "def",
+      "substats": [
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "pen", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 4 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_121"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "hp", "upgrades": 3 },
+        { "key": "crit_dmg_", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 3 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_348"
+    },
+    {
+      "setKey": "SwingJazz",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "6",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_435"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "crit_",
+      "substats": [
+        { "key": "crit_dmg_", "upgrades": 3 },
+        { "key": "def", "upgrades": 1 },
+        { "key": "atk_", "upgrades": 4 },
+        { "key": "atk", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_222"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "5",
+      "mainStatKey": "hp_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "crit_", "upgrades": 1 },
+        { "key": "hp", "upgrades": 2 },
+        { "key": "atk_", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_107"
+    },
+    {
+      "setKey": "MoonlightLullaby",
+      "rarity": "S",
+      "level": 15,
+      "slotKey": "4",
+      "mainStatKey": "atk_",
+      "substats": [
+        { "key": "def_", "upgrades": 2 },
+        { "key": "hp_", "upgrades": 3 },
+        { "key": "anomProf", "upgrades": 3 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_30"
+    },
+    {
+      "setKey": "AstralVoice",
+      "rarity": "S",
+      "level": 0,
+      "slotKey": "2",
+      "mainStatKey": "atk",
+      "substats": [
+        { "key": "hp_", "upgrades": 1 },
+        { "key": "anomProf", "upgrades": 1 },
+        { "key": "pen", "upgrades": 1 }
+      ],
+      "location": "",
+      "lock": false,
+      "trash": false,
+      "id": "zzz_disc_417"
+    }
+  ],
+  "wengines": [
+    {
+      "key": "CloudcleaveRadiance",
+      "level": 60,
+      "modification": 5,
+      "phase": 1,
+      "location": "YeShunguang",
+      "lock": false,
+      "id": "zzz_wengine_1"
+    },
+    {
+      "key": "BellicoseBlaze",
+      "level": 60,
+      "modification": 5,
+      "phase": 1,
+      "location": "",
+      "lock": false,
+      "id": "zzz_wengine_0"
+    }
+  ],
+  "charMetas": [{ "description": "", "id": "YeShunguang" }],
+  "generatedBuildList": [
+    {
+      "builds": [
+        {
+          "discIds": {
+            "1": "zzz_disc_138",
+            "2": "zzz_disc_120",
+            "3": "zzz_disc_149",
+            "4": "zzz_disc_318",
+            "5": "zzz_disc_322",
+            "6": "zzz_disc_196"
+          },
+          "wengineId": "zzz_wengine_1",
+          "value": 183529.61935316806
+        },
+        {
+          "discIds": {
+            "1": "zzz_disc_1",
+            "2": "zzz_disc_174",
+            "3": "zzz_disc_149",
+            "4": "zzz_disc_152",
+            "5": "zzz_disc_188",
+            "6": "zzz_disc_7"
+          },
+          "wengineId": "zzz_wengine_1",
+          "value": 183224.55805627487
+        },
+        {
+          "discIds": {
+            "1": "zzz_disc_138",
+            "2": "zzz_disc_4",
+            "3": "zzz_disc_149",
+            "4": "zzz_disc_222",
+            "5": "zzz_disc_188",
+            "6": "zzz_disc_8"
+          },
+          "wengineId": "zzz_wengine_1",
+          "value": 183133.19197796026
+        },
+        {
+          "discIds": {
+            "1": "zzz_disc_1",
+            "2": "zzz_disc_120",
+            "3": "zzz_disc_149",
+            "4": "zzz_disc_152",
+            "5": "zzz_disc_188",
+            "6": "zzz_disc_7"
+          },
+          "wengineId": "zzz_wengine_1",
+          "value": 182664.1473340695
+        },
+        {
+          "discIds": {
+            "1": "zzz_disc_1",
+            "2": "zzz_disc_146",
+            "3": "zzz_disc_149",
+            "4": "zzz_disc_222",
+            "5": "zzz_disc_188",
+            "6": "zzz_disc_8"
+          },
+          "wengineId": "zzz_wengine_1",
+          "value": 182622.97212741105
+        }
+      ],
+      "buildDate": 1767273490627,
+      "id": "zzz_generatedBuildList_0"
+    }
+  ],
+  "optConfigs": [
+    {
+      "statFilters": [],
+      "levelLow": 15,
+      "levelHigh": 15,
+      "slot4": ["atk_", "crit_", "crit_dmg_"],
+      "slot5": ["atk_", "physical_dmg_", "pen_"],
+      "slot6": ["atk_"],
+      "setFilter2": [],
+      "setFilter4": [],
+      "useEquipped": false,
+      "optWengine": false,
+      "wlevelLow": 60,
+      "wlevelHigh": 60,
+      "wEngineTypes": ["attack"],
+      "useEquippedWengine": false,
+      "maxBuildsToShow": 5,
+      "generatedBuildListId": "zzz_generatedBuildList_0",
+      "id": "zzz_optConfig_1"
+    },
+    {
+      "statFilters": [],
+      "levelLow": 15,
+      "levelHigh": 15,
+      "slot4": ["hp_", "atk_", "def_", "crit_", "crit_dmg_", "anomProf"],
+      "slot5": [
+        "hp_",
+        "atk_",
+        "def_",
+        "pen_",
+        "electric_dmg_",
+        "fire_dmg_",
+        "ice_dmg_",
+        "physical_dmg_",
+        "ether_dmg_"
+      ],
+      "slot6": ["hp_", "atk_", "def_", "anomMas_", "impact_", "enerRegen_"],
+      "setFilter2": [],
+      "setFilter4": [],
+      "useEquipped": false,
+      "optWengine": false,
+      "wlevelLow": 60,
+      "wlevelHigh": 60,
+      "wEngineTypes": ["anomaly"],
+      "useEquippedWengine": false,
+      "maxBuildsToShow": 5,
+      "id": "zzz_optConfig_0"
+    }
+  ],
+  "charOpts": [
+    {
+      "target": {
+        "sheet": "YeShunguang",
+        "name": "standardDmgInst",
+        "damageType1": "basic",
+        "damageType2": "aftershock"
+      },
+      "conditionals": [
+        {
+          "sheet": "CloudcleaveRadiance",
+          "src": "YeShunguang",
+          "dst": null,
+          "condKey": "activatesEtherVeil",
+          "condValue": 1
+        },
+        {
+          "sheet": "enemy",
+          "src": "YeShunguang",
+          "dst": null,
+          "condKey": "isStunned",
+          "condValue": 1
+        },
+        {
+          "sheet": "DawnsBloom",
+          "src": "YeShunguang",
+          "dst": null,
+          "condKey": "exSpecial_ult_used",
+          "condValue": 1
+        },
+        {
+          "sheet": "WhiteWaterBallad",
+          "src": "YeShunguang",
+          "dst": null,
+          "condKey": "inEtherVeil",
+          "condValue": 1
+        },
+        {
+          "sheet": "WhiteWaterBallad",
+          "src": "YeShunguang",
+          "dst": null,
+          "condKey": "activateExtendVeil",
+          "condValue": 1
+        }
+      ],
+      "bonusStats": [
+        {
+          "tag": { "q": "dmg_", "qt": "combat" },
+          "value": 60,
+          "disabled": false
+        },
+        {
+          "tag": { "q": "atk", "qt": "combat" },
+          "value": 1200,
+          "disabled": false
+        },
+        {
+          "tag": { "q": "atk_", "qt": "combat" },
+          "value": 20,
+          "disabled": false
+        },
+        {
+          "tag": { "q": "crit_dmg_", "qt": "combat" },
+          "value": 55,
+          "disabled": false
+        },
+        {
+          "tag": { "q": "crit_dmg_", "qt": "combat" },
+          "value": 30,
+          "disabled": false
+        },
+        {
+          "tag": { "q": "crit_", "qt": "combat" },
+          "value": 30,
+          "disabled": false
+        },
+        {
+          "tag": { "q": "crit_dmg_", "qt": "combat" },
+          "value": 25,
+          "disabled": false
+        },
+        {
+          "tag": { "q": "dmg_", "qt": "combat" },
+          "value": 10,
+          "disabled": false
+        }
+      ],
+      "teammates": [],
+      "critMode": "avg",
+      "enemyLvl": 80,
+      "enemyDef": 150,
+      "enemyStunMultiplier": 210,
+      "enemyStats": [{ "tag": { "q": "defRed_" }, "value": 20 }],
+      "optConfigId": "zzz_optConfig_1",
+      "id": "YeShunguang"
+    },
+    {
+      "conditionals": [],
+      "bonusStats": [],
+      "teammates": [],
+      "critMode": "avg",
+      "enemyLvl": 80,
+      "enemyDef": 953,
+      "enemyStunMultiplier": 150,
+      "enemyStats": [],
+      "optConfigId": "zzz_optConfig_0",
+      "id": "Alice"
+    }
+  ],
+  "dbMeta": {
+    "name": "Database 1",
+    "lastEdit": 1767273406410,
+    "optCharKey": "YeShunguang"
+  },
+  "display_disc": {
+    "filterOption": {
+      "discSetKeys": [],
+      "rarity": ["S", "A", "B"],
+      "levelLow": 0,
+      "levelHigh": 15,
+      "slotKeys": ["1", "2", "3", "4", "5", "6"],
+      "mainStatKeys": [],
+      "substats": [],
+      "locations": [],
+      "showEquipped": true,
+      "showInventory": true,
+      "locked": ["locked", "unlocked"],
+      "rvLow": 0,
+      "rvHigh": 900,
+      "useMaxRV": false,
+      "lines": [1, 2, 3, 4]
+    },
+    "ascending": false,
+    "sortType": "rarity",
+    "effFilter": [
+      "hp",
+      "atk",
+      "def",
+      "hp_",
+      "atk_",
+      "def_",
+      "pen",
+      "crit_",
+      "crit_dmg_",
+      "anomProf"
+    ]
+  },
+  "display_character": {
+    "sortType": "level",
+    "ascending": false,
+    "specialtyType": [
+      "attack",
+      "stun",
+      "anomaly",
+      "support",
+      "defense",
+      "rupture"
+    ],
+    "attribute": ["physical"],
+    "rarity": ["S", "A"]
+  },
+  "display_wengine": {
+    "editWengineId": "",
+    "sortType": "level",
+    "ascending": false,
+    "rarity": ["S", "A", "B"],
+    "speciality": [
+      "attack",
+      "stun",
+      "anomaly",
+      "support",
+      "defense",
+      "rupture"
+    ],
+    "locked": ["locked", "unlocked"],
+    "showEquipped": true,
+    "showInventory": true,
+    "locations": []
+  }
+}
