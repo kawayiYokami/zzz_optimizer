@@ -82,6 +82,12 @@ export class AgentSkills {
 
 /**
  * 角色模型
+ *
+ * ⚠️ 重要说明：
+ * 这是一个运行时对象，从存档数据生成，用于属性计算和战斗模拟
+ * - 包含计算缓存（self_properties、buff列表等）
+ * - 不是存档本身，不应该被持久化
+ * - 每次从存档加载时重新创建
  */
 export class Agent {
   // 实例ID（存档中的唯一标识）

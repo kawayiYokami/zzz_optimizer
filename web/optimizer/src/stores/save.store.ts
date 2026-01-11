@@ -2,12 +2,28 @@
  * 存档管理Store
  *
  * 使用Pinia管理存档数据的状态
+ *
+ * ⚠️ 重要架构说明：
+ * - 存档（SaveData）：持久化数据，存储在localStorage中，是数据的"真相"
+ * - 实例对象（Agent、WEngine、DriveDisk）：从存档中生成的运行时对象，用于计算
+ *
+ * 实例对象 ≠ 存档
+ * - 实例对象包含计算缓存（self_properties、base_stats等）
+ * - 实例对象是从存档数据生成的，用于运行时计算
+ * - 存档是持久化数据，应该直接从localStorage读取
+ *
+ * 数据流：
+ * 1. 存档（SaveData.toDict） → localStorage（持久化）
+ * 2. localStorage → 存档（SaveData.fromDict） → 实例对象（运行时计算）
+ * 3. 导出时：直接从localStorage读取存档数据，不使用实例对象
+ * 4. 导出ZOD时：从实例对象转换格式（因为实例对象有完整的游戏数据引用）
  */
 
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { SaveData } from '../model/save-data-instance';
 import { dataLoaderService } from '../services/data-loader.service';
+import type { SaveDataZod } from '../model/save-data-zod';
 
 const STORAGE_KEY = 'zzz_optimizer_saves';
 const CURRENT_SAVE_KEY = 'zzz_optimizer_current_save';
@@ -54,8 +70,19 @@ export const useSaveStore = defineStore('save', () => {
         const newSaves = new Map<string, SaveData>();
 
         for (const [name, data] of Object.entries(parsed)) {
-          const saveData = await SaveData.fromDict(data as any, dataLoaderService);
-          newSaves.set(name, saveData);
+          try {
+            let saveData: SaveData;
+            if (isZodSaveData(data)) {
+              const normalized = normalizeZodData(data as SaveDataZod);
+              saveData = await SaveData.fromZod(name, normalized, dataLoaderService);
+            } else {
+              saveData = await SaveData.fromDict(data as any, dataLoaderService);
+            }
+            newSaves.set(name, saveData);
+          } catch (err) {
+            console.error(`加载存档失败 [${name}]:`, err);
+            // 继续加载其他存档，不中断整个加载过程
+          }
         }
 
         saves.value = newSaves;
@@ -76,10 +103,10 @@ export const useSaveStore = defineStore('save', () => {
    */
   function saveToStorage(): void {
     try {
-      const dataToSave: Record<string, any> = {};
+      const dataToSave: Record<string, SaveDataZod> = {};
 
       for (const [name, saveData] of saves.value.entries()) {
-        dataToSave[name] = saveData.toDict();
+        dataToSave[name] = saveData.toZodData();
       }
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
@@ -153,37 +180,19 @@ export const useSaveStore = defineStore('save', () => {
   }
 
   /**
-   * 从扫描数据导入
+   * 导入ZOD格式数据
    */
-  async function importFromScanData(data: any, saveName?: string): Promise<SaveData> {
+  async function importZodData(data: any, saveName?: string): Promise<SaveData> {
     isLoading.value = true;
     error.value = null;
 
     try {
-      // 动态导入 ZOD 解析服务
-      const { zodParserService } = await import('../services/zod-parser.service');
-
-      // 创建新存档
       const name = saveName ?? `import_${Date.now()}`;
-      const newSave = new SaveData(name);
-
-      // 使用 ZOD 解析服务解析数据
-      const parsedData = await zodParserService.parseZodData(data);
-
-      // 合并角色数据
-      for (const [agentId, agent] of parsedData.agents.entries()) {
-        newSave.addAgent(agent);
+      if (!isZodSaveData(data)) {
+        throw new Error('Invalid ZOD data');
       }
-
-      // 合并驱动盘数据
-      for (const [diskId, disk] of parsedData.driveDisks.entries()) {
-        newSave.addDriveDisk(disk);
-      }
-
-      // 合并音擎数据
-      for (const [wengineId, wengine] of parsedData.wengines.entries()) {
-        newSave.addWEngine(wengine);
-      }
+      const normalized = normalizeZodData(data as SaveDataZod);
+      const newSave = await SaveData.fromZod(name, normalized, dataLoaderService);
 
       // 保存
       saves.value.set(name, newSave);
@@ -193,7 +202,7 @@ export const useSaveStore = defineStore('save', () => {
       return newSave;
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error';
-      console.error('Failed to import scan data:', err);
+      console.error('Failed to import ZOD data:', err);
       throw err;
     } finally {
       isLoading.value = false;
@@ -201,9 +210,77 @@ export const useSaveStore = defineStore('save', () => {
   }
 
   /**
-   * 导出当前存档
+   * 导出当前存档（实例格式）
+   *
+   * ⚠️ 重要说明：
+   * - 实例对象（Agent、WEngine、DriveDisk）是从存档中生成的运行时对象，用于计算
+   * - 实例对象包含计算缓存（self_properties、base_stats等），不是存档本身
+   * - 存档是持久化数据，存储在localStorage中
+   *
+   * 此方法直接从localStorage读取存档数据，不使用实例对象
+   * 这样确保导出的数据与存储的数据完全一致
+   *
+   * 数据流：localStorage → 存档JSON → 导出
    */
   function exportSaveData(): string {
+    if (!currentSaveName.value) {
+      throw new Error('No current save to export');
+    }
+
+    try {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (!savedData) {
+        throw new Error('No save data found in localStorage');
+      }
+
+      const parsed = JSON.parse(savedData);
+      const saveData = parsed[currentSaveName.value];
+
+      if (!saveData) {
+        throw new Error(`Save "${currentSaveName.value}" not found in storage`);
+      }
+
+      return JSON.stringify(saveData, null, 2);
+    } catch (err) {
+      throw new Error(`Failed to export save: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * 导出为ZOD格式（从实例对象转换）
+   *
+   * ⚠️ 重要说明：
+   * - 实例对象（Agent、WEngine、DriveDisk）是从存档中生成的运行时对象，用于计算
+   * - 实例对象包含计算缓存（self_properties、base_stats等）和游戏数据引用
+   * - 存档是持久化数据，存储在localStorage中
+   *
+   * 此方法从实例对象转换为ZOD格式，用于与其他工具兼容
+   * 注意：这是唯一一个从实例对象导出的方法，因为需要访问游戏数据引用
+   *
+   * 数据流：实例对象 → 转换为ZOD格式 → 导出
+   */
+  function exportAsZod(): string {
+    if (!currentSave.value) {
+      throw new Error('No current save to export');
+    }
+
+    return JSON.stringify(currentSave.value.toZodData(), null, 2);
+  }
+
+  /**
+   * 导出当前存档（实例格式，从实例对象生成）
+   *
+   * ⚠️ 重要说明：
+   * - 实例对象（Agent、WEngine、DriveDisk）是从存档中生成的运行时对象，用于计算
+   * - 实例对象包含计算缓存（self_properties、base_stats等），不是存档本身
+   * - 存档是持久化数据，存储在localStorage中
+   *
+   * 此方法从实例对象重新生成JSON，可能与localStorage中的数据不同步
+   * 仅用于调试目的，不推荐用于生产环境
+   *
+   * 数据流：实例对象 → 重新生成JSON → 导出（可能不同步）
+   */
+  function exportSaveDataAsInstance(): string {
     if (!currentSave.value) {
       throw new Error('No current save to export');
     }
@@ -212,13 +289,13 @@ export const useSaveStore = defineStore('save', () => {
   }
 
   /**
-   * 导出所有存档
+   * 导出所有存档（内部实例格式，仅用于调试）
    */
   function exportAllSaves(): string {
-    const dataToSave: Record<string, any> = {};
+    const dataToSave: Record<string, SaveDataZod> = {};
 
     for (const [name, saveData] of saves.value.entries()) {
-      dataToSave[name] = saveData.toDict();
+      dataToSave[name] = saveData.toZodData();
     }
 
     return JSON.stringify(dataToSave, null, 2);
@@ -235,6 +312,102 @@ export const useSaveStore = defineStore('save', () => {
 
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(CURRENT_SAVE_KEY);
+  }
+
+  function isZodSaveData(data: any): data is SaveDataZod {
+    return data && typeof data === 'object' && typeof data.format === 'string' && data.format === 'ZOD';
+  }
+
+  function normalizeZodData(data: SaveDataZod): SaveDataZod {
+    const cloned: SaveDataZod = JSON.parse(JSON.stringify(data));
+    cloned.characters = (cloned.characters ?? []).map((char) => ({
+      ...char,
+      key: normalizeCharacterKey(char.key),
+    }));
+    cloned.wengines = (cloned.wengines ?? []).map((wengine) => ({
+      ...wengine,
+      key: normalizeWengineKey(wengine.key),
+    }));
+    cloned.discs = (cloned.discs ?? []).map((disc) => ({
+      ...disc,
+      setKey: normalizeDiscSetKey(disc.setKey),
+    }));
+    return cloned;
+  }
+
+  function normalizeCharacterKey(key: string): string {
+    const normalized = keyNormalizer(key);
+    const charData = dataLoaderService.characterData;
+    if (!charData) {
+      return key;
+    }
+
+    for (const info of charData.values()) {
+      const candidates = [
+        info.code,
+        info.EN,
+        info.CHS,
+        info.JP,
+        info.KR,
+      ].filter(Boolean) as string[];
+
+      for (const candidate of candidates) {
+        if (keyNormalizer(candidate) === normalized) {
+          return info.code || candidate;
+        }
+      }
+    }
+
+    return key;
+  }
+
+  function normalizeWengineKey(key: string): string {
+    const normalized = keyNormalizer(key);
+    const weaponData = dataLoaderService.weaponData;
+    if (!weaponData) {
+      return key;
+    }
+
+    for (const info of weaponData.values()) {
+      const candidates = [info.EN, info.CHS, info.JP, info.KR].filter(Boolean) as string[];
+      for (const candidate of candidates) {
+        if (keyNormalizer(candidate) === normalized) {
+          return info.EN || candidate;
+        }
+      }
+    }
+
+    return key;
+  }
+
+  function normalizeDiscSetKey(key: string): string {
+    const normalized = keyNormalizer(key);
+    const equipmentData = dataLoaderService.equipmentData;
+    if (!equipmentData) {
+      return key;
+    }
+
+    for (const info of equipmentData.values()) {
+      const names: string[] = [];
+      if (info.EN?.name) names.push(info.EN.name);
+      if (info.CHS?.name) names.push(info.CHS.name);
+      if (info.JP?.name) names.push(info.JP.name);
+      if (info.KR?.name) names.push(info.KR.name);
+
+      for (const name of names) {
+        if (keyNormalizer(name) === normalized) {
+          return info.EN?.name || name;
+        }
+      }
+    }
+
+    return key;
+  }
+
+  function keyNormalizer(value: string): string {
+    return value
+      ? value.replace(/[\s']/g, '').toLowerCase()
+      : '';
   }
 
   // 不在模块初始化时自动加载，由应用显式控制加载顺序
@@ -260,9 +433,11 @@ export const useSaveStore = defineStore('save', () => {
     createSave,
     deleteSave,
     switchSave,
-    importFromScanData,
-    exportSaveData,
-    exportAllSaves,
+    importZodData,           // 导入ZOD格式数据
+    exportSaveData,           // 导出实例格式（直接从localStorage读取）
+    exportAsZod,              // 导出ZOD格式（转换格式）
+    exportSaveDataAsInstance, // 导出实例格式（从实例生成，调试用）
+    exportAllSaves,           // 导出所有存档（实例格式）
     reset,
   };
 });

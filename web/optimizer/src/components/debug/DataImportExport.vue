@@ -60,7 +60,7 @@ function handleFileImport(event: Event) {
       const content = e.target?.result as string;
       const data = JSON.parse(content);
 
-      saveStore.importFromScanData(data)
+      saveStore.importZodData(data)
         .then(() => {
           importSuccess.value = true;
           importError.value = null;

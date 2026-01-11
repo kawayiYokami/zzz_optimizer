@@ -5,7 +5,10 @@
 import { Agent } from './agent';
 import { DriveDisk } from './drive-disk';
 import { WEngine } from './wengine';
+import { PropertyType, Rarity } from './base';
 import type { dataLoaderService } from '../services/data-loader.service';
+import type { SaveDataZod, ZodCharacterData, ZodDiscData, ZodWengineData } from './save-data-zod';
+import { zodParserService } from '../services/zod-parser.service';
 
 /**
  * 单个存档数据
@@ -20,6 +23,17 @@ import type { dataLoaderService } from '../services/data-loader.service';
  * 都需要从游戏数据文件（character.json, weapon.json, equipment.json）中读取！
  *
  * 存档不应该包含完整的游戏数据，只记录"玩家有什么"和"状态如何"。
+ *
+ * ⚠️ 实例对象 vs 存档的区别：
+ * - 存档（SaveData）：持久化数据，存储在localStorage中，是数据的"真相"
+ * - 实例对象（Agent、WEngine、DriveDisk）：从存档中生成的运行时对象，用于计算
+ * - 实例对象包含计算缓存（self_properties、base_stats等），不是存档本身
+ * - 实例对象是从存档数据生成的，用于运行时计算，不应该持久化
+ *
+ * 数据流：
+ * 1. 存档（SaveData.toDict） → localStorage（持久化）
+ * 2. localStorage → 存档（SaveData.fromDict） → 实例对象（运行时计算）
+ * 3. 实例对象（计算用） → 不持久化，从存档重新生成
  *
  * ID分配规则：
  * - 角色：10001, 10002, 10003...
@@ -43,6 +57,22 @@ export class SaveData {
     next_wengine_id: number;
   };
 
+  // ZOD元信息（用于保持导入/导出的字段一致）
+  private zodMetadata: {
+    format: string;
+    dbVersion: number;
+    source: string;
+    version: number;
+  };
+
+  private zodCharacterKeyMap: Map<string, string>;
+  private zodCharacterPotentialMap: Map<string, number>;
+  private zodWengineKeyMap: Map<string, string>;
+  private zodWengineLockMap: Map<string, boolean>;
+  private zodWenginePhaseMap: Map<string, number>;
+  private zodDriveDiskKeyMap: Map<string, string>;
+  private zodDriveDiskTrashMap: Map<string, boolean>;
+
   constructor(name: string) {
     this.name = name;
     this.created_at = new Date();
@@ -55,6 +85,19 @@ export class SaveData {
       next_drive_disk_id: 20001,
       next_wengine_id: 30001,
     };
+    this.zodMetadata = {
+      format: 'ZOD',
+      dbVersion: 2,
+      source: 'zzz-optimizer',
+      version: 1,
+    };
+    this.zodCharacterKeyMap = new Map();
+    this.zodCharacterPotentialMap = new Map();
+    this.zodWengineKeyMap = new Map();
+    this.zodWengineLockMap = new Map();
+    this.zodWenginePhaseMap = new Map();
+    this.zodDriveDiskKeyMap = new Map();
+    this.zodDriveDiskTrashMap = new Map();
   }
 
   /**
@@ -79,10 +122,110 @@ export class SaveData {
   }
 
   /**
+   * 设置ZOD元数据
+   */
+  setZodMetadata(meta: SaveDataZod): void {
+    this.zodMetadata = {
+      format: meta.format ?? 'ZOD',
+      dbVersion: meta.dbVersion ?? 2,
+      source: meta.source ?? 'zzz-optimizer',
+      version: meta.version ?? 1,
+    };
+    if (meta.created_at) {
+      this.created_at = new Date(meta.created_at);
+    }
+    if (meta.updated_at) {
+      this.updated_at = new Date(meta.updated_at);
+    }
+  }
+
+  registerZodCharacterMetadata(data: ZodCharacterData): void {
+    this.zodCharacterKeyMap.set(data.id, data.key);
+    this.zodCharacterPotentialMap.set(data.id, data.potential ?? 0);
+  }
+
+  registerZodWengineMetadata(data: ZodWengineData): void {
+    this.zodWengineKeyMap.set(data.id, data.key);
+    if (typeof data.lock === 'boolean') {
+      this.zodWengineLockMap.set(data.id, data.lock);
+    }
+    if (typeof data.phase === 'number') {
+      this.zodWenginePhaseMap.set(data.id, data.phase);
+    } else if (typeof data.promotion === 'number') {
+      this.zodWenginePhaseMap.set(data.id, data.promotion);
+    }
+  }
+
+  registerZodDriveDiskMetadata(data: ZodDiscData): void {
+    this.zodDriveDiskKeyMap.set(data.id, data.setKey);
+    this.zodDriveDiskTrashMap.set(data.id, data.trash ?? false);
+  }
+
+  /**
+   * 转换为ZOD格式的数据
+   */
+  toZodData(): SaveDataZod {
+    const zodData: SaveDataZod = {
+      format: this.zodMetadata.format,
+      dbVersion: this.zodMetadata.dbVersion,
+      source: this.zodMetadata.source,
+      version: this.zodMetadata.version,
+      name: this.name,
+      created_at: this.created_at.toISOString(),
+      updated_at: this.updated_at.toISOString(),
+      characters: [],
+      wengines: [],
+      discs: [],
+    };
+
+    for (const agent of this.getAllAgents()) {
+      zodData.characters.push(this._agentToZod(agent));
+    }
+
+    for (const wengine of this.getAllWEngines()) {
+      zodData.wengines.push(this._wengineToZod(wengine));
+    }
+
+    for (const disk of this.getAllDriveDisks()) {
+      zodData.discs.push(this._driveDiskToZod(disk));
+    }
+
+    return zodData;
+  }
+
+  /**
    * 角色序列化（只序列化实例特有数据）
    */
   private _agentToDict(agent: Agent): any {
     return agent.toDict();
+  }
+
+  private _agentToZod(agent: Agent): ZodCharacterData {
+    const discs: Record<string, string> = {
+      '1': agent.equipped_drive_disks[0] ?? '',
+      '2': agent.equipped_drive_disks[1] ?? '',
+      '3': agent.equipped_drive_disks[2] ?? '',
+      '4': agent.equipped_drive_disks[3] ?? '',
+      '5': agent.equipped_drive_disks[4] ?? '',
+      '6': agent.equipped_drive_disks[5] ?? '',
+    };
+
+    return {
+      key: this.zodCharacterKeyMap.get(agent.id) ?? agent.game_id,
+      id: agent.id,
+      level: agent.level,
+      core: agent.core_skill,
+      mindscape: agent.cinema,
+      dodge: agent.skills.dodge,
+      basic: agent.skills.normal,
+      chain: agent.skills.chain,
+      special: agent.skills.special,
+      assist: agent.skills.assist,
+      promotion: agent.breakthrough,
+      potential: this.zodCharacterPotentialMap.get(agent.id) ?? 0,
+      equippedDiscs: discs,
+      equippedWengine: agent.equipped_wengine ?? '',
+    };
   }
 
   /**
@@ -90,6 +233,29 @@ export class SaveData {
    */
   private _diskToDict(disk: DriveDisk): any {
     return disk.toDict();
+  }
+
+  private _driveDiskToZod(disk: DriveDisk): ZodDiscData {
+    const substats: ZodDiscData['substats'] = [];
+    for (const [prop, statValue] of disk.sub_stats.entries()) {
+      substats.push({
+        key: this._propertyTypeToZodKey(prop),
+        upgrades: Number(statValue.value) ?? 0,
+      });
+    }
+
+    return {
+      setKey: (this.zodDriveDiskKeyMap.get(disk.id) ?? disk.set_name) || disk.game_id,
+      rarity: Rarity[disk.rarity],
+      level: disk.level,
+      slotKey: disk.position.toString(),
+      mainStatKey: this._propertyTypeToZodKey(disk.main_stat),
+      substats,
+      location: disk.equipped_agent ?? '',
+      lock: disk.locked,
+      trash: this.zodDriveDiskTrashMap.get(disk.id) ?? false,
+      id: disk.id,
+    };
   }
 
   /**
@@ -100,6 +266,76 @@ export class SaveData {
    */
   private _wengineToDict(wengine: WEngine): any {
     return wengine.toDict();
+  }
+
+  private _wengineToZod(wengine: WEngine): ZodWengineData {
+    const base: ZodWengineData = {
+      key: this.zodWengineKeyMap.get(wengine.id) ?? wengine.wengine_id,
+      id: wengine.id,
+      level: wengine.level,
+      modification: wengine.refinement,
+      promotion: wengine.breakthrough,
+      location: wengine.equipped_agent ?? '',
+    };
+
+    const phase = this.zodWenginePhaseMap.get(wengine.id);
+    if (phase !== undefined) {
+      base.phase = phase;
+    }
+    if (this.zodWengineLockMap.has(wengine.id)) {
+      base.lock = this.zodWengineLockMap.get(wengine.id);
+    }
+
+    return base;
+  }
+
+  private _propertyTypeToZodKey(prop: PropertyType): string {
+    switch (prop) {
+      case PropertyType.HP:
+        return 'hp';
+      case PropertyType.HP_:
+        return 'hp_';
+      case PropertyType.ATK:
+        return 'atk';
+      case PropertyType.ATK_:
+        return 'atk_';
+      case PropertyType.DEF:
+        return 'def';
+      case PropertyType.DEF_:
+        return 'def_';
+      case PropertyType.CRIT_:
+        return 'crit_';
+      case PropertyType.CRIT_DMG_:
+        return 'crit_dmg_';
+      case PropertyType.PEN:
+        return 'pen';
+      case PropertyType.PEN_:
+        return 'pen_';
+      case PropertyType.ANOM_PROF:
+        return 'anomProf';
+      case PropertyType.ANOM_MAS:
+      case PropertyType.ANOM_MAS_:
+        return 'anomMas_';
+      case PropertyType.IMPACT:
+        return 'impact';
+      case PropertyType.IMPACT_:
+        return 'impact_';
+      case PropertyType.ENER_REGEN:
+      case PropertyType.ENER_REGEN_:
+        return 'energyRegen_';
+      case PropertyType.PHYSICAL_DMG_:
+        return 'physical_dmg_';
+      case PropertyType.FIRE_DMG_:
+        return 'fire_dmg_';
+      case PropertyType.ICE_DMG_:
+        return 'ice_dmg_';
+      case PropertyType.ELECTRIC_DMG_:
+        return 'electric_dmg_';
+      case PropertyType.ETHER_DMG_:
+        return 'ether_dmg_';
+      default:
+        return PropertyType[prop] ?? 'hp';
+    }
   }
 
   /**
@@ -128,8 +364,13 @@ export class SaveData {
     if (data.agents) {
       save.agents = new Map();
       for (const [k, v] of Object.entries(data.agents)) {
-        const agent = await Agent.fromDict(v, k, dataLoader);
-        save.agents.set(k, agent);
+        try {
+          const agent = await Agent.fromDict(v, k, dataLoader);
+          save.agents.set(k, agent);
+        } catch (err) {
+          console.error(`加载角色失败 [${k}]:`, err);
+          // 继续加载其他角色，不中断整个存档加载
+        }
       }
     }
 
@@ -137,8 +378,13 @@ export class SaveData {
     if (data.drive_disks) {
       save.drive_disks = new Map();
       for (const [k, v] of Object.entries(data.drive_disks)) {
-        const disk = await DriveDisk.fromDict(v, k, dataLoader);
-        save.drive_disks.set(k, disk);
+        try {
+          const disk = await DriveDisk.fromDict(v, k, dataLoader);
+          save.drive_disks.set(k, disk);
+        } catch (err) {
+          console.error(`加载驱动盘失败 [${k}]:`, err);
+          // 继续加载其他驱动盘，不中断整个存档加载
+        }
       }
     }
 
@@ -146,8 +392,61 @@ export class SaveData {
     if (data.wengines) {
       save.wengines = new Map();
       for (const [k, v] of Object.entries(data.wengines)) {
-        const wengine = await WEngine.fromDict(v, dataLoader);
-        save.wengines.set(k, wengine);
+        try {
+          const wengine = await WEngine.fromDict(v, dataLoader);
+          save.wengines.set(k, wengine);
+        } catch (err) {
+          console.error(`加载音擎失败 [${k}]:`, err);
+          // 继续加载其他音擎，不中断整个存档加载
+        }
+      }
+    }
+
+    return save;
+  }
+
+  /**
+   * 从ZOD数据创建存档
+   */
+  static async fromZod(
+    name: string,
+    zodData: SaveDataZod,
+    dataLoader: typeof dataLoaderService
+  ): Promise<SaveData> {
+    const save = new SaveData(name);
+    save.setZodMetadata(zodData);
+
+    const characterLookup = new Map<string, ZodCharacterData>();
+    const discLookup = new Map<string, ZodDiscData>();
+    const wengineLookup = new Map<string, ZodWengineData>();
+
+    (zodData.characters ?? []).forEach((char) => characterLookup.set(char.id, char));
+    (zodData.discs ?? []).forEach((disc) => discLookup.set(disc.id, disc));
+    (zodData.wengines ?? []).forEach((wengine) => wengineLookup.set(wengine.id, wengine));
+
+    const parsed = await zodParserService.parseZodData(zodData);
+
+    for (const agent of parsed.agents.values()) {
+      save.addAgent(agent);
+      const zodChar = characterLookup.get(agent.id);
+      if (zodChar) {
+        save.registerZodCharacterMetadata(zodChar);
+      }
+    }
+
+    for (const disk of parsed.driveDisks.values()) {
+      save.addDriveDisk(disk);
+      const zodDisk = discLookup.get(disk.id);
+      if (zodDisk) {
+        save.registerZodDriveDiskMetadata(zodDisk);
+      }
+    }
+
+    for (const wengine of parsed.wengines.values()) {
+      save.addWEngine(wengine);
+      const zodWengine = wengineLookup.get(wengine.id);
+      if (zodWengine) {
+        save.registerZodWengineMetadata(zodWengine);
       }
     }
 
@@ -189,6 +488,12 @@ export class SaveData {
       agent.id = this.getNextAgentId();
     }
     this.agents.set(agent.id, agent);
+    if (!this.zodCharacterKeyMap.has(agent.id)) {
+      this.zodCharacterKeyMap.set(agent.id, agent.game_id);
+    }
+    if (!this.zodCharacterPotentialMap.has(agent.id)) {
+      this.zodCharacterPotentialMap.set(agent.id, 0);
+    }
     this.updated_at = new Date();
   }
 
@@ -200,6 +505,12 @@ export class SaveData {
       disk.id = this.getNextDriveDiskId();
     }
     this.drive_disks.set(disk.id, disk);
+    if (!this.zodDriveDiskKeyMap.has(disk.id)) {
+      this.zodDriveDiskKeyMap.set(disk.id, disk.game_id);
+    }
+    if (!this.zodDriveDiskTrashMap.has(disk.id)) {
+      this.zodDriveDiskTrashMap.set(disk.id, false);
+    }
     this.updated_at = new Date();
   }
 
@@ -211,6 +522,15 @@ export class SaveData {
       wengine.id = this.getNextWEngineId();
     }
     this.wengines.set(wengine.id, wengine);
+    if (!this.zodWengineKeyMap.has(wengine.id)) {
+      this.zodWengineKeyMap.set(wengine.id, wengine.wengine_id);
+    }
+    if (!this.zodWengineLockMap.has(wengine.id)) {
+      this.zodWengineLockMap.set(wengine.id, false);
+    }
+    if (!this.zodWenginePhaseMap.has(wengine.id)) {
+      this.zodWenginePhaseMap.set(wengine.id, wengine.breakthrough);
+    }
     this.updated_at = new Date();
   }
 
@@ -220,6 +540,8 @@ export class SaveData {
   removeAgent(agentId: string): boolean {
     const result = this.agents.delete(agentId);
     if (result) {
+      this.zodCharacterKeyMap.delete(agentId);
+      this.zodCharacterPotentialMap.delete(agentId);
       this.updated_at = new Date();
     }
     return result;
@@ -231,6 +553,8 @@ export class SaveData {
   removeDriveDisk(diskId: string): boolean {
     const result = this.drive_disks.delete(diskId);
     if (result) {
+      this.zodDriveDiskKeyMap.delete(diskId);
+      this.zodDriveDiskTrashMap.delete(diskId);
       this.updated_at = new Date();
     }
     return result;
@@ -242,6 +566,9 @@ export class SaveData {
   removeWEngine(wengineId: string): boolean {
     const result = this.wengines.delete(wengineId);
     if (result) {
+      this.zodWengineKeyMap.delete(wengineId);
+      this.zodWengineLockMap.delete(wengineId);
+      this.zodWenginePhaseMap.delete(wengineId);
       this.updated_at = new Date();
     }
     return result;

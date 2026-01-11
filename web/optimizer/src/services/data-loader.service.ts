@@ -249,7 +249,18 @@ export class DataLoaderService {
     if (!response.ok) {
       throw new Error(`Failed to load ${path}: ${response.statusText}`);
     }
-    return (await response.json()) as Record<string, T>;
+
+    const text = await response.text();
+    // 检查是否是HTML页面（404错误页面等）
+    if (text.trim().startsWith('<!doctype') || text.trim().startsWith('<html')) {
+      throw new Error(`Failed to load ${path}: Server returned HTML instead of JSON`);
+    }
+
+    try {
+      return JSON.parse(text) as Record<string, T>;
+    } catch (err) {
+      throw new Error(`Failed to parse JSON from ${path}: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    }
   }
 
   /**

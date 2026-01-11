@@ -191,7 +191,7 @@ function handleFileImport(event: Event) {
         return;
       }
 
-      saveStore.importFromZodData(data, saveName)
+      saveStore.importZodData(data, saveName)
         .then(() => {
           importSuccess.value = true;
           importError.value = null;

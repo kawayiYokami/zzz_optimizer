@@ -22,11 +22,13 @@ export interface ZodCharacterData {
 }
 
 export interface ZodWengineData {
-  key: string;          // EN name
+  key: string;          // EN name/codename
   level: number;
   modification: number; // 精炼
   promotion: number;    // 突破
+  phase?: number;       // 一些工具使用 phase 表示突破
   location: string;     // 装备角色ID
+  lock?: boolean;
   id: string;
 }
 
@@ -50,7 +52,7 @@ export interface ZodDiscData {
  * 存档数据（完全ZOD格式）
  */
 export interface SaveDataZod {
-  name: string;
+  name?: string;
   format: string;
   dbVersion: number;
   source: string;
