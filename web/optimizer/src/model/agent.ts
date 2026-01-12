@@ -11,6 +11,7 @@ import type { AgentSkillSet } from './skill';
 import type { dataLoaderService } from '../services/data-loader.service';
 import type { WEngine } from './wengine';
 import type { DriveDisk } from './drive-disk';
+import { DriveDiskSetBonus } from './drive-disk';
 
 /**
  * 角色技能等级
@@ -570,12 +571,81 @@ export class Agent {
    * 获取所有有效的Buff（同步，仅返回已加载的Buff）
    */
   getAllBuffsSync(): Buff[] {
-    return [
+    const allBuffs: Buff[] = [
       ...this.core_passive_buffs || [],
       ...this.talent_buffs || [],
       ...this.potential_buffs || [],
       ...this.conversion_buffs || [],
     ];
+
+    // 添加武器BUFF
+    if (this.equipped_wengine && this._wengines) {
+      const wengine = this._wengines.get(this.equipped_wengine);
+      if (wengine) {
+        const wengineBuffs = wengine.getActiveBuffs();
+        if (wengineBuffs && wengineBuffs.length > 0) {
+          allBuffs.push(...wengineBuffs);
+        }
+      } else {
+        console.warn(`[Agent.getAllBuffsSync] Wengine not found: ${this.equipped_wengine} for agent ${this.id}`);
+      }
+    } else if (this.equipped_wengine && !this._wengines) {
+      console.warn(`[Agent.getAllBuffsSync] Wengine reference not set for agent ${this.id}. Call setEquipmentReferences() first.`);
+    }
+
+    // 添加驱动盘四件套BUFF
+    if (this._driveDisks) {
+      // 统计套装数量
+      const setCounts = new Map<string, number>();
+      for (const diskId of this.equipped_drive_disks) {
+        if (diskId) {
+          const disk = this._driveDisks!.get(diskId);
+          if (disk) {
+            const setName = disk.set_name;
+            setCounts.set(setName, (setCounts.get(setName) || 0) + 1);
+          }
+        }
+      }
+
+      // 收集每个套装的四件套BUFF
+      const processedSets = new Set<string>();
+      for (const diskId of this.equipped_drive_disks) {
+        if (diskId) {
+          const disk = this._driveDisks!.get(diskId);
+          if (!disk) {
+            continue;
+          }
+
+          const setName = disk.set_name;
+          const count = setCounts.get(setName) || 0;
+
+          // 如果套装数量 >= 4 且未处理过
+          if (count >= 4 && !processedSets.has(setName)) {
+            if (disk.four_piece_buffs && disk.four_piece_buffs.length > 0) {
+              allBuffs.push(...disk.four_piece_buffs);
+            }
+            processedSets.add(setName);
+          }
+        }
+      }
+    } else if (this.equipped_drive_disks.some(id => id !== null) && !this._driveDisks) {
+      console.warn(`[Agent.getAllBuffsSync] DriveDisk reference not set for agent ${this.id}. Call setEquipmentReferences() first.`);
+    }
+
+    // 验证返回的buff都有有效的in_combat_stats
+    const validBuffs = allBuffs.filter(buff => {
+      if (!buff) {
+        console.warn('[Agent.getAllBuffsSync] Null buff found');
+        return false;
+      }
+      if (!buff.in_combat_stats) {
+        console.warn(`[Agent.getAllBuffsSync] Buff ${buff.id} has no in_combat_stats`);
+        return false;
+      }
+      return true;
+    });
+
+    return validBuffs;
   }
 
   /**

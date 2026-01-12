@@ -5,6 +5,7 @@
 import { Agent } from './agent';
 import { DriveDisk } from './drive-disk';
 import { WEngine } from './wengine';
+import { Team } from './team';
 import { PropertyType, Rarity } from './base';
 import type { dataLoaderService } from '../services/data-loader.service';
 import type { SaveDataZod, ZodCharacterData, ZodDiscData, ZodWengineData, ZodTeamData, ZodBattleData } from './save-data-zod';
@@ -49,7 +50,8 @@ export class SaveData {
   agents: Map<string, Agent>;
   drive_disks: Map<string, DriveDisk>;
   wengines: Map<string, WEngine>;
-  teams: Map<string, ZodTeamData>;
+  teams: Map<string, ZodTeamData>; // 原始ZOD队伍数据
+  teamsMap: Map<string, Team>; // 队伍实例映射
   battles: Map<string, ZodBattleData>;
 
   // 元数据：ID分配信息
@@ -89,6 +91,7 @@ export class SaveData {
     this.drive_disks = new Map();
     this.wengines = new Map();
     this.teams = new Map();
+    this.teamsMap = new Map();
     this.battles = new Map();
     this._metadata = {
       next_agent_id: 10001,
@@ -442,6 +445,13 @@ export class SaveData {
     // 添加队伍数据
     (zodData.teams ?? []).forEach((team) => {
       save.addTeam(team);
+      // 创建Team实例并存储到teamsMap中
+      try {
+        const teamInstance = Team.fromZod(team, save.agents);
+        save.teamsMap.set(team.id, teamInstance);
+      } catch (error) {
+        console.error(`创建队伍实例失败 [${team.id}]:`, error);
+      }
     });
 
     // 添加战场数据
@@ -706,6 +716,14 @@ export class SaveData {
     this.teams.set(team.id, team);
     this.updated_at = new Date();
     this._invalidateCache();
+    
+    // 创建Team实例并存储到teamsMap中
+    try {
+      const teamInstance = Team.fromZod(team, this.agents);
+      this.teamsMap.set(team.id, teamInstance);
+    } catch (error) {
+      console.error(`创建队伍实例失败 [${team.id}]:`, error);
+    }
   }
 
   /**
@@ -713,6 +731,8 @@ export class SaveData {
    */
   deleteTeam(teamId: string): void {
     this.teams.delete(teamId);
+    // 删除关联的Team实例
+    this.teamsMap.delete(teamId);
     // 删除关联的战场数据
     for (const [battleId, battle] of this.battles.entries()) {
       if (battle.teamId === teamId) {
@@ -731,10 +751,62 @@ export class SaveData {
   }
 
   /**
+   * 获取队伍实例
+   */
+  getTeamInstance(teamId: string): Team | undefined {
+    return this.teamsMap.get(teamId);
+  }
+
+  /**
    * 获取所有队伍
    */
   getAllTeams(): ZodTeamData[] {
     return Array.from(this.teams.values());
+  }
+
+  /**
+   * 获取所有队伍实例
+   */
+  getAllTeamInstances(): Team[] {
+    return Array.from(this.teamsMap.values());
+  }
+
+  /**
+   * 更新队伍
+   * 原子化方法，同时更新ZodTeamData和Team实例
+   */
+  updateTeam(teamId: string, updates: Partial<ZodTeamData>): void {
+    const existingTeam = this.teams.get(teamId);
+    if (!existingTeam) {
+      throw new Error(`队伍 ${teamId} 不存在`);
+    }
+    
+    // 更新ZodTeamData
+    const updatedTeam = { ...existingTeam, ...updates };
+    this.teams.set(teamId, updatedTeam);
+    
+    // 更新Team实例
+    const existingTeamInstance = this.teamsMap.get(teamId);
+    if (existingTeamInstance) {
+      // 如果Team实例存在，更新它
+      try {
+        const newTeamInstance = Team.fromZod(updatedTeam, this.agents);
+        this.teamsMap.set(teamId, newTeamInstance);
+      } catch (error) {
+        console.error(`更新队伍实例失败 [${teamId}]:`, error);
+      }
+    } else {
+      // 如果Team实例不存在，创建一个新的
+      try {
+        const newTeamInstance = Team.fromZod(updatedTeam, this.agents);
+        this.teamsMap.set(teamId, newTeamInstance);
+      } catch (error) {
+        console.error(`创建队伍实例失败 [${teamId}]:`, error);
+      }
+    }
+    
+    this.updated_at = new Date();
+    this._invalidateCache();
   }
 
   /**

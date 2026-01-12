@@ -73,6 +73,14 @@ export const useSaveStore = defineStore('save', () => {
     return currentSave.value?.getAllWEngines() ?? [];
   });
 
+  const teams = computed(() => {
+    return currentSave.value?.getAllTeams() ?? [];
+  });
+
+  const teamInstances = computed(() => {
+    return currentSave.value?.getAllTeamInstances() ?? [];
+  });
+
   const saveNames = computed(() => {
     return Array.from(rawSaves.value.keys());
   });
@@ -100,6 +108,19 @@ export const useSaveStore = defineStore('save', () => {
               newRawSaves.set(name, normalized);
               // 从原始ZOD数据生成实例
               const saveData = await SaveData.fromZod(name, normalized, dataLoaderService);
+
+              // 为所有Agent设置装备引用
+              const agents = saveData.getAllAgents();
+              const wengines = saveData.getAllWEngines();
+              const driveDisks = saveData.getAllDriveDisks();
+
+              const wenginesMap = new Map(wengines.map(w => [w.id, w]));
+              const driveDisksMap = new Map(driveDisks.map(d => [d.id, d]));
+
+              agents.forEach(agent => {
+                agent.setEquipmentReferences(wenginesMap, driveDisksMap);
+              });
+
               newSaves.set(name, saveData);
             }
           } catch (err) {
@@ -669,6 +690,8 @@ export const useSaveStore = defineStore('save', () => {
     agents,
     driveDisks,
     wengines,
+    teams,
+    teamInstances,
     saveNames,
     rawSaveData,
 

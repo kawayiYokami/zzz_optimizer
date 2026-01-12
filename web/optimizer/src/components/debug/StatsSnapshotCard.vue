@@ -10,7 +10,7 @@
       </div>
 
       <div v-show="isStatsSnapshotExpanded" class="mt-4">
-        <div v-if="combatStatsSnapshot && frontAgent" class="space-y-4">
+        <div v-if="frontAgent" class="space-y-4">
           <!-- Debug信息 -->
           <div class="card bg-warning text-warning-content">
             <div class="card-body p-4">
@@ -26,7 +26,7 @@
           <div class="card bg-base-100">
             <div class="card-body p-4">
               <h4 class="font-bold mb-3">最终战斗属性</h4>
-              <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ combatStatsSnapshot.format() }}</pre>
+              <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ PropertyCollection.formatMap(battleService.getFinalStats()) }}</pre>
             </div>
           </div>
 

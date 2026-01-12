@@ -37,18 +37,11 @@
 
     <!-- Buff列表卡片 -->
     <BuffListCard
-      :front-character-id="frontCharacterId"
-      :front-character-name="frontCharacterName"
-      :front-character-buffs="frontCharacterBuffs"
-      :back-character-1-id="backCharacter1Id"
-      :back-character-1-name="backCharacter1Name"
-      :back-character-1-buffs="backCharacter1Buffs"
-      :back-character-2-id="backCharacter2Id"
-      :back-character-2-name="backCharacter2Name"
-      :back-character-2-buffs="backCharacter2Buffs"
+      :all-buffs="allBuffs"
       :is-expanded="isBuffListExpanded"
       @toggle-expand="isBuffListExpanded = !isBuffListExpanded"
       @toggle-buff-active="toggleBuffActive"
+      @refresh-buffs="updateBattleService"
     />
 
     <!-- 技能列表卡片 -->
@@ -67,10 +60,12 @@ import { useSaveStore } from '../../stores/save.store';
 import { useGameDataStore } from '../../stores/game-data.store';
 import { dataLoaderService } from '../../services/data-loader.service';
 import { Agent } from '../../model/agent';
+import { Team } from '../../model/team';
 import { PropertyCollection } from '../../model/property-collection';
 import type { CombatStats } from '../../model/combat-stats';
 import type { ZodTeamData } from '../../model/save-data-zod';
 import { BattleService } from '../../services/battle.service';
+import { PropertyType } from '../../model/base';
 
 // 导入新的卡片组件
 import TeamConfigCard from './TeamConfigCard.vue';
@@ -84,6 +79,9 @@ const gameDataStore = useGameDataStore();
 
 // 创建战场服务实例
 const battleService = new BattleService();
+
+// Buff刷新触发器（用于强制Vue重新计算allBuffs）
+const buffRefreshTrigger = ref(0);
 
 // 队伍选择
 const selectedTeamId = ref<string>('');
@@ -113,9 +111,10 @@ const availableCharacters = computed<Array<{ id: string; name: string; level: nu
   }));
 });
 
+// 直接使用saveStore的teams计算属性
 // 可用队伍列表
 const availableTeams = computed(() => {
-  return saveStore.currentSave ? saveStore.currentSave.getAllTeams() : [];
+  return saveStore.teams;
 });
 
 // 当前存档
@@ -275,48 +274,29 @@ function setFrontCharacter(newFrontCharId: string) {
 
 // 更新战场服务的角色和buff
 async function updateBattleService() {
-  // 设置前台角色
   if (frontAgent.value) {
-    battleService.setFrontAgent(frontAgent.value);
+    // 构建队伍成员列表
+    const teamMembers: Agent[] = [frontAgent.value];
+    
+    // 添加后台角色
+    if (backCharacter1Id.value) {
+      const agent1 = availableCharacters.value.find(c => c.id === backCharacter1Id.value)?.agent;
+      if (agent1) teamMembers.push(agent1);
+    }
+    if (backCharacter2Id.value) {
+      const agent2 = availableCharacters.value.find(c => c.id === backCharacter2Id.value)?.agent;
+      if (agent2) teamMembers.push(agent2);
+    }
+    
+    // 创建队伍实例
+    const team = new Team(teamMembers);
+    
+    // 设置队伍到战场服务（异步）
+    await battleService.setTeam(team);
   }
   
-  // 设置后台角色
-  const backAgents: Agent[] = [];
-  if (backCharacter1Id.value) {
-    const agent1 = availableCharacters.value.find(c => c.id === backCharacter1Id.value)?.agent;
-    if (agent1) backAgents.push(agent1);
-  }
-  if (backCharacter2Id.value) {
-    const agent2 = availableCharacters.value.find(c => c.id === backCharacter2Id.value)?.agent;
-    if (agent2) backAgents.push(agent2);
-  }
-  battleService.setBackAgents(backAgents);
-  
-  // 重新加载所有buff（异步）
-  await battleService.loadBuffsFromAllAgentsAsync();
-  
-  // 同步buff激活状态
-  syncBuffStatusToBattleService();
-}
-
-// 将所有buff状态同步到战场服务
-function syncBuffStatusToBattleService() {
-  // 同步前台角色buff
-  frontCharacterBuffs.value.forEach(buff => {
-    battleService.updateBuffStatus(buff.id, buff.isActive);
-  });
-  
-  // 同步后台角色1buff
-  backCharacter1Buffs.value.forEach(buff => {
-    battleService.updateBuffStatus(buff.id, buff.isActive);
-  });
-  
-  // 同步后台角色2buff
-  backCharacter2Buffs.value.forEach(buff => {
-    battleService.updateBuffStatus(buff.id, buff.isActive);
-  });
-  
-  console.log('战场服务buff状态已更新:', battleService.getStatus());
+  // 触发Buff刷新，强制Vue重新计算allBuffs
+  buffRefreshTrigger.value++;
 }
 
 // 装备详细信息（包含原始数据，用于StatsSnapshotCard）
@@ -435,100 +415,11 @@ function onEnemyStunChange(isStunned: boolean) {
   enemyIsStunned.value = isStunned;
 }
 
-// Buff数据结构
-interface BuffInfo {
-  id: string;
-  name: string;
-  description: string;
-  source: 'character' | 'weapon' | 'equipment';
-  sourceType: string;
-  context: string;
-  stats: Record<string, number>;
-  target: any;
-  isActive: boolean; // 是否激活
-}
-
-// 前台角色的Buff
-const frontCharacterBuffs = ref<BuffInfo[]>([]);
-// 后台角色1的Buff
-const backCharacter1Buffs = ref<BuffInfo[]>([]);
-// 后台角色2的Buff
-const backCharacter2Buffs = ref<BuffInfo[]>([]);
-
-// 从Agent实例的Buff对象创建BuffInfo
-function createBuffInfoFromAgentBuff(buff: any): BuffInfo {
-  // 将BuffSource枚举转换为中文名称
-  const buffSourceMap: Record<number, string> = {
-    1: '角色被动',
-    2: '角色天赋',
-    9: '核心被动',
-    10: '影画',
-    11: '天赋',
-    3: '角色核心',
-    4: '音擎',
-    5: '音擎天赋',
-    6: '驱动盘2件套',
-    7: '驱动盘4件套',
-    8: '队友'
-  };
-  
-  // 确定buff来源类型
-  let source: 'character' | 'weapon' | 'equipment' = 'character';
-  let sourceType = buffSourceMap[buff.source] || '未知';
-  
-  if (buff.source === 4 || buff.source === 5) {
-    source = 'weapon';
-  } else if (buff.source === 6 || buff.source === 7) {
-    source = 'equipment';
-    sourceType = buff.source === 6 ? '驱动盘2件套' : '驱动盘4件套';
-  }
-  
-  // 合并局内和局外属性
-  const stats: Record<string, number> = {};
-  buff.out_of_combat_stats.forEach((value: number, key: string) => {
-    stats[key] = value;
-  });
-  buff.in_combat_stats.forEach((value: number, key: string) => {
-    stats[key] = value;
-  });
-  
-  return {
-    id: buff.id,
-    name: buff.name,
-    description: buff.description || '',
-    source: source,
-    sourceType: sourceType,
-    context: 'in_combat', // 暂时默认，后续可从buff数据中获取
-    stats: stats,
-    target: buff.target,
-    isActive: buff.is_active,
-  };
-}
-
-// 检查buff是否适合当前角色位置
-function isBuffSuitableForPosition(buff: any, isOnField: boolean): boolean {
-  const targetSelf = buff.target?.target_self || false;
-  const targetTeammate = buff.target?.target_teammate || false;
-  
-  // 前台：只选择对自己生效的
-  // 后台：只选择对队友或全体生效的
-  return isOnField ? targetSelf : targetTeammate;
-}
-
-// 从Agent实例获取buff数据
-async function getBuffsFromAgent(agent: Agent, isOnField: boolean): Promise<BuffInfo[]> {
-  // 确保buff已加载
-  await agent.getAllBuffs();
-  
-  // 获取所有buff
-  const allBuffs = agent.getAllBuffsSync();
-  
-  // 根据角色位置筛选buff
-  const suitableBuffs = allBuffs.filter(buff => isBuffSuitableForPosition(buff, isOnField));
-  
-  // 转换为BuffInfo格式
-  return suitableBuffs.map(buff => createBuffInfoFromAgentBuff(buff));
-}
+// 所有Buff，从战斗服务类获取包含开关状态的buff列表
+const allBuffs = computed(() => {
+  buffRefreshTrigger.value; // 触发响应式依赖
+  return battleService.getBuffInfos();
+});
 
 // 监听敌人选择变化，重置失衡状态
 watch(selectedEnemyId, () => {
@@ -548,93 +439,39 @@ watch(
 // 监听前台角色变化
 watch(frontCharacterId, async (newId) => {
   if (newId) {
-    // 直接使用Agent实例的buff数据
+    // 直接使用Agent实例
     const char = availableCharacters.value.find(c => c.id === newId);
     if (char) {
       frontAgent.value = char.agent;
-      frontCharacterBuffs.value = await getBuffsFromAgent(char.agent, true);
     }
     
-    // 更新战场服务
-    updateBattleService();
+    // 更新战场服务，等待完成
+    await updateBattleService();
   } else {
-    frontCharacterBuffs.value = [];
     frontAgent.value = null;
     
-    // 更新战场服务
-    updateBattleService();
+    // 更新战场服务，等待完成
+    await updateBattleService();
   }
 });
 
 // 监听后台角色1变化
-watch(backCharacter1Id, async (newId) => {
-  if (newId) {
-    const char = availableCharacters.value.find(c => c.id === newId);
-    if (char) {
-      backCharacter1Buffs.value = await getBuffsFromAgent(char.agent, false);
-    }
-  } else {
-    backCharacter1Buffs.value = [];
-  }
-  
-  // 更新战场服务
-  updateBattleService();
+watch(backCharacter1Id, async () => {
+  // 更新战场服务，等待完成
+  await updateBattleService();
 });
 
 // 监听后台角色2变化
-watch(backCharacter2Id, async (newId) => {
-  if (newId) {
-    const char = availableCharacters.value.find(c => c.id === newId);
-    if (char) {
-      backCharacter2Buffs.value = await getBuffsFromAgent(char.agent, false);
-    }
-  } else {
-    backCharacter2Buffs.value = [];
-  }
-  
-  // 更新战场服务
-  updateBattleService();
+watch(backCharacter2Id, async () => {
+  // 更新战场服务，等待完成
+  await updateBattleService();
 });
 
 // 切换Buff激活状态
-const toggleBuffActive = (buffListType: 'front' | 'back1' | 'back2', buffId: string) => {
-  let buffList;
-  let agent;
-  
-  switch (buffListType) {
-    case 'front':
-      buffList = frontCharacterBuffs;
-      agent = frontAgent.value;
-      break;
-    case 'back1':
-      buffList = backCharacter1Buffs;
-      agent = availableCharacters.value.find(c => c.id === backCharacter1Id.value)?.agent || null;
-      break;
-    case 'back2':
-      buffList = backCharacter2Buffs;
-      agent = availableCharacters.value.find(c => c.id === backCharacter2Id.value)?.agent || null;
-      break;
-  }
-  
-  if (buffList && agent) {
-    const buffIndex = buffList.value.findIndex(b => b.id === buffId);
-    if (buffIndex !== -1) {
-      // 更新UI显示
-      buffList.value[buffIndex].isActive = !buffList.value[buffIndex].isActive;
-      
-      // 更新Agent实例中的buff状态
-      const allBuffs = agent.getAllBuffsSync();
-      const agentBuff = allBuffs.find(b => b.id === buffId);
-      if (agentBuff) {
-        agentBuff.is_active = buffList.value[buffIndex].isActive;
-      }
-      
-      // 同步到战场服务
-      battleService.updateBuffStatus(buffId, buffList.value[buffIndex].isActive);
-      
-      console.log(`Buff ${buffId} 状态已更新为 ${buffList.value[buffIndex].isActive}`);
-    }
-  }
+const toggleBuffActive = (buffListType: 'all', buffId: string) => {
+  // 直接调用战斗服务类的方法
+  const currentStatus = battleService.getBuffIsActive(buffId);
+  battleService.updateBuffStatus(buffId, !currentStatus);
 };
 </script>
 
