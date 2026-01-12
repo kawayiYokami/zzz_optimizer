@@ -59,21 +59,9 @@
                 <td>{{ agent.level }}</td>
                 <td>{{ agent.breakthrough }}</td>
                 <td>M{{ agent.cinema }}</td>
-                <td>
-                  <button
-                    @click="openEquipmentDialog(agent, 'wengine')"
-                    class="btn btn-xs btn-outline"
-                  >
-                    {{ getWeaponNameByInstanceId(agent.equipped_wengine) || '未装备' }}
-                  </button>
-                </td>
+                <td>{{ getWeaponNameByInstanceId(agent.equipped_wengine) || '未装备' }}</td>
                 <td v-for="slot in 6" :key="slot">
-                  <button
-                    @click="openEquipmentDialog(agent, 'disk', slot)"
-                    class="btn btn-xs btn-outline"
-                  >
-                    {{ getDiskNameByInstanceId(agent.equipped_drive_disks[slot - 1]) || '未装备' }}
-                  </button>
+                  {{ getDiskNameByInstanceId(agent.equipped_drive_disks[slot - 1]) || '未装备' }}
                 </td>
                 <td>
                   <button
@@ -166,44 +154,7 @@
       </div>
     </div>
 
-    <!-- 装备选择对话框 -->
-    <dialog id="equipment-dialog" class="modal">
-      <div class="modal-box">
-        <h3 class="font-bold text-lg mb-4">选择{{ equipmentDialogTitle }}</h3>
-        <div class="max-h-96 overflow-y-auto">
-          <table class="table table-zebra table-sm">
-            <thead>
-              <tr>
-                <th>名称</th>
-                <th>等级</th>
-                <th>当前装备者</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in availableEquipment" :key="item.id">
-                <td>{{ getEquipmentDisplayName(item) }}</td>
-                <td>{{ item.level }}</td>
-                <td>{{ getEquipmentEquippedBy(item) }}</td>
-                <td>
-                  <button
-                    @click="selectEquipment(item)"
-                    class="btn btn-sm btn-primary"
-                  >
-                    装备
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="modal-action">
-          <form method="dialog">
-            <button class="btn">取消</button>
-          </form>
-        </div>
-      </div>
-    </dialog>
+
   </div>
 </template>
 
@@ -232,30 +183,6 @@ const currentSave = computed(() => saveStore.currentSave);
 const agents = computed(() => saveStore.agents);
 const driveDisks = computed(() => saveStore.driveDisks);
 const wengines = computed(() => saveStore.wengines);
-
-// 装备选择对话框状态
-const equipmentDialogState = ref({
-  agent: null as Agent | null,
-  type: '' as 'wengine' | 'disk',
-  slot: 0,
-});
-
-const availableEquipment = computed(() => {
-  if (equipmentDialogState.value.type === 'wengine') {
-    return wengines.value;
-  } else {
-    const slot = equipmentDialogState.value.slot;
-    return driveDisks.value.filter(d => d.position === slot);
-  }
-});
-
-const equipmentDialogTitle = computed(() => {
-  if (equipmentDialogState.value.type === 'wengine') {
-    return '音擎';
-  } else {
-    return `${equipmentDialogState.value.slot}号位驱动盘`;
-  }
-});
 
 // 导出当前存档
 function exportCurrentSave() {
@@ -308,88 +235,6 @@ function getDiskNameByInstanceId(diskId: string | null): string {
   const disk = driveDisks.value.find(d => d.id === diskId);
   if (!disk) return '';
   return disk.set_name;
-}
-
-// 获取装备显示名称
-function getEquipmentDisplayName(item: any): string {
-  if (equipmentDialogState.value.type === 'wengine') {
-    return (item as WEngine).name;
-  } else {
-    const disk = item as DriveDisk;
-    return disk.set_name;
-  }
-}
-
-// 获取装备当前装备者
-function getEquipmentEquippedBy(item: any): string {
-  return getCharacterNameByInstanceId(item.equipped_agent);
-}
-
-// 打开装备选择对话框
-function openEquipmentDialog(agent: Agent, type: 'wengine' | 'disk', slot?: number) {
-  equipmentDialogState.value = {
-    agent: agent,
-    type,
-    slot: slot || 0,
-  };
-  const dialog = document.getElementById('equipment-dialog') as HTMLDialogElement;
-  dialog.showModal();
-}
-
-// 选择装备
-function selectEquipment(item: any) {
-  const agent = equipmentDialogState.value.agent;
-  if (!agent) return;
-
-  const type = equipmentDialogState.value.type;
-  const slot = equipmentDialogState.value.slot;
-
-  // 1. 处理原装备（如果有，设为未装备）
-  if (type === 'wengine') {
-    if (agent.equipped_wengine) {
-      const oldWengine = wengines.value.find(w => w.id === agent.equipped_wengine);
-      if (oldWengine) oldWengine.equipped_agent = null;
-    }
-  } else {
-    // 数组索引
-    const diskId = agent.equipped_drive_disks[slot - 1];
-    if (diskId) {
-      const oldDisk = driveDisks.value.find(d => d.id === diskId);
-      if (oldDisk) oldDisk.equipped_agent = null;
-    }
-  }
-
-  // 2. 处理新装备（如果已被其他人装备，先卸下）
-  if (item.equipped_agent) {
-    const otherAgent = agents.value.find(a => a.id === item.equipped_agent);
-    if (otherAgent) {
-      if (type === 'wengine') {
-        otherAgent.equipped_wengine = null;
-      } else {
-        // 找到对应的槽位并置空
-        const otherSlotIndex = otherAgent.equipped_drive_disks.indexOf(item.id);
-        if (otherSlotIndex !== -1) {
-          otherAgent.equipped_drive_disks[otherSlotIndex] = null;
-        }
-      }
-    }
-  }
-
-  // 3. 建立新连接
-  if (type === 'wengine') {
-    agent.equipped_wengine = item.id;
-    (item as WEngine).equipped_agent = agent.id;
-  } else {
-    agent.equipped_drive_disks[slot - 1] = item.id;
-    (item as DriveDisk).equipped_agent = agent.id;
-  }
-
-  // 4. 保存到store
-  saveStore.saveToStorage();
-
-  // 5. 关闭对话框
-  const dialog = document.getElementById('equipment-dialog') as HTMLDialogElement;
-  dialog.close();
 }
 
 // 查看角色属性

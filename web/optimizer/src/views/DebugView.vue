@@ -55,6 +55,7 @@ import GameWiki from '../components/debug/GameWiki.vue';
 import SkillsData from '../components/debug/SkillsData.vue';
 import BuffDataInspector from '../components/debug/BuffDataInspector.vue';
 import TeamManager from '../components/debug/TeamManager.vue';
+import CharacterBrowser from '../components/debug/CharacterBrowser.vue';
 
 const gameDataStore = useGameDataStore();
 const saveStore = useSaveStore();
@@ -62,6 +63,7 @@ const saveStore = useSaveStore();
 const tabs = [
   { id: 'import-export', label: '存档管理', component: DataImportExport },
   { id: 'inspector', label: '存档查看', component: DataInspector },
+  { id: 'character-browser', label: '角色浏览', component: CharacterBrowser },
   { id: 'teams', label: '队伍管理', component: TeamManager },
   { id: 'wiki', label: '游戏WIKI', component: GameWiki },
   { id: 'skills', label: '技能数据', component: SkillsData },
@@ -78,18 +80,30 @@ const activeComponent = computed(() => {
 
 onMounted(async () => {
   try {
+    console.log('[DEBUG] 初始化调试控制台');
+    console.log('[DEBUG] 可用标签页:', tabs.map(tab => tab.label));
+    
     // 1. 先加载游戏数据 ZOD
-    console.log('1. 开始加载游戏数据...');
+    console.log('[DEBUG] 1. 开始加载游戏数据...');
     await gameDataStore.initialize();
-    console.log('2. 游戏数据加载完成');
+    console.log('[DEBUG] 2. 游戏数据加载完成');
+    
+    // 显示已加载的角色数量
+    const characterCount = gameDataStore.characterData?.size || 0;
+    console.log('[DEBUG] 已加载角色数量:', characterCount);
 
     // 2. 再加载存档数据（此时 dataLoader 已完全初始化）
-    console.log('3. 开始加载存档...');
+    console.log('[DEBUG] 3. 开始加载存档...');
     await saveStore.loadFromStorage();
-    console.log('4. 存档加载完成');
+    console.log('[DEBUG] 4. 存档加载完成');
+    
+    // 显示存档中的角色数量
+    const agentCount = saveStore.agents.length;
+    console.log('[DEBUG] 存档中的角色数量:', agentCount);
+    console.log('[DEBUG] 存档中的角色名称:', saveStore.agents.map(agent => agent.name_cn).join(', '));
 
   } catch (error) {
-    console.error('Failed to initialize:', error);
+    console.error('[ERROR] 初始化失败:', error);
   }
 });
 </script>

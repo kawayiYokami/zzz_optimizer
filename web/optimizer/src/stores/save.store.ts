@@ -101,13 +101,6 @@ export const useSaveStore = defineStore('save', () => {
               // 从原始ZOD数据生成实例
               const saveData = await SaveData.fromZod(name, normalized, dataLoaderService);
               newSaves.set(name, saveData);
-            } else {
-              // 非ZOD格式数据，暂时保留原有逻辑
-              const saveData = await SaveData.fromDict(data as any, dataLoaderService);
-              newSaves.set(name, saveData);
-              // 转换为ZOD格式保存到rawSaves
-              const zodData = saveData.toZodData();
-              newRawSaves.set(name, zodData);
             }
           } catch (err) {
             console.error(`加载存档失败 [${name}]:`, err);

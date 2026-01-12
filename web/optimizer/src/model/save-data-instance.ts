@@ -31,8 +31,8 @@ import { zodParserService } from '../services/zod-parser.service';
  * - 实例对象是从存档数据生成的，用于运行时计算，不应该持久化
  *
  * 数据流：
- * 1. 存档（SaveData.toDict） → localStorage（持久化）
- * 2. localStorage → 存档（SaveData.fromDict） → 实例对象（运行时计算）
+ * 1. 存档（原始ZOD格式） → localStorage（持久化）
+ * 2. localStorage → 存档（SaveData.fromZod） → 实例对象（运行时计算）
  * 3. 实例对象（计算用） → 不持久化，从存档重新生成
  *
  * ID分配规则：
@@ -120,6 +120,17 @@ export class SaveData {
   private _invalidateCache(): void {
     this._cache.clear();
     this._isCacheValid = false;
+  }
+  
+  /**
+   * 更新所有角色的装备引用
+   * 
+   * 当装备集合（驱动盘或音擎）发生变化时调用，确保所有角色都能访问到最新的装备数据
+   */
+  private _updateAllAgentsEquipmentReferences(): void {
+    for (const agent of this.getAllAgents()) {
+      agent.setEquipmentReferences(this.wengines, this.drive_disks);
+    }
   }
 
   /**
@@ -377,72 +388,7 @@ export class SaveData {
     }
   }
 
-  /**
-   * 从字典反序列化
-   *
-   * @param data 字典数据
-   * @param dataLoader 数据加载服务
-   * @returns SaveData实例
-   */
-  static async fromDict(data: any, dataLoader: typeof dataLoaderService): Promise<SaveData> {
-    // 检查 dataLoader 是否已初始化
-    if (!dataLoader.characterData || !dataLoader.weaponData || !dataLoader.equipmentData) {
-      throw new Error('DataLoaderService 未初始化，无法加载存档。请先调用 gameDataStore.initialize()');
-    }
 
-    const save = new SaveData(data.name);
-    save.created_at = new Date(data.created_at);
-    save.updated_at = new Date(data.updated_at);
-
-    // 加载元数据
-    if (data._metadata) {
-      save._metadata = data._metadata;
-    }
-
-    // 反序列化角色
-    if (data.agents) {
-      save.agents = new Map();
-      for (const [k, v] of Object.entries(data.agents)) {
-        try {
-          const agent = await Agent.fromDict(v, k, dataLoader);
-          save.agents.set(k, agent);
-        } catch (err) {
-          console.error(`加载角色失败 [${k}]:`, err);
-          // 继续加载其他角色，不中断整个存档加载
-        }
-      }
-    }
-
-    // 反序列化驱动盘
-    if (data.drive_disks) {
-      save.drive_disks = new Map();
-      for (const [k, v] of Object.entries(data.drive_disks)) {
-        try {
-          const disk = await DriveDisk.fromDict(v, k, dataLoader);
-          save.drive_disks.set(k, disk);
-        } catch (err) {
-          console.error(`加载驱动盘失败 [${k}]:`, err);
-          // 继续加载其他驱动盘，不中断整个存档加载
-        }
-      }
-    }
-
-    // 反序列化音擎
-    if (data.wengines) {
-      save.wengines = new Map();
-      for (const [k, v] of Object.entries(data.wengines)) {
-        try {
-          const wengine = await WEngine.fromDict(v, dataLoader);
-          save.wengines.set(k, wengine);
-        } catch (err) {
-          console.error(`加载音擎失败 [${k}]:`, err);
-          // 继续加载其他音擎，不中断整个存档加载
-        }
-      }
-    }
-
-    return save;
-  }
 
   /**
    * 从ZOD数据创建存档
@@ -465,14 +411,7 @@ export class SaveData {
 
     const parsed = await zodParserService.parseZodData(zodData);
 
-    for (const agent of parsed.agents.values()) {
-      save.addAgent(agent);
-      const zodChar = characterLookup.get(agent.id);
-      if (zodChar) {
-        save.registerZodCharacterMetadata(zodChar);
-      }
-    }
-
+    // 先添加所有装备和驱动盘
     for (const disk of parsed.driveDisks.values()) {
       save.addDriveDisk(disk);
       const zodDisk = discLookup.get(disk.id);
@@ -487,6 +426,17 @@ export class SaveData {
       if (zodWengine) {
         save.registerZodWengineMetadata(zodWengine);
       }
+    }
+
+    // 然后添加角色，并设置装备集合引用
+    for (const agent of parsed.agents.values()) {
+      save.addAgent(agent);
+      const zodChar = characterLookup.get(agent.id);
+      if (zodChar) {
+        save.registerZodCharacterMetadata(zodChar);
+      }
+      // 设置装备集合引用，让角色可以访问装备属性
+      agent.setEquipmentReferences(save.wengines, save.drive_disks);
     }
 
     // 添加队伍数据
@@ -596,6 +546,8 @@ export class SaveData {
     this.updated_at = new Date();
     // 触发缓存失效
     this._invalidateCache();
+    // 更新所有角色的装备引用
+    this._updateAllAgentsEquipmentReferences();
   }
 
   /**
@@ -608,6 +560,8 @@ export class SaveData {
       this.updated_at = new Date();
       // 触发缓存失效
       this._invalidateCache();
+      // 更新所有角色的装备引用
+      this._updateAllAgentsEquipmentReferences();
     }
   }
 
@@ -631,6 +585,8 @@ export class SaveData {
     this.updated_at = new Date();
     // 触发缓存失效
     this._invalidateCache();
+    // 更新所有角色的装备引用
+    this._updateAllAgentsEquipmentReferences();
   }
 
   /**
@@ -643,6 +599,8 @@ export class SaveData {
       this.updated_at = new Date();
       // 触发缓存失效
       this._invalidateCache();
+      // 更新所有角色的装备引用
+      this._updateAllAgentsEquipmentReferences();
     }
   }
 
@@ -672,6 +630,8 @@ export class SaveData {
       this.updated_at = new Date();
       // 触发缓存失效
       this._invalidateCache();
+      // 更新所有角色的装备引用
+      this._updateAllAgentsEquipmentReferences();
     }
     return result;
   }
@@ -688,6 +648,8 @@ export class SaveData {
       this.updated_at = new Date();
       // 触发缓存失效
       this._invalidateCache();
+      // 更新所有角色的装备引用
+      this._updateAllAgentsEquipmentReferences();
     }
     return result;
   }

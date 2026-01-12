@@ -152,79 +152,126 @@ export class PropertyCollection {
   }
 
   /**
-   * 计算最终面板
+   * 局外属性 → 战斗属性（三层属性转换：1 → 2）
    *
-   * 将 out_of_combat 和 in_combat 合并计算成 final
+   * 严格遵循三层属性转换流程：
+   * 局外属性(1) → 局内属性(2) → 最终属性(3)
+   * 
+   * 算法：
+   * - 基础属性 = 基础属性 × (1 + 百分比属性) + 固定值属性
+   * - 其他属性直接复制
+   * 
+   * 注意：
+   * 1. 只处理局外属性，不访问任何局内属性
+   * 2. 不应该生成任何最终属性
+   * 3. 算法与 toFinalStats 完全一致，只是处理的数据源不同
+   * 4. 转换后局内属性不应该再有任何的ATK%、ATK（固定值）等原始属性
    *
-   * 计算规则：
-   * 1. 四大基础属性（ATK/HP/DEF/IMPACT）：
-   *    - 局外最终 = base × (1 + percent) + flat
-   *    - 局内最终 = 局外最终 × (1 + 局内percent) + 局内flat
-   * 2. 其他属性：直接累加 out_of_combat + in_combat
+   * @returns 战斗属性PropertyCollection，只包含局内面板
    */
-  calculateFinal(): void {
-    this.final.clear();
-
+  toCombatStats(): PropertyCollection {
+    const combatStats = new PropertyCollection();
+    
+    // 只处理局外属性，将其转换为局内属性
+    // 算法：基础属性 × (1 + 百分比属性) + 固定值属性
+    
     // 1. 处理四大基础属性（ATK/HP/DEF/IMPACT）
     const fourBasicProps = [
       { base: PropertyType.ATK_BASE, percent: PropertyType.ATK_, flat: PropertyType.ATK },
       { base: PropertyType.HP_BASE, percent: PropertyType.HP_, flat: PropertyType.HP },
       { base: PropertyType.DEF_BASE, percent: PropertyType.DEF_, flat: PropertyType.DEF },
-      { base: PropertyType.IMPACT, percent: PropertyType.IMPACT_, flat: null }, // IMPACT 没有 flat
+      { base: PropertyType.IMPACT, percent: PropertyType.IMPACT_, flat: null }
     ];
 
     for (const { base, percent, flat } of fourBasicProps) {
-      // 计算局外最终值
-      const out_base = this.getOutOfCombat(base, 0);
-      const out_percent = this.getOutOfCombat(percent, 0) / 100.0;
-      const out_flat = flat ? this.getOutOfCombat(flat, 0) : 0;
-      const out_final = out_base * (1 + out_percent) + out_flat;
-
-      // 计算局内最终值（局外最终作为局内基础）
-      const in_percent = this.getInCombat(percent, 0) / 100.0;
-      const in_flat = flat ? this.getInCombat(flat, 0) : 0;
-      const final_value = out_final * (1 + in_percent) + in_flat;
-
-      this.final.set(base, final_value);
+      // 从局外属性获取值
+      const baseValue = this.getOutOfCombat(base, 0);
+      const percentValue = this.getOutOfCombat(percent, 0);
+      const flatValue = flat ? this.getOutOfCombat(flat, 0) : 0;
+      
+      // 计算最终值
+      const finalValue = baseValue * (1 + percentValue) + flatValue;
+      combatStats.in_combat.set(base, finalValue);
     }
 
-    // 2. 处理其他所有属性（直接累加）
-    const allProps = new Set<PropertyType>();
-
-    // 收集所有属性类型
-    for (const prop of this.out_of_combat.keys()) {
-      allProps.add(prop);
-    }
-    for (const prop of this.in_combat.keys()) {
-      allProps.add(prop);
-    }
-
-    // 对于非四大基础属性，直接累加
-    for (const prop of allProps) {
-      // 跳过四大基础属性的 base/percent/flat（已经处理过）
-      if (
-        prop === PropertyType.ATK_BASE ||
-        prop === PropertyType.HP_BASE ||
-        prop === PropertyType.DEF_BASE ||
-        prop === PropertyType.IMPACT ||
-        prop === PropertyType.ATK_ ||
-        prop === PropertyType.HP_ ||
-        prop === PropertyType.DEF_ ||
-        prop === PropertyType.IMPACT_ ||
-        prop === PropertyType.ATK ||
-        prop === PropertyType.HP ||
-        prop === PropertyType.DEF
-      ) {
+    // 2. 处理其他所有属性（直接复制，不进行计算）
+    for (const [prop, value] of this.out_of_combat.entries()) {
+      // 跳过已经处理的四大基础属性的 base/percent/flat
+      if ([
+        PropertyType.ATK_BASE, PropertyType.HP_BASE, PropertyType.DEF_BASE, PropertyType.IMPACT,
+        PropertyType.ATK_, PropertyType.HP_, PropertyType.DEF_, PropertyType.IMPACT_,
+        PropertyType.ATK, PropertyType.HP, PropertyType.DEF
+      ].includes(prop)) {
         continue;
       }
-
-      // 直接累加
-      const total = this.getOutOfCombat(prop, 0) + this.getInCombat(prop, 0);
-      if (total !== 0) {
-        this.final.set(prop, total);
-      }
+      
+      combatStats.in_combat.set(prop, value);
     }
+    
+    return combatStats;
   }
+
+  /**
+   * 局内属性 → 最终属性（三层属性转换：2 → 3）
+   *
+   * 严格遵循三层属性转换流程：
+   * 局外属性(1) → 局内属性(2) → 最终属性(3)
+   * 
+   * 算法：
+   * - 基础属性 = 基础属性 × (1 + 百分比属性) + 固定值属性
+   * - 其他属性直接复制
+   * 
+   * 注意：
+   * 1. 只处理局内属性，不访问任何局外属性
+   * 2. 不应该涉及任何局外属性
+   * 3. 算法与 toCombatStats 完全一致，只是处理的数据源不同
+   * 4. 局外属性不直接影响最终属性，必须通过局内属性间接影响
+   *
+   * @returns 最终属性Map
+   */
+  toFinalStats(): Map<PropertyType, number> {
+    const finalStats = new Map<PropertyType, number>();
+    
+    // 只处理局内属性，将其转换为最终属性
+    // 算法与toCombatStats完全一致，只是数据源不同
+    
+    // 1. 处理四大基础属性（ATK/HP/DEF/IMPACT）
+    const fourBasicProps = [
+      { base: PropertyType.ATK_BASE, percent: PropertyType.ATK_, flat: PropertyType.ATK },
+      { base: PropertyType.HP_BASE, percent: PropertyType.HP_, flat: PropertyType.HP },
+      { base: PropertyType.DEF_BASE, percent: PropertyType.DEF_, flat: PropertyType.DEF },
+      { base: PropertyType.IMPACT, percent: PropertyType.IMPACT_, flat: null }
+    ];
+
+    for (const { base, percent, flat } of fourBasicProps) {
+      // 从局内属性获取值
+      const baseValue = this.getInCombat(base, 0);
+      const percentValue = this.getInCombat(percent, 0);
+      const flatValue = flat ? this.getInCombat(flat, 0) : 0;
+      
+      // 计算最终值
+      const finalValue = baseValue * (1 + percentValue) + flatValue;
+      finalStats.set(base, finalValue);
+    }
+
+    // 2. 处理其他所有属性（直接复制，不进行计算）
+    for (const [prop, value] of this.in_combat.entries()) {
+      // 跳过已经处理的四大基础属性的 base/percent/flat
+      if ([
+        PropertyType.ATK_BASE, PropertyType.HP_BASE, PropertyType.DEF_BASE, PropertyType.IMPACT,
+        PropertyType.ATK_, PropertyType.HP_, PropertyType.DEF_, PropertyType.IMPACT_,
+        PropertyType.ATK, PropertyType.HP, PropertyType.DEF
+      ].includes(prop)) {
+        continue;
+      }
+      
+      finalStats.set(prop, value);
+    }
+    
+    return finalStats;
+  }
+
+
 
   /**
    * 检查是否为空
@@ -239,65 +286,206 @@ export class PropertyCollection {
    * 格式化输出（只输出不为0的属性）
    *
    * @param indent 缩进空格数
+   * @param formatType 输出类型：
+   *   - 'separate'（分开显示局外/局内）
+   *   - 'final'（只显示最终面板）
+   *   - 'out_of_combat'（只显示局外属性）
+   *   - 'in_combat'（只显示局内属性）
    * @returns 格式化字符串
    */
-  format(indent: number = 0): string {
+  format(indent: number = 0, formatType: 'separate' | 'final' | 'out_of_combat' | 'in_combat' = 'separate'): string {
     const lines: string[] = [];
     const prefix = ' '.repeat(indent);
 
-    // 局外属性
-    if (this.out_of_combat.size > 0) {
-      const outItems: [PropertyType, number][] = [];
-      for (const [prop, value] of this.out_of_combat.entries()) {
-        if (value !== 0) {
-          outItems.push([prop, value]);
+    if (formatType === 'final') {
+      // 显示最终面板属性
+      // 确保已计算最终面板
+      if (this.final.size === 0) {
+        // 直接计算最终面板，不调用updateFinalStats方法
+        this.final = this.toFinalStats();
+      }
+
+      if (this.final.size > 0) {
+        const finalItems: [PropertyType, number][] = [];
+        for (const [prop, value] of this.final.entries()) {
+          if (value !== 0) {
+            finalItems.push([prop, value]);
+          }
+        }
+
+        if (finalItems.length > 0) {
+          finalItems.sort((a, b) => getPropertyCnName(a[0]).localeCompare(getPropertyCnName(b[0])));
+          lines.push(`${prefix}最终面板 (${finalItems.length}个属性):`);
+          for (const [prop, value] of finalItems) {
+            const cnName = getPropertyCnName(prop);
+            if (isPercentageProperty(prop)) {
+              // 百分比属性（存储为小数形式，如 0.05 表示 5%，显示时需要乘以100）
+              lines.push(`  ${prefix}${cnName}: ${(value * 100).toFixed(2)}%`);
+            } else {
+              // 固定值属性
+              if (Math.abs(value) >= 10) {
+                lines.push(`  ${prefix}${cnName}: ${value.toFixed(1)}`);
+              } else {
+                lines.push(`  ${prefix}${cnName}: ${value.toFixed(3)}`);
+              }
+            }
+          }
+        }
+      }
+    } else if (formatType === 'out_of_combat') {
+      // 只显示局外属性
+      if (this.out_of_combat.size > 0) {
+        const outItems: [PropertyType, number][] = [];
+        for (const [prop, value] of this.out_of_combat.entries()) {
+          if (value !== 0) {
+            outItems.push([prop, value]);
+          }
+        }
+
+        if (outItems.length > 0) {
+          outItems.sort((a, b) => getPropertyCnName(a[0]).localeCompare(getPropertyCnName(b[0])));
+          lines.push(`${prefix}局外属性 (${outItems.length}个属性):`);
+          for (const [prop, value] of outItems) {
+            const cnName = getPropertyCnName(prop);
+            if (isPercentageProperty(prop)) {
+              // 百分比属性（存储为小数形式，如 0.05 表示 5%，显示时需要乘以100）
+              lines.push(`  ${prefix}${cnName}: ${(value * 100).toFixed(2)}%`);
+            } else {
+              // 固定值属性
+              if (Math.abs(value) >= 10) {
+                lines.push(`  ${prefix}${cnName}: ${value.toFixed(1)}`);
+              } else {
+                lines.push(`  ${prefix}${cnName}: ${value.toFixed(3)}`);
+              }
+            }
+          }
+        }
+      }
+    } else if (formatType === 'in_combat') {
+      // 只显示局内属性
+      if (this.in_combat.size > 0) {
+        const inItems: [PropertyType, number][] = [];
+        for (const [prop, value] of this.in_combat.entries()) {
+          if (value !== 0) {
+            inItems.push([prop, value]);
+          }
+        }
+
+        if (inItems.length > 0) {
+          inItems.sort((a, b) => getPropertyCnName(a[0]).localeCompare(getPropertyCnName(b[0])));
+          lines.push(`${prefix}局内属性 (${inItems.length}个属性):`);
+          for (const [prop, value] of inItems) {
+            const cnName = getPropertyCnName(prop);
+            if (isPercentageProperty(prop)) {
+              // 百分比属性（存储为小数形式，如 0.05 表示 5%，显示时需要乘以100）
+              lines.push(`  ${prefix}${cnName}: ${(value * 100).toFixed(2)}%`);
+            } else {
+              // 固定值属性
+              if (Math.abs(value) >= 10) {
+                lines.push(`  ${prefix}${cnName}: ${value.toFixed(1)}`);
+              } else {
+                lines.push(`  ${prefix}${cnName}: ${value.toFixed(3)}`);
+              }
+            }
+          }
+        }
+      }
+    } else {
+      // 分开显示局外和局内属性（原有逻辑）
+      // 局外属性
+      if (this.out_of_combat.size > 0) {
+        const outItems: [PropertyType, number][] = [];
+        for (const [prop, value] of this.out_of_combat.entries()) {
+          if (value !== 0) {
+            outItems.push([prop, value]);
+          }
+        }
+
+        if (outItems.length > 0) {
+          outItems.sort((a, b) => getPropertyCnName(a[0]).localeCompare(getPropertyCnName(b[0])));
+          lines.push(`${prefix}局外 (${outItems.length}个属性):`);
+          for (const [prop, value] of outItems) {
+            const cnName = getPropertyCnName(prop);
+            if (isPercentageProperty(prop)) {
+              // 百分比属性（存储为小数形式，如 0.05 表示 5%，显示时需要乘以100）
+              lines.push(`  ${prefix}${cnName}: ${(value * 100).toFixed(2)}%`);
+            } else {
+              // 固定值属性
+              if (Math.abs(value) >= 10) {
+                lines.push(`  ${prefix}${cnName}: ${value.toFixed(1)}`);
+              } else {
+                lines.push(`  ${prefix}${cnName}: ${value.toFixed(3)}`);
+              }
+            }
+          }
         }
       }
 
-      if (outItems.length > 0) {
-        outItems.sort((a, b) => getPropertyCnName(a[0]).localeCompare(getPropertyCnName(b[0])));
-        lines.push(`${prefix}局外 (${outItems.length}个属性):`);
-        for (const [prop, value] of outItems) {
-          const cnName = getPropertyCnName(prop);
-          if (isPercentageProperty(prop)) {
-            // 百分比属性（存储为小数形式，如 0.05 表示 5%，显示时需要乘以100）
-            lines.push(`  ${prefix}${cnName}: ${(value * 100).toFixed(2)}%`);
-          } else {
-            // 固定值属性
-            if (Math.abs(value) >= 10) {
-              lines.push(`  ${prefix}${cnName}: ${value.toFixed(1)}`);
+      // 局内属性
+      if (this.in_combat.size > 0) {
+        const inItems: [PropertyType, number][] = [];
+        for (const [prop, value] of this.in_combat.entries()) {
+          if (value !== 0) {
+            inItems.push([prop, value]);
+          }
+        }
+
+        if (inItems.length > 0) {
+          inItems.sort((a, b) => getPropertyCnName(a[0]).localeCompare(getPropertyCnName(b[0])));
+          lines.push(`${prefix}局内 (${inItems.length}个属性):`);
+          for (const [prop, value] of inItems) {
+            const cnName = getPropertyCnName(prop);
+            if (isPercentageProperty(prop)) {
+              // 百分比属性（存储为小数形式，如 0.05 表示 5%，显示时需要乘以100）
+              lines.push(`  ${prefix}${cnName}: ${(value * 100).toFixed(2)}%`);
             } else {
-              lines.push(`  ${prefix}${cnName}: ${value.toFixed(3)}`);
+              // 固定值属性
+              if (Math.abs(value) >= 10) {
+                lines.push(`  ${prefix}${cnName}: ${value.toFixed(1)}`);
+              } else {
+                lines.push(`  ${prefix}${cnName}: ${value.toFixed(3)}`);
+              }
             }
           }
         }
       }
     }
 
-    // 局内属性
-    if (this.in_combat.size > 0) {
-      const inItems: [PropertyType, number][] = [];
-      for (const [prop, value] of this.in_combat.entries()) {
-        if (value !== 0) {
-          inItems.push([prop, value]);
-        }
-      }
+    return lines.join('\n');
+  }
 
-      if (inItems.length > 0) {
-        inItems.sort((a, b) => getPropertyCnName(a[0]).localeCompare(getPropertyCnName(b[0])));
-        lines.push(`${prefix}局内 (${inItems.length}个属性):`);
-        for (const [prop, value] of inItems) {
-          const cnName = getPropertyCnName(prop);
-          if (isPercentageProperty(prop)) {
-            // 百分比属性（存储为小数形式，如 0.05 表示 5%，显示时需要乘以100）
-            lines.push(`  ${prefix}${cnName}: ${(value * 100).toFixed(2)}%`);
+  /**
+   * 格式化Map<PropertyType, number>为字符串（静态方法）
+   *
+   * @param statsMap 要格式化的属性Map
+   * @param indent 缩进空格数
+   * @returns 格式化字符串
+   */
+  static formatMap(statsMap: Map<PropertyType, number>, indent: number = 0): string {
+    const lines: string[] = [];
+    const prefix = ' '.repeat(indent);
+
+    const items: [PropertyType, number][] = [];
+    for (const [prop, value] of statsMap.entries()) {
+      if (value !== 0) {
+        items.push([prop, value]);
+      }
+    }
+
+    if (items.length > 0) {
+      items.sort((a, b) => getPropertyCnName(a[0]).localeCompare(getPropertyCnName(b[0])));
+      lines.push(`${prefix}属性 (${items.length}个属性):`);
+      for (const [prop, value] of items) {
+        const cnName = getPropertyCnName(prop);
+        if (isPercentageProperty(prop)) {
+          // 百分比属性（存储为小数形式，如 0.05 表示 5%，显示时需要乘以100）
+          lines.push(`  ${prefix}${cnName}: ${(value * 100).toFixed(2)}%`);
+        } else {
+          // 固定值属性
+          if (Math.abs(value) >= 10) {
+            lines.push(`  ${prefix}${cnName}: ${value.toFixed(1)}`);
           } else {
-            // 固定值属性
-            if (Math.abs(value) >= 10) {
-              lines.push(`  ${prefix}${cnName}: ${value.toFixed(1)}`);
-            } else {
-              lines.push(`  ${prefix}${cnName}: ${value.toFixed(3)}`);
-            }
+            lines.push(`  ${prefix}${cnName}: ${value.toFixed(3)}`);
           }
         }
       }

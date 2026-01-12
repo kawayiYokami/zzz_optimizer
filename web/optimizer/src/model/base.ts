@@ -293,8 +293,24 @@ export function getPropertyTypeByCnName(cnName: string): PropertyType | undefine
  * 判断是否为百分比属性
  */
 export function isPercentageProperty(propertyType: PropertyType): boolean {
-  const name = propertyType.toString();
-  return name.endsWith('_') || name.includes('RATE') || name.includes('DMG');
+  // 直接判断属性类型是否为百分比属性
+  const percentProps = [
+    PropertyType.CRIT_,
+    PropertyType.CRIT_DMG_,
+    PropertyType.ATK_,
+    PropertyType.HP_,
+    PropertyType.DEF_,
+    PropertyType.PEN_,
+    PropertyType.IMPACT_,
+    PropertyType.ENER_REGEN_,
+    PropertyType.PHYSICAL_DMG_,
+    PropertyType.FIRE_DMG_,
+    PropertyType.ICE_DMG_,
+    PropertyType.ELECTRIC_DMG_,
+    PropertyType.ETHER_DMG_,
+    PropertyType.ANOM_MAS_
+  ];
+  return percentProps.includes(propertyType);
 }
 
 /**

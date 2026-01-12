@@ -121,7 +121,7 @@ export class WEngine {
   base_stats: PropertyCollection = new PropertyCollection(); // 基础属性集（局外）
   talents: WEngineTalent[] = []; // 天赋buff列表（局内）
   buffs: Buff[] = []; // 当前精炼等级的buff列表（缓存）
-  
+
   // 懒加载标志位
   private _isBaseStatsLoaded: boolean = false;
 
@@ -157,6 +157,7 @@ export class WEngine {
     }
 
     if (this.rand_stat > 0 && this.rand_stat_type) {
+      // 按照文档公式：副词条 = rand_stat × (1 + 0.3 × ascension)
       const stat = this.rand_stat * (1 + 0.3 * ascension);
       result.out_of_combat.set(this.rand_stat_type, stat);
     }
@@ -221,7 +222,7 @@ export class WEngine {
   ): Promise<WEngine> {
     // 验证必要字段，如果缺失使用默认值
     const wengineId = data.wengine_id || data.id || `unknown_${Date.now()}`;
-    
+
     // 通过wengine_id从游戏数据获取名称
     const weaponInfo = dataLoader.weaponData?.get(data.wengine_id);
     if (!weaponInfo) {
@@ -280,9 +281,21 @@ export class WEngine {
 
         // 设置副属性基础值
         if (wengineDetail.RandProperty && wengineDetail.RandProperty.Value !== undefined) {
-          // 如果 Format 包含%，则是百分比属性，需要除以100
-          const isPercent = wengineDetail.RandProperty.Format && wengineDetail.RandProperty.Format.includes('%');
-          wengine.rand_stat = isPercent ? wengineDetail.RandProperty.Value / 100 : wengineDetail.RandProperty.Value;
+          // 根据属性类型判断是否是百分比属性
+          let isPercentType = false;
+          if (wengine.rand_stat_type) {
+            isPercentType = [
+              PropertyType.CRIT_,
+              PropertyType.CRIT_DMG_,
+              PropertyType.ATK_,
+              PropertyType.HP_,
+              PropertyType.DEF_,
+              PropertyType.PEN_,
+              PropertyType.SHIELD_
+            ].includes(wengine.rand_stat_type);
+          }
+          // 游戏数据是万分比，百分比属性需要除以10000转换为小数
+          wengine.rand_stat = isPercentType ? wengineDetail.RandProperty.Value / 10000 : wengineDetail.RandProperty.Value;
         }
 
         // 设置等级成长数据（从 Level 获取）
@@ -410,11 +423,23 @@ export class WEngine {
       }
 
       // 设置副属性基础值
-      if (wengineDetail.RandProperty && wengineDetail.RandProperty.Value !== undefined) {
-        // 如果 Format 包含%，则是百分比属性，需要除以100
-        const isPercent = wengineDetail.RandProperty.Format && wengineDetail.RandProperty.Format.includes('%');
-        wengine.rand_stat = isPercent ? wengineDetail.RandProperty.Value / 100 : wengineDetail.RandProperty.Value;
-      }
+        if (wengineDetail.RandProperty && wengineDetail.RandProperty.Value !== undefined) {
+          // 根据属性类型判断是否是百分比属性
+          let isPercentType = false;
+          if (wengine.rand_stat_type) {
+            isPercentType = [
+              PropertyType.CRIT_,
+              PropertyType.CRIT_DMG_,
+              PropertyType.ATK_,
+              PropertyType.HP_,
+              PropertyType.DEF_,
+              PropertyType.PEN_,
+              PropertyType.SHIELD_
+            ].includes(wengine.rand_stat_type);
+          }
+          // 游戏数据是万分比，百分比属性需要除以10000转换为小数
+          wengine.rand_stat = isPercentType ? wengineDetail.RandProperty.Value / 10000 : wengineDetail.RandProperty.Value;
+        }
 
       // 设置等级成长数据（从 Level 获取）
       if (wengineDetail.Level) {

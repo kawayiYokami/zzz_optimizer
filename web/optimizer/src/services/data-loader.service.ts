@@ -283,16 +283,34 @@ export class DataLoaderService {
    * 获取角色Buff数据（按需加载）
    */
   async getCharacterBuff(gameId: string): Promise<any> {
+    console.log(`[DEBUG] 尝试获取角色 ${gameId} 的BUFF数据`);
+    
     // 检查缓存
     if (this._characterBuffCache.has(gameId)) {
-      return this._characterBuffCache.get(gameId);
+      const cachedBuff = this._characterBuffCache.get(gameId);
+      console.log(`[DEBUG] 从缓存获取BUFF数据:`, cachedBuff);
+      return cachedBuff;
     }
 
-    // 加载数据
-    const buff = await this.loadJsonFile<any>(`/game-data/character_data_buff/${gameId}.json`);
-    this._characterBuffCache.set(gameId, buff);
-
-    return buff;
+    try {
+      // 加载数据
+      console.log(`[DEBUG] 从文件加载BUFF数据: /game-data/character_data_buff/${gameId}.json`);
+      const buff = await this.loadJsonFile<any>(`/game-data/character_data_buff/${gameId}.json`);
+      console.log(`[DEBUG] 成功加载BUFF数据:`, buff);
+      this._characterBuffCache.set(gameId, buff);
+      return buff;
+    } catch (error) {
+      console.error(`[ERROR] 加载BUFF数据失败: /game-data/character_data_buff/${gameId}.json`, error);
+      // 返回一个空的BUFF数据对象，避免后续处理出错
+      const emptyBuff = {
+        core_passive_buffs: [],
+        talent_buffs: [],
+        mindscape_buffs: [],
+        conversion_buffs: []
+      };
+      this._characterBuffCache.set(gameId, emptyBuff);
+      return emptyBuff;
+    }
   }
 
   /**
@@ -527,7 +545,7 @@ export class DataLoaderService {
       }
 
       this._agentSkills = skillsMap;
-      console.log(`成功加载 ${skillsMap.size} 个角色的技能数据`);
+    console.log(`成功加载 ${skillsMap.size} 个角色的技能数据`);
     } catch (error) {
       console.error('加载技能数据失败:', error);
       this._agentSkills = new Map();
@@ -538,7 +556,10 @@ export class DataLoaderService {
    * 获取指定角色的技能数据
    */
   getAgentSkills(agentName: string): AgentSkillSet | null {
-    return this._agentSkills?.get(agentName) || null;
+    if (this._agentSkills) {
+      return this._agentSkills.get(agentName) || null;
+    }
+    return null;
   }
 
   /**

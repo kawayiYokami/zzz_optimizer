@@ -5,9 +5,12 @@
 import { Rarity, ElementType, WeaponType, PropertyType } from './base';
 import { PropertyCollection } from './property-collection';
 import { CombatStats } from './combat-stats';
-import { Buff, ConversionBuff } from './buff';
+import { Buff, ConversionBuff, BuffSource, BuffTarget, Conversion } from './buff';
 import type { ZodCharacterData } from './save-data-zod';
+import type { AgentSkillSet } from './skill';
 import type { dataLoaderService } from '../services/data-loader.service';
+import type { WEngine } from './wengine';
+import type { DriveDisk } from './drive-disk';
 
 /**
  * 角色技能等级
@@ -123,6 +126,9 @@ export class Agent {
   talent_buffs: Buff[] = [];
   conversion_buffs: ConversionBuff[] = [];
   potential_buffs: Buff[] = [];
+  
+  // 技能数据（从游戏数据加载）
+  agentSkills: AgentSkillSet | null = null;
 
   constructor(
     id: string,
@@ -147,11 +153,11 @@ export class Agent {
   private _isBuffsLoaded: boolean = false;
 
   /**
-   * 获取角色自身属性（懒加载）
+   * 获取角色基础属性（仅角色自身，不含装备、buff）
    *
    * @returns 属性集合
    */
-  getSelfProperties(): PropertyCollection {
+  getCharacterBaseStats(): PropertyCollection {
     if (!this._isSelfPropertiesLoaded || !this.self_properties) {
       this._calculateSelfProperties();
     }
@@ -159,31 +165,146 @@ export class Agent {
   }
 
   /**
+   * 获取角色+装备属性（角色基础 + 武器 + 驱动盘基础 + 驱动盘两件套）
+   *
+   * @returns 属性集合
+   */
+  getCharacterEquipmentStats(): PropertyCollection {
+    // 1. 先获取角色基础属性
+    const baseStats = this.getCharacterBaseStats();
+    
+    // 2. 创建新的属性集合来存储角色+装备属性
+    const equipmentStats = new PropertyCollection();
+    equipmentStats.add(baseStats);
+    
+    // 3. 获取武器属性（如果有装备）
+    if (this.equipped_wengine && this._wengines) {
+      const wengine = this._wengines.get(this.equipped_wengine);
+      if (wengine) {
+        equipmentStats.add(wengine.getBaseStats());
+      }
+    }
+    
+    // 4. 获取驱动盘属性和两件套效果
+    if (this._driveDisks) {
+      // 统计不同套装的数量
+      const setCounts = new Map<string, number>();
+      
+      // 先计算所有驱动盘的基础属性
+      for (const diskId of this.equipped_drive_disks) {
+        if (diskId) {
+          const disk = this._driveDisks!.get(diskId);
+          if (disk) {
+            // 添加驱动盘基础属性
+            equipmentStats.add(disk.getStats());
+            
+            // 统计套装数量
+            const setName = disk.set_name;
+            setCounts.set(setName, (setCounts.get(setName) || 0) + 1);
+          }
+        }
+      }
+      
+      // 计算两件套效果
+      // 遍历所有驱动盘，为每个至少有2件的套装添加两件套效果
+      for (const diskId of this.equipped_drive_disks) {
+        if (diskId) {
+          const disk = this._driveDisks!.get(diskId);
+          if (disk) {
+            const setName = disk.set_name;
+            const count = setCounts.get(setName) || 0;
+            
+            // 如果套装数量 >= 2，添加两件套效果
+            if (count >= 2) {
+              const twoPieceBonus = disk.getSetBuff(2);
+              equipmentStats.add(twoPieceBonus);
+              // 为了避免重复添加同一套装的两件套效果，移除该套装的计数
+              setCounts.set(setName, 0);
+            }
+          }
+        }
+      }
+    }
+    
+    return equipmentStats;
+  }
+
+  /**
+   * 获取角色战斗属性（角色+装备的战斗属性）
+   *
+   * 严格遵循三层属性转换流程：
+   * 局外属性(1) → 局内属性(2) → 最终属性(3)
+   *
+   * 此方法执行的是第一层到第二层的转换：
+   * - 输入：角色+装备的局外属性（from getCharacterEquipmentStats()）
+   * - 转换：调用 toCombatStats() 将局外属性转换为局内属性
+   * - 输出：只包含局内属性的 PropertyCollection
+   *
+   * @returns 战斗属性PropertyCollection，只包含局内面板
+   */
+  getCharacterCombatStats(): PropertyCollection {
+    const equipmentStats = this.getCharacterEquipmentStats();
+    // 直接返回toCombatStats()的结果，它已经是计算好的战斗属性PropertyCollection
+    return equipmentStats.toCombatStats();
+  }
+
+  // 兼容层：保留原有方法，指向新方法
+  
+  /**
    * 获取裸属性（只有角色自身，不含装备）
    *
    * @returns 属性集合
    */
   getBareStats(): PropertyCollection {
-    return this.getSelfProperties();
+    return this.getCharacterBaseStats();
+  }
+
+  /**
+   * 获取角色自身属性（裸 + 武器 + 驱动盘基础 + 所有驱动盘两件套）
+   *
+   * @returns 属性集合
+   */
+  getSelfProperties(): PropertyCollection {
+    return this.getCharacterEquipmentStats();
   }
 
   /**
    * 获取战斗属性（角色+装备）
    *
    * 基础战斗面板 = 角色自身 + 武器固定属性 + 驱动盘固定属性 + 驱动盘2件套
+   * 最终战斗属性 = 基础战斗面板 + Buff属性
    *
-   * @param equipmentStats 装备属性集数组（武器+驱动盘+套装，可选）
+   * @param buffs Buff属性数组（可选）
    * @returns 战斗属性
    */
-  getCombatStats(equipmentStats?: PropertyCollection[]): CombatStats {
+  getCombatStats(buffs?: Buff[]): CombatStats {
     const collections: PropertyCollection[] = [];
 
-    // 1. 角色自身属性（懒加载）
-    collections.push(this.getSelfProperties());
+    // 1. 角色自身属性 + 装备属性（裸 + 武器 + 驱动盘基础 + 所有驱动盘两件套）
+    collections.push(this.getCharacterEquipmentStats());
 
-    // 2. 装备属性（武器+驱动盘+套装）
-    if (equipmentStats) {
-      collections.push(...equipmentStats);
+    // 2. Buff属性
+    if (buffs) {
+      for (const buff of buffs) {
+        // 将buff的属性转换为PropertyCollection
+        const buffCollection = new PropertyCollection();
+        
+        // 添加局外属性
+        if (buff.out_of_combat_stats) {
+          buff.out_of_combat_stats.forEach((value, key) => {
+            buffCollection.addProperty(key, value);
+          });
+        }
+        
+        // 添加局内属性
+        if (buff.in_combat_stats) {
+          buff.in_combat_stats.forEach((value, key) => {
+            buffCollection.addProperty(key, value);
+          });
+        }
+        
+        collections.push(buffCollection);
+      }
     }
 
     return CombatStats.fromPropertyCollections(collections, this.level);
@@ -248,15 +369,15 @@ export class Agent {
     // 属性名映射：stats 字段名 -> PropertyType -> 转换因子
     const propertyMapping: Record<string, { propType: PropertyType | null; divisor?: number }> = {
       // 基础属性（需要加上突破和核心技加成）
-      'HpMax': { propType: PropertyType.HP },
-      'Attack': { propType: PropertyType.ATK },
-      'Defence': { propType: PropertyType.DEF },
+      'HpMax': { propType: PropertyType.HP_BASE },
+      'Attack': { propType: PropertyType.ATK_BASE },
+      'Defence': { propType: PropertyType.DEF_BASE },
 
       // 其他属性（不需要额外加成）
       'BreakStun': { propType: PropertyType.IMPACT },
       'Crit': { propType: PropertyType.CRIT_, divisor: 10000 },
       'CritDamage': { propType: PropertyType.CRIT_DMG_, divisor: 10000 },
-      'CritRes': { propType: PropertyType.CRIT_RATE_, divisor: 10000 },
+      'CritRes': { propType: null }, // 移除CRIT_RATE_映射，避免重复计算
       'CritDmgRes': { propType: null }, // 暂无对应枚举
       'ElementAbnormalPower': { propType: PropertyType.ANOM_MAS },
       'ElementMystery': { propType: PropertyType.ANOM_PROF },
@@ -270,6 +391,8 @@ export class Agent {
       'Stun': { propType: null }, // 暂无对应枚举
       'Rbl': { propType: null }, // 暂无对应枚举
     };
+    
+    console.log('[DEBUG] Agent._calculateSelfProperties() - 属性映射:', propertyMapping);
 
     for (const [key, value] of Object.entries(stats)) {
       // 跳过 Growth 字段和其他非数值字段
@@ -280,21 +403,35 @@ export class Agent {
       if (!mapping || mapping.propType === null) continue;
 
       // 计算最终值
-      let finalValue = value;
-      if (key === 'HpMax') {
-        finalValue = baseHp + promotionHp + coreHp;
-      } else if (key === 'Attack') {
-        finalValue = baseAtk + promotionAtk + coreAtk;
-      } else if (key === 'Defence') {
-        finalValue = baseDef + promotionDef + coreDef;
-      } else if (key === 'BreakStun') {
-        finalValue = value + coreImpact;
-      } else if (mapping.divisor) {
-        finalValue = value / mapping.divisor;
-      }
+    let finalValue = value;
+    console.log(`[DEBUG] Agent._calculateSelfProperties() - 处理属性 ${key}: 原始值=${value}, mapping=${JSON.stringify(mapping)}`);
+    
+    if (key === 'HpMax') {
+      finalValue = baseHp + promotionHp + coreHp;
+      console.log(`[DEBUG] Agent._calculateSelfProperties() - HpMax: baseHp=${baseHp}, promotionHp=${promotionHp}, coreHp=${coreHp}, finalValue=${finalValue}`);
+    } else if (key === 'Attack') {
+      finalValue = baseAtk + promotionAtk + coreAtk;
+      console.log(`[DEBUG] Agent._calculateSelfProperties() - Attack: baseAtk=${baseAtk}, promotionAtk=${promotionAtk}, coreAtk=${coreAtk}, finalValue=${finalValue}`);
+    } else if (key === 'Defence') {
+      finalValue = baseDef + promotionDef + coreDef;
+      console.log(`[DEBUG] Agent._calculateSelfProperties() - Defence: baseDef=${baseDef}, promotionDef=${promotionDef}, coreDef=${coreDef}, finalValue=${finalValue}`);
+    } else if (key === 'BreakStun') {
+      finalValue = value + coreImpact;
+      console.log(`[DEBUG] Agent._calculateSelfProperties() - BreakStun: value=${value}, coreImpact=${coreImpact}, finalValue=${finalValue}`);
+    } else if (mapping.divisor) {
+      // 对于需要除以divisor的属性，确保使用正确的计算方式
+      finalValue = value / mapping.divisor;
+      console.log(`[DEBUG] Agent._calculateSelfProperties() - 使用divisor计算 ${key}: value=${value}, divisor=${mapping.divisor}, finalValue=${finalValue}`);
+    }
+    
+    // 特别关注暴击率相关属性
+    if (key === 'Crit' || key === 'CritDamage' || key === 'CritRes') {
+      console.log(`[DEBUG] Agent._calculateSelfProperties() - 暴击相关属性 ${key}: 最终值=${finalValue}, 属性类型=${PropertyType[mapping.propType as PropertyType]}`);
+    }
 
       // 只添加不为 0 的属性
       if (finalValue !== 0) {
+        // 角色基础属性只属于局外面板
         this.self_properties.out_of_combat.set(mapping.propType, finalValue);
       }
     }
@@ -403,6 +540,18 @@ export class Agent {
     agent._charDetail = await dataLoader.getCharacterDetail(gameCharId);
     agent._gameCharId = gameCharId;
     agent._zodData = zodData;
+    
+    // 加载技能数据
+    const agentName = agent.name_cn || agent.name_en;
+    agent.agentSkills = dataLoader.getAgentSkills(agentName);
+    
+    // 尝试使用游戏ID作为备用名称加载技能
+    if (!agent.agentSkills || agent.agentSkills.skills.size === 0) {
+      const skillsByGameId = dataLoader.getAgentSkills(agent.game_id);
+      if (skillsByGameId) {
+        agent.agentSkills = skillsByGameId;
+      }
+    }
 
     return agent;
   }
@@ -410,14 +559,22 @@ export class Agent {
   /**
    * 获取所有有效的Buff（懒加载）
    */
-  getAllBuffs(): Buff[] {
+  async getAllBuffs(): Promise<Buff[]> {
     if (!this._isBuffsLoaded || !this.core_passive_buffs) {
-      this._loadBuffs();
+      await this._loadBuffs();
     }
+    return this.getAllBuffsSync();
+  }
+  
+  /**
+   * 获取所有有效的Buff（同步，仅返回已加载的Buff）
+   */
+  getAllBuffsSync(): Buff[] {
     return [
       ...this.core_passive_buffs || [],
       ...this.talent_buffs || [],
       ...this.potential_buffs || [],
+      ...this.conversion_buffs || [],
     ];
   }
 
@@ -426,43 +583,226 @@ export class Agent {
    */
   private async _loadBuffs(): Promise<void> {
     if (!this._dataLoader || !this._gameCharId) {
+      console.warn(`无法加载BUFF数据，缺少_dataLoader或_gameCharId`, { _dataLoader: !!this._dataLoader, _gameCharId: this._gameCharId });
       return;
     }
 
     try {
+      console.log(`[DEBUG] 开始加载角色 ${this.name_cn} (${this._gameCharId}) 的BUFF数据`);
       const buffData = await this._dataLoader.getCharacterBuff(this._gameCharId);
+      console.log(`[DEBUG] 获取到的BUFF数据:`, buffData);
 
-      // 核心被动Buff
-      if (buffData.core_passive_buffs) {
-        this.core_passive_buffs = buffData.core_passive_buffs.map((b: any) =>
-          Buff.fromBuffData(b)
-        );
+      // 重置BUFF数组
+      this.core_passive_buffs = [];
+      this.talent_buffs = [];
+      this.potential_buffs = [];
+      this.conversion_buffs = [];
+
+      // 检查buffData是否是数组
+      if (Array.isArray(buffData)) {
+        console.log(`[DEBUG] BUFF数据是数组，长度为: ${buffData.length}`);
+        
+        // 遍历BUFF数组，根据source字段分配到不同的数组中
+        for (const buff of buffData) {
+          try {
+            console.log(`[DEBUG] 处理BUFF:`, buff.id, buff.source);
+            
+            // 解析BUFF ID，提取影画等级（比如从 "1411_talent_6_1" 中提取出 6）
+            let requiredMindscapeLevel = 0;
+            if (buff.id && buff.id.includes('_talent_')) {
+              const parts = buff.id.split('_');
+              if (parts.length >= 3) {
+                const mindscapePart = parts[2];
+                requiredMindscapeLevel = parseInt(mindscapePart) || 0;
+                console.log(`[DEBUG] 从BUFF ID解析出影画等级: ${requiredMindscapeLevel}`);
+              }
+            }
+            
+            // 检查角色影画等级是否满足条件
+            const characterMindscapeLevel = this._zodData?.mindscape || 0;
+            if (requiredMindscapeLevel > characterMindscapeLevel) {
+              console.log(`[DEBUG] 角色影画等级 ${characterMindscapeLevel} 小于BUFF所需影画等级 ${requiredMindscapeLevel}，跳过该BUFF`);
+              continue;
+            }
+            
+            // 直接创建简单的buff实例，跳过复杂的解析和转换
+            let buffSource: BuffSource;
+            if (buff.source === 'CORE_PASSIVE') {
+              buffSource = BuffSource.CORE_PASSIVE;
+            } else if (buff.source === 'TALENT') {
+              buffSource = BuffSource.TALENT;
+            } else if (buff.source === 'MINDSCAPE') {
+              buffSource = BuffSource.POTENTIAL;
+            } else {
+              buffSource = BuffSource.TALENT;
+            }
+            
+            // 创建并初始化BuffTarget实例，使用实际的target数据
+            const buffTarget = new BuffTarget();
+            if (buff.target) {
+              // 只有当buff.target中明确设置了target_self时才覆盖默认值
+              if (buff.target.target_self !== undefined) {
+                buffTarget.target_self = buff.target.target_self;
+              }
+              // 其他目标属性没有默认值，直接赋值
+              buffTarget.target_teammate = buff.target.target_teammate || false;
+              buffTarget.target_enemy = buff.target.target_enemy || false;
+              buffTarget.target_bund = buff.target.target_bund || false;
+            }
+            
+            const simpleBuff = new Buff(
+              buffSource,
+              new Map(),
+              new Map(),
+              undefined,
+              buffTarget,
+              1,
+              'linear',
+              true,
+              buff.id || '',
+              buff.name || '',
+              buff.description || ''
+            );
+            
+            // 根据source字段分配到不同的数组中
+            if (buff.source === 'CORE_PASSIVE') {
+              this.core_passive_buffs.push(simpleBuff);
+              console.log(`[DEBUG] 添加核心被动BUFF:`, buff.id, `当前数量:`, this.core_passive_buffs.length);
+            } else if (buff.source === 'TALENT') {
+              this.talent_buffs.push(simpleBuff);
+              console.log(`[DEBUG] 添加天赋BUFF:`, buff.id, `当前数量:`, this.talent_buffs.length);
+            } else if (buff.source === 'MINDSCAPE') {
+              // 检查影画等级是否满足条件
+              if (this._zodData && (!buff.mindscape_level || buff.mindscape_level <= this._zodData.mindscape)) {
+                this.potential_buffs.push(simpleBuff);
+                console.log(`[DEBUG] 添加影画BUFF:`, buff.id, `当前数量:`, this.potential_buffs.length);
+              }
+            } else {
+              this.talent_buffs.push(simpleBuff);
+              console.log(`[DEBUG] 添加未知类型BUFF:`, buff.id, `当前数量:`, this.talent_buffs.length);
+            }
+          } catch (error) {
+            console.error(`[DEBUG] 创建BUFF失败:`, buff.id, error);
+          }
+        }
+      } else {
+        // 旧格式处理（如果buffData是对象）
+        console.log(`[DEBUG] BUFF数据是对象`);
+        
+        // 辅助函数：创建BuffTarget实例
+        const createBuffTarget = (targetData: any): BuffTarget => {
+          const target = new BuffTarget();
+          if (targetData) {
+            // 只有当targetData中明确设置了target_self时才覆盖默认值
+            if (targetData.target_self !== undefined) {
+              target.target_self = targetData.target_self;
+            }
+            // 其他目标属性没有默认值，直接赋值
+            target.target_teammate = targetData.target_teammate || false;
+            target.target_enemy = targetData.target_enemy || false;
+            target.target_bund = targetData.target_bund || false;
+          }
+          return target;
+        };
+        
+        // 核心被动Buff
+        if (buffData.core_passive_buffs) {
+          console.log(`[DEBUG] 核心被动Buff数量:`, buffData.core_passive_buffs.length);
+          for (const b of buffData.core_passive_buffs) {
+            this.core_passive_buffs.push(new Buff(
+              BuffSource.CORE_PASSIVE,
+              new Map(),
+              new Map(),
+              undefined,
+              createBuffTarget(b.target),
+              1,
+              'linear',
+              true,
+              b.id || '',
+              b.name || '',
+              b.description || ''
+            ));
+          }
+        }
+
+        // 天赋Buff
+        if (buffData.talent_buffs) {
+          console.log(`[DEBUG] 天赋Buff数量:`, buffData.talent_buffs.length);
+          for (const b of buffData.talent_buffs) {
+            // 解析BUFF ID，提取影画等级
+            let requiredMindscapeLevel = 0;
+            if (b.id && b.id.includes('_talent_')) {
+              const parts = b.id.split('_');
+              if (parts.length >= 3) {
+                const mindscapePart = parts[2];
+                requiredMindscapeLevel = parseInt(mindscapePart) || 0;
+              }
+            }
+            
+            // 检查角色影画等级是否满足条件
+            const characterMindscapeLevel = this._zodData?.mindscape || 0;
+            if (requiredMindscapeLevel > characterMindscapeLevel) {
+              continue;
+            }
+            
+            this.talent_buffs.push(new Buff(
+              BuffSource.TALENT,
+              new Map(),
+              new Map(),
+              undefined,
+              createBuffTarget(b.target),
+              1,
+              'linear',
+              true,
+              b.id || '',
+              b.name || '',
+              b.description || ''
+            ));
+          }
+        }
+
+        // 影画Buff
+        if (buffData.mindscape_buffs && this._zodData) {
+          const filteredBuffs = buffData.mindscape_buffs.filter((b: any) => b.mindscape_level <= (this._zodData?.mindscape || 0));
+          console.log(`[DEBUG] 影画Buff数量: ${filteredBuffs.length} (总数量: ${buffData.mindscape_buffs.length}, 影画等级: ${this._zodData?.mindscape || 0})`);
+          for (const b of filteredBuffs) {
+            this.potential_buffs.push(new Buff(
+              BuffSource.POTENTIAL,
+              new Map(),
+              new Map(),
+              undefined,
+              createBuffTarget(b.target),
+              1,
+              'linear',
+              true,
+              b.id || '',
+              b.name || '',
+              b.description || ''
+            ));
+          }
+        }
+
+        // 转化Buff
+        if (buffData.conversion_buffs) {
+          console.log(`[DEBUG] 转化Buff数量:`, buffData.conversion_buffs.length);
+          for (const b of buffData.conversion_buffs) {
+            try {
+              // 使用ConversionBuff.fromBuffData方法创建实例
+              const conversionBuff = ConversionBuff.fromBuffData(b);
+              this.conversion_buffs.push(conversionBuff);
+              console.log(`[DEBUG] 添加转化BUFF:`, b.id, `当前数量:`, this.conversion_buffs.length);
+            } catch (error) {
+              console.error(`[DEBUG] 创建转化BUFF失败:`, b.id, error);
+            }
+          }
+        }
       }
 
-      // 天赋Buff
-      if (buffData.talent_buffs) {
-        this.talent_buffs = buffData.talent_buffs.map((b: any) =>
-          Buff.fromBuffData(b)
-        );
-      }
-
-      // 影画Buff
-      if (buffData.mindscape_buffs && this._zodData) {
-        this.potential_buffs = buffData.mindscape_buffs
-          .filter((b: any) => b.mindscape_level <= (this._zodData?.mindscape || 0))
-          .map((b: any) => Buff.fromBuffData(b));
-      }
-
-      // 转化Buff
-      if (buffData.conversion_buffs) {
-        this.conversion_buffs = buffData.conversion_buffs.map((b: any) =>
-          ConversionBuff.fromBuffData(b)
-        );
-      }
-
+      // 显示最终加载的BUFF数量
+      console.log(`[DEBUG] 最终加载的BUFF数量: 核心被动${this.core_passive_buffs.length}, 天赋${this.talent_buffs.length}, 影画${this.potential_buffs.length}, 转化${this.conversion_buffs.length}`);
       this._isBuffsLoaded = true;
     } catch (err) {
-      console.warn(`加载角色Buff数据失败: ${this.game_id}`, err);
+      console.error(`加载角色Buff数据失败: ${this.game_id}`, err);
     }
   }
 
@@ -471,187 +811,18 @@ export class Agent {
   private _charDetail: any = null;
   private _gameCharId: string | null = null;
   private _zodData: ZodCharacterData | null = null;
-
+  
+  // 装备集合引用（从外部注入，用于获取装备属性）
+  private _wengines: Map<string, WEngine> | null = null;
+  private _driveDisks: Map<string, DriveDisk> | null = null;
+  
   /**
-   * 从字典创建Agent实例（用于反序列化）
-   *
-   * @param data 字典数据
-   * @param id 实例ID
-   * @param dataLoader 数据加载服务
-   * @returns Agent实例
+   * 设置装备集合引用
    */
-  static async fromDict(
-    data: any,
-    id: string,
-    dataLoader: typeof dataLoaderService
-  ): Promise<Agent> {
-    // 通过game_id从游戏数据获取基础信息（名称、稀有度、元素等）
-    const charInfo = dataLoader.characterData?.get(data.game_id);
-    if (!charInfo) {
-      throw new Error(`未找到角色游戏数据: ${data.game_id}`);
-    }
-
-    // 创建实例
-    const agent = new Agent(
-      id,
-      data.game_id,
-      charInfo.CHS || charInfo.EN,
-      data.level,
-      charInfo.rank as Rarity,
-      charInfo.element as ElementType,
-      charInfo.type as WeaponType
-    );
-
-    // 恢复玩家数据
-    agent.name_en = charInfo.EN || '';
-    agent.icon = charInfo.icon || '';
-    agent.breakthrough = data.breakthrough;
-    agent.cinema = data.cinema;
-    agent.core_skill = data.core_skill;
-    agent.skills = AgentSkills.fromDict(data.skills);
-    agent.equipped_wengine = data.equipped_wengine;
-    agent.equipped_drive_disks = data.equipped_drive_disks;
-
-    // 重新计算self_properties（基于game_id和level）
-    const charDetail = await dataLoader.getCharacterDetail(data.game_id);
-    if (charDetail && charDetail.Stats) {
-      const stats = charDetail.Stats;
-      const level = data.level;
-      const promotion = data.breakthrough;
-
-      // 基础属性公式：(Base + (Level - 1) * Growth / 10000)
-      const calcBase = (base: number, growth: number) => {
-        return base + ((level - 1) * growth) / 10000;
-      };
-
-      // 计算基础属性值（HP/ATK/DEF 需要加上突破和核心技加成）
-      const baseHp = calcBase(stats.HpMax, stats.HpGrowth);
-      const baseAtk = calcBase(stats.Attack, stats.AttackGrowth);
-      const baseDef = calcBase(stats.Defence, stats.DefenceGrowth);
-
-      // 突破加成
-      let promotionHp = 0;
-      let promotionAtk = 0;
-      let promotionDef = 0;
-      if (promotion > 0 && charDetail.Level) {
-        const levelKey = (promotion + 1).toString();
-        const levelData = charDetail.Level[levelKey];
-        if (levelData) {
-          promotionHp = levelData.HpMax || 0;
-          promotionAtk = levelData.Attack || 0;
-          promotionDef = levelData.Defence || 0;
-        }
-      }
-
-      // 核心技加成
-      let coreHp = 0;
-      let coreAtk = 0;
-      let coreDef = 0;
-      let coreImpact = 0;
-      if (charDetail.ExtraLevel) {
-        const coreKey = data.core_skill.toString();
-        const extraData = charDetail.ExtraLevel[coreKey];
-        if (extraData && extraData.Extra) {
-          for (const bonus of Object.values(extraData.Extra) as any[]) {
-            if (bonus.Name === '基础攻击力') coreAtk += bonus.Value;
-            if (bonus.Name === '基础生命值') coreHp += bonus.Value;
-            if (bonus.Name === '基础防御力') coreDef += bonus.Value;
-            if (bonus.Name === '冲击力') coreImpact += bonus.Value;
-          }
-        }
-      }
-
-      // 动态填充所有不为 0 的属性
-      // 属性名映射：stats 字段名 -> PropertyType -> 转换因子
-      const propertyMapping: Record<string, { propType: PropertyType | null; divisor?: number }> = {
-        // 基础属性（需要加上突破和核心技加成）
-        'HpMax': { propType: PropertyType.HP_BASE },
-        'Attack': { propType: PropertyType.ATK_BASE },
-        'Defence': { propType: PropertyType.DEF_BASE },
-
-        // 其他属性（不需要额外加成）
-        'BreakStun': { propType: PropertyType.IMPACT },
-        'Crit': { propType: PropertyType.CRIT_, divisor: 10000 },
-        'CritDamage': { propType: PropertyType.CRIT_DMG_, divisor: 10000 },
-        'CritRes': { propType: PropertyType.CRIT_RATE_, divisor: 10000 },
-        'CritDmgRes': { propType: null }, // 暂无对应枚举
-        'ElementAbnormalPower': { propType: PropertyType.ANOM_MAS },
-        'ElementMystery': { propType: PropertyType.ANOM_PROF },
-        'SpRecover': { propType: PropertyType.ENER_REGEN, divisor: 100 },
-        'SpBarPoint': { propType: null }, // 暂无对应枚举
-        'PenDelta': { propType: PropertyType.PEN },
-        'PenRate': { propType: PropertyType.PEN_, divisor: 100 },
-        'Armor': { propType: null }, // 暂无对应枚举
-        'Shield': { propType: PropertyType.SHIELD_ },
-        'Endurance': { propType: null }, // 暂无对应枚举
-        'Stun': { propType: null }, // 暂无对应枚举
-        'Rbl': { propType: null }, // 暂无对应枚举
-      };
-
-      for (const [key, value] of Object.entries(stats)) {
-        // 跳过 Growth 字段和其他非数值字段
-        if (key.includes('Growth')) continue;
-        if (typeof value !== 'number' || value === 0) continue;
-
-        const mapping = propertyMapping[key];
-        if (!mapping || mapping.propType === null) continue;
-
-        // 计算最终值
-        let finalValue = value;
-        if (key === 'HpMax') {
-          finalValue = baseHp + promotionHp + coreHp;
-        } else if (key === 'Attack') {
-          finalValue = baseAtk + promotionAtk + coreAtk;
-        } else if (key === 'Defence') {
-          finalValue = baseDef + promotionDef + coreDef;
-        } else if (key === 'BreakStun') {
-          finalValue = value + coreImpact;
-        } else if (mapping.divisor) {
-          finalValue = value / mapping.divisor;
-        }
-
-        // 只添加不为 0 的属性
-        if (finalValue !== 0) {
-          agent.self_properties.out_of_combat.set(mapping.propType, finalValue);
-        }
-      }
-    }
-
-    // 加载角色Buff数据
-    try {
-      const buffData = await dataLoader.getCharacterBuff(data.game_id);
-
-      // 核心被动Buff
-      if (buffData.core_passive_buffs) {
-        agent.core_passive_buffs = buffData.core_passive_buffs.map((b: any) =>
-          Buff.fromBuffData(b)
-        );
-      }
-
-      // 天赋Buff
-      if (buffData.talent_buffs) {
-        agent.talent_buffs = buffData.talent_buffs.map((b: any) =>
-          Buff.fromBuffData(b)
-        );
-      }
-
-      // 影画Buff（根据角色影画等级过滤）
-      if (buffData.mindscape_buffs) {
-        agent.potential_buffs = buffData.mindscape_buffs
-          .filter((b: any) => b.mindscape_level <= data.cinema)
-          .map((b: any) => Buff.fromBuffData(b));
-      }
-
-      // 转化Buff
-      if (buffData.conversion_buffs) {
-        agent.conversion_buffs = buffData.conversion_buffs.map((b: any) =>
-          ConversionBuff.fromBuffData(b)
-        );
-      }
-    } catch (err) {
-      console.warn(`加载角色Buff数据失败: ${data.game_id}`, err);
-    }
-
-    return agent;
+  setEquipmentReferences(wengines: Map<string, WEngine>, driveDisks: Map<string, DriveDisk>): void {
+    this._wengines = wengines;
+    this._driveDisks = driveDisks;
   }
+
+
 }

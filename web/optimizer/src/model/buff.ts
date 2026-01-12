@@ -186,12 +186,32 @@ export class Buff {
       );
     }
 
-    // 解析in_combat_stats（JSON中已经是小数形式，不需要除以100）
+    // 解析in_combat_stats
     const inCombatStats = new Map<PropertyType, number>();
     if (data.in_combat_stats) {
       for (const [propName, value] of Object.entries(data.in_combat_stats)) {
         const propType = (PropertyType as any)[propName];
-        inCombatStats.set(propType, value as number);
+        const numValue = value as number;
+        // 检查是否为百分比属性，游戏数据是百分比的100倍，需要除以100转换为小数
+        const isPercentType = [
+          PropertyType.CRIT_,
+          PropertyType.CRIT_DMG_,
+          PropertyType.ATK_,
+          PropertyType.HP_,
+          PropertyType.DEF_,
+          PropertyType.PEN_,
+          PropertyType.SHIELD_,
+          PropertyType.IMPACT_,
+          PropertyType.ANOM_MAS_,
+          PropertyType.PHYSICAL_DMG_,
+          PropertyType.FIRE_DMG_,
+          PropertyType.ICE_DMG_,
+          PropertyType.ELECTRIC_DMG_,
+          PropertyType.ETHER_DMG_,
+          PropertyType.ENER_REGEN_
+        ].includes(propType);
+        const finalValue = isPercentType ? numValue / 100 : numValue;
+        inCombatStats.set(propType, finalValue);
       }
     }
 
@@ -200,7 +220,27 @@ export class Buff {
     if (data.out_of_combat_stats) {
       for (const [propName, value] of Object.entries(data.out_of_combat_stats)) {
         const propType = (PropertyType as any)[propName];
-        outOfCombatStats.set(propType, value as number);
+        const numValue = value as number;
+        // 检查是否为百分比属性，游戏数据是百分比的100倍，需要除以100转换为小数
+        const isPercentType = [
+          PropertyType.CRIT_,
+          PropertyType.CRIT_DMG_,
+          PropertyType.ATK_,
+          PropertyType.HP_,
+          PropertyType.DEF_,
+          PropertyType.PEN_,
+          PropertyType.SHIELD_,
+          PropertyType.IMPACT_,
+          PropertyType.ANOM_MAS_,
+          PropertyType.PHYSICAL_DMG_,
+          PropertyType.FIRE_DMG_,
+          PropertyType.ICE_DMG_,
+          PropertyType.ELECTRIC_DMG_,
+          PropertyType.ETHER_DMG_,
+          PropertyType.ENER_REGEN_
+        ].includes(propType);
+        const finalValue = isPercentType ? numValue / 100 : numValue;
+        outOfCombatStats.set(propType, finalValue);
       }
     }
 
@@ -356,6 +396,11 @@ export class ConversionBuff extends Buff {
    */
   static fromBuffData(data: any): ConversionBuff {
     // 解析 conversion
+    if (!data.conversion) {
+      console.error(`[DEBUG] ConversionBuff.fromBuffData: 缺少conversion字段`, data);
+      throw new Error(`ConversionBuff.fromBuffData: 缺少conversion字段`);
+    }
+    
     const conversion = new Conversion(
       (PropertyType as any)[data.conversion.from_property],
       (PropertyType as any)[data.conversion.to_property],

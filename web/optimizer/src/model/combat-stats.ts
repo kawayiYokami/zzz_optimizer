@@ -110,8 +110,11 @@ export class CombatStats {
   constructor(properties: PropertyCollection, level: number = 60) {
     this.properties = properties;
     this.level = level;
-    // 自动计算最终面板
-    this.properties.calculateFinal();
+    // 自动计算最终面板，但不使用已删除的updateFinalStats方法
+    // 直接调用toFinalStats方法，确保最终面板已计算
+    if (this.properties.final.size === 0) {
+      this.properties.final = this.properties.toFinalStats();
+    }
   }
 
   /**
@@ -172,7 +175,10 @@ export class CombatStats {
    * 获取暴击率
    */
   get crit_rate(): number {
-    return this.properties.getFinal(PropertyType.CRIT_, 0.05);
+    const critRateFromProp = this.properties.getFinal(PropertyType.CRIT_, 0.05);
+    const critRateFromProp2 = this.properties.getFinal(PropertyType.CRIT_RATE_, 0.05);
+    console.log(`[DEBUG] CombatStats.crit_rate - 从属性集合获取暴击率: CRIT_=${critRateFromProp}, CRIT_RATE_=${critRateFromProp2}, 最终返回=${critRateFromProp}`);
+    return critRateFromProp;
   }
 
   /**
@@ -319,9 +325,11 @@ export class CombatStats {
 
     // 暴击属性
     if (this.crit_rate > 0) {
+      console.log(`[DEBUG] CombatStats.format() - 暴击率原始值: ${this.crit_rate}, 格式化后: ${(this.crit_rate * 100).toFixed(2)}%`);
       stats.push(['暴击率', this.crit_rate, true]);
     }
     if (this.crit_dmg > 0) {
+      console.log(`[DEBUG] CombatStats.format() - 暴击伤害原始值: ${this.crit_dmg}, 格式化后: ${(this.crit_dmg * 100).toFixed(2)}%`);
       stats.push(['暴击伤害', this.crit_dmg, true]);
     }
 

@@ -2,531 +2,62 @@
   <div class="battle-simulator">
     <h2 class="text-2xl font-bold mb-4">战场模拟</h2>
 
-    <!-- 队伍选择区 -->
-    <div class="card bg-base-200 shadow-xl mb-6">
-      <div class="card-body">
-        <h3 class="card-title">队伍配置</h3>
+    <!-- 队伍配置卡片 -->
+    <TeamConfigCard
+      :available-teams="availableTeams"
+      :selected-team-id="selectedTeamId"
+      :available-characters="availableCharacters"
+      @team-select="onTeamSelect"
+      @set-front-character="setFrontCharacter"
+    />
 
-        <!-- 队伍选择 -->
-        <div class="mb-4">
-          <label class="label">
-            <span class="label-text font-bold">选择队伍</span>
-          </label>
-          <select v-model="selectedTeamId" class="select select-bordered w-full">
-            <option value="">请选择队伍...</option>
-            <option v-for="team in availableTeams" :key="team.id" :value="team.id">
-              {{ team.name }}
-            </option>
-          </select>
-        </div>
+    <!-- 敌人配置卡片 -->
+    <EnemyConfigCard
+      :available-enemies="availableEnemies"
+      :selected-enemy-id="selectedEnemyId"
+      :enemy-is-stunned="enemyIsStunned"
+      @enemy-select="onEnemySelect"
+      @enemy-stun-change="onEnemyStunChange"
+    />
 
-        <!-- 队伍详情 -->
-        <div v-if="selectedTeam" class="bg-base-100 rounded-lg p-4">
-          <div class="flex justify-between items-center mb-3">
-            <h4 class="text-lg font-bold">{{ selectedTeam.name }}</h4>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- 前台角色 -->
-            <div class="text-center p-4 bg-primary/10 rounded-lg">
-              <div class="font-semibold text-primary mb-1">前台角色</div>
-              <div class="text-xl font-bold mb-2">{{ getCharacterName(selectedTeam.frontCharacterId) }}</div>
-              <div class="text-sm text-gray-500 mb-2">当前为前台</div>
-            </div>
-            <!-- 后台角色1 -->
-            <div class="text-center p-4 bg-base-200 rounded-lg">
-              <div class="font-semibold mb-1">后台角色1</div>
-              <div class="text-xl font-bold mb-2">{{ getCharacterName(selectedTeam.backCharacter1Id) }}</div>
-              <button 
-                @click="setFrontCharacter(selectedTeam.backCharacter1Id)" 
-                class="btn btn-xs btn-primary"
-              >
-                设置为前台
-              </button>
-            </div>
-            <!-- 后台角色2 -->
-            <div class="text-center p-4 bg-base-200 rounded-lg">
-              <div class="font-semibold mb-1">后台角色2</div>
-              <div class="text-xl font-bold mb-2">{{ getCharacterName(selectedTeam.backCharacter2Id) }}</div>
-              <button 
-                @click="setFrontCharacter(selectedTeam.backCharacter2Id)" 
-                class="btn btn-xs btn-primary"
-              >
-                设置为前台
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- 属性快照卡片 -->
+    <StatsSnapshotCard
+      :front-agent="frontAgent"
+      :front-character-id="frontCharacterId"
+      :available-characters="availableCharacters"
+      :save-store="saveStore"
+      :is-expanded="isStatsSnapshotExpanded"
+      :combat-stats-snapshot="combatStatsSnapshot"
+      :equipment-stats="equipmentStats"
+      :equipment-details="equipmentDetails"
+      :raw-save-data="saveStore.currentRawSave"
+      :battle-service="battleService"
+      @toggle-expand="isStatsSnapshotExpanded = !isStatsSnapshotExpanded"
+    />
 
-    <!-- 敌人配置区 -->
-    <div class="card bg-base-200 shadow-xl mb-6">
-      <div class="card-body">
-        <h3 class="card-title">敌人配置</h3>
+    <!-- Buff列表卡片 -->
+    <BuffListCard
+      :front-character-id="frontCharacterId"
+      :front-character-name="frontCharacterName"
+      :front-character-buffs="frontCharacterBuffs"
+      :back-character-1-id="backCharacter1Id"
+      :back-character-1-name="backCharacter1Name"
+      :back-character-1-buffs="backCharacter1Buffs"
+      :back-character-2-id="backCharacter2Id"
+      :back-character-2-name="backCharacter2Name"
+      :back-character-2-buffs="backCharacter2Buffs"
+      :is-expanded="isBuffListExpanded"
+      @toggle-expand="isBuffListExpanded = !isBuffListExpanded"
+      @toggle-buff-active="toggleBuffActive"
+    />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- 敌人选择 -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text font-bold">选择敌人 (Lv.70)</span>
-            </label>
-            <select v-model="selectedEnemyId" class="select select-bordered w-full">
-              <option value="">请选择敌人...</option>
-              <option v-for="enemy in availableEnemies" :key="enemy.id" :value="enemy.id">
-                {{ enemy.CHS || enemy.EN }}
-              </option>
-            </select>
-          </div>
-
-          <!-- 失衡状态 -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text font-bold">失衡状态</span>
-            </label>
-            <div class="flex items-center h-12">
-              <label class="label cursor-pointer">
-                <input
-                  v-model="enemyIsStunned"
-                  type="checkbox"
-                  class="checkbox checkbox-primary"
-                  :disabled="!selectedEnemyId || !selectedEnemy?.can_stun"
-                />
-                <span class="label-text ml-2">已失衡</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- 敌人详情 -->
-        <div v-if="selectedEnemy" class="mt-4 p-4 bg-base-100 rounded-lg">
-          <h4 class="font-bold mb-3 text-lg">{{ selectedEnemy.CHS || selectedEnemy.EN }} (Lv.70)</h4>
-
-          <!-- 基础属性 -->
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-            <div class="stat bg-base-200 rounded p-3">
-              <div class="stat-title text-xs">生命值</div>
-              <div class="stat-value text-lg">{{ (selectedEnemy.level_70_max_hp || 0).toFixed(0) }}</div>
-            </div>
-            <div class="stat bg-base-200 rounded p-3">
-              <div class="stat-title text-xs">攻击力</div>
-              <div class="stat-value text-lg">{{ (selectedEnemy.level_70_max_atk || 0).toFixed(0) }}</div>
-            </div>
-            <div class="stat bg-base-200 rounded p-3">
-              <div class="stat-title text-xs">防御力</div>
-              <div class="stat-value text-lg">{{ (selectedEnemy.level_60_plus_defense || 0).toFixed(0) }}</div>
-            </div>
-            <div class="stat bg-base-200 rounded p-3">
-              <div class="stat-title text-xs">失衡值</div>
-              <div class="stat-value text-lg">
-                {{ selectedEnemy.can_stun ? (selectedEnemy.level_70_max_stun || 0).toFixed(0) : '无法失衡' }}
-              </div>
-            </div>
-          </div>
-
-          <!-- 标签 -->
-          <div v-if="selectedEnemy.tags" class="mb-3">
-            <span class="text-sm font-semibold">标签: </span>
-            <span class="text-sm">{{ selectedEnemy.tags }}</span>
-          </div>
-
-          <!-- 抗性列表 -->
-          <div v-if="displayedResistances.length > 0">
-            <span class="text-sm font-semibold">元素抗性: </span>
-            <div class="flex flex-wrap gap-2 mt-2">
-              <div
-                v-for="res in displayedResistances"
-                :key="res.name"
-                class="badge"
-                :class="{
-                  'badge-error': res.value > 0,
-                  'badge-success': res.value < 0,
-                }"
-              >
-                {{ res.name }}: {{ res.value > 0 ? '+' : '' }}{{ (res.value * 100).toFixed(1) }}%
-              </div>
-            </div>
-          </div>
-
-          <!-- 失衡状态 -->
-          <div v-if="selectedEnemy.can_stun && enemyIsStunned" class="mt-3">
-            <div class="alert alert-warning">
-              <span>⚠️ 敌人已失衡</span>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="!selectedEnemyId" class="text-center text-gray-500 py-8">
-          请选择敌人
-        </div>
-      </div>
-    </div>
-
-    <!-- 属性快照区 -->
-    <div v-if="frontCharacterId" class="card bg-base-200 shadow-xl mt-6">
-      <div class="card-body">
-        <div class="flex justify-between items-center cursor-pointer hover:bg-base-300 rounded-lg p-2 -m-2 transition-colors" @click="isStatsSnapshotExpanded = !isStatsSnapshotExpanded">
-          <h3 class="card-title">属性快照</h3>
-          <button class="btn btn-ghost btn-sm">
-            <span v-if="isStatsSnapshotExpanded">▼ 收起</span>
-            <span v-else>▶ 展开</span>
-          </button>
-        </div>
-
-        <div v-show="isStatsSnapshotExpanded" class="mt-4">
-          <div v-if="combatStatsSnapshot && frontAgent" class="space-y-4">
-            <!-- Debug信息 -->
-            <div class="card bg-warning text-warning-content">
-              <div class="card-body p-4">
-                <h4 class="font-bold mb-3">Debug - 原始数据</h4>
-                <pre class="text-xs overflow-auto bg-base-200 text-base-content p-4 rounded">{{ JSON.stringify({
-                  self_properties_out: Array.from(frontAgent.getBareStats().out_of_combat.entries()),
-                  self_properties_in: Array.from(frontAgent.getBareStats().in_combat.entries()),
-                }, null, 2) }}</pre>
-              </div>
-            </div>
-
-            <!-- 最终战斗属性 -->
-            <div class="card bg-base-100">
-              <div class="card-body p-4">
-                <h4 class="font-bold mb-3">最终战斗属性</h4>
-                <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ combatStatsSnapshot.format() }}</pre>
-              </div>
-            </div>
-
-            <!-- 裸属性 (角色自身) -->
-            <div class="card bg-base-100">
-              <div class="card-body p-4">
-                <h4 class="font-bold mb-3">裸属性 (角色自身，不含装备)</h4>
-                <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ frontAgent.getBareStats().format() }}</pre>
-              </div>
-            </div>
-
-            <!-- 装备信息 -->
-            <div class="card bg-base-100">
-              <div class="card-body p-4">
-                <h4 class="font-bold mb-3">装备信息</h4>
-                <div class="text-sm space-y-2">
-                  <div>引擎ID: {{ frontAgent.equipped_wengine || '无' }}</div>
-                  <div>驱动盘: {{ frontAgent.equipped_drive_disks.filter(d => d).length }}/6</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-else class="text-center text-gray-500 py-8">
-            无法加载属性数据
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Buff列表区 -->
-    <div v-if="frontCharacterId" class="card bg-base-200 shadow-xl">
-      <div class="card-body">
-        <div class="flex justify-between items-center cursor-pointer hover:bg-base-300 rounded-lg p-2 -m-2 transition-colors" @click="isBuffListExpanded = !isBuffListExpanded">
-          <h3 class="card-title">Buff列表</h3>
-          <button class="btn btn-ghost btn-sm">
-            <span v-if="isBuffListExpanded">▼ 收起</span>
-            <span v-else>▶ 展开</span>
-          </button>
-        </div>
-
-        <div v-show="isBuffListExpanded" class="mt-4">
-          <!-- 前台角色的Buff -->
-          <div v-if="frontCharacterBuffs.length > 0" class="mb-6">
-            <div class="flex items-center gap-2 mb-3">
-            <h4 class="text-lg font-bold text-primary">{{ frontCharacterName }}</h4>
-            <span class="badge badge-primary">前台</span>
-          </div>
-
-          <div class="space-y-4">
-            <!-- 角色自身Buff -->
-            <div v-if="frontCharacterBuffs.find(b => b.source === 'character')">
-              <h5 class="font-semibold mb-2">角色Buff</h5>
-              <div class="space-y-2">
-                <div
-                  v-for="buff in frontCharacterBuffs.filter(b => b.source === 'character')"
-                  :key="buff.id"
-                  class="card bg-base-100 shadow-sm"
-                  :class="{ 'opacity-50': !buff.isActive }"
-                >
-                  <div class="card-body p-3">
-                    <div class="flex justify-between items-start gap-2">
-                      <div class="flex-1">
-                        <div class="font-semibold">{{ buff.name }}</div>
-                        <div class="text-sm text-gray-500">{{ buff.description }}</div>
-                      </div>
-                      <div class="flex items-center gap-2">
-                        <div class="badge badge-sm">{{ buff.context }}</div>
-                        <input
-                          type="checkbox"
-                          class="toggle toggle-sm toggle-success"
-                          :checked="buff.isActive"
-                          @change="toggleBuffActive(frontCharacterBuffs, buff.id)"
-                        />
-                      </div>
-                    </div>
-                    <div v-if="Object.keys(buff.stats).length > 0" class="mt-2 text-sm">
-                      <div v-for="(value, key) in buff.stats" :key="key" class="text-accent">
-                        {{ key }}: +{{ value }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 音擎Buff -->
-            <div v-if="frontCharacterBuffs.find(b => b.source === 'weapon')">
-              <h5 class="font-semibold mb-2">音擎Buff</h5>
-              <div class="space-y-2">
-                <div
-                  v-for="buff in frontCharacterBuffs.filter(b => b.source === 'weapon')"
-                  :key="buff.id"
-                  class="card bg-base-100 shadow-sm"
-                  :class="{ 'opacity-50': !buff.isActive }"
-                >
-                  <div class="card-body p-3">
-                    <div class="flex justify-between items-start gap-2">
-                      <div class="flex-1">
-                        <div class="font-semibold">{{ buff.name }}</div>
-                        <div class="text-sm text-gray-500">{{ buff.description }}</div>
-                      </div>
-                      <div class="flex items-center gap-2">
-                        <div class="badge badge-sm">{{ buff.context }}</div>
-                        <input
-                          type="checkbox"
-                          class="toggle toggle-sm toggle-success"
-                          :checked="buff.isActive"
-                          @change="toggleBuffActive(frontCharacterBuffs, buff.id)"
-                        />
-                      </div>
-                    </div>
-                    <div v-if="Object.keys(buff.stats).length > 0" class="mt-2 text-sm">
-                      <div v-for="(value, key) in buff.stats" :key="key" class="text-accent">
-                        {{ key }}: +{{ value }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 驱动盘Buff -->
-            <div v-if="frontCharacterBuffs.find(b => b.source === 'equipment')">
-              <h5 class="font-semibold mb-2">驱动盘Buff</h5>
-              <div class="space-y-2">
-                <div
-                  v-for="buff in frontCharacterBuffs.filter(b => b.source === 'equipment')"
-                  :key="buff.id"
-                  class="card bg-base-100 shadow-sm"
-                  :class="{ 'opacity-50': !buff.isActive }"
-                >
-                  <div class="card-body p-3">
-                    <div class="flex justify-between items-start gap-2">
-                      <div class="flex-1">
-                        <div class="font-semibold">{{ buff.name }}</div>
-                        <div class="text-sm text-gray-500">{{ buff.description }}</div>
-                      </div>
-                      <div class="flex items-center gap-2">
-                        <div class="badge badge-sm">{{ buff.context }}</div>
-                        <input
-                          type="checkbox"
-                          class="toggle toggle-sm toggle-success"
-                          :checked="buff.isActive"
-                          @change="toggleBuffActive(frontCharacterBuffs, buff.id)"
-                        />
-                      </div>
-                    </div>
-                    <div v-if="Object.keys(buff.stats).length > 0" class="mt-2 text-sm">
-                      <div v-for="(value, key) in buff.stats" :key="key" class="text-accent">
-                        {{ key }}: +{{ value }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 后台角色1的Buff -->
-        <div v-if="backCharacter1Id && backCharacter1Buffs.length > 0" class="mb-6">
-          <div class="flex items-center gap-2 mb-3">
-            <h4 class="text-lg font-bold">{{ backCharacter1Name }}</h4>
-            <span class="badge">后台</span>
-          </div>
-          <div class="space-y-2">
-            <div
-              v-for="buff in backCharacter1Buffs"
-              :key="buff.id"
-              class="card bg-base-100 shadow-sm"
-              :class="{ 'opacity-50': !buff.isActive }"
-            >
-              <div class="card-body p-3">
-                <div class="flex justify-between items-start gap-2">
-                  <div class="flex-1">
-                    <div class="font-semibold">{{ buff.name }} <span class="text-sm text-gray-500">({{ buff.sourceType }})</span></div>
-                    <div class="text-sm text-gray-500">{{ buff.description }}</div>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <div class="badge badge-sm">{{ buff.context }}</div>
-                    <input
-                      type="checkbox"
-                      class="toggle toggle-sm toggle-success"
-                      :checked="buff.isActive"
-                      @change="toggleBuffActive(backCharacter1Buffs, buff.id)"
-                    />
-                  </div>
-                </div>
-                <div v-if="Object.keys(buff.stats).length > 0" class="mt-2 text-sm">
-                  <div v-for="(value, key) in buff.stats" :key="key" class="text-accent">
-                    {{ key }}: +{{ value }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 后台角色2的Buff -->
-        <div v-if="backCharacter2Id && backCharacter2Buffs.length > 0" class="mb-6">
-          <div class="flex items-center gap-2 mb-3">
-            <h4 class="text-lg font-bold">{{ backCharacter2Name }}</h4>
-            <span class="badge">后台</span>
-          </div>
-          <div class="space-y-2">
-            <div
-              v-for="buff in backCharacter2Buffs"
-              :key="buff.id"
-              class="card bg-base-100 shadow-sm"
-              :class="{ 'opacity-50': !buff.isActive }"
-            >
-              <div class="card-body p-3">
-                <div class="flex justify-between items-start gap-2">
-                  <div class="flex-1">
-                    <div class="font-semibold">{{ buff.name }} <span class="text-sm text-gray-500">({{ buff.sourceType }})</span></div>
-                    <div class="text-sm text-gray-500">{{ buff.description }}</div>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <div class="badge badge-sm">{{ buff.context }}</div>
-                    <input
-                      type="checkbox"
-                      class="toggle toggle-sm toggle-success"
-                      :checked="buff.isActive"
-                      @change="toggleBuffActive(backCharacter2Buffs, buff.id)"
-                    />
-                  </div>
-                </div>
-                <div v-if="Object.keys(buff.stats).length > 0" class="mt-2 text-sm">
-                  <div v-for="(value, key) in buff.stats" :key="key" class="text-accent">
-                    {{ key }}: +{{ value }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="!frontCharacterId" class="text-center text-gray-500 py-8">
-          请先选择前台角色
-        </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 技能列表区 -->
-    <div v-if="frontCharacterId" class="card bg-base-200 shadow-xl mt-6">
-      <div class="card-body">
-        <div class="flex justify-between items-center cursor-pointer hover:bg-base-300 rounded-lg p-2 -m-2 transition-colors" @click="isSkillListExpanded = !isSkillListExpanded">
-          <h3 class="card-title">技能列表</h3>
-          <button class="btn btn-ghost btn-sm">
-            <span v-if="isSkillListExpanded">▼ 收起</span>
-            <span v-else>▶ 展开</span>
-          </button>
-        </div>
-
-        <div v-show="isSkillListExpanded" class="mt-4">
-          <div v-if="frontCharacterSkills && frontCharacterSkills.skills.size > 0" class="space-y-6">
-          <!-- 技能类型分组显示 -->
-          <div
-            v-for="[skillName, skill] in Array.from(frontCharacterSkills.skills.entries())"
-            :key="skillName"
-            class="mb-4"
-          >
-            <h4 class="text-lg font-bold mb-3 text-primary">{{ skillName }}</h4>
-
-            <!-- 技能段列表 -->
-            <div class="space-y-2">
-              <div
-                v-for="(segment, index) in skill.segments"
-                :key="index"
-                class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="card-body p-4">
-                  <div class="flex justify-between items-start gap-4">
-                    <!-- 段名称 -->
-                    <div class="flex-shrink-0">
-                      <span class="font-semibold text-base">
-                        {{ segment.segmentName || '单段' }}
-                      </span>
-                    </div>
-
-                    <!-- 技能数据 -->
-                    <div class="flex flex-wrap gap-2 justify-end">
-                      <div class="badge badge-primary badge-lg">
-                        伤害倍率: {{ (segment.damageRatio * 100).toFixed(1) }}%
-                      </div>
-                      <div class="badge badge-secondary badge-lg">
-                        失衡倍率: {{ (segment.stunRatio * 100).toFixed(1) }}%
-                      </div>
-                      <div v-if="segment.energyRecovery > 0" class="badge badge-info badge-lg">
-                        能量回复: {{ segment.energyRecovery }}
-                      </div>
-                      <div v-if="segment.anomalyBuildup > 0" class="badge badge-accent badge-lg">
-                        异常积蓄: {{ segment.anomalyBuildup }}
-                      </div>
-                      <div v-if="segment.decibelRecovery > 0" class="badge badge-success badge-lg">
-                        喧响值: {{ segment.decibelRecovery }}
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 额外信息（如果有） -->
-                  <div
-                    v-if="
-                      segment.flashEnergyAccumulation > 0 ||
-                      segment.corruptionShieldReduction > 0 ||
-                      segment.energyExtraCost > 0
-                    "
-                    class="mt-2 flex flex-wrap gap-2 text-sm"
-                  >
-                    <div v-if="segment.flashEnergyAccumulation > 0" class="text-gray-500">
-                      闪能累积: {{ segment.flashEnergyAccumulation }}
-                    </div>
-                    <div v-if="segment.corruptionShieldReduction > 0" class="text-gray-500">
-                      秽盾削减: {{ segment.corruptionShieldReduction }}
-                    </div>
-                    <div v-if="segment.energyExtraCost > 0" class="text-gray-500">
-                      额外能量消耗: {{ segment.energyExtraCost }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          v-if="!frontCharacterSkills || frontCharacterSkills.skills.size === 0"
-          class="text-center text-gray-500 py-8"
-        >
-          {{ frontCharacterId ? '未找到该角色的技能数据' : '请先选择前台角色' }}
-        </div>
-        </div>
-      </div>
-    </div>
-
-
+    <!-- 技能列表卡片 -->
+    <SkillListCard
+      :front-character-id="frontCharacterId"
+      :available-characters="availableCharacters"
+      :is-expanded="isSkillListExpanded"
+      @toggle-expand="isSkillListExpanded = !isSkillListExpanded"
+    />
   </div>
 </template>
 
@@ -539,9 +70,20 @@ import { Agent } from '../../model/agent';
 import { PropertyCollection } from '../../model/property-collection';
 import type { CombatStats } from '../../model/combat-stats';
 import type { ZodTeamData } from '../../model/save-data-zod';
+import { BattleService } from '../../services/battle.service';
+
+// 导入新的卡片组件
+import TeamConfigCard from './TeamConfigCard.vue';
+import EnemyConfigCard from './EnemyConfigCard.vue';
+import StatsSnapshotCard from './StatsSnapshotCard.vue';
+import BuffListCard from './BuffListCard.vue';
+import SkillListCard from './SkillListCard.vue';
 
 const saveStore = useSaveStore();
 const gameDataStore = useGameDataStore();
+
+// 创建战场服务实例
+const battleService = new BattleService();
 
 // 队伍选择
 const selectedTeamId = ref<string>('');
@@ -562,7 +104,7 @@ const isSkillListExpanded = ref<boolean>(true);
 const isStatsSnapshotExpanded = ref<boolean>(true);
 
 // 可用角色列表（直接使用实例）
-const availableCharacters = computed(() => {
+const availableCharacters = computed<Array<{ id: string; name: string; level: number; agent: Agent }>>(() => {
   return saveStore.agents.map(agent => ({
     id: agent.id,
     name: agent.name_cn || agent.name_en,
@@ -731,27 +273,83 @@ function setFrontCharacter(newFrontCharId: string) {
   backCharacter2Id.value = newBack2;
 }
 
+// 更新战场服务的角色和buff
+async function updateBattleService() {
+  // 设置前台角色
+  if (frontAgent.value) {
+    battleService.setFrontAgent(frontAgent.value);
+  }
+  
+  // 设置后台角色
+  const backAgents: Agent[] = [];
+  if (backCharacter1Id.value) {
+    const agent1 = availableCharacters.value.find(c => c.id === backCharacter1Id.value)?.agent;
+    if (agent1) backAgents.push(agent1);
+  }
+  if (backCharacter2Id.value) {
+    const agent2 = availableCharacters.value.find(c => c.id === backCharacter2Id.value)?.agent;
+    if (agent2) backAgents.push(agent2);
+  }
+  battleService.setBackAgents(backAgents);
+  
+  // 重新加载所有buff（异步）
+  await battleService.loadBuffsFromAllAgentsAsync();
+  
+  // 同步buff激活状态
+  syncBuffStatusToBattleService();
+}
 
+// 将所有buff状态同步到战场服务
+function syncBuffStatusToBattleService() {
+  // 同步前台角色buff
+  frontCharacterBuffs.value.forEach(buff => {
+    battleService.updateBuffStatus(buff.id, buff.isActive);
+  });
+  
+  // 同步后台角色1buff
+  backCharacter1Buffs.value.forEach(buff => {
+    battleService.updateBuffStatus(buff.id, buff.isActive);
+  });
+  
+  // 同步后台角色2buff
+  backCharacter2Buffs.value.forEach(buff => {
+    battleService.updateBuffStatus(buff.id, buff.isActive);
+  });
+  
+  console.log('战场服务buff状态已更新:', battleService.getStatus());
+}
 
-// 属性快照（computed，直接使用实例）
-const combatStatsSnapshot = computed(() => {
+// 装备详细信息（包含原始数据，用于StatsSnapshotCard）
+interface EquipmentDetail {
+  type: 'wengine' | 'drive_disk' | 'set_bonus';
+  stats: PropertyCollection;
+  rawData?: any; // 原始数据
+  name?: string; // 名称
+}
+
+const equipmentDetails = computed(() => {
   if (!frontAgent.value || !frontCharacterId.value) {
-    return null;
+    return [];
   }
 
   const char = availableCharacters.value.find(c => c.id === frontCharacterId.value);
   if (!char) {
-    return null;
+    return [];
   }
 
-  const equipmentStats: PropertyCollection[] = [];
+  const details: EquipmentDetail[] = [];
 
   // 1. 获取音擎属性
   if (char.agent.equipped_wengine) {
     const wengine = saveStore.wengines.find(w => w.id === char.agent.equipped_wengine);
     if (wengine) {
       const wengineStats = wengine.getStatsAtLevel(wengine.level, wengine.breakthrough);
-      equipmentStats.push(wengineStats);
+      details.push({
+        type: 'wengine',
+        stats: wengineStats,
+        rawData: wengine,
+        name: wengine.name_cn || wengine.name_en
+      });
     }
   }
 
@@ -762,7 +360,12 @@ const combatStatsSnapshot = computed(() => {
 
   for (const disk of driveDisks) {
     const diskStats = disk!.getStats();
-    equipmentStats.push(diskStats);
+    details.push({
+      type: 'drive_disk',
+      stats: diskStats,
+      rawData: disk,
+      name: disk!.name_cn || disk!.name_en
+    });
   }
 
   // 3. 计算套装效果（2件套）
@@ -777,20 +380,60 @@ const combatStatsSnapshot = computed(() => {
     const processedSets = new Set<string>();
     for (const disk of driveDisks) {
       if (!disk!.set_name) continue;
+      if (processedSets.has(disk!.set_name)) continue;
       processedSets.add(disk!.set_name);
 
       const count = setCounts[disk!.set_name] || 0;
       if (count >= 2 && disk!.two_piece_buffs.length > 0) {
         for (const buff of disk!.two_piece_buffs) {
-          equipmentStats.push(buff.toPropertyCollection());
+          details.push({
+            type: 'set_bonus',
+            stats: buff.toPropertyCollection(),
+            name: `${disk!.set_name} 2件套`
+          });
         }
       }
     }
   }
 
-  // 计算基础战斗属性（角色+装备，不含buff）
-  return frontAgent.value.getCombatStats(equipmentStats);
+  return details;
 });
+
+// 装备属性（兼容旧接口，用于StatsSnapshotCard）
+const equipmentStats = computed(() => {
+  return equipmentDetails.value.map(detail => detail.stats);
+});
+
+// 属性快照（computed，直接使用实例）
+const combatStatsSnapshot = computed(() => {
+  if (!frontAgent.value || !frontCharacterId.value) {
+    return null;
+  }
+
+  const char = availableCharacters.value.find(c => c.id === frontCharacterId.value);
+  if (!char) {
+    return null;
+  }
+
+  // 计算基础战斗属性（角色+装备，考虑buff）
+  const activeBuffs = battleService.getActiveBuffs();
+  return frontAgent.value.getCombatStats(activeBuffs);
+});
+
+
+
+// 组件事件处理函数
+function onTeamSelect(teamId: string) {
+  selectedTeamId.value = teamId;
+}
+
+function onEnemySelect(enemyId: string) {
+  selectedEnemyId.value = enemyId;
+}
+
+function onEnemyStunChange(isStunned: boolean) {
+  enemyIsStunned.value = isStunned;
+}
 
 // Buff数据结构
 interface BuffInfo {
@@ -812,214 +455,79 @@ const backCharacter1Buffs = ref<BuffInfo[]>([]);
 // 后台角色2的Buff
 const backCharacter2Buffs = ref<BuffInfo[]>([]);
 
-// 加载角色的所有Buff
-async function loadCharacterBuffs(characterId: string, isOnField: boolean): Promise<BuffInfo[]> {
-  const char = availableCharacters.value.find(c => c.id === characterId);
-  if (!char) return [];
-
-  const buffs: BuffInfo[] = [];
-
-  try {
-    // 1. 加载角色自身的Buff
-    const gameCharId = char.agent.game_id; // 直接使用实例的game_id
-
-    console.log(`加载角色Buff: ${char.agent.name_cn}, ID: ${gameCharId}`);
-
-    const charBuffData = await gameDataStore.getCharacterBuff(gameCharId);
-
-      // 提取角色Buff
-      const allCharBuffs = [
-        ...(charBuffData.core_passive_buffs || []),
-        ...(charBuffData.talent_buffs || []),
-        ...(charBuffData.mindscape_buffs || []),
-      ];
-
-      for (const buff of allCharBuffs) {
-        // 前台：只选择对自己生效的
-        // 后台：只选择对队友或全体生效的
-        const targetSelf = buff.target?.target_self || false;
-        const targetTeammate = buff.target?.target_teammate || false;
-
-        // 调试日志
-        if (!isOnField) {
-          console.log(`后台角色Buff: ${buff.name}`, {
-            targetSelf,
-            targetTeammate,
-            target: buff.target
-          });
-        }
-
-        if (isOnField && targetSelf) {
-          buffs.push({
-            id: buff.id,
-            name: buff.name,
-            description: buff.description || '',
-            source: 'character',
-            sourceType: '角色',
-            context: buff.context || '',
-            stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-            target: buff.target,
-            isActive: true,
-          });
-        } else if (!isOnField && targetTeammate) {
-          buffs.push({
-            id: buff.id,
-            name: buff.name,
-            description: buff.description || '',
-            source: 'character',
-            sourceType: '角色',
-            context: buff.context || '',
-            stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-            target: buff.target,
-            isActive: true,
-          });
-        }
-      }
-
-    // 2. 加载音擎Buff
-    if (char.agent.equipped_wengine) {
-      const wengine = saveStore.wengines.find(w => w.id === char.agent.equipped_wengine);
-      if (wengine) {
-        const gameWengineId = wengine.wengine_id; // 直接使用实例的wengine_id
-
-        console.log(`加载音擎Buff: ${wengine.name}, ID: ${gameWengineId}`);
-        const wengineBuffData = await gameDataStore.getWeaponBuff(gameWengineId);
-
-        // 提取音擎Buff
-        const allWengineBuffs = wengineBuffData.talents?.flatMap((t: any) => t.buffs || []) || [];
-
-        for (const buff of allWengineBuffs) {
-          const targetSelf = buff.target?.target_self || false;
-          const targetTeammate = buff.target?.target_teammate || false;
-
-          if (isOnField && targetSelf) {
-            buffs.push({
-              id: buff.id,
-              name: buff.name,
-              description: buff.description || '',
-              source: 'weapon',
-              sourceType: '音擎',
-              context: buff.context || '',
-              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-              target: buff.target,
-              isActive: true,
-            });
-          } else if (!isOnField && targetTeammate) {
-            buffs.push({
-              id: buff.id,
-              name: buff.name,
-              description: buff.description || '',
-              source: 'weapon',
-              sourceType: '音擎',
-              context: buff.context || '',
-              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-              target: buff.target,
-              isActive: true,
-            });
-          }
-        }
-      }
-    }
-
-    // 3. 加载驱动盘Buff
-    const equippedDisks = char.agent.equipped_drive_disks.filter(id => id !== null);
-    const diskInstances = equippedDisks
-      .map(id => saveStore.driveDisks.find(d => d.id === id))
-      .filter(d => d !== undefined);
-
-    // 统计每个套装的数量（按game_id）
-    const setCount: Record<string, number> = {};
-    for (const disk of diskInstances) {
-      const gameId = disk!.game_id;
-      if (gameId) {
-        setCount[gameId] = (setCount[gameId] || 0) + 1;
-      }
-    }
-
-    // 处理套装buff（去重）
-    const processedSets = new Set<string>();
-    for (const disk of diskInstances) {
-      const gameId = disk!.game_id;
-      if (!gameId || processedSets.has(gameId)) continue;
-      processedSets.add(gameId);
-
-      const count = setCount[gameId] || 0;
-      const equipBuffData = await gameDataStore.getEquipmentBuff(gameId);
-
-      // 2件套效果
-      if (count >= 2 && equipBuffData.two_piece_buffs) {
-        for (const buff of equipBuffData.two_piece_buffs) {
-          const targetSelf = buff.target?.target_self || false;
-          const targetTeammate = buff.target?.target_teammate || false;
-
-          if (isOnField && targetSelf) {
-            buffs.push({
-              id: buff.id,
-              name: buff.name,
-              description: buff.description || '',
-              source: 'equipment',
-              sourceType: '驱动盘2件套',
-              context: buff.context || '',
-              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-              target: buff.target,
-              isActive: true,
-            });
-          } else if (!isOnField && targetTeammate) {
-            buffs.push({
-              id: buff.id,
-              name: buff.name,
-              description: buff.description || '',
-              source: 'equipment',
-              sourceType: '驱动盘2件套',
-              context: buff.context || '',
-              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-              target: buff.target,
-              isActive: true,
-            });
-          }
-        }
-      }
-
-      // 4件套效果
-      if (count >= 4 && equipBuffData.four_piece_buffs) {
-        for (const buff of equipBuffData.four_piece_buffs) {
-          const targetSelf = buff.target?.target_self || false;
-          const targetTeammate = buff.target?.target_teammate || false;
-
-          if (isOnField && targetSelf) {
-            buffs.push({
-              id: buff.id,
-              name: buff.name,
-              description: buff.description || '',
-              source: 'equipment',
-              sourceType: '驱动盘4件套',
-              context: buff.context || '',
-              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-              target: buff.target,
-              isActive: true,
-            });
-          } else if (!isOnField && targetTeammate) {
-            buffs.push({
-              id: buff.id,
-              name: buff.name,
-              description: buff.description || '',
-              source: 'equipment',
-              sourceType: '驱动盘4件套',
-              context: buff.context || '',
-              stats: { ...buff.out_of_combat_stats, ...buff.in_combat_stats },
-              target: buff.target,
-              isActive: true,
-            });
-          }
-        }
-      }
-    }
-
-  } catch (err) {
-    console.error('加载角色Buff失败:', err);
+// 从Agent实例的Buff对象创建BuffInfo
+function createBuffInfoFromAgentBuff(buff: any): BuffInfo {
+  // 将BuffSource枚举转换为中文名称
+  const buffSourceMap: Record<number, string> = {
+    1: '角色被动',
+    2: '角色天赋',
+    9: '核心被动',
+    10: '影画',
+    11: '天赋',
+    3: '角色核心',
+    4: '音擎',
+    5: '音擎天赋',
+    6: '驱动盘2件套',
+    7: '驱动盘4件套',
+    8: '队友'
+  };
+  
+  // 确定buff来源类型
+  let source: 'character' | 'weapon' | 'equipment' = 'character';
+  let sourceType = buffSourceMap[buff.source] || '未知';
+  
+  if (buff.source === 4 || buff.source === 5) {
+    source = 'weapon';
+  } else if (buff.source === 6 || buff.source === 7) {
+    source = 'equipment';
+    sourceType = buff.source === 6 ? '驱动盘2件套' : '驱动盘4件套';
   }
+  
+  // 合并局内和局外属性
+  const stats: Record<string, number> = {};
+  buff.out_of_combat_stats.forEach((value: number, key: string) => {
+    stats[key] = value;
+  });
+  buff.in_combat_stats.forEach((value: number, key: string) => {
+    stats[key] = value;
+  });
+  
+  return {
+    id: buff.id,
+    name: buff.name,
+    description: buff.description || '',
+    source: source,
+    sourceType: sourceType,
+    context: 'in_combat', // 暂时默认，后续可从buff数据中获取
+    stats: stats,
+    target: buff.target,
+    isActive: buff.is_active,
+  };
+}
 
-  return buffs;
+// 检查buff是否适合当前角色位置
+function isBuffSuitableForPosition(buff: any, isOnField: boolean): boolean {
+  const targetSelf = buff.target?.target_self || false;
+  const targetTeammate = buff.target?.target_teammate || false;
+  
+  // 前台：只选择对自己生效的
+  // 后台：只选择对队友或全体生效的
+  return isOnField ? targetSelf : targetTeammate;
+}
+
+// 从Agent实例获取buff数据
+async function getBuffsFromAgent(agent: Agent, isOnField: boolean): Promise<BuffInfo[]> {
+  // 确保buff已加载
+  await agent.getAllBuffs();
+  
+  // 获取所有buff
+  const allBuffs = agent.getAllBuffsSync();
+  
+  // 根据角色位置筛选buff
+  const suitableBuffs = allBuffs.filter(buff => isBuffSuitableForPosition(buff, isOnField));
+  
+  // 转换为BuffInfo格式
+  return suitableBuffs.map(buff => createBuffInfoFromAgentBuff(buff));
 }
 
 // 监听敌人选择变化，重置失衡状态
@@ -1040,40 +548,92 @@ watch(
 // 监听前台角色变化
 watch(frontCharacterId, async (newId) => {
   if (newId) {
-    frontCharacterBuffs.value = await loadCharacterBuffs(newId, true);
-
-    // 直接使用Agent实例
+    // 直接使用Agent实例的buff数据
     const char = availableCharacters.value.find(c => c.id === newId);
-    frontAgent.value = char ? char.agent : null;
+    if (char) {
+      frontAgent.value = char.agent;
+      frontCharacterBuffs.value = await getBuffsFromAgent(char.agent, true);
+    }
+    
+    // 更新战场服务
+    updateBattleService();
   } else {
     frontCharacterBuffs.value = [];
     frontAgent.value = null;
+    
+    // 更新战场服务
+    updateBattleService();
   }
 });
 
 // 监听后台角色1变化
 watch(backCharacter1Id, async (newId) => {
   if (newId) {
-    backCharacter1Buffs.value = await loadCharacterBuffs(newId, false);
+    const char = availableCharacters.value.find(c => c.id === newId);
+    if (char) {
+      backCharacter1Buffs.value = await getBuffsFromAgent(char.agent, false);
+    }
   } else {
     backCharacter1Buffs.value = [];
   }
+  
+  // 更新战场服务
+  updateBattleService();
 });
 
 // 监听后台角色2变化
 watch(backCharacter2Id, async (newId) => {
   if (newId) {
-    backCharacter2Buffs.value = await loadCharacterBuffs(newId, false);
+    const char = availableCharacters.value.find(c => c.id === newId);
+    if (char) {
+      backCharacter2Buffs.value = await getBuffsFromAgent(char.agent, false);
+    }
   } else {
     backCharacter2Buffs.value = [];
   }
+  
+  // 更新战场服务
+  updateBattleService();
 });
 
 // 切换Buff激活状态
-const toggleBuffActive = (buffList: Ref<BuffInfo[]>, buffId: string) => {
-  const buff = buffList.value.find(b => b.id === buffId);
-  if (buff) {
-    buff.isActive = !buff.isActive;
+const toggleBuffActive = (buffListType: 'front' | 'back1' | 'back2', buffId: string) => {
+  let buffList;
+  let agent;
+  
+  switch (buffListType) {
+    case 'front':
+      buffList = frontCharacterBuffs;
+      agent = frontAgent.value;
+      break;
+    case 'back1':
+      buffList = backCharacter1Buffs;
+      agent = availableCharacters.value.find(c => c.id === backCharacter1Id.value)?.agent || null;
+      break;
+    case 'back2':
+      buffList = backCharacter2Buffs;
+      agent = availableCharacters.value.find(c => c.id === backCharacter2Id.value)?.agent || null;
+      break;
+  }
+  
+  if (buffList && agent) {
+    const buffIndex = buffList.value.findIndex(b => b.id === buffId);
+    if (buffIndex !== -1) {
+      // 更新UI显示
+      buffList.value[buffIndex].isActive = !buffList.value[buffIndex].isActive;
+      
+      // 更新Agent实例中的buff状态
+      const allBuffs = agent.getAllBuffsSync();
+      const agentBuff = allBuffs.find(b => b.id === buffId);
+      if (agentBuff) {
+        agentBuff.is_active = buffList.value[buffIndex].isActive;
+      }
+      
+      // 同步到战场服务
+      battleService.updateBuffStatus(buffId, buffList.value[buffIndex].isActive);
+      
+      console.log(`Buff ${buffId} 状态已更新为 ${buffList.value[buffIndex].isActive}`);
+    }
   }
 };
 </script>

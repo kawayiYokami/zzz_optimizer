@@ -466,6 +466,7 @@ export class DriveDisk {
 function parsePropertyType(key: string): PropertyType {
   // ZOD的key可能是简写形式，需要映射到PropertyType
   const keyMap: Record<string, PropertyType> = {
+    // 大写形式
     'HP_': PropertyType.HP_,
     'ATK_': PropertyType.ATK_,
     'DEF_': PropertyType.DEF_,
@@ -479,8 +480,10 @@ function parsePropertyType(key: string): PropertyType {
     'ELECTRIC_DMG_': PropertyType.ELECTRIC_DMG_,
     'ETHER_DMG_': PropertyType.ETHER_DMG_,
     'ENERGY_REGEN': PropertyType.ENER_REGEN,
+    'ENERGY_REGEN_': PropertyType.ENER_REGEN_,
     'IMPACT': PropertyType.IMPACT,
-    // 添加缺失的映射（小写形式）
+    'IMPACT_': PropertyType.IMPACT_,
+    // 小写形式
     'hp': PropertyType.HP,
     'hp_': PropertyType.HP_,
     'atk': PropertyType.ATK,
@@ -491,6 +494,16 @@ function parsePropertyType(key: string): PropertyType {
     'pen_': PropertyType.PEN_,
     'crit_': PropertyType.CRIT_,
     'crit_dmg_': PropertyType.CRIT_DMG_,
+    'energyregen': PropertyType.ENER_REGEN,
+    'energyregen_': PropertyType.ENER_REGEN_,
+    'anomprof': PropertyType.ANOM_PROF,
+    'anomaly_proficiency': PropertyType.ANOM_PROF,
+    'impact': PropertyType.IMPACT,
+    'impact_': PropertyType.IMPACT_,
+    // 驼峰形式
+    'energyRegen': PropertyType.ENER_REGEN,
+    'energyRegen_': PropertyType.ENER_REGEN_,
+    'anomProf': PropertyType.ANOM_PROF,
   };
 
   const mapped = keyMap[key];
