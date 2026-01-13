@@ -1,40 +1,53 @@
 [
   {
-    "id": "1281_COREPASSIVE_1_1",
-    "name": "动力蓄能-物理异常积蓄效率",
-    "description": "每拥有一层[动力]，派派的物理异常积蓄效率提升4%",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": { "PHYSICAL_ANOMALY_ACCUMULATION_EFFICIENCY": 0.04 },
+    "id": "1281_talent_2",
+    "name": "影画2-上进心",
+    "description": "下砸攻击造成的物理伤害提升10%，每拥有1层[动力]，该增益效果额外提升1% (上限30层, 共40%)",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "PHYSICAL_DMG_": 0.4
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "每拥有一层[动力]时",
-    "max_stacks": 20,
-    "stack_mode": "additive"
-  },
-  {
-    "id": "1281_COREPASSIVE_2_1",
-    "name": "同步疾驰-全队伤害提升",
-    "description": "派派拥有20层或以上[动力]时，全队角色造成的伤害提升18%",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": { "DMG_BONUS": 0.18 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "拥有20层或以上[动力]时",
+    "trigger_conditions": "下砸攻击命中时",
     "max_stacks": 1,
     "stack_mode": "full_only"
   },
   {
-    "id": "1281_TALENT_2_1",
-    "name": "上进心-物理伤害提升",
-    "description": "在[特殊技：有亿点重]、[强化特殊技：非常重]和[终结技]中发动下砸攻击命中敌人时，招式造成的物理伤害提升10%，每拥有1层[动力]，该增益效果额外提升1%",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "PHYSICAL_DMG_BONUS": 0.1 },
+    "id": "1281_core_passive",
+    "name": "核心被动-动力蓄能",
+    "description": "每拥有一层[动力]，派派的物理异常积蓄效率提升4% (上限30层, 共120%)",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "PHYSICAL_ANOMALY_BUILDUP_": 1.20
+    },
     "out_of_combat_stats": {},
-    "conversion": { "from": "momentum_stacks", "to": "physical_dmg_bonus", "rate": 0.01 },
-    "trigger_conditions": "发动下砸攻击命中敌人时",
+    "conversion": null,
+    "trigger_conditions": "拥有[动力]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1281_additional_ability",
+    "name": "额外能力-同步疾驰",
+    "description": "派派拥有20层或以上[动力]时，全队角色造成的伤害提升18%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "DMG_": 0.18
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有20层以上[动力]时",
     "max_stacks": 1,
     "stack_mode": "full_only"
   }

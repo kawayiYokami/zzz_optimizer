@@ -21,7 +21,7 @@
       "stack_mode": "linear",
       "trigger_conditions": [],
       "out_of_combat_stats": {
-        "COMMON_DMG_": 15.0
+        "SHIELD_": 0.15
       },
       "in_combat_stats": {}
     }
@@ -36,7 +36,7 @@
       "target": {
         "target_self": true,
         "target_enemy": false,
-        "target_teammate": false,
+        "target_teammate": true,
         "target_bund": false
       },
       "max_stacks": 1,
@@ -44,7 +44,7 @@
       "trigger_conditions": "队伍中任意角色发动[招架支援]或[回避支援]时",
       "out_of_combat_stats": {},
       "in_combat_stats": {
-        "COMMON_DMG_": 15.0
+        "COMMON_DMG_": 0.15
       }
     }
   ]

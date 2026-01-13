@@ -1,67 +1,101 @@
 [
   {
-    "id": "1021_core_passive_0_1",
-    "name": "猫步诡影",
-    "description": "猫又闪避反击或快速支援命中敌人时，自身造成的伤害提升60%，持续6秒。",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.60 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "闪避反击或快速支援命中敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1021_talent_0_1",
-    "name": "猫步秀",
-    "description": "队伍中任意角色对敌人施加强击效果后，猫又下一次发动强化特殊技时，招式造成的伤害提升35%，最多叠加2层。",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.35 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "队伍中任意角色对敌人施加强击效果后下一次发动强化特殊技时",
-    "max_stacks": 2,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1021_talent_1_1",
+    "id": "1021_talent_1",
     "name": "猎鸟技巧",
     "description": "从背后攻击命中敌人时，猫又无视目标16%物理伤害抗性；敌方处于失衡状态时，猫又对其的所有攻击均被视为背后攻击。",
     "source": "TALENT",
-    "target": { "target_enemy": true },
-    "in_combat_stats": { "PHYSICAL_RES_": -0.16 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "RES_IGN_": 0.16
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "从背后攻击命中敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "从背后攻击命中敌人时 (敌方失衡时所有攻击视为背后攻击)",
+    "max_stacks": 1
   },
   {
-    "id": "1021_talent_4_1",
-    "name": "磨爪",
-    "description": "发动强化特殊技时，猫又的暴击率提升7%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+    "id": "1021_talent_2",
+    "name": "猫鼠游戏",
+    "description": "当场上只有一名敌人且自身位于前场时，猫又的能量获得效率提升25%。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "CRIT_RATE_": 0.07 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ENER_EFF_": 0.25
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "发动强化特殊技时",
+    "trigger_conditions": "当场上只有一名敌人且自身位于前场时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1021_talent_4",
+    "name": "磨爪",
+    "description": "发动[强化特殊技]时，猫又的暴击率提升7%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_": 0.07
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[强化特殊技]时",
     "max_stacks": 2,
     "stack_mode": "linear"
   },
   {
-    "id": "1021_talent_6_1",
+    "id": "1021_talent_6",
     "name": "捕食者血统",
-    "description": "发动连携技或终结技时，猫又的暴击伤害提升18%，最多叠加3层，退出接战状态时增益效果结束；猫又击败敌人时，该增益效果直接叠加至层数上限。",
+    "description": "发动[连携技]或[终结技]时，猫又的暴击伤害提升18%，最多叠加3层，退出接战状态时增益效果结束；猫又击败敌人时，该增益效果直接叠加至层数上限。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "CRIT_DMG_": 0.18 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_DMG_": 0.18
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "发动连携技或终结技时",
+    "trigger_conditions": "发动[连携技]或[终结技]时，或击败敌人时",
     "max_stacks": 3,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1021_core_passive",
+    "name": "猫步诡影",
+    "description": "猫又[闪避反击]或[快速支援]命中敌人时，自身造成的伤害提升60%，持续6秒。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "COMMON_DMG_": 0.6
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[闪避反击]或[快速支援]命中敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1021_extra_ability",
+    "name": "猫步秀",
+    "description": "队伍中存在与自身属性或阵营相同的角色时触发：队伍中任意角色对敌人施加[强击]效果后，猫又下一次发动[强化特殊技]时，招式造成的伤害提升35%，最多叠加2层。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ENHANCED_SPECIAL_DMG_": 0.35
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "队伍中任意角色对敌人施加[强击]效果后",
+    "max_stacks": 2,
     "stack_mode": "linear"
   }
 ]

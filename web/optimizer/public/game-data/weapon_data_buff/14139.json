@@ -24,9 +24,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升28%；\n发动[连携技]或[终结技]并造成火属性伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAZE_INC_": 0.28
+          }
         }
       ]
     },
@@ -49,9 +51,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升32.2%；\n发动[连携技]或[终结技]并造成火属性伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAZE_INC_": 0.322
+          }
         }
       ]
     },
@@ -74,9 +78,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升36.4%；\n发动[连携技]或[终结技]并造成火属性伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAZE_INC_": 0.364
+          }
         }
       ]
     },
@@ -99,9 +105,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升40.6%；\n发动[连携技]或[终结技]并造成火属性伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAZE_INC_": 0.406
+          }
         }
       ]
     },
@@ -124,9 +132,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]、[连携技]和[终结技]造成的失衡值提升44.8%；\n发动[连携技]或[终结技]并造成火属性伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAZE_INC_": 0.44799999999999995
+          }
         }
       ]
     }

@@ -24,9 +24,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]或[终结技]造成物理伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ANOM_PROF": 60.0
+          }
         }
       ]
     },
@@ -49,9 +51,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]或[终结技]造成物理伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ANOM_PROF": 69.0
+          }
         }
       ]
     },
@@ -74,9 +78,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]或[终结技]造成物理伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ANOM_PROF": 78.0
+          }
         }
       ]
     },
@@ -99,9 +105,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]或[终结技]造成物理伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ANOM_PROF": 87.0
+          }
         }
       ]
     },
@@ -124,9 +132,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]或[终结技]造成物理伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ANOM_PROF": 96.0
+          }
         }
       ]
     }

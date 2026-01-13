@@ -27,7 +27,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "PHYSICAL_DMG_": 3.0
+            "PHYSICAL_DMG_": 0.03
           }
         },
         {
@@ -47,7 +47,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "PHYSICAL_DMG_": 3.0
+            "PHYSICAL_DMG_": 0.03
           }
         }
       ]
@@ -74,7 +74,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "PHYSICAL_DMG_": 3.5
+            "PHYSICAL_DMG_": 0.035
           }
         },
         {
@@ -94,7 +94,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "PHYSICAL_DMG_": 3.5
+            "PHYSICAL_DMG_": 0.035
           }
         }
       ]
@@ -121,7 +121,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "PHYSICAL_DMG_": 4.0
+            "PHYSICAL_DMG_": 0.04
           }
         },
         {
@@ -141,7 +141,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "PHYSICAL_DMG_": 4.0
+            "PHYSICAL_DMG_": 0.04
           }
         }
       ]
@@ -168,7 +168,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "PHYSICAL_DMG_": 4.4
+            "PHYSICAL_DMG_": 0.044
           }
         },
         {
@@ -188,7 +188,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "PHYSICAL_DMG_": 4.4
+            "PHYSICAL_DMG_": 0.044
           }
         }
       ]
@@ -215,7 +215,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "PHYSICAL_DMG_": 4.8
+            "PHYSICAL_DMG_": 0.048
           }
         },
         {
@@ -235,7 +235,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "PHYSICAL_DMG_": 4.8
+            "PHYSICAL_DMG_": 0.048
           }
         }
       ]

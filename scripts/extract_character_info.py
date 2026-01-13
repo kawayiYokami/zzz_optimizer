@@ -42,7 +42,8 @@ def extract_character_info(file_path: str):
 
     # 提取潜能（Potential）
     potential_data = data.get("Potential", [])
-    if potential_data:
+    # 检查 potential_data 是否为字典列表 (某些角色如 1041 这里是 ID 列表)
+    if potential_data and isinstance(potential_data[0], dict):
         for pot in potential_data:
             result["潜能"].append({
                 "名称": pot.get("Name", ""),

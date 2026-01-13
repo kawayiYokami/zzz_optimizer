@@ -173,7 +173,6 @@ export class DriveDisk {
       [PropertyType.PEN]: 'pen',
       [PropertyType.PEN_]: 'pen_',
       [PropertyType.CRIT_]: 'crit_',
-      [PropertyType.CRIT_RATE_]: 'crit_',
       [PropertyType.CRIT_DMG_]: 'crit_dmg_',
       [PropertyType.ANOM_PROF]: 'anomProf',
       [PropertyType.ANOM_MAS_]: 'anomMas_',

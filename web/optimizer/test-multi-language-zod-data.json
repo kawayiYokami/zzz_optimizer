@@ -80,7 +80,7 @@
       "mainStatKey": "ATK",
       "substats": [
         {
-          "key": "CRIT_RATE_",
+          "key": "CRIT_",
           "upgrades": 3
         }
       ],

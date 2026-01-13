@@ -107,7 +107,6 @@ export enum PropertyType {
 
   // 暴击
   CRIT_ = 20103, // 暴击率
-  CRIT_RATE_ = 20104, // 暴击率（别名）
   CRIT_DMG_ = 21103, // 暴击伤害
 
   // 能量
@@ -130,7 +129,6 @@ export enum PropertyType {
   // 异常掌控
   ANOM_MAS = 31303, // 异常掌控
   ANOM_MAS_ = 31304, // 异常掌控%
-  ANOM_MASTERY_ = 31305, // 异常掌控%（别名）
 
   // 异常精通
   ANOM_PROF = 31203, // 异常精通
@@ -192,12 +190,30 @@ export enum PropertyType {
   DEF_RED_ = 41001, // 敌人防御降低
   ENEMY_RES_ = 41002, // 敌人属性抗性
   ENEMY_RES_RED_ = 41003, // 敌人属性抗性降低
+  PHYSICAL_RES_RED_ = 41013, // 敌人物理抗性降低
+  FIRE_RES_RED_ = 41023, // 敌人火属性抗性降低
+  ICE_RES_RED_ = 41033, // 敌人冰属性抗性降低
+  ELECTRIC_RES_RED_ = 41043, // 敌人电属性抗性降低
+  ETHER_RES_RED_ = 41053, // 敌人以太属性抗性降低
+
   ENEMY_RES_IGN_ = 41004, // 无视敌人属性抗性
+  PHYSICAL_RES_IGN_ = 41014, // 无视敌人物理抗性
+  FIRE_RES_IGN_ = 41024, // 无视敌人火属性抗性
+  ICE_RES_IGN_ = 41034, // 无视敌人冰属性抗性
+  ELECTRIC_RES_IGN_ = 41044, // 无视敌人电属性抗性
+  ETHER_RES_IGN_ = 41054, // 无视敌人以太属性抗性
+
   ANOM_BUILDUP_RES_ = 41005, // 敌人异常积蓄抗性
+  PHYSICAL_ANOM_BUILDUP_RES_ = 41015, // 敌人物理异常积蓄抗性
+  FIRE_ANOM_BUILDUP_RES_ = 41025, // 敌人火属性异常积蓄抗性
+  ICE_ANOM_BUILDUP_RES_ = 41035, // 敌人冰属性异常积蓄抗性
+  ELECTRIC_ANOM_BUILDUP_RES_ = 41045, // 敌人电属性异常积蓄抗性
+  ETHER_ANOM_BUILDUP_RES_ = 41055, // 敌人以太属性异常积蓄抗性
   DAZE_RES_ = 41006, // 敌人失衡抗性
   DAZE_RED_ = 41007, // 敌人失衡易伤
   DMG_INC_ = 41008, // 敌人易伤
   DAMAGE_TAKEN_RED_ = 41009, // 受到伤害降低（别名）
+  ENEMY_DAZE_VULNERABILITY_ = 41010, // 失衡易伤倍率
 }
 
 /**
@@ -226,9 +242,16 @@ export const PROPERTY_CN_NAMES: Partial<Record<PropertyType, string>> = {
   [PropertyType.PEN]: "穿透值",
   [PropertyType.PEN_]: "穿透率",
 
+  // 贯穿
+  [PropertyType.SHEER_FORCE]: "贯穿值",
+  [PropertyType.SHEER_DMG_]: "贯穿伤害",
+
+  // 无视
+  [PropertyType.RES_IGN_]: "无视属性抗性",
+  [PropertyType.DEF_IGN_]: "无视防御",
+
   // 暴击
   [PropertyType.CRIT_]: "暴击率",
-  [PropertyType.CRIT_RATE_]: "暴击率",
   [PropertyType.CRIT_DMG_]: "暴击伤害",
 
   // 能量
@@ -240,10 +263,16 @@ export const PROPERTY_CN_NAMES: Partial<Record<PropertyType, string>> = {
   [PropertyType.IMPACT_]: "冲击力",
   [PropertyType.IMPACT]: "冲击力",
 
+  // 失衡
+  [PropertyType.DAZE_INC_]: "失衡值提升",
+  [PropertyType.FEVER_GAIN_]: "喧响值获取提升",
+
+  // 护盾
+  [PropertyType.SHIELD_]: "护盾效果",
+
   // 异常掌控
   [PropertyType.ANOM_MAS]: "异常掌控",
   [PropertyType.ANOM_MAS_]: "异常掌控%",
-  [PropertyType.ANOM_MASTERY_]: "异常掌控%",
 
   // 异常精通
   [PropertyType.ANOM_PROF]: "异常精通",
@@ -256,13 +285,79 @@ export const PROPERTY_CN_NAMES: Partial<Record<PropertyType, string>> = {
   [PropertyType.ELECTRIC_ANOMALY_BUILDUP_]: "电属性异常积蓄效率",
   [PropertyType.ETHER_ANOMALY_BUILDUP_]: "以太属性异常积蓄效率",
 
+  // 异常暴击
+  [PropertyType.ANOM_CRIT_]: "异常暴击率",
+  [PropertyType.ANOM_CRIT_DMG_]: "异常暴击伤害",
+  [PropertyType.ANOM_MV_MULT_]: "异常伤害倍率提升",
+  [PropertyType.ADDL_DISORDER_]: "额外紊乱倍率",
+  [PropertyType.ANOM_BASE_]: "异常基础伤害提升",
+  [PropertyType.ANOM_FLAT_DMG]: "异常固定伤害加成",
+
+  // 异常伤害加成
+  [PropertyType.BURN_DMG_]: "灼烧伤害加成",
+  [PropertyType.SHOCK_DMG_]: "感电伤害加成",
+  [PropertyType.CORRUPTION_DMG_]: "侵蚀伤害加成",
+  [PropertyType.SHATTER_DMG_]: "碎冰伤害加成",
+  [PropertyType.ASSAULT_DMG_]: "强击伤害加成",
+
   // 通用伤害加成
   [PropertyType.COMMON_DMG_]: "伤害加成",
   [PropertyType.DMG_]: "伤害加成",
   [PropertyType.FLAT_DMG]: "固定伤害加成",
 
+  // 技能伤害加成
+  [PropertyType.NORMAL_ATK_DMG_]: "普通攻击伤害加成",
+  [PropertyType.ENHANCED_SPECIAL_DMG_]: "强化特殊技伤害加成",
+  [PropertyType.CHAIN_ATK_DMG_]: "连携技伤害加成",
+  [PropertyType.ULTIMATE_ATK_DMG_]: "终结技伤害加成",
+  [PropertyType.DASH_ATK_DMG_]: "冲刺攻击伤害加成",
+  [PropertyType.DODGE_COUNTER_DMG_]: "闪避反击伤害加成",
+  [PropertyType.ASSIST_ATK_DMG_]: "支援攻击伤害加成",
+  [PropertyType.ADDL_ATK_DMG_]: "追加攻击伤害加成",
+  [PropertyType.SPECIAL_ATK_DMG_]: "特殊技伤害加成",
+
+  // 元素伤害加成
+  [PropertyType.PHYSICAL_DMG_]: "物理伤害加成",
+  [PropertyType.ETHER_DMG_]: "以太伤害加成",
+  [PropertyType.ELECTRIC_DMG_]: "电属性伤害加成",
+  [PropertyType.ICE_DMG_]: "冰属性伤害加成",
+  [PropertyType.FIRE_DMG_]: "火属性伤害加成",
+
   // 属性异常伤害加成
+  [PropertyType.IMPACT_DMG_]: "强击伤害加成",
+  [PropertyType.FREEZE_DMG_]: "冻结伤害加成",
+  [PropertyType.PENETRATION_DMG_]: "贯穿伤害加成",
+  [PropertyType.DISORDER_DMG_]: "紊乱伤害加成",
   [PropertyType.ANOMALY_DMG_]: "属性异常伤害加成",
+
+  // Debuff相关
+  [PropertyType.DEF_RED_]: "敌人防御降低",
+  [PropertyType.ENEMY_RES_]: "敌人属性抗性",
+  [PropertyType.ENEMY_RES_RED_]: "敌人属性抗性降低",
+  [PropertyType.PHYSICAL_RES_RED_]: "敌人物理抗性降低",
+  [PropertyType.FIRE_RES_RED_]: "敌人火属性抗性降低",
+  [PropertyType.ICE_RES_RED_]: "敌人冰属性抗性降低",
+  [PropertyType.ELECTRIC_RES_RED_]: "敌人电属性抗性降低",
+  [PropertyType.ETHER_RES_RED_]: "敌人以太属性抗性降低",
+
+  [PropertyType.ENEMY_RES_IGN_]: "无视敌人属性抗性",
+  [PropertyType.PHYSICAL_RES_IGN_]: "无视敌人物理抗性",
+  [PropertyType.FIRE_RES_IGN_]: "无视敌人火属性抗性",
+  [PropertyType.ICE_RES_IGN_]: "无视敌人冰属性抗性",
+  [PropertyType.ELECTRIC_RES_IGN_]: "无视敌人电属性抗性",
+  [PropertyType.ETHER_RES_IGN_]: "无视敌人以太属性抗性",
+
+  [PropertyType.ANOM_BUILDUP_RES_]: "敌人异常积蓄抗性",
+  [PropertyType.PHYSICAL_ANOM_BUILDUP_RES_]: "敌人物理异常积蓄抗性",
+  [PropertyType.FIRE_ANOM_BUILDUP_RES_]: "敌人火属性异常积蓄抗性",
+  [PropertyType.ICE_ANOM_BUILDUP_RES_]: "敌人冰属性异常积蓄抗性",
+  [PropertyType.ELECTRIC_ANOM_BUILDUP_RES_]: "敌人电属性异常积蓄抗性",
+  [PropertyType.ETHER_ANOM_BUILDUP_RES_]: "敌人以太属性异常积蓄抗性",
+  [PropertyType.DAZE_RES_]: "敌人失衡抗性",
+  [PropertyType.DAZE_RED_]: "敌人失衡易伤",
+  [PropertyType.DMG_INC_]: "敌人易伤",
+  [PropertyType.DAMAGE_TAKEN_RED_]: "受到伤害降低",
+  [PropertyType.ENEMY_DAZE_VULNERABILITY_]: "失衡易伤倍率",
 };
 
 /**
@@ -293,8 +388,8 @@ export function getPropertyTypeByCnName(cnName: string): PropertyType | undefine
  * 判断是否为百分比属性
  */
 export function isPercentageProperty(propertyType: PropertyType): boolean {
-  // 直接判断属性类型是否为百分比属性
   const percentProps = [
+    // 基础百分比
     PropertyType.CRIT_,
     PropertyType.CRIT_DMG_,
     PropertyType.ATK_,
@@ -303,12 +398,85 @@ export function isPercentageProperty(propertyType: PropertyType): boolean {
     PropertyType.PEN_,
     PropertyType.IMPACT_,
     PropertyType.ENER_REGEN_,
+    PropertyType.ENER_EFF_,
+    PropertyType.ANOM_MAS_,
+    // 无视/贯穿
+    PropertyType.RES_IGN_,
+    PropertyType.DEF_IGN_,
+    PropertyType.SHEER_DMG_,
+    // 异常相关
+    PropertyType.ANOM_BUILDUP_,
+    PropertyType.PHYSICAL_ANOMALY_BUILDUP_,
+    PropertyType.FIRE_ANOMALY_BUILDUP_,
+    PropertyType.ICE_ANOMALY_BUILDUP_,
+    PropertyType.ELECTRIC_ANOMALY_BUILDUP_,
+    PropertyType.ETHER_ANOMALY_BUILDUP_,
+    PropertyType.ANOM_CRIT_,
+    PropertyType.ANOM_CRIT_DMG_,
+    PropertyType.ANOM_MV_MULT_,
+    PropertyType.ADDL_DISORDER_,
+    PropertyType.ANOM_BASE_,
+    // 异常伤害加成
+    PropertyType.BURN_DMG_,
+    PropertyType.SHOCK_DMG_,
+    PropertyType.CORRUPTION_DMG_,
+    PropertyType.SHATTER_DMG_,
+    PropertyType.ASSAULT_DMG_,
+    // 通用伤害加成
+    PropertyType.COMMON_DMG_,
+    PropertyType.DMG_,
+    // 技能伤害加成
+    PropertyType.NORMAL_ATK_DMG_,
+    PropertyType.ENHANCED_SPECIAL_DMG_,
+    PropertyType.CHAIN_ATK_DMG_,
+    PropertyType.ULTIMATE_ATK_DMG_,
+    PropertyType.DASH_ATK_DMG_,
+    PropertyType.DODGE_COUNTER_DMG_,
+    PropertyType.ASSIST_ATK_DMG_,
+    PropertyType.ADDL_ATK_DMG_,
+    PropertyType.SPECIAL_ATK_DMG_,
+    // 元素伤害加成
     PropertyType.PHYSICAL_DMG_,
-    PropertyType.FIRE_DMG_,
-    PropertyType.ICE_DMG_,
-    PropertyType.ELECTRIC_DMG_,
     PropertyType.ETHER_DMG_,
-    PropertyType.ANOM_MAS_
+    PropertyType.ELECTRIC_DMG_,
+    PropertyType.ICE_DMG_,
+    PropertyType.FIRE_DMG_,
+    // 特殊伤害加成
+    PropertyType.IMPACT_DMG_,
+    PropertyType.FREEZE_DMG_,
+    PropertyType.PENETRATION_DMG_,
+    PropertyType.DISORDER_DMG_,
+    PropertyType.ANOMALY_DMG_,
+    // 失衡/护盾
+    PropertyType.DAZE_INC_,
+    PropertyType.FEVER_GAIN_,
+    PropertyType.SHIELD_,
+    // Debuff相关
+    PropertyType.DEF_RED_,
+    PropertyType.ENEMY_RES_,
+    PropertyType.ENEMY_RES_RED_,
+    PropertyType.PHYSICAL_RES_RED_,
+    PropertyType.FIRE_RES_RED_,
+    PropertyType.ICE_RES_RED_,
+    PropertyType.ELECTRIC_RES_RED_,
+    PropertyType.ETHER_RES_RED_,
+    PropertyType.ENEMY_RES_IGN_,
+    PropertyType.PHYSICAL_RES_IGN_,
+    PropertyType.FIRE_RES_IGN_,
+    PropertyType.ICE_RES_IGN_,
+    PropertyType.ELECTRIC_RES_IGN_,
+    PropertyType.ETHER_RES_IGN_,
+    PropertyType.ANOM_BUILDUP_RES_,
+    PropertyType.PHYSICAL_ANOM_BUILDUP_RES_,
+    PropertyType.FIRE_ANOM_BUILDUP_RES_,
+    PropertyType.ICE_ANOM_BUILDUP_RES_,
+    PropertyType.ELECTRIC_ANOM_BUILDUP_RES_,
+    PropertyType.ETHER_ANOM_BUILDUP_RES_,
+    PropertyType.DAZE_RES_,
+    PropertyType.DAZE_RED_,
+    PropertyType.DMG_INC_,
+    PropertyType.DAMAGE_TAKEN_RED_,
+    PropertyType.ENEMY_DAZE_VULNERABILITY_,
   ];
   return percentProps.includes(propertyType);
 }

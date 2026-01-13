@@ -18,15 +18,17 @@
           "context": "IN_COMBAT",
           "target": {
             "target_self": true,
-            "target_enemy": false,
-            "target_teammate": false,
-            "target_bund": false
+            "target_teammate": true,
+            "target_enemy": true
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "造成以太伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DMG_INC_": 0.15,
+            "ENER_REGEN": 0.5
+          }
         }
       ]
     },
@@ -43,15 +45,17 @@
           "context": "IN_COMBAT",
           "target": {
             "target_self": true,
-            "target_enemy": false,
-            "target_teammate": false,
-            "target_bund": false
+            "target_teammate": true,
+            "target_enemy": true
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "造成以太伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DMG_INC_": 0.175,
+            "ENER_REGEN": 0.58
+          }
         }
       ]
     },
@@ -68,15 +72,17 @@
           "context": "IN_COMBAT",
           "target": {
             "target_self": true,
-            "target_enemy": false,
-            "target_teammate": false,
-            "target_bund": false
+            "target_teammate": true,
+            "target_enemy": true
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "造成以太伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DMG_INC_": 0.2,
+            "ENER_REGEN": 0.65
+          }
         }
       ]
     },
@@ -93,15 +99,17 @@
           "context": "IN_COMBAT",
           "target": {
             "target_self": true,
-            "target_enemy": false,
-            "target_teammate": false,
-            "target_bund": false
+            "target_teammate": true,
+            "target_enemy": true
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "造成以太伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DMG_INC_": 0.22,
+            "ENER_REGEN": 0.72
+          }
         }
       ]
     },
@@ -118,15 +126,17 @@
           "context": "IN_COMBAT",
           "target": {
             "target_self": true,
-            "target_enemy": false,
-            "target_teammate": false,
-            "target_bund": false
+            "target_teammate": true,
+            "target_enemy": true
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "造成以太伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DMG_INC_": 0.24,
+            "ENER_REGEN": 0.8
+          }
         }
       ]
     }

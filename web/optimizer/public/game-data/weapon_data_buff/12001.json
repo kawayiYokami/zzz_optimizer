@@ -11,26 +11,22 @@
       "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升12%。",
       "buffs": [
         {
-          "id": "12001_talent_1_skill_dmg",
-          "name": "「月相」-望-技能伤害",
-          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升12%。",
+          "id": "12001_talent_1_1",
+          "name": "「月相」-望-精1",
+          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升12%",
           "source": "WENGINE_TALENT",
-          "context": "IN_COMBAT",
+          "is_permanent": false,
           "target": {
-            "target_self": true,
-            "target_enemy": false,
-            "target_teammate": false,
-            "target_bund": false
+            "target_self": true
           },
-          "max_stacks": 1,
-          "stack_mode": "full_only",
-          "trigger_conditions": "",
-          "out_of_combat_stats": {},
           "in_combat_stats": {
-            "NORMAL_ATK_DMG_": 12.0,
-            "DASH_ATK_DMG_": 12.0,
-            "DODGE_COUNTER_DMG_": 12.0
-          }
+            "NORMAL_ATK_DMG_": 0.12,
+            "DASH_ATK_DMG_": 0.12,
+            "DODGE_COUNTER_DMG_": 0.12
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "常驻"
         }
       ]
     },
@@ -40,26 +36,22 @@
       "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升14%。",
       "buffs": [
         {
-          "id": "12001_talent_2_skill_dmg",
-          "name": "「月相」-望-技能伤害",
-          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升14%。",
+          "id": "12001_talent_2_1",
+          "name": "「月相」-望-精2",
+          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升14%",
           "source": "WENGINE_TALENT",
-          "context": "IN_COMBAT",
+          "is_permanent": false,
           "target": {
-            "target_self": true,
-            "target_enemy": false,
-            "target_teammate": false,
-            "target_bund": false
+            "target_self": true
           },
-          "max_stacks": 1,
-          "stack_mode": "full_only",
-          "trigger_conditions": "",
-          "out_of_combat_stats": {},
           "in_combat_stats": {
-            "NORMAL_ATK_DMG_": 14.0,
-            "DASH_ATK_DMG_": 14.0,
-            "DODGE_COUNTER_DMG_": 14.0
-          }
+            "NORMAL_ATK_DMG_": 0.14,
+            "DASH_ATK_DMG_": 0.14,
+            "DODGE_COUNTER_DMG_": 0.14
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "常驻"
         }
       ]
     },
@@ -69,26 +61,22 @@
       "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升16%。",
       "buffs": [
         {
-          "id": "12001_talent_3_skill_dmg",
-          "name": "「月相」-望-技能伤害",
-          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升16%。",
+          "id": "12001_talent_3_1",
+          "name": "「月相」-望-精3",
+          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升16%",
           "source": "WENGINE_TALENT",
-          "context": "IN_COMBAT",
+          "is_permanent": false,
           "target": {
-            "target_self": true,
-            "target_enemy": false,
-            "target_teammate": false,
-            "target_bund": false
+            "target_self": true
           },
-          "max_stacks": 1,
-          "stack_mode": "full_only",
-          "trigger_conditions": "",
-          "out_of_combat_stats": {},
           "in_combat_stats": {
-            "NORMAL_ATK_DMG_": 16.0,
-            "DASH_ATK_DMG_": 16.0,
-            "DODGE_COUNTER_DMG_": 16.0
-          }
+            "NORMAL_ATK_DMG_": 0.16,
+            "DASH_ATK_DMG_": 0.16,
+            "DODGE_COUNTER_DMG_": 0.16
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "常驻"
         }
       ]
     },
@@ -98,26 +86,22 @@
       "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升18%。",
       "buffs": [
         {
-          "id": "12001_talent_4_skill_dmg",
-          "name": "「月相」-望-技能伤害",
-          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升18%。",
+          "id": "12001_talent_4_1",
+          "name": "「月相」-望-精4",
+          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升18%",
           "source": "WENGINE_TALENT",
-          "context": "IN_COMBAT",
+          "is_permanent": false,
           "target": {
-            "target_self": true,
-            "target_enemy": false,
-            "target_teammate": false,
-            "target_bund": false
+            "target_self": true
           },
-          "max_stacks": 1,
-          "stack_mode": "full_only",
-          "trigger_conditions": "",
-          "out_of_combat_stats": {},
           "in_combat_stats": {
-            "NORMAL_ATK_DMG_": 18.0,
-            "DASH_ATK_DMG_": 18.0,
-            "DODGE_COUNTER_DMG_": 18.0
-          }
+            "NORMAL_ATK_DMG_": 0.18,
+            "DASH_ATK_DMG_": 0.18,
+            "DODGE_COUNTER_DMG_": 0.18
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "常驻"
         }
       ]
     },
@@ -127,26 +111,22 @@
       "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升20%。",
       "buffs": [
         {
-          "id": "12001_talent_5_skill_dmg",
-          "name": "「月相」-望-技能伤害",
-          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升20%。",
+          "id": "12001_talent_5_1",
+          "name": "「月相」-望-精5",
+          "description": "[普通攻击]、[冲刺攻击]、[闪避反击]造成的伤害提升20%",
           "source": "WENGINE_TALENT",
-          "context": "IN_COMBAT",
+          "is_permanent": false,
           "target": {
-            "target_self": true,
-            "target_enemy": false,
-            "target_teammate": false,
-            "target_bund": false
+            "target_self": true
           },
-          "max_stacks": 1,
-          "stack_mode": "full_only",
-          "trigger_conditions": "",
-          "out_of_combat_stats": {},
           "in_combat_stats": {
-            "NORMAL_ATK_DMG_": 20.0,
-            "DASH_ATK_DMG_": 20.0,
-            "DODGE_COUNTER_DMG_": 20.0
-          }
+            "NORMAL_ATK_DMG_": 0.2,
+            "DASH_ATK_DMG_": 0.2,
+            "DODGE_COUNTER_DMG_": 0.2
+          },
+          "out_of_combat_stats": {},
+          "conversion": null,
+          "trigger_conditions": "常驻"
         }
       ]
     }

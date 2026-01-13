@@ -176,8 +176,6 @@ export class CombatStats {
    */
   get crit_rate(): number {
     const critRateFromProp = this.properties.getFinal(PropertyType.CRIT_, 0.05);
-    const critRateFromProp2 = this.properties.getFinal(PropertyType.CRIT_RATE_, 0.05);
-    console.log(`[DEBUG] CombatStats.crit_rate - 从属性集合获取暴击率: CRIT_=${critRateFromProp}, CRIT_RATE_=${critRateFromProp2}, 最终返回=${critRateFromProp}`);
     return critRateFromProp;
   }
 

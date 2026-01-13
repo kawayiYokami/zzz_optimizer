@@ -10,29 +10,31 @@ import type { Buff } from '../model/buff';
 import { Team } from '../model/team';
 import { DamageCalculatorService } from './damage-calculator.service';
 import { PropertyCollection } from '../model/property-collection';
-import { PropertyType } from '../model/base';
+import { PropertyType, ElementType } from '../model/base';
+import { RatioSet } from '../model/ratio-set';
 
 /**
  * 技能伤害参数
  */
 export interface SkillDamageParams {
-  damage_ratio: number; // 技能倍率
-  element: string; // 元素类型
-  is_penetration: boolean; // 是否贯穿伤害
-  anomaly_buildup: number; // 异常积蓄值
+  damage_ratio: number;
+  element?: string;
+  anomaly_buildup?: number;
+  anomaly_ratio?: number;
+  is_penetration?: boolean;
+  distance?: number;
 }
 
 /**
- * 伤害计算结果
+ * 完整伤害计算结果
  */
-export interface DamageResult {
-  normal_damage_no_crit: number; // 未暴击伤害
-  normal_damage_crit: number; // 暴击伤害
-  normal_damage_expected: number; // 期望伤害
-  anomaly_damage_no_crit: number; // 异常未暴击伤害
-  anomaly_damage_crit: number; // 异常暴击伤害
-  anomaly_damage_expected: number; // 异常期望伤害
-  total_damage_expected: number; // 总期望伤害
+export interface TotalDamageResult {
+  directDamage: number;         // 直伤/贯穿期望
+  anomalyDamage: number;        // 异常持续伤害期望
+  disorderDamage: number;       // 紊乱伤害期望 (450%)
+  specialAnomalyDamage: number; // 特殊异常伤害（烈霜等）
+  totalDamage: number;          // 总伤害期望
+  triggerExpectation: number;   // 异常触发期望
 }
 
 /**
@@ -160,31 +162,10 @@ export class BattleService {
         timestamp: Date.now()
       };
 
-      // 验证数据一致性
-      const generatedMergedProps = this.mergeCombatProperties();
-      const generatedFinalStats = this.convertToFinalStats();
+      // 验证激活buff数量一致性
       const generatedActiveBuffs = this.getActiveBuffs();
-
-      if (generatedMergedProps !== this.finalPropertySnapshot.mergedProperties) {
-        throw new Error('合并属性集生成不一致');
-      }
-
-      if (generatedFinalStats !== this.finalPropertySnapshot.finalStats) {
-        throw new Error('最终属性集生成不一致');
-      }
-
       if (generatedActiveBuffs.length !== this.finalPropertySnapshot.activeBuffs.length) {
         throw new Error('激活buff数量不一致');
-      }
-
-      // 验证计算准确性
-      const finalStats1 = this.convertToFinalStats();
-      const finalStats2 = this.convertToFinalStats();
-
-      for (const [key, value] of finalStats1.entries()) {
-        if (finalStats2.get(key) !== value) {
-          throw new Error(`最终属性计算不一致: ${key}`);
-        }
       }
 
     } catch (error) {
@@ -217,13 +198,8 @@ export class BattleService {
     // 获取角色所有Buff
     const allBuffs = agent.getAllBuffsSync();
 
-    console.log('[DEBUG] loadBuffsFromAgentAsync - agent:', agent.name_cn, 'isOnField:', isOnField, 'allBuffs:', allBuffs.length);
-
     // 根据角色位置筛选Buff
     for (const buff of allBuffs) {
-      console.log('[DEBUG] loadBuffsFromAgentAsync - buff:', buff.id, buff.name, buff.source);
-      console.log('[DEBUG] loadBuffsFromAgentAsync - buff target:', JSON.stringify(buff.target, null, 2));
-
       // 前台：只选择对自己生效的
       // 后台：只选择对队友或全体生效的
       // 这里修改逻辑，先尝试将所有buff添加到characterBuffs中，不管target属性
@@ -237,14 +213,11 @@ export class BattleService {
    * @param isOnField 是否在前台
    */
   loadBuffsFromAgent(agent: Agent, isOnField: boolean): void {
-    console.log('[DEBUG] loadBuffsFromAgent - agent:', agent.name_cn, 'isOnField:', isOnField);
-
     // 获取角色所有Buff
     const allBuffs = agent.getAllBuffsSync();
 
     // 不筛选，直接添加所有buff
     for (const buff of allBuffs) {
-      console.log('[DEBUG] loadBuffsFromAgent - buff:', buff.id, buff.name, buff.source);
       this.addCharacterBuff(buff, isOnField);
     }
   }
@@ -253,40 +226,29 @@ export class BattleService {
    * 从所有角色加载Buff（异步版本）
    */
   async loadBuffsFromAllAgentsAsync(): Promise<void> {
-    console.log('[DEBUG] loadBuffsFromAllAgentsAsync - start');
-
     // 记录当前角色buff的ID，用于后续清除状态映射
     const characterBuffIds = new Set(this.characterBuffs.map(buff => buff.id));
 
     // 只清除角色buff，保留手动buff
     this.characterBuffs = [];
-    console.log('[DEBUG] loadBuffsFromAllAgentsAsync - cleared characterBuffs');
 
     // 清除相关状态映射
     characterBuffIds.forEach(buffId => {
       this.buffStatusMap.delete(buffId);
     });
-    console.log('[DEBUG] loadBuffsFromAllAgentsAsync - cleared buffStatusMap');
 
     if (this.team) {
-      console.log('[DEBUG] loadBuffsFromAllAgentsAsync - team found:', this.team.name);
-
       // 加载前台角色Buff
-      console.log('[DEBUG] loadBuffsFromAllAgentsAsync - loading front agent buffs');
       await this.loadBuffsFromAgentAsync(this.team.frontAgent, true);
 
       // 加载后台角色Buff
-      console.log('[DEBUG] loadBuffsFromAllAgentsAsync - loading back agent buffs');
       for (const agent of this.team.backAgents) {
-        console.log('[DEBUG] loadBuffsFromAllAgentsAsync - loading back agent:', agent.name_cn);
         await this.loadBuffsFromAgentAsync(agent, false);
       }
     }
-    console.log('[DEBUG] loadBuffsFromAllAgentsAsync - final characterBuffs:', this.characterBuffs.length);
 
     // 清除属性缓存
     this.clearPropertyCache();
-    console.log('[DEBUG] loadBuffsFromAllAgentsAsync - end');
   }
 
   /**
@@ -339,13 +301,10 @@ export class BattleService {
    * 添加角色Buff
    */
   private addCharacterBuff(buff: Buff, isOnField: boolean): void {
-    console.log('[DEBUG] addCharacterBuff - buff:', buff.id, buff.name);
-
     // 检查Buff是否已存在
     const existingIndex = this.characterBuffs.findIndex(b => b.id === buff.id);
     if (existingIndex === -1) {
       this.characterBuffs.push(buff);
-      console.log('[DEBUG] addCharacterBuff - added buff:', buff.id, buff.name, 'current length:', this.characterBuffs.length);
 
       // 设置Buff状态，包括可开关性
       const isToggleable = this.isBuffToggleable(buff, isOnField);
@@ -355,10 +314,7 @@ export class BattleService {
           isActive: true,      // 默认打开
           isToggleable: isToggleable
         });
-        console.log('[DEBUG] addCharacterBuff - set buff status:', buff.id, 'isToggleable:', isToggleable);
       }
-    } else {
-      console.log('[DEBUG] addCharacterBuff - buff already exists:', buff.id, buff.name);
     }
   }
 
@@ -378,6 +334,8 @@ export class BattleService {
           isToggleable: true
         });
       }
+      // 清除属性缓存
+      this.clearPropertyCache();
     }
   }
 
@@ -499,10 +457,7 @@ export class BattleService {
    * 获取所有Buff列表
    */
   getAllBuffs(): Buff[] {
-    console.log('[DEBUG] getAllBuffs - characterBuffs:', this.characterBuffs.length, 'manualBuffs:', this.manualBuffs.length);
-    const result = [...this.characterBuffs, ...this.manualBuffs];
-    console.log('[DEBUG] getAllBuffs - returning:', result.length);
-    return result;
+    return [...this.characterBuffs, ...this.manualBuffs];
   }
 
   /**
@@ -576,91 +531,23 @@ export class BattleService {
   // ==================== 伤害计算 ====================
 
   /**
-   * 计算技能伤害（直伤 + 异常伤害）
+   * 批量应用buff到属性集
    *
-   * @param skillDamageRatio 技能倍率
-   * @param skillElement 技能元素类型
-   * @param skillAnomalyBuildup 技能异常积蓄值
-   * @param isPenetration 是否为贯穿伤害
-   * @returns 伤害结果
+   * @param buffs buff列表
+   * @param props 输入属性集
+   * @returns 应用后的属性集
    */
-  calculateSkillDamage(
-    skillDamageRatio: number,
-    skillElement: string = 'physical',
-    skillAnomalyBuildup: number = 0,
-    isPenetration: boolean = false
-  ): DamageResult {
-    if (!this.isBattleStarted) {
-      throw new Error('请先调用 startBattle()');
+  applyBuffs(buffs: Buff[], props: PropertyCollection): PropertyCollection {
+    const inCombatBuffs = buffs.filter(b => b.hasInCombatStats());
+    const conversionBuffs = buffs.filter(b => b.isConversion());
+
+    let result = props;
+    for (const buff of inCombatBuffs) {
+      result = buff.applyInCombatStats(result);
     }
-    if (this.isBattlePaused) {
-      throw new Error('战斗已暂停，请调用 resumeBattle()');
+    for (const buff of conversionBuffs) {
+      result = buff.applyConversionStats(result);
     }
-
-    // 1. 获取角色战斗属性，考虑当前激活的Buff
-    const activeBuffs = this.getActiveBuffs();
-    const attacker = this.team!.frontAgent.getCombatStats(activeBuffs);
-
-    // 2. 获取敌人战斗属性
-    const enemy = this.enemy!.getCombatStats();
-
-    // 3. 构建技能参数
-    const skillParams: SkillDamageParams = {
-      damage_ratio: skillDamageRatio,
-      element: skillElement,
-      is_penetration: isPenetration,
-      anomaly_buildup: skillAnomalyBuildup,
-    };
-
-    // 4. 计算直接伤害（常规伤害）
-    const directResult = DamageCalculatorService.calculateDirectDamage(
-      attacker,
-      enemy,
-      skillParams,
-      false // 计算期望值
-    );
-
-    // 5. 初始化异常伤害为0
-    let anomaly_damage_no_crit = 0;
-    let anomaly_damage_crit = 0;
-    let anomaly_damage_expected = 0;
-
-    // 6. 如果有异常积蓄值，计算异常伤害
-    if (skillAnomalyBuildup > 0) {
-      // 计算异常积蓄值
-      const calculatedAnomalyBuildup = DamageCalculatorService.calculateAnomalyBuildup(
-        attacker,
-        enemy,
-        skillParams
-      );
-
-      // 计算异常伤害（使用标准异常倍率，例如200%）
-      const anomalyRatio = 2.0; // TODO: 从技能数据中获取具体的异常倍率
-      const anomalyResult = DamageCalculatorService.calculateAnomalyDamage(
-        attacker,
-        enemy,
-        anomalyRatio,
-        calculatedAnomalyBuildup,
-        skillElement,
-        false
-      );
-
-      anomaly_damage_no_crit = anomalyResult.anomaly_damage_no_crit;
-      anomaly_damage_crit = anomalyResult.anomaly_damage_crit;
-      anomaly_damage_expected = anomalyResult.anomaly_damage_expected;
-    }
-
-    // 7. 组合结果
-    const result: DamageResult = {
-      normal_damage_no_crit: directResult.damage_no_crit,
-      normal_damage_crit: directResult.damage_crit,
-      normal_damage_expected: directResult.damage_expected,
-      anomaly_damage_no_crit: anomaly_damage_no_crit,
-      anomaly_damage_crit: anomaly_damage_crit,
-      anomaly_damage_expected: anomaly_damage_expected,
-      total_damage_expected: directResult.damage_expected + anomaly_damage_expected,
-    };
-
     return result;
   }
 
@@ -670,7 +557,6 @@ export class BattleService {
    * @returns 合并后的局内属性集
    */
   mergeCombatProperties(): PropertyCollection {
-    // 检查缓存是否有效
     if (this.mergedInCombatProperties) {
       return this.mergedInCombatProperties;
     }
@@ -679,25 +565,11 @@ export class BattleService {
       throw new Error('请先设置队伍');
     }
 
-    // 1. 获取角色+装备的战斗属性
     const combatStats = this.team.frontAgent.getCharacterCombatStats();
-
-    // 2. 获取激活的buff列表
     const activeBuffs = this.getActiveBuffs();
+    const mergedProperties = this.applyBuffs(activeBuffs, combatStats);
 
-    // 3. 合并buff属性到战斗属性中
-    const mergedProperties = new PropertyCollection();
-    mergedProperties.add(combatStats);
-
-    // 4. 添加所有激活buff的属性
-    for (const buff of activeBuffs) {
-      const buffProps = buff.toPropertyCollection();
-      mergedProperties.add(buffProps);
-    }
-
-    // 5. 缓存结果
     this.mergedInCombatProperties = mergedProperties;
-
     return mergedProperties;
   }
 
@@ -912,7 +784,14 @@ export class BattleService {
         stats: stats,
         target: buff.target || {},
         isActive: status.isActive,
-        isToggleable: status.isToggleable
+        isToggleable: status.isToggleable,
+        conversion: buff.conversion ? {
+          from_property: PropertyType[buff.conversion.from_property],
+          to_property: PropertyType[buff.conversion.to_property],
+          conversion_ratio: buff.conversion.conversion_ratio,
+          max_value: buff.conversion.max_value,
+          from_property_threshold: buff.conversion.from_property_threshold
+        } : null
       };
     });
   }
@@ -947,5 +826,90 @@ export class BattleService {
    */
   getFinalPropertySnapshot(): BattleStateSnapshot | null {
     return this.finalPropertySnapshot;
+  }
+
+  /**
+   * 计算完整伤害期望
+   * @param totalSkillRatio 技能总倍率
+   * @param anomalyBuildup 异常积蓄系数
+   */
+  calculateTotalDamage(totalSkillRatio: number, anomalyBuildup: number): TotalDamageResult {
+    if (!this.team || !this.enemy) {
+      throw new Error('请先设置队伍和敌人');
+    }
+
+    const agent = this.team.frontAgent;
+    const isPenetration = agent.isPenetrationAgent();
+    const element = ElementType[agent.element].toLowerCase();
+    
+    // 获取乘区集合
+    const props = this.mergeCombatProperties();
+    const enemyStats = this.enemy.getCombatStats();
+    const zones = DamageCalculatorService.updateAllZones(props, enemyStats, element);
+    
+    // 1. 计算直伤/贯穿伤害
+    let directDamage = 0;
+    if (isPenetration) {
+      const ratios = new RatioSet();
+      ratios.atk_ratio = totalSkillRatio;
+      const result = DamageCalculatorService.calculatePenetrationDamage(zones, ratios);
+      directDamage = result.damage_expected;
+    } else {
+      const ratios = new RatioSet();
+      ratios.atk_ratio = totalSkillRatio;
+      const result = DamageCalculatorService.calculateDirectDamageFromRatios(zones, ratios);
+      directDamage = result.damage_expected;
+    }
+    
+    // 2. 计算异常触发期望
+    const triggerExpectation = this.calculateAnomalyTriggerExpectation(anomalyBuildup, element);
+    
+    // 3. 计算异常持续伤害
+    const anomalyParams = DamageCalculatorService.getAnomalyDotParams(element);
+    const anomalyRatios = new RatioSet();
+    anomalyRatios.atk_ratio = anomalyParams.totalRatio;
+    const anomalyResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, anomalyRatios);
+    const anomalyDamage = anomalyResult.damage_expected * triggerExpectation;
+    
+    // 4. 计算紊乱伤害 (450%)
+    const disorderRatios = new RatioSet();
+    disorderRatios.atk_ratio = 4.5;
+    const disorderResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, disorderRatios);
+    const disorderDamage = disorderResult.damage_expected * triggerExpectation;
+    
+    // 5. 特殊异常伤害（星见雅烈霜 1500%）
+    let specialAnomalyDamage = 0;
+    const specialConfig = agent.getSpecialAnomalyConfig();
+    if (specialConfig) {
+      const specialRatios = new RatioSet();
+      specialRatios.atk_ratio = specialConfig.ratio;
+      const specialResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, specialRatios);
+      specialAnomalyDamage = specialResult.damage_expected * triggerExpectation;
+    }
+    
+    return {
+      directDamage,
+      anomalyDamage,
+      disorderDamage,
+      specialAnomalyDamage,
+      totalDamage: directDamage + anomalyDamage + disorderDamage + specialAnomalyDamage,
+      triggerExpectation
+    };
+  }
+
+  /**
+   * 计算异常触发期望
+   * 公式：异常积蓄 × (1 + buff效率) / 敌人异常条
+   */
+  calculateAnomalyTriggerExpectation(anomalyBuildup: number, element: string): number {
+    if (!this.enemy) return 0;
+    
+    const props = this.mergeCombatProperties();
+    // 使用伤害计算服务获取完整的乘区（包含属性积蓄效率和抗性）
+    const zones = DamageCalculatorService.updateAllZones(props, this.enemy.getCombatStats(), element);
+    const enemyThreshold = this.enemy.getCombatStats().getAnomalyThreshold(element);
+    
+    // zones.accumulate_zone 已经计算了 (1 + 效率) * (1 - 抗性)
+    return anomalyBuildup * zones.accumulate_zone / enemyThreshold;
   }
 }

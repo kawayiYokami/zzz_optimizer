@@ -1,67 +1,86 @@
 [
   {
-    "id": "1061_core_passive_0_1",
-    "name": "专注",
-    "description": "连点或长按后，可琳使用电锯持续斩击敌人时，招式造成的伤害提升37.5%。",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.375 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "使用电锯持续斩击敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1061_talent_1_1",
+    "id": "1061_talent_1",
     "name": "开放性创伤",
-    "description": "连携技或终结技命中敌人时，可琳对目标造成的伤害提升12%，持续15秒。",
+    "description": "[连携技]或[终结技]命中敌人时，可琳对目标造成的伤害提升12%，持续15秒。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.12 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "COMMON_DMG_": 0.12
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "连携技或终结技命中敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "[连携技]或[终结技]命中敌人时",
+    "max_stacks": 1
   },
   {
-    "id": "1061_talent_2_1",
+    "id": "1061_talent_2",
     "name": "裂解效应",
-    "description": "强化特殊技、连携技或终结技命中敌人时，目标的物理伤害抗性下降0.5%，最多叠加20层，持续5秒，每层效果单独结算持续时间。",
+    "description": "[强化特殊技]、[连携技]或[终结技]命中敌人时，目标的物理伤害抗性下降0.5%，最多叠加20层，持续5秒，每层效果单独结算持续时间。",
     "source": "TALENT",
-    "target": { "target_enemy": true },
-    "in_combat_stats": { "PHYSICAL_RES_": -0.005 },
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "ENEMY_RES_RED_": 0.005
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "强化特殊技、连携技或终结技命中敌人时",
+    "trigger_conditions": "[强化特殊技]、[连携技]或[终结技]命中敌人时",
     "max_stacks": 20,
     "stack_mode": "linear"
   },
   {
-    "id": "1061_talent_6_1",
+    "id": "1061_talent_6",
     "name": "厚积薄发",
-    "description": "持续斩击命中敌人时，可琳获得1层充能（最多40层）；在闪避反击、特殊技、强化特殊技、快速支援、支援突击中，引爆电锯命中敌人时，消耗所有充能，每层充能使本次攻击额外造成可琳3%攻击力的伤害。",
+    "description": "持续斩击命中敌人时，可琳获得1层充能（最多40层）；在[闪避反击]、[特殊技]、[强化特殊技]、[快速支援]、[支援突击]中，引爆电锯命中敌人时，消耗所有充能，每层充能使本次攻击额外造成可琳3%攻击力的伤害。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "ATTACK": 0.03 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {},
     "out_of_combat_stats": {},
-    "conversion": { "source_stat": "ATTACK", "target_stat": "ATTACK", "multiplier": 0.03, "description": "每层充能额外造成3%攻击力的伤害" },
-    "trigger_conditions": "引爆电锯命中敌人时",
+    "conversion": {
+      "from_property": "ATK",
+      "to_property": "FLAT_DMG",
+      "conversion_ratio": 0.03
+    },
+    "trigger_conditions": "消耗充能层数时",
     "max_stacks": 40,
-    "stack_mode": "consume"
+    "stack_mode": "linear"
   },
   {
-    "id": "1061_extra_ability_0_1",
-    "name": "扫除帮手",
-    "description": "队伍中存在与自身属性或阵营相同的角色时触发：可琳攻击命中处于失衡状态下的敌人时，自身造成的伤害提升35%。",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.35 },
+    "id": "1061_core_passive",
+    "name": "专注",
+    "description": "连点或长按后，可琳使用电锯持续斩击敌人时，招式造成的伤害提升37.5%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "COMMON_DMG_": 0.375
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "队伍中存在同属性或同阵营角色，且攻击命中失衡敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "使用电锯持续斩击敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1061_extra_ability",
+    "name": "扫除帮手",
+    "description": "队伍中存在与自身属性或阵营相同的角色时触发：可琳攻击命中处于失衡状态下的敌人时，自身造成的伤害提升35%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "COMMON_DMG_": 0.35
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "攻击命中处于失衡状态下的敌人时",
+    "max_stacks": 1
   }
 ]

@@ -1,41 +1,103 @@
 [
   {
-    "id": "1211_core_passive_7_1",
-    "name": "穿透率传递",
-    "description": "指派杜苏拉或安娜塔莎进行攻击时，队伍中其他角色的穿透率随丽娜自身的穿透率提升，提升效果等同于丽娜25%穿透率+12%，最高提升30%",
+    "id": "1211_talent_1",
+    "name": "双人领舞",
+    "description": "在杜苏拉或安娜塔莎附近10米范围内的角色，从[核心被动：迷你毁灭拍档]中获得的增益效果提升至原本的130%。",
+    "source": "TALENT",
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "在杜苏拉或安娜塔莎附近时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1211_talent_2",
+    "name": "主人的典范",
+    "description": "成为接战状态下的当前操作角色时，丽娜造成的伤害提升15%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "COMMON_DMG_": 0.15
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "成为接战角色时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1211_talent_6",
+    "name": "雷雨夜惊魂",
+    "description": "[强化特殊技]、[连携技]或[终结技]命中敌人时，全队角色造成的电属性伤害提升15%，持续8秒。",
+    "source": "TALENT",
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {
+      "ELECTRIC_DMG_": 0.15
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[强化特殊技]、[连携技]或[终结技]命中敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1211_core_passive_1",
+    "name": "迷你毁灭拍档 - 基础穿透",
+    "description": "指派杜苏拉或安娜塔莎进行攻击时，队伍中其他角色的穿透率提升12%。",
     "source": "CORE_PASSIVE",
-    "target": { "target_self": true, "target_teammate": true },
-    "in_combat_stats": { "PEN_": 25.0 },
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {
+      "PEN_": 0.12
+    },
     "out_of_combat_stats": {},
     "conversion": null,
     "trigger_conditions": "指派杜苏拉或安娜塔莎进行攻击时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "max_stacks": 1
   },
   {
-    "id": "1211_core_passive_extra_1",
-    "name": "完美舞会",
-    "description": "队伍中存在与自身属性或阵营相同的角色时触发：场上存在处于感电状态下的敌人时，全队角色造成的电属性伤害提升10%",
+    "id": "1211_core_passive_2",
+    "name": "迷你毁灭拍档 - 穿透转换",
+    "description": "指派杜苏拉或安娜塔莎进行攻击时，队伍中其他角色的穿透率随丽娜自身的穿透率提升，提升效果等同于丽娜25%穿透率，最高提升30%。",
     "source": "CORE_PASSIVE",
-    "target": { "target_self": true, "target_teammate": true },
-    "in_combat_stats": { "ELECTRIC_DMG_": 10.0 },
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {},
     "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "与自身属性或阵营相同的角色存在时，且场上存在感电状态下的敌人",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "conversion": {
+      "from_property": "DEF_PEN_",
+      "to_property": "DEF_PEN_",
+      "conversion_ratio": 0.25
+    },
+    "trigger_conditions": "指派杜苏拉或安娜塔莎进行攻击时",
+    "max_stacks": 1
   },
   {
-    "id": "1211_talent_6_1",
-    "name": "雷雨夜惊魂",
-    "description": "强化特殊技、连携技或终结技命中敌人时，全队角色造成的电属性伤害提升15%，持续8秒",
-    "source": "TALENT",
-    "target": { "target_self": true, "target_teammate": true },
-    "in_combat_stats": { "ELECTRIC_DMG_": 15.0 },
+    "id": "1211_extra_ability_1",
+    "name": "完美舞会",
+    "description": "场上存在处于[感电]状态下的敌人时，全队角色造成的电属性伤害提升10%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {
+      "ELECTRIC_DMG_": 0.1
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "强化特殊技、连携技或终结技命中敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "场上存在处于[感电]状态下的敌人时",
+    "max_stacks": 1
   }
 ]

@@ -21,16 +21,16 @@
       "stack_mode": "linear",
       "trigger_conditions": [],
       "out_of_combat_stats": {
-        "ETHER_DMG_": 10.0
+        "ETHER_DMG_": 0.1
       },
       "in_combat_stats": {}
     }
   ],
   "four_piece_buffs": [
     {
-      "id": "流光咏叹_4pc",
-      "name": "流光咏叹 4件套",
-      "description": "装备者发动[普通攻击]命中敌人时，自身异常精通提升36点，持续8秒，重复触发时刷新持续时间；当场上有敌人进入失衡状态时，装备者造成的伤害提升25%，持续18秒，重复触发时刷新持续时间。",
+      "id": "流光咏叹_4pc_1",
+      "name": "流光咏叹 4件套 (普通攻击)",
+      "description": "装备者发动[普通攻击]命中敌人时，自身异常精通提升36点，持续8秒",
       "source": "DRIVE_DISK_4PC",
       "context": "IN_COMBAT",
       "target": {
@@ -44,7 +44,27 @@
       "trigger_conditions": "装备者发动[普通攻击]命中敌人时",
       "out_of_combat_stats": {},
       "in_combat_stats": {
-        "NORMAL_ATK_DMG_": 25.0
+        "ANOM_PROF": 36.0
+      }
+    },
+    {
+      "id": "流光咏叹_4pc_2",
+      "name": "流光咏叹 4件套 (失衡)",
+      "description": "当场上有敌人进入失衡状态时，装备者造成的伤害提升25%，持续18秒",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "当场上有敌人进入失衡状态时",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "COMMON_DMG_": 0.25
       }
     }
   ]

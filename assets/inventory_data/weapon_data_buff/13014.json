@@ -22,11 +22,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 3,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "连携技/终结技触发",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "PEN": 80.0
+          }
         }
       ]
     },
@@ -47,11 +49,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 3,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "连携技/终结技触发",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "PEN": 92.0
+          }
         }
       ]
     },
@@ -72,11 +76,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 3,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "连携技/终结技触发",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "PEN": 104.0
+          }
         }
       ]
     },
@@ -97,11 +103,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 3,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "连携技/终结技触发",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "PEN": 116.0
+          }
         }
       ]
     },
@@ -122,11 +130,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 3,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "连携技/终结技触发",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "PEN": 128.0
+          }
         }
       ]
     }

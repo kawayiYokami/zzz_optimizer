@@ -21,7 +21,7 @@
       "stack_mode": "linear",
       "trigger_conditions": [],
       "out_of_combat_stats": {
-        "IMPACT_DMG_": 6.0
+        "IMPACT_": 0.06
       },
       "in_combat_stats": {}
     }
@@ -44,7 +44,7 @@
       "trigger_conditions": "",
       "out_of_combat_stats": {},
       "in_combat_stats": {
-        "NORMAL_ATK_DMG_": 20.0
+        "DAZE_INC_": 0.2
       }
     }
   ]

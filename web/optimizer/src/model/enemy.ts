@@ -34,19 +34,33 @@ export class Enemy {
   physical_dmg_resistance: number;
   ether_dmg_resistance: number;
 
-  // 异常抗性（可选，暂不实现）
+  // 异常抗性
   ice_anomaly_resistance: number = 0;
   fire_anomaly_resistance: number = 0;
   electric_anomaly_resistance: number = 0;
   physical_anomaly_resistance: number = 0;
   ether_anomaly_resistance: number = 0;
 
-  // 失衡抗性（可选，暂不实现）
+  // 失衡抗性
   ice_stun_resistance: number = 0;
   fire_stun_resistance: number = 0;
   electric_stun_resistance: number = 0;
   physical_stun_resistance: number = 0;
   ether_stun_resistance: number = 0;
+
+  // 异常条ID
+  ice_anomaly_bar: string = '';
+  fire_anomaly_bar: string = '';
+  electric_anomaly_bar: string = '';
+  physical_anomaly_bar: string = '';
+  ether_anomaly_bar: string = '';
+
+  // 其他属性
+  crit_dmg: number = 0;
+  chain_attack_count: number = 0;
+  base_poise_level: number = 0;
+  freeze_time_resistance: number = 0;
+  base_buildup_coefficient: number = 0;
 
   constructor(
     id: string,
@@ -97,6 +111,10 @@ export class Enemy {
     // 设置其他属性
     enemy.index_id = enemyData.index_id || '';
     enemy.tags = enemyData.tags || '';
+    // 默认失衡易伤倍率为 50%
+    enemy.stun_vulnerability_multiplier = enemyData.stun_vulnerability_multiplier !== undefined
+      ? enemyData.stun_vulnerability_multiplier
+      : 0.5;
 
     // 伤害抗性
     enemy.ice_dmg_resistance = enemyData.ice_dmg_resistance || 0;
@@ -104,6 +122,34 @@ export class Enemy {
     enemy.electric_dmg_resistance = enemyData.electric_dmg_resistance || 0;
     enemy.physical_dmg_resistance = enemyData.physical_dmg_resistance || 0;
     enemy.ether_dmg_resistance = enemyData.ether_dmg_resistance || 0;
+
+    // 异常抗性
+    enemy.ice_anomaly_resistance = enemyData.ice_anomaly_resistance || 0;
+    enemy.fire_anomaly_resistance = enemyData.fire_anomaly_resistance || 0;
+    enemy.electric_anomaly_resistance = enemyData.electric_anomaly_resistance || 0;
+    enemy.physical_anomaly_resistance = enemyData.physical_anomaly_resistance || 0;
+    enemy.ether_anomaly_resistance = enemyData.ether_anomaly_resistance || 0;
+
+    // 失衡抗性
+    enemy.ice_stun_resistance = enemyData.ice_stun_resistance || 0;
+    enemy.fire_stun_resistance = enemyData.fire_stun_resistance || 0;
+    enemy.electric_stun_resistance = enemyData.electric_stun_resistance || 0;
+    enemy.physical_stun_resistance = enemyData.physical_stun_resistance || 0;
+    enemy.ether_stun_resistance = enemyData.ether_stun_resistance || 0;
+
+    // 异常条ID
+    enemy.ice_anomaly_bar = enemyData.ice_anomaly_bar || '';
+    enemy.fire_anomaly_bar = enemyData.fire_anomaly_bar || '';
+    enemy.electric_anomaly_bar = enemyData.electric_anomaly_bar || '';
+    enemy.physical_anomaly_bar = enemyData.physical_anomaly_bar || '';
+    enemy.ether_anomaly_bar = enemyData.ether_anomaly_bar || '';
+
+    // 其他属性
+    enemy.crit_dmg = enemyData.crit_dmg || 0;
+    enemy.chain_attack_count = enemyData.chain_attack_count || 0;
+    enemy.base_poise_level = enemyData.base_poise_level || 0;
+    enemy.freeze_time_resistance = enemyData.freeze_time_resistance || 0;
+    enemy.base_buildup_coefficient = enemyData.base_buildup_coefficient || 0;
 
     return enemy;
   }
@@ -237,11 +283,9 @@ export class Enemy {
     if (this.can_stun) {
       lines.push(`${prefix}【失衡属性】`);
       lines.push(`  ${prefix}失衡值上限: ${this.stun_max.toFixed(0)}`);
-      if (this.stun_vulnerability_multiplier > 0) {
-        lines.push(
-          `  ${prefix}失衡易伤倍率: ${(this.stun_vulnerability_multiplier * 100).toFixed(1)}%`
-        );
-      }
+      lines.push(
+        `  ${prefix}失衡易伤倍率: ${(this.stun_vulnerability_multiplier * 100).toFixed(1)}%`
+      );
     } else {
       lines.push(`${prefix}【失衡属性】`);
       lines.push(`  ${prefix}无法失衡`);
@@ -288,6 +332,7 @@ export class EnemyStats {
   can_stun: boolean;
   stun_vulnerability: number;
   is_stunned: boolean;
+  has_corruption_shield: boolean;
   element_resistances: Record<string, number>;
   anomaly_thresholds: Record<string, number>;
 
@@ -300,7 +345,8 @@ export class EnemyStats {
     stunVulnerability: number,
     isStunned: boolean,
     elementResistances: Record<string, number>,
-    anomalyThresholds: Record<string, number>
+    anomalyThresholds: Record<string, number>,
+    hasCorruptionShield: boolean = false
   ) {
     this.hp = hp;
     this.defense = defense;
@@ -309,6 +355,7 @@ export class EnemyStats {
     this.can_stun = canStun;
     this.stun_vulnerability = stunVulnerability;
     this.is_stunned = isStunned;
+    this.has_corruption_shield = hasCorruptionShield;
     this.element_resistances = elementResistances;
     this.anomaly_thresholds = anomalyThresholds;
   }

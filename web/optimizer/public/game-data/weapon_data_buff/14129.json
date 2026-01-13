@@ -27,7 +27,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 45.0
+            "CRIT_DMG_": 0.45
           }
         },
         {
@@ -47,7 +47,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 45.0
+            "CRIT_DMG_": 0.45
           }
         }
       ]
@@ -74,7 +74,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 51.75
+            "CRIT_DMG_": 0.5175
           }
         },
         {
@@ -94,7 +94,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 51.75
+            "CRIT_DMG_": 0.5175
           }
         }
       ]
@@ -121,7 +121,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 58.5
+            "CRIT_DMG_": 0.585
           }
         },
         {
@@ -141,7 +141,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 58.5
+            "CRIT_DMG_": 0.585
           }
         }
       ]
@@ -168,7 +168,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 65.25
+            "CRIT_DMG_": 0.6525
           }
         },
         {
@@ -188,7 +188,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 65.25
+            "CRIT_DMG_": 0.6525
           }
         }
       ]
@@ -215,7 +215,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 72.0
+            "CRIT_DMG_": 0.72
           }
         },
         {
@@ -235,7 +235,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 72.0
+            "CRIT_DMG_": 0.72
           }
         }
       ]

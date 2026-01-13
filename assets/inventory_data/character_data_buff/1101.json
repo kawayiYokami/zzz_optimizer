@@ -1,53 +1,86 @@
 [
   {
-    "id": "1101_core_passive_0_1",
-    "name": "爆破锤",
-    "description": "珂蕾妲发动强化特殊技，或消耗熔炉升温发动强化普通攻击时，招式造成的失衡值提升60%。",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": { "STUN_RATIO_": 0.60 },
+    "id": "1101_talent_1",
+    "name": "锤击节奏",
+    "description": "当衔接在[普通攻击]第二、第四段或强化[普通攻击]后，快速发动[特殊技]或[强化特殊技]时，招式造成的失衡值提升15%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DAZE_INC_": 0.15
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "发动强化特殊技或消耗熔炉升温发动强化普通攻击时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "在[普通攻击]第二、第四段或强化[普通攻击]后，快速发动[特殊技]或[强化特殊技]时",
+    "max_stacks": 1
   },
   {
-    "id": "1101_talent_4_1",
+    "id": "1101_talent_4",
     "name": "熔炉余温",
-    "description": "消耗熔炉升温发动强化普通攻击时，珂蕾妲获得1层充能（上限2层）；连携技：天崩-地裂或终结技：锤进地心命中敌人时，消耗所有充能，每层充能使当前招式造成的伤害提升18%。",
+    "description": "消耗[熔炉升温]发动强化[普通攻击]时，珂蕾妲获得1层充能（上限2层）；[连携技：天崩-地裂]或[终结技：锤进地心]命中敌人时，消耗所有充能，每层充能使当前招式造成的伤害提升18%。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.18 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CHAIN_ATK_DMG_": 0.18,
+      "ULTIMATE_ATK_DMG_": 0.18
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "连携技或终结技命中敌人并消耗充能时",
+    "trigger_conditions": "[连携技]或[终结技]命中时，消耗充能层数",
     "max_stacks": 2,
-    "stack_mode": "consume"
+    "stack_mode": "linear"
   },
   {
-    "id": "1101_talent_6_1",
+    "id": "1101_talent_6",
     "name": "饱和爆破",
-    "description": "在强化特殊技、连携技或终结技中，引发爆炸命中敌人时，额外造成珂蕾妲360%攻击力的伤害。",
+    "description": "在[强化特殊技]、[连携技]或[终结技]中，引发爆炸命中敌人时，额外造成珂蕾妲360%攻击力的伤害。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "ATTACK": 3.60 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {},
     "out_of_combat_stats": {},
-    "conversion": { "source_stat": "ATTACK", "target_stat": "COMMON_DMG", "multiplier": 3.60, "description": "额外造成360%攻击力的伤害" },
-    "trigger_conditions": "强化特殊技、连携技或终结技中引发爆炸命中敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "conversion": {
+      "from_property": "ATK",
+      "to_property": "FLAT_DMG",
+      "conversion_ratio": 3.6
+    },
+    "trigger_conditions": "在[强化特殊技]、[连携技]或[终结技]中引发爆炸时",
+    "max_stacks": 1
   },
   {
-    "id": "1101_extra_ability_0_1",
-    "name": "白祇管理学",
-    "description": "队伍中存在与自身属性或阵营相同的角色或命破角色时触发：珂蕾妲发动强化特殊技引发爆炸命中敌人时，对目标施加减益效果；当目标陷入失衡状态后，连携技对其造成的伤害提升35%，最多叠加2层，失衡状态结束时该效果重置。",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.35 },
+    "id": "1101_core_passive",
+    "name": "爆破锤",
+    "description": "珂蕾妲发动[强化特殊技]，或消耗[熔炉升温]发动强化[普通攻击]时，招式造成的失衡值提升60%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DAZE_INC_": 0.60
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "目标陷入失衡状态后受到连携技伤害时",
+    "trigger_conditions": "发动[强化特殊技]，或消耗[熔炉升温]发动强化[普通攻击]时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1101_extra_ability",
+    "name": "白祇管理学",
+    "description": "当目标陷入失衡状态后，[连携技]对其造成的伤害提升35%，最多叠加2层，失衡状态结束时该效果重置。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CHAIN_ATK_DMG_": 0.35
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "当目标陷入失衡状态后，使用[连携技]攻击时",
     "max_stacks": 2,
     "stack_mode": "linear"
   }

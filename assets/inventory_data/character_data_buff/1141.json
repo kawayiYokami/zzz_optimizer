@@ -1,41 +1,99 @@
 [
   {
-    "id": "1141_core_passive_7_1",
-    "name": "冰属性抗性降低",
-    "description": "强化特殊技：狂猎时刻或支援突击：复仇反扑命中敌人时，目标的冰属性伤害抗性降低25%，持续30秒",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true, "target_enemy": true },
-    "in_combat_stats": { "ICE_RESISTANCE_": -25.0 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "强化特殊技或支援突击命中敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1141_core_passive_extra_1",
-    "name": "优雅猎群",
-    "description": "队伍中存在与自身属性或阵营相同的角色时触发：莱卡恩攻击命中处于失衡状态下的敌人时，目标的失衡易伤倍率提升35%",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true, "target_enemy": true },
-    "in_combat_stats": { "STUN_VULNERABILITY_": 35.0 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "与自身属性或阵营相同的角色，且攻击命中失衡状态下的敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1141_talent_6_1",
-    "name": "冷酷猎手",
-    "description": "蓄力攻击命中敌人时，莱卡恩对目标造成的伤害提升10%，最多叠加5层，持续12秒，同一招式内最多叠加1层，重复触发时刷新持续时间",
+    "id": "1141_talent_1_1",
+    "name": "满月蓄势",
+    "description": "强化特殊技：狂猎时刻]命中敌人时，招式造成的失衡值提升12%。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 10.0 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DAZE_INC_": 0.12
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "强化特殊技：狂猎时刻]命中敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1141_talent_1_2",
+    "name": "满月蓄势-蓄力",
+    "description": "在[强化特殊技：狂猎时刻]中完成蓄力时，该增益效果额外提升10%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DAZE_INC_": 0.1
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "在[强化特殊技：狂猎时刻]中完成蓄力时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1141_talent_6",
+    "name": "冷酷猎手",
+    "description": "蓄力攻击命中敌人时，莱卡恩对目标造成的伤害提升10%，最多叠加5层，持续12秒；同一招式内最多叠加1层效果，重复触发时刷新持续时间。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "COMMON_DMG_": 0.1
+    },
     "out_of_combat_stats": {},
     "conversion": null,
     "trigger_conditions": "蓄力攻击命中敌人时",
     "max_stacks": 5,
     "stack_mode": "linear"
+  },
+  {
+    "id": "1141_core_passive_1",
+    "name": "金属狼足-失衡",
+    "description": "莱卡恩在[普通攻击]中完成蓄力时，招式造成的失衡值提升80%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DAZE_INC_": 0.8
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "在[普通攻击]中完成蓄力时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1141_core_passive_2",
+    "name": "金属狼足-冰抗",
+    "description": "[强化特殊技：狂猎时刻]或[支援突击：复仇反扑]命中敌人时，目标的冰属性伤害抗性降低25%，持续30秒。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "ICE_RES_RED_": 0.25
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[强化特殊技：狂猎时刻]或[支援突击：复仇反扑]命中敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1141_core_passive_3",
+    "name": "优雅猎群",
+    "description": "队伍中存在与自身属性或阵营相同的角色时触发：莱卡恩攻击命中处于失衡状态下的敌人时，目标的失衡易伤倍率提升35%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "DAZE_RED_": 0.35
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "队伍中存在与自身属性或阵营相同的角色，且攻击命中处于失衡状态下的敌人时",
+    "max_stacks": 1
   }
 ]

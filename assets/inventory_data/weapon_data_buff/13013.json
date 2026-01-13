@@ -27,7 +27,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ENHANCED_SPECIAL_DMG_": 15.0
+            "ENHANCED_SPECIAL_DMG_": 0.15
           }
         },
         {
@@ -47,7 +47,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 6.0
+            "ATK_": 0.06
           }
         }
       ]
@@ -74,7 +74,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ENHANCED_SPECIAL_DMG_": 17.2
+            "ENHANCED_SPECIAL_DMG_": 0.172
           }
         },
         {
@@ -94,7 +94,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 6.9
+            "ATK_": 0.069
           }
         }
       ]
@@ -121,7 +121,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ENHANCED_SPECIAL_DMG_": 19.5
+            "ENHANCED_SPECIAL_DMG_": 0.195
           }
         },
         {
@@ -141,7 +141,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 7.8
+            "ATK_": 0.078
           }
         }
       ]
@@ -168,7 +168,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ENHANCED_SPECIAL_DMG_": 21.8
+            "ENHANCED_SPECIAL_DMG_": 0.218
           }
         },
         {
@@ -188,7 +188,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 8.7
+            "ATK_": 0.087
           }
         }
       ]
@@ -215,7 +215,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ENHANCED_SPECIAL_DMG_": 24.0
+            "ENHANCED_SPECIAL_DMG_": 0.24
           }
         },
         {
@@ -235,7 +235,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 9.6
+            "ATK_": 0.096
           }
         }
       ]

@@ -27,7 +27,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_": 20.0
+            "CRIT_": 0.2
           }
         }
       ]
@@ -54,7 +54,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_": 23.0
+            "CRIT_": 0.23
           }
         }
       ]
@@ -81,7 +81,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_": 26.0
+            "CRIT_": 0.26
           }
         }
       ]
@@ -108,7 +108,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_": 29.0
+            "CRIT_": 0.29
           }
         }
       ]
@@ -135,7 +135,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_": 32.0
+            "CRIT_": 0.32
           }
         }
       ]

@@ -24,9 +24,12 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "普通攻击命中时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.06,
+            "DAZE_INC_": 0.06
+          }
         }
       ]
     },
@@ -49,9 +52,12 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "普通攻击命中时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.075,
+            "DAZE_INC_": 0.075
+          }
         }
       ]
     },
@@ -74,9 +80,12 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "普通攻击命中时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.09,
+            "DAZE_INC_": 0.09
+          }
         }
       ]
     },
@@ -99,9 +108,12 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "普通攻击命中时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.105,
+            "DAZE_INC_": 0.105
+          }
         }
       ]
     },
@@ -124,9 +136,12 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "普通攻击命中时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "NORMAL_ATK_DMG_": 0.12,
+            "DAZE_INC_": 0.12
+          }
         }
       ]
     }

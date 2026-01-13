@@ -1,67 +1,85 @@
 [
   {
-    "id": "1111_core_passive_0_1",
-    "name": "兄弟齐心！",
-    "description": "安东发动打桩攻击时，招式造成的伤害提升24%；发动电钻攻击时，招式造成的伤害提升40%。",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.40 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "发动电钻攻击时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1111_core_passive_0_2",
-    "name": "兄弟齐心！-打桩攻击",
-    "description": "安东发动打桩攻击时，招式造成的伤害提升24%。",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.24 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "发动打桩攻击时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1111_talent_4_1",
+    "id": "1111_talent_4",
     "name": "一起燃烧！",
-    "description": "发动连携技或终结技时，全队角色暴击率提升10%，持续12秒。",
+    "description": "发动[连携技]或[终结技]时，全队角色暴击率提升10%，持续12秒。",
     "source": "TALENT",
-    "target": { "target_teammate": true },
-    "in_combat_stats": { "CRIT_RATE_": 0.10 },
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {
+      "CRIT_": 0.10
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "发动连携技或终结技时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "发动[连携技]或[终结技]时",
+    "max_stacks": 1
   },
   {
-    "id": "1111_talent_6_1",
+    "id": "1111_talent_6",
     "name": "突破极限",
-    "description": "打桩攻击造成暴击时，普通攻击：热血上工操（爆发状态）和闪避反击：过载钻击（爆发状态）造成的伤害提升4%，最多叠加6层，持续30秒，重复触发时刷新持续时间。",
+    "description": "[打桩攻击]造成暴击时，[普通攻击：热血上工操（爆发状态）]和[闪避反击：过载钻击（爆发状态）]造成的伤害提升4%，最多叠加6层，持续30秒，重复触发时刷新持续时间。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.04 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "NORMAL_ATK_DMG_": 0.04,
+      "DODGE_COUNTER_DMG_": 0.04
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "打桩攻击造成暴击时",
+    "trigger_conditions": "[打桩攻击]造成暴击时",
     "max_stacks": 6,
     "stack_mode": "linear"
   },
   {
-    "id": "1111_extra_ability_0_1",
-    "name": "通力合作",
-    "description": "队伍中存在与自身属性或阵营相同的角色时触发：安东进入爆发状态后，每触发4次暴击，下一次攻击命中处于感电状态下的敌人时，能够额外结算一次感电伤害，伤害效果等同于原本的45%，0.5秒内最多触发一次。",
-    "source": "TALENT",
-    "target": { "target_enemy": true },
-    "in_combat_stats": { "SHOCK_DMG_ADD": 0.45 },
+    "id": "1111_core_passive_1",
+    "name": "兄弟齐心！-打桩",
+    "description": "安东发动[打桩攻击]时，招式造成的伤害提升24%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "NORMAL_ATK_DMG_": 0.24
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "进入爆发状态后，每4次暴击下一次攻击命中感电敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "发动[打桩攻击]时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1111_core_passive_2",
+    "name": "兄弟齐心！-电钻",
+    "description": "安东发动[电钻攻击]时，招式造成的伤害提升40%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "NORMAL_ATK_DMG_": 0.40
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[电钻攻击]时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1111_extra_ability",
+    "name": "通力合作",
+    "description": "安东进入[爆发状态]后，每触发4次暴击，下一次攻击命中处于[感电]状态下的敌人时，能够额外结算一次[感电]伤害，伤害效果等同于原本的45%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "SHOCK_DMG_": 0.45
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "进入[爆发状态]后，每触发4次暴击，下一次攻击命中[感电]状态敌人时",
+    "max_stacks": 1
   }
 ]

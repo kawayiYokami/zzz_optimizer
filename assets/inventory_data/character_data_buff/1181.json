@@ -1,28 +1,68 @@
 [
   {
-    "id": "1181_talent_6_1",
-    "name": "电能强化",
-    "description": "消耗所有电能发动特殊技或强化特殊技时，能够强化招式效果，额外投掷一颗手雷，并使每颗手雷造成的伤害提升至原本的200%",
+    "id": "1181_talent_2",
+    "name": "电致击穿",
+    "description": "在[普通攻击]、[特殊技]、[强化特殊技]等招式中投掷手雷命中敌人时，目标的电属性伤害抗性降低8.5%，电属性异常积蓄抗性降低8.5%，持续8秒。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 200.0 },
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "ELECTRIC_RES_RED_": 0.085,
+      "ELECTRIC_ANOM_BUILDUP_RES_": -0.085
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "消耗所有电能发动特殊技或强化特殊技时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "投掷手雷命中敌人时",
+    "max_stacks": 1
   },
   {
-    "id": "1181_core_passive_extra_1",
-    "name": "过载协议",
-    "description": "队伍中存在与自身属性或阵营相同的角色时触发：格莉丝对处于感电状态下的敌人造成的伤害提升25%",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 25.0 },
+    "id": "1181_potential_1",
+    "name": "超频工程引擎",
+    "description": "消耗[电能]时获得[电能强化]状态，造成的电属性伤害提升30%，持续25秒，重复触发时刷新持续时间。",
+    "source": "POTENTIAL",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ELECTRIC_DMG_": 0.3
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "与自身属性或阵营相同的角色存在时，且攻击感电状态下的敌人",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "消耗[电能]时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1181_core_passive_1",
+    "name": "预驱动撞针",
+    "description": "[电能]层数到达上限后，发动[特殊技]或[强化特殊技]时，会消耗所有[电能]，使招式累积的电属性异常积蓄值提升130%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ELECTRIC_ANOMALY_BUILDUP_": 0.013
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "消耗满层[电能]发动特殊技或强化特殊技时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1181_extra_ability_1",
+    "name": "技术支持班组",
+    "description": "格莉丝[强化特殊技]命中敌人时，目标下次被施加[感电]效果时，该次[感电]伤害提升18%，最多叠加2层。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "SHOCK_DMG_": 0.18
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "强化特殊技命中敌人时",
+    "max_stacks": 2,
+    "stack_mode": "linear"
   }
 ]

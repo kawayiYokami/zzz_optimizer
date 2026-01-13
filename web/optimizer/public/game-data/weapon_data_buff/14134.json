@@ -27,7 +27,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 30.0
+            "CRIT_DMG_": 0.3
           }
         },
         {
@@ -47,9 +47,9 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 10.0,
-            "HP_": 10.0,
-            "CRIT_DMG_": 30.0
+            "ATK_": 0.1,
+            "HP_": 0.1,
+            "CRIT_DMG_": 0.3
           }
         }
       ]
@@ -76,7 +76,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 34.5
+            "CRIT_DMG_": 0.345
           }
         },
         {
@@ -96,9 +96,9 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 11.5,
-            "HP_": 11.5,
-            "CRIT_DMG_": 34.5
+            "ATK_": 0.115,
+            "HP_": 0.115,
+            "CRIT_DMG_": 0.345
           }
         }
       ]
@@ -125,7 +125,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 39.0
+            "CRIT_DMG_": 0.39
           }
         },
         {
@@ -145,9 +145,9 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 13.0,
-            "HP_": 13.0,
-            "CRIT_DMG_": 39.0
+            "ATK_": 0.13,
+            "HP_": 0.13,
+            "CRIT_DMG_": 0.39
           }
         }
       ]
@@ -174,7 +174,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 43.5
+            "CRIT_DMG_": 0.435
           }
         },
         {
@@ -194,9 +194,9 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 14.5,
-            "HP_": 14.5,
-            "CRIT_DMG_": 43.5
+            "ATK_": 0.145,
+            "HP_": 0.145,
+            "CRIT_DMG_": 0.435
           }
         }
       ]
@@ -223,7 +223,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 48.0
+            "CRIT_DMG_": 0.48
           }
         },
         {
@@ -243,9 +243,9 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 16.0,
-            "HP_": 16.0,
-            "CRIT_DMG_": 48.0
+            "ATK_": 0.16,
+            "HP_": 0.16,
+            "CRIT_DMG_": 0.48
           }
         }
       ]

@@ -1,80 +1,153 @@
 [
   {
-    "id": "1091_core_passive_0_1",
-    "name": "寒炎",
-    "description": "星见雅对敌人造成烈霜伤害时，将会为目标附着冰焰，持续30秒；对附着冰焰的敌人累积烈霜异常积蓄值时，会基于星见雅暴击率的100%提升烈霜异常积蓄效率，最多提升80%；星见雅累积烈霜异常积蓄值时，具有独立的属性异常积蓄槽，随之触发的冻结、碎冰和霜寒效果，可以与包括冰属性异常效果在内的其他属性异常效果互相结算紊乱；星见雅对附着冰焰的敌人施加霜寒效果时，将会消除冰焰并触发霜灼·破，对目标造成星见雅1500%攻击力的烈霜伤害。",
-    "source": "CORE_PASSIVE",
-    "target": { "target_enemy": true },
-    "in_combat_stats": { "ICE_DMG_": 15.00 },
-    "out_of_combat_stats": {},
-    "conversion": { "source_stat": "ATTACK", "target_stat": "ICE_DMG", "multiplier": 15.00, "description": "霜灼·破造成1500%攻击力的烈霜伤害" },
-    "trigger_conditions": "对附着冰焰的敌人施加霜寒效果时触发霜灼·破",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
     "id": "1091_talent_1_1",
-    "name": "雪上加霜",
-    "description": "在霜月架势期间，每消耗1点落霜，普通攻击：霜月将无视目标6%防御力，最多叠加6层，退出霜月架势后增益效果结束。",
+    "name": "雪上加霜-无视防御",
+    "description": "在[霜月架势]期间，每消耗1点[落霜]，[普通攻击：霜月]将无视目标6%防御力，最多叠加6层",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "DEF_": -0.06 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DEF_IGN_": 0.06
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "在霜月架势期间消耗落霜时",
+    "trigger_conditions": "在[霜月架势]期间，消耗[落霜]时",
     "max_stacks": 6,
     "stack_mode": "linear"
   },
   {
-    "id": "1091_talent_2_1",
+    "id": "1091_talent_1_2",
+    "name": "雪上加霜-异常积蓄",
+    "description": "在[普通攻击：霜月]中进行三段蓄力，斩击命中处于[霜灼]状态下的敌人时，可以立即消除目标的[霜灼]状态，并使全队角色属性异常积蓄效率提升20%，持续10秒。",
+    "source": "TALENT",
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {
+      "ANOM_BUILDUP_": 0.20
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[普通攻击：霜月]三段蓄力命中[霜灼]状态的敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1091_talent_2",
     "name": "吐纳法",
-    "description": "普通攻击：风花和闪避反击造成的伤害提升30%；进入战场时，星见雅立刻获得6点落霜，自身暴击率提升15%。",
+    "description": "[普通攻击：风花]和[闪避反击]造成的伤害提升30%；进入战场时，自身暴击率提升15%。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.30, "CRIT_RATE_": 0.15 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "NORMAL_ATK_DMG_": 0.30,
+      "DODGE_COUNTER_DMG_": 0.30,
+      "CRIT_": 0.15
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "普通攻击：风花或闪避反击命中时；进入战场时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "无",
+    "max_stacks": 1
   },
   {
-    "id": "1091_talent_4_1",
+    "id": "1091_talent_4",
     "name": "皲裂",
-    "description": "霜灼·破造成的伤害提升30%。",
+    "description": "[霜灼·破]造成的伤害提升30%",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "ICE_DMG_": 0.30 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ADDL_ATK_DMG_": 0.30
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "触发霜灼·破时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "触发[霜灼·破]时",
+    "max_stacks": 1
   },
   {
-    "id": "1091_talent_6_1",
+    "id": "1091_talent_6",
     "name": "天资卓越",
-    "description": "在霜月架势期间，星见雅将获得极意效果，使普通攻击：霜月造成的伤害提升30%。",
+    "description": "在[霜月架势]期间，星见雅将获得[极意]效果，使[普通攻击：霜月]造成的伤害提升30%",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.30 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "NORMAL_ATK_DMG_": 0.30
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "在霜月架势期间获得极意效果时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "在[霜月架势]期间",
+    "max_stacks": 1
   },
   {
-    "id": "1091_extra_ability_0_1",
-    "name": "同沐霜雪",
-    "description": "队伍中存在支援角色或与自身阵营相同的角色时触发：普通攻击：霜月造成的伤害提升60%；队伍中任意角色触发紊乱效果时，星见雅获得2点落霜，且在下次霜月架势期间，普通攻击：霜月将无视目标30%冰属性伤害抗性。",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.60, "ICE_RES_": -0.30 },
+    "id": "1091_core_passive_1",
+    "name": "寒炎-积蓄转换",
+    "description": "对附着[冰焰]的敌人累积烈霜异常积蓄值时，会基于星见雅暴击率的100%提升烈霜异常积蓄效率，最多提升80%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": {
+      "from_property": "CRIT_",
+      "to_property": "ANOM_BUILDUP_",
+      "conversion_ratio": 1.0,
+      "max_value": 0.80
+    },
+    "trigger_conditions": "对附着[冰焰]的敌人累积烈霜异常积蓄值时",
+    "max_stacks": 1
+  },
+    {
+    "id": "1091_core_passive_2",
+    "name": "寒炎-霜灼",
+    "description": "[霜灼]状态下，所有单位对目标累积的属性异常积蓄值提升20%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+        "ANOM_BUILDUP_": 0.20
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "队伍中存在支援或同阵营角色时；任意角色触发紊乱效果后下一次霜月架势期间",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "敌人处于[霜灼]状态时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1091_extra_ability_1",
+    "name": "同沐霜雪-伤害提升",
+    "description": "[普通攻击：霜月]造成的伤害提升60%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "NORMAL_ATK_DMG_": 0.60
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "无条件",
+    "max_stacks": 1
+  },
+  {
+    "id": "1091_extra_ability_2",
+    "name": "同沐霜雪-抗性穿透",
+    "description": "队伍中任意角色触发[紊乱]效果时，星见雅获得2点[落霜]，且在下一次[霜月架势]期间，[普通攻击：霜月]将无视目标30%冰属性伤害抗性。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "RES_IGN_": 0.30
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "队伍中任意角色触发[紊乱]效果后，下一次[霜月架势]期间",
+    "max_stacks": 1
   }
 ]

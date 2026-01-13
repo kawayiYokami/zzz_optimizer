@@ -16,8 +16,21 @@
       :available-enemies="availableEnemies"
       :selected-enemy-id="selectedEnemyId"
       :enemy-is-stunned="enemyIsStunned"
+      :enemy-has-corruption-shield="enemyHasCorruptionShield"
       @enemy-select="onEnemySelect"
       @enemy-stun-change="onEnemyStunChange"
+      @enemy-corruption-shield-change="onEnemyCorruptionShieldChange"
+    />
+
+    <!-- 战斗属性卡片 -->
+    <CombatZonesCard
+      :is-expanded="isCombatZonesExpanded"
+      :battle-service="battleService"
+      :front-agent="frontAgent as Agent | null"
+      :enemy="selectedEnemy"
+      :enemy-is-stunned="enemyIsStunned"
+      :enemy-has-corruption-shield="enemyHasCorruptionShield"
+      @toggle-expand="isCombatZonesExpanded = !isCombatZonesExpanded"
     />
 
     <!-- 属性快照卡片 -->
@@ -70,6 +83,7 @@ import { PropertyType } from '../../model/base';
 // 导入新的卡片组件
 import TeamConfigCard from './TeamConfigCard.vue';
 import EnemyConfigCard from './EnemyConfigCard.vue';
+import CombatZonesCard from './CombatZonesCard.vue';
 import StatsSnapshotCard from './StatsSnapshotCard.vue';
 import BuffListCard from './BuffListCard.vue';
 import SkillListCard from './SkillListCard.vue';
@@ -94,12 +108,14 @@ const backCharacter2Id = ref<string>('');
 // 敌人配置
 const selectedEnemyId = ref<string>('');
 const enemyIsStunned = ref<boolean>(false);
+const enemyHasCorruptionShield = ref<boolean>(false);
 const enemyLevel = 70; // 敌人固定为70级
 
 // 折叠状态
-const isBuffListExpanded = ref<boolean>(true);
-const isSkillListExpanded = ref<boolean>(true);
-const isStatsSnapshotExpanded = ref<boolean>(true);
+const isBuffListExpanded = ref<boolean>(false);
+const isSkillListExpanded = ref<boolean>(false);
+const isStatsSnapshotExpanded = ref<boolean>(false);
+const isCombatZonesExpanded = ref<boolean>(true);
 
 // 可用角色列表（直接使用实例）
 const availableCharacters = computed<Array<{ id: string; name: string; level: number; agent: Agent }>>(() => {
@@ -273,10 +289,16 @@ function setFrontCharacter(newFrontCharId: string) {
 }
 
 // 更新战场服务的角色和buff
+let isUpdating = false;
+
 async function updateBattleService() {
-  if (frontAgent.value) {
+  if (isUpdating) return;
+  isUpdating = true;
+  
+  try {
+    if (frontAgent.value) {
     // 构建队伍成员列表
-    const teamMembers: Agent[] = [frontAgent.value];
+    const teamMembers: Agent[] = [frontAgent.value as Agent];
     
     // 添加后台角色
     if (backCharacter1Id.value) {
@@ -295,8 +317,11 @@ async function updateBattleService() {
     await battleService.setTeam(team);
   }
   
-  // 触发Buff刷新，强制Vue重新计算allBuffs
-  buffRefreshTrigger.value++;
+    // 触发Buff刷新，强制Vue重新计算allBuffs
+    buffRefreshTrigger.value++;
+  } finally {
+    isUpdating = false;
+  }
 }
 
 // 装备详细信息（包含原始数据，用于StatsSnapshotCard）
@@ -328,7 +353,7 @@ const equipmentDetails = computed(() => {
         type: 'wengine',
         stats: wengineStats,
         rawData: wengine,
-        name: wengine.name_cn || wengine.name_en
+        name: wengine.name
       });
     }
   }
@@ -344,7 +369,7 @@ const equipmentDetails = computed(() => {
       type: 'drive_disk',
       stats: diskStats,
       rawData: disk,
-      name: disk!.name_cn || disk!.name_en
+      name: disk!.set_name
     });
   }
 
@@ -415,6 +440,10 @@ function onEnemyStunChange(isStunned: boolean) {
   enemyIsStunned.value = isStunned;
 }
 
+function onEnemyCorruptionShieldChange(hasShield: boolean) {
+  enemyHasCorruptionShield.value = hasShield;
+}
+
 // 所有Buff，从战斗服务类获取包含开关状态的buff列表
 const allBuffs = computed(() => {
   buffRefreshTrigger.value; // 触发响应式依赖
@@ -437,34 +466,21 @@ watch(
 );
 
 // 监听前台角色变化
-watch(frontCharacterId, async (newId) => {
+watch(frontCharacterId, (newId) => {
   if (newId) {
-    // 直接使用Agent实例
     const char = availableCharacters.value.find(c => c.id === newId);
     if (char) {
       frontAgent.value = char.agent;
     }
-    
-    // 更新战场服务，等待完成
-    await updateBattleService();
   } else {
     frontAgent.value = null;
-    
-    // 更新战场服务，等待完成
-    await updateBattleService();
   }
+  updateBattleService();
 });
 
-// 监听后台角色1变化
-watch(backCharacter1Id, async () => {
-  // 更新战场服务，等待完成
-  await updateBattleService();
-});
-
-// 监听后台角色2变化
-watch(backCharacter2Id, async () => {
-  // 更新战场服务，等待完成
-  await updateBattleService();
+// 监听后台角色变化
+watch([backCharacter1Id, backCharacter2Id], () => {
+  updateBattleService();
 });
 
 // 切换Buff激活状态

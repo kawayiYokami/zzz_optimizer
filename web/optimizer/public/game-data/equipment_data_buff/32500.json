@@ -21,7 +21,7 @@
       "stack_mode": "linear",
       "trigger_conditions": [],
       "out_of_combat_stats": {
-        "ICE_DMG_": 10.0
+        "ICE_DMG_": 0.1
       },
       "in_combat_stats": {}
     }
@@ -44,7 +44,8 @@
       "trigger_conditions": "[普通攻击]和[冲刺攻击]造成的伤害提升20%，队伍中任意角色对敌人施加[冻结]或触发[碎冰]效果时",
       "out_of_combat_stats": {},
       "in_combat_stats": {
-        "DASH_ATK_DMG_": 20.0
+        "NORMAL_ATK_DMG_": 0.2,
+        "DASH_ATK_DMG_": 0.2
       }
     }
   ]

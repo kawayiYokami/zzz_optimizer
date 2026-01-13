@@ -21,7 +21,7 @@
       "stack_mode": "linear",
       "trigger_conditions": [],
       "out_of_combat_stats": {
-        "COMMON_DMG_": 6.0
+        "COMMON_DMG_": 0.06
       },
       "in_combat_stats": {}
     }
@@ -36,15 +36,15 @@
       "target": {
         "target_self": true,
         "target_enemy": false,
-        "target_teammate": false,
+        "target_teammate": true,
         "target_bund": false
       },
-      "max_stacks": 1,
+      "max_stacks": 2,
       "stack_mode": "linear",
       "trigger_conditions": "装备者为[击破]角色时",
       "out_of_combat_stats": {},
       "in_combat_stats": {
-        "CRIT_DMG_": 15.0
+        "CRIT_DMG_": 0.15
       }
     }
   ]

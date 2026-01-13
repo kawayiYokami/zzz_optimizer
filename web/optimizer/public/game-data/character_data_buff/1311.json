@@ -1,92 +1,93 @@
 [
   {
-    "id": "1311_COREPASSIVE_1_1",
-    "name": "如歌的行板-攻击力提升",
-    "description": "耀嘉音和入场角色的攻击力提升，提升效果等同于耀嘉音初始攻击力的35%，最高不超过1200点，持续20秒",
+    "id": "1311_talent_1",
+    "name": "影画1-「太乙」遗音-增伤",
+    "description": "拥有[声之花]的代理人攻击时，造成的伤害提升20%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "DMG_": 0.20
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[声之花]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1311_talent_2",
+    "name": "影画2-「太素」遗音-声之花",
+    "description": "[声之花]：暴击率提高20%，造成的伤害无视目标20%的防御。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "CRIT_": 0.20,
+      "DEF_IGN_": 0.20
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "摇嘉音离场时能量>=50",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1311_core_passive_1",
+    "name": "核心被动-太上清音-暴伤",
+    "description": "摇嘉音的暴击伤害提高50%。",
     "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": {},
-    "out_of_combat_stats": {},
-    "conversion": { "from": "base_atk", "to": "atk", "rate": 0.35, "max_value": 1200.0 },
-    "trigger_conditions": "[咏叹华彩]状态下，队伍中其他角色通过入场方式触发时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1311_TALENT_1_1",
-    "name": "十二平均律-全属性抗性降低",
-    "description": "耀嘉音攻击命中敌人时，目标的全属性伤害抗性降低6%，最多叠加3层，持续30秒",
-    "source": "TALENT",
-    "target": { "target_enemy": true },
-    "in_combat_stats": { "ALL_RESISTANCE_PENETRATION": 0.06 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_DMG_": 0.50
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "耀嘉音攻击命中敌人时",
-    "max_stacks": 3,
-    "stack_mode": "additive"
-  },
-  {
-    "id": "1311_TALENT_2_1",
-    "name": "贪心艺术-攻击力提升效果增强",
-    "description": "[核心被动：《如歌的行板》]中的攻击力提升效果额外提升19%，上限额外提升400点",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": {},
-    "out_of_combat_stats": {},
-    "conversion": { "from": "base_atk", "to": "atk", "rate": 0.19, "max_value": 400.0 },
-    "trigger_conditions": "触发《如歌的行板》攻击力提升效果时",
+    "trigger_conditions": "常驻",
     "max_stacks": 1,
     "stack_mode": "full_only"
   },
   {
-    "id": "1311_TALENT_4_1",
-    "name": "后颈的碎发-强攻额外伤害",
-    "description": "[强攻]：下一次[快速支援]重击命中敌人时，额外造成等同于耀嘉音300%攻击力的伤害",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": {},
-    "out_of_combat_stats": {},
-    "conversion": { "from": "atk", "to": "flat_damage", "rate": 3.0 },
-    "trigger_conditions": "[咏叹华彩]状态下，队伍中其他角色为[强攻]时下一次[快速支援]重击",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1311_TALENT_6_1",
-    "name": "我们即是世界-震音音簇伤害倍率提升",
-    "description": "在[咏叹华彩]状态下释放和追加释放的[震音]和[音簇]的伤害倍率提升至原本的200%",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": {},
-    "out_of_combat_stats": {},
-    "conversion": { "from": "base", "to": "damage_mult", "rate": 2.0 },
-    "trigger_conditions": "在[咏叹华彩]状态下释放和追加释放[震音]和[音簇]时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1311_TALENT_6_2",
-    "name": "我们即是世界-震音音簇暴击率提升",
-    "description": "在[咏叹华彩]状态下释放和追加释放的[震音]和[音簇]的暴击率提升80%",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "CRIT_RATE": 0.8 },
+    "id": "1311_core_passive_2",
+    "name": "核心被动-太上清音-易伤",
+    "description": "受到[雷伤·附加]伤害的敌人，受到的所有伤害提高36%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "ALL_DMG_RED_": 0.36
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "在[咏叹华彩]状态下释放和追加释放[震音]和[音簇]时",
+    "trigger_conditions": "受到[雷伤·附加]伤害时",
     "max_stacks": 1,
     "stack_mode": "full_only"
   },
   {
-    "id": "1311_TALENT_6_3",
-    "name": "我们即是世界-追加攻击暴击率提升",
-    "description": "触发[精准支援]时，耀嘉音会自动追加发动[普通攻击：《随想曲》]第三段攻击，并使该招式的暴击率提升80%",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "CRIT_RATE": 0.8 },
+    "id": "1311_additional_ability_2",
+    "name": "额外能力-太初清音",
+    "description": "摇嘉音的攻击力提高，提升值等于异常精通的100%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {},
     "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "触发[精准支援]时",
+    "conversion": {
+      "source_stat": "ANOM_MAS",
+      "target_stat": "ATK",
+      "ratio": 1.0,
+      "source_is_flat": true,
+      "target_is_flat": true
+    },
+    "trigger_conditions": "常驻",
     "max_stacks": 1,
     "stack_mode": "full_only"
   }

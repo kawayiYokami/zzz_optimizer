@@ -1,53 +1,92 @@
 [
   {
-    "id": "1361_talent_2_1",
-    "name": "以太视域-暴击伤害提升",
-    "description": "每拥有1层[猎眸]，全队角色暴击伤害提升6%，最多叠加4层，持续10秒。",
+    "id": "1361_talent_1",
+    "name": "影画1-精准感知",
+    "description": "失衡易伤倍率额外提升20%",
     "source": "TALENT",
-    "target": { "target_self": true, "target_teammate": true },
-    "in_combat_stats": { "crit_dmg_percent": 0.24 },
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "DAZE_RED_": 0.20
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "发动[追加攻击]或[终结一击]获得[猎眸]",
-    "max_stacks": 4,
-    "stack_mode": "duration_refresh"
-  },
-  {
-    "id": "1361_talent_4_1",
-    "name": "匿息隐踪-断离额外伤害",
-    "description": "下一次[普通攻击：协奏狙杀]或[普通攻击：协奏狙杀·冥狱]命中敌人时触发[断离]效果，额外造成「扳机」200%攻击力的伤害。",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": {},
-    "out_of_combat_stats": {},
-    "conversion": { "from": "attack", "to": "flat_dmg", "rate": 2.0 },
-    "trigger_conditions": "队伍中其他角色触发[普通攻击：协奏狙杀]或[普通攻击：协奏狙杀·冥狱]",
-    "max_stacks": 1,
-    "stack_mode": "consume"
-  },
-  {
-    "id": "1361_talent_6_1",
-    "name": "冥河彼岸-破甲凶弹伤害提升",
-    "description": "[破甲凶弹]造成的伤害额外提升50%。",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "armor_pierce_bullet_dmg_percent": 0.5 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "[破甲凶弹]命中目标",
+    "trigger_conditions": "通过[破隙幽瞳]施加时",
     "max_stacks": 1,
     "stack_mode": "full_only"
   },
   {
-    "id": "1361_talent_6_2",
-    "name": "冥河彼岸-破甲凶弹电伤害",
-    "description": "消耗[破甲凶弹]时，额外对目标造成「扳机」1200%攻击力的电属性伤害。",
+    "id": "1361_talent_2",
+    "name": "影画2-「以太视域」",
+    "description": "每层[猎眸]使全队角色暴击伤害提升6%，最多4层",
     "source": "TALENT",
-    "target": { "target_self": true },
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {
+      "CRIT_DMG_": 0.06
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[猎眸]",
+    "max_stacks": 4,
+    "stack_mode": "stackable"
+  },
+  {
+    "id": "1361_talent_6",
+    "name": "影画6-冥河彼岸",
+    "description": "[破甲凶弹]造成的伤害额外提升50%",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ADDL_ATK_DMG_": 0.50
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[破甲凶弹]时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1361_core_passive",
+    "name": "核心被动-破隙幽瞳",
+    "description": "目标的失衡易伤倍率提升35%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "DAZE_RED_": 0.35
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[追加攻击]命中时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1361_additional_ability",
+    "name": "额外能力-灵目银灯",
+    "description": "暴击率高于40%时，每超过1%暴击率会使自身发动[追加攻击]造成的失衡值提升1.5%，最多提升75%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
     "in_combat_stats": {},
     "out_of_combat_stats": {},
-    "conversion": { "from": "attack", "to": "electric_flat_dmg", "rate": 12.0 },
-    "trigger_conditions": "消耗[破甲凶弹]命中目标",
+    "conversion": {
+      "source_stat": "CRIT_",
+      "target_stat": "ADDL_ATK_DAZE_INC_",
+      "ratio": 1.5,
+      "source_is_percentage": true,
+      "min_source_value": 0.4,
+      "max_value": 0.75
+    },
+    "trigger_conditions": "队伍中存在[强攻]或同属性角色",
     "max_stacks": 1,
     "stack_mode": "full_only"
   }

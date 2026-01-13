@@ -1,28 +1,35 @@
 [
-  {
-    "id": "1151_talent_4_1",
-    "name": "无规则球赛",
-    "description": "处于加油状态下，暴击伤害额外提升10%",
-    "source": "TALENT",
-    "target": { "target_self": true, "target_teammate": true },
-    "in_combat_stats": { "CRIT_DMG_": 10.0 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "处于加油状态下",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1151_core_passive_extra_1",
-    "name": "击球准备",
-    "description": "队伍中存在与自身属性或阵营相同的角色或命破角色时触发：亲卫队小猪可以继承露西的暴击率和暴击伤害",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": { "CRIT_RATE_": 0, "CRIT_DMG_": 0 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "与自身属性或阵营相同的角色或命破角色存在时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  }
+    {
+        "id": "1151_talent_4",
+        "name": "加油！",
+        "description": "发动[连携技]或[终结技]时，将为全队角色、邦布和亲卫队小猪施加[加油！]状态，处于该状态下的友方单位，暴击伤害额外提升10%。",
+        "source": "TALENT",
+        "target": {
+            "target_teammate": true,
+            "target_bund": true
+        },
+        "in_combat_stats": {
+            "CRIT_DMG_": 0.10
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "发动[连携技]或[终结技]时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1151_core_passive_1",
+        "name": "赤鬣亲卫队 - 增效",
+        "description": "[加油！]对亲卫队小猪的增益效果提升至原本的200%。(额外提供10%暴击伤害)",
+        "source": "CORE_PASSIVE",
+        "target": {
+            "target_bund": true
+        },
+        "in_combat_stats": {
+            "CRIT_DMG_": 0.10
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "处于[加油！]状态下",
+        "max_stacks": 1
+    }
 ]

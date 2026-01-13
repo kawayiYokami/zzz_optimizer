@@ -53,7 +53,7 @@ def convert_bangboo_to_json(csv_path: Path) -> Dict[str, Any]:
 
 
 def convert_enemy_to_json(csv_path: Path) -> Dict[str, Any]:
-    """将敌人属性CSV转换为JSON索引数据"""
+    """将敌人属性CSV转换为JSON索引数据（完整字段）"""
     enemy_data = {}
 
     with open(csv_path, 'r', encoding='utf-8-sig') as f:
@@ -62,38 +62,68 @@ def convert_enemy_to_json(csv_path: Path) -> Dict[str, Any]:
             enemy_id = row.get('ID', '').strip()
             full_name = row.get('完整名称', '').strip()
 
-            # 跳过空ID
             if not enemy_id:
                 continue
 
-            # 处理布尔值
             can_stun_str = row.get('能否失衡', 'True').strip()
             can_stun = can_stun_str.lower() == 'true'
 
             enemy_data[enemy_id] = {
                 'id': enemy_id,
                 'full_name': full_name,
-                'CHS': full_name,  # 使用完整名称作为中文名
+                'CHS': full_name,
                 'EN': row.get('FullName', '').strip(),
                 'code_name': row.get('CodeName', '').strip(),
                 'index_id': row.get('IndexID', '').strip(),
-                'hp': float(row.get('生命值', 0) or 0),
-                'atk': float(row.get('攻击力', 0) or 0),
-                'defense': float(row.get('防御力', 0) or 0),
-                'stun_max': float(row.get('失衡值上限', 0) or 0),
+                # 基础属性
+                'hp': safe_float(row.get('生命值', 0)),
+                'atk': safe_float(row.get('攻击力', 0)),
+                'defense': safe_float(row.get('防御力', 0)),
+                'crit_dmg': safe_float(row.get('暴击伤害', 0)),
+                # 失衡相关
+                'stun_max': safe_float(row.get('失衡值上限', 0)),
                 'can_stun': can_stun,
-                'tags': row.get('标签列表', '').strip(),
+                'stun_auto_recovery': safe_float(row.get('失衡值自动回复', 0)),
+                'stun_auto_recovery_delay': safe_float(row.get('失衡值自动回复时限', 0)),
+                'base_stun_recovery_speed': safe_float(row.get('基础失衡恢复速度', 0)),
+                'default_stun_recovery_time': safe_float(row.get('默认失衡恢复时间', 0)),
+                'stun_vulnerability_multiplier': safe_float(row.get('失衡易伤倍率', 0)),
+                'chain_attack_count': int(safe_float(row.get('可连携次数', 0))),
+                'base_poise_level': int(safe_float(row.get('初始抗打断等级', 0))),
+                'freeze_time_resistance': safe_float(row.get('冻结时间抵抗', 0)),
                 # 伤害抗性
-                'ice_dmg_resistance': float(row.get('冰伤害抗性', 0) or 0),
-                'fire_dmg_resistance': float(row.get('火伤害抗性', 0) or 0),
-                'electric_dmg_resistance': float(row.get('电伤害抗性', 0) or 0),
-                'physical_dmg_resistance': float(row.get('物理伤害抗性', 0) or 0),
-                'ether_dmg_resistance': float(row.get('以太伤害抗性', 0) or 0),
+                'ice_dmg_resistance': safe_float(row.get('冰伤害抗性', 0)),
+                'fire_dmg_resistance': safe_float(row.get('火伤害抗性', 0)),
+                'electric_dmg_resistance': safe_float(row.get('电伤害抗性', 0)),
+                'physical_dmg_resistance': safe_float(row.get('物理伤害抗性', 0)),
+                'ether_dmg_resistance': safe_float(row.get('以太伤害抗性', 0)),
+                # 异常抗性
+                'ice_anomaly_resistance': safe_float(row.get('冰异常抗性', 0)),
+                'fire_anomaly_resistance': safe_float(row.get('火异常抗性', 0)),
+                'electric_anomaly_resistance': safe_float(row.get('电异常抗性', 0)),
+                'physical_anomaly_resistance': safe_float(row.get('物理异常抗性', 0)),
+                'ether_anomaly_resistance': safe_float(row.get('以太异常抗性', 0)),
+                # 失衡抗性
+                'ice_stun_resistance': safe_float(row.get('冰失衡抗性', 0)),
+                'fire_stun_resistance': safe_float(row.get('火失衡抗性', 0)),
+                'electric_stun_resistance': safe_float(row.get('电失衡抗性', 0)),
+                'physical_stun_resistance': safe_float(row.get('物理失衡抗性', 0)),
+                'ether_stun_resistance': safe_float(row.get('以太失衡抗性', 0)),
+                # 异常条ID
+                'ice_anomaly_bar': row.get('冰异常条', '').strip(),
+                'fire_anomaly_bar': row.get('火异常条', '').strip(),
+                'electric_anomaly_bar': row.get('电异常条', '').strip(),
+                'physical_anomaly_bar': row.get('物理异常条', '').strip(),
+                'ether_anomaly_bar': row.get('以太异常条', '').strip(),
+                # 其他
+                'base_buildup_coefficient': safe_float(row.get('基础积蓄上限提升系数', 0)),
+                'energy_orb_drop': safe_float(row.get('能量球掉落', 0)),
+                'tags': row.get('标签列表', '').strip(),
                 # 70级属性
-                'level_70_max_hp': float(row.get('70级最大生命值', 0) or 0),
-                'level_70_max_atk': float(row.get('70级最大攻击力', 0) or 0),
-                'level_70_max_stun': float(row.get('70级最大失衡值上限', 0) or 0),
-                'level_60_plus_defense': float(row.get('60级及以上防御力', 0) or 0),
+                'level_70_max_hp': safe_float(row.get('70级最大生命值', 0)),
+                'level_70_max_atk': safe_float(row.get('70级最大攻击力', 0)),
+                'level_70_max_stun': safe_float(row.get('70级最大失衡值上限', 0)),
+                'level_60_plus_defense': safe_float(row.get('60级及以上防御力', 0)),
             }
 
     return enemy_data

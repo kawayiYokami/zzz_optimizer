@@ -1,54 +1,103 @@
 [
   {
-    "id": "1121_core_passive_7_1",
-    "name": "攻击转化",
+    "id": "1121_talent_1",
+    "name": "反作用力",
+    "description": "发动[特殊技]或[强化特殊技]，成功格挡敌人的攻击时，攻击者造成的伤害降低30%，持续15秒。",
+    "source": "TALENT",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "COMMON_DMG_": -0.3
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "成功格挡敌人的攻击时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1121_talent_2",
+    "name": "以守为攻",
+    "description": "在[特殊技]或[强化特殊技]中，成功触发格挡反击时，额外造成本300%防御力的伤害。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": {
+      "from_property": "DEF",
+      "to_property": "FLAT_DMG",
+      "conversion_ratio": 3.0
+    },
+    "trigger_conditions": "成功触发格挡反击时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1121_talent_4",
+    "name": "灵活应变",
+    "description": "在[特殊技]或[强化特殊技]中，通过无敌效果成功格挡攻击时 ，后继反击造成的伤害提升30%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "COMMON_DMG_": 0.3
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "通过无敌效果成功格挡攻击时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1121_talent_6",
+    "name": "野性斗志",
+    "description": "在[强化特殊技]中发动攻击或追加强力打击后，[普通攻击]、[冲刺攻击]、[闪避反击]造成的失衡值提升20%，持续12秒。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DAZE_INC_": 0.2
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "在[强化特殊技]中发动攻击或追加强力打击后",
+    "max_stacks": 1
+  },
+  {
+    "id": "1121_core_passive",
+    "name": "守卫",
     "description": "本的初始攻击力随初始防御力提升，提升效果等同于自身初始防御力的80%",
     "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
+    "target": {
+      "target_self": true
+    },
     "in_combat_stats": {},
     "out_of_combat_stats": {},
-    "conversion": { "source_stat": "DEF", "target_stat": "ATK", "multiplier": 0.80, "description": "初始攻击力随初始防御力提升80%" },
-    "trigger_conditions": "",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "conversion": {
+      "from_property": "DEF_BASE",
+      "to_property": "ATK_BASE",
+      "conversion_ratio": 0.8
+    },
+    "trigger_conditions": "无",
+    "max_stacks": 1
   },
   {
-    "id": "1121_core_passive_extra_1",
+    "id": "1121_extra_ability",
     "name": "协议合同",
-    "description": "队伍中存在与自身属性或阵营相同的角色时触发：拥有护盾时，角色的暴击率提升16%",
+    "description": "拥有[核心被动：守卫]施加的护盾时，角色的暴击率提升16%。",
     "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
-    "in_combat_stats": { "CRIT_RATE_": 16.0 },
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {
+      "CRIT_": 0.16
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "与自身属性或阵营相同的角色，且拥有护盾时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1121_talent_2_1",
-    "name": "以守为攻",
-    "description": "在特殊技或强化特殊技中，成功触发格挡反击时，额外造成本300%防御力的伤害",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": {},
-    "out_of_combat_stats": {},
-    "conversion": { "source_stat": "DEF", "target_stat": "COMMON_DMG", "multiplier": 3.00, "description": "额外造成300%防御力的伤害" },
-    "trigger_conditions": "特殊技或强化特殊技中成功触发格挡反击时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1121_talent_4_1",
-    "name": "灵活应变",
-    "description": "在特殊技或强化特殊技中，通过无敌效果成功格挡攻击时，后继反击造成的伤害提升30%",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 30.0 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "特殊技或强化特殊技中通过无敌效果成功格挡攻击时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "拥有[核心被动：守卫]施加的护盾时",
+    "max_stacks": 1
   }
 ]

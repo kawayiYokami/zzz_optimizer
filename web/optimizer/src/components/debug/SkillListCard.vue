@@ -125,14 +125,8 @@ watch(() => props.isExpanded, (newValue) => {
 
 // 当前选中的角色
 const selectedCharacter = computed(() => {
-  console.log(`[DEBUG] SkillListCard: frontCharacterId = ${props.frontCharacterId}`);
-  console.log(`[DEBUG] SkillListCard: availableCharacters =`, props.availableCharacters);
   if (!props.frontCharacterId) return null;
   const character = props.availableCharacters.find(c => c.id === props.frontCharacterId) || null;
-  console.log(`[DEBUG] SkillListCard: selectedCharacter =`, character);
-  if (character) {
-    console.log(`[DEBUG] SkillListCard: character.agent.agentSkills =`, character.agent.agentSkills);
-  }
   return character;
 });
 </script>

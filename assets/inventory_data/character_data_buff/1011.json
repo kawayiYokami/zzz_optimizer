@@ -1,28 +1,98 @@
 [
   {
-    "id": "1011_talent_2_1",
-    "name": "精准放电",
-    "description": "普通攻击：落雷命中处于失衡状态下的敌人时，招式造成的伤害提升30%...",
+    "id": "1011_talent_1",
+    "name": "快充模式",
+    "description": "[普通攻击]第四段斩击命中敌人时，安比的能量获得效率提升12%，持续30秒。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.30 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ENER_EFF_": 0.12
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "普通攻击：落雷命中处于失衡状态下的敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "[普通攻击]第四段斩击命中敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1011_talent_2_1",
+    "name": "精准放电-伤害提升",
+    "description": "[普通攻击：落雷]命中处于失衡状态下的敌人时，招式造成的伤害提升30%",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "NORMAL_ATK_DMG_": 0.30
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[普通攻击：落雷]命中处于失衡状态下的敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1011_talent_2_2",
+    "name": "精准放电-失衡值提升",
+    "description": "[强化特殊技]命中未处于失衡状态下的敌人时，招式造成的失衡值提升10%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DAZE_INC_": 0.10
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[强化特殊技]命中未处于失衡状态下的敌人时",
+    "max_stacks": 1
   },
   {
     "id": "1011_talent_6_1",
-    "name": "充能电场",
-    "description": "发动强化特殊技时，安比获得8层充能；普通攻击或冲刺攻击命中敌人时，消耗1层充能，使当前招式造成的伤害提升45%...",
+    "name": "充能电场-普攻",
+    "description": "发动[强化特殊技]时，安比获得8层充能（上限8层）；[普通攻击]命中敌人时，消耗1层充能，使当前招式造成的伤害提升45%。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.45 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "NORMAL_ATK_DMG_": 0.45
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "普通攻击或冲刺攻击命中敌人时，消耗1层充能",
-    "max_stacks": 8,
-    "stack_mode": "linear"
+    "trigger_conditions": "拥有充能层数时，[普通攻击]命中敌人消耗1层",
+    "max_stacks": 1
+  },
+  {
+    "id": "1011_talent_6_2",
+    "name": "充能电场-冲刺攻击",
+    "description": "发动[强化特殊技]时，安比获得8层充能（上限8层）；[冲刺攻击]命中敌人时，消耗1层充能，使当前招式造成的伤害提升45%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DASH_ATK_DMG_": 0.45
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有充能层数时，[冲刺攻击]命中敌人消耗1层",
+    "max_stacks": 1
+  },
+  {
+    "id": "1011_core_passive",
+    "name": "波动电压",
+    "description": "安比在[普通攻击]第三段后发动[普通攻击：落雷]、[特殊技]或[强化特殊技]时，招式造成的失衡值提升64%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DAZE_INC_": 0.64
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "在[普通攻击]第三段后发动[普通攻击：落雷]、[特殊技]或[强化特殊技]时",
+    "max_stacks": 1
   }
 ]

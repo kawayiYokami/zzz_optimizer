@@ -1,33 +1,60 @@
-{
-  "agent_id": "1421",
-  "name": "潘引壶",
-  "code_name": "Yinhu",
-  "rarity": 3,
-  "weapon_type": "防护",
-  "element_type": "物理",
-  "core_passive_buffs": [
+[
     {
-      "id": "1421_core_passive_7_1",
-      "name": "CORE_PASSIVE-BUFF1",
-      "description": "队伍中存在[命破]角色或与自身阵营相同的角色时触发：\n潘引壶发动[特殊技：断脉破穴手]命中敌人时对敌人施加[气绝]效果，使所有单位对其造成的伤害提升20%，[特殊技：断脉破穴手]命中敌人时将分别对敌人造成10秒[气绝]效果",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "COMMON_DMG_": 20.0
-      },
-      "trigger_conditions": "[命破]角色或与自身阵营相同的角色",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
+        "id": "1421_talent_1",
+        "name": "气劲护体",
+        "description": "所有单位对被施加[气绝]效果的敌人造成伤害时，造成的伤害额外提升10%。",
+        "source": "TALENT",
+        "target": { "target_teammate": true, "target_bund": true },
+        "in_combat_stats": { "ALL_DMG_INC_": 0.10 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "攻击处于[气绝]状态的敌人时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1421_talent_6",
+        "name": "气穴论",
+        "description": "[核心被动：脉中乾坤]提供的[通窍]将额外获得潘引壶初始攻击力6%的提升，该效果提供的贯穿力最多提升至720点。",
+        "source": "TALENT",
+        "target": { "target_teammate": true },
+        "in_combat_stats": {},
+        "out_of_combat_stats": {},
+        "conversion": {
+            "from_property": "ATK_BASE",
+            "to_property": "PENETRATION_",
+            "conversion_ratio": 0.06,
+            "max_value": 720
+        },
+        "trigger_conditions": "获得[通窍]效果时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1421_core_passive_1",
+        "name": "脉中乾坤",
+        "description": "通过[快速支援]或[连携技]入场的下一位代理人将会获得[通窍]效果。该效果提供潘引壶初始攻击力18%的贯穿力提升，持续25秒。该效果提供的贯穿力最多不超过540点。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_teammate": true },
+        "in_combat_stats": {},
+        "out_of_combat_stats": {},
+        "conversion": {
+            "from_property": "ATK_BASE",
+            "to_property": "PENETRATION_",
+            "conversion_ratio": 0.18,
+            "max_value": 540
+        },
+        "trigger_conditions": "通过[快速支援]或[连携技]入场时",
+        "max_stacks": 1
+    },
+    {
+        "id": "1421_extra_ability_1",
+        "name": "食铁纳金",
+        "description": "潘引壶发动[特殊技：断脉破穴手]命中敌人时对敌人施加[气绝]效果，使所有单位对其造成的伤害提升20%。",
+        "source": "CORE_PASSIVE",
+        "target": { "target_teammate": true, "target_bund": true },
+        "in_combat_stats": { "ALL_DMG_INC_": 0.20 },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": "攻击处于[气绝]状态的敌人时",
+        "max_stacks": 1
     }
-  ],
-  "talent_buffs": [],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+]

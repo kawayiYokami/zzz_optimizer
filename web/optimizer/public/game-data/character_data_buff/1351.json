@@ -1,24 +1,32 @@
 [
   {
-    "id": "1351_talent_1_1",
-    "name": "利己主义-暴击率提升",
-    "description": "对被施加[困迹]效果的敌人造成伤害时，自身暴击率提升10%。",
+    "id": "1351_talent_1",
+    "name": "影画1-利己主义",
+    "description": "对被施加[困迹]效果的敌人造成伤害时，自身暴击率提升10%",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "crit_rate": 0.1 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_": 0.10
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "对被施加[困迹]效果的敌人造成伤害",
+    "trigger_conditions": "攻击[困迹]敌人时",
     "max_stacks": 1,
     "stack_mode": "full_only"
   },
   {
-    "id": "1351_talent_2_1",
-    "name": "借势而为-攻击力提升",
-    "description": "处于[猎步]状态时，波可娜的攻击力额外提升10%。",
+    "id": "1351_talent_2",
+    "name": "影画2-借势而为",
+    "description": "处于[猎步]状态时，波可娜的攻击力额外提升10%",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "attack_percent": 0.1 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ATK_": 0.10
+    },
     "out_of_combat_stats": {},
     "conversion": null,
     "trigger_conditions": "处于[猎步]状态",
@@ -26,28 +34,70 @@
     "stack_mode": "full_only"
   },
   {
-    "id": "1351_talent_6_1",
-    "name": "面具之下-特殊技伤害提升",
-    "description": "[特殊技：噬爪·噩梦袭影]造成的伤害提升15%。",
+    "id": "1351_talent_6_special",
+    "name": "影画6-面具之下-特殊技",
+    "description": "[特殊技：噬爪·噩梦袭影]造成的伤害提升15%",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "skill_dmg_percent": 0.15 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "SPECIAL_DMG_": 0.15
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "发动[特殊技：噬爪·噩梦袭影]",
+    "trigger_conditions": "发动[噬爪·噩梦袭影]时",
     "max_stacks": 1,
     "stack_mode": "full_only"
   },
   {
-    "id": "1351_core_passive_1",
-    "name": "困迹-追加攻击伤害提升",
-    "description": "被施加[困迹]效果后，所有单位发动[追加攻击]对目标造成的伤害提升30%。",
-    "source": "CORE_PASSIVE",
-    "target": { "target_enemy": true, "target_self": true, "target_teammate": true },
-    "in_combat_stats": { "additional_attack_dmg_percent": 0.3 },
+    "id": "1351_talent_6_debuff",
+    "name": "影画6-面具之下-困迹增伤",
+    "description": "[困迹]效果的增伤对所有伤害类型生效",
+    "source": "TALENT",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "ALL_DMG_RED_": 0.30
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "目标被施加[困迹]效果",
+    "trigger_conditions": "敌人有[困迹]效果时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1351_core_passive",
+    "name": "核心被动-猎手本能",
+    "description": "进入[猎步]状态，使自身造成的失衡值提升30%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "DAZE_INC_": 0.30
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "进入[猎步]状态",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1351_additional_ability_base",
+    "name": "额外能力-业务搭档-基础",
+    "description": "被施加[困迹]效果后，所有单位发动[追加攻击]对目标造成的伤害提升30%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "ADDL_ATK_DMG_RED_": 0.30
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "敌人有[困迹]效果时",
     "max_stacks": 1,
     "stack_mode": "full_only"
   }

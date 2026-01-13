@@ -21,16 +21,16 @@
       "stack_mode": "linear",
       "trigger_conditions": [],
       "out_of_combat_stats": {
-        "NORMAL_ATK_DMG_": 15.0
+        "NORMAL_ATK_DMG_": 0.15
       },
       "in_combat_stats": {}
     }
   ],
   "four_piece_buffs": [
     {
-      "id": "拂晓生花_4pc",
-      "name": "拂晓生花 4件套",
-      "description": "[普通攻击]造成的伤害提升20%，装备者为[强攻]角色时，发动[强化特殊技]或[终结技]会使[普通攻击]造成的伤害额外提升20%，持续25秒，重复触发时刷新持续时间。",
+      "id": "拂晓生花_4pc_1",
+      "name": "拂晓生花 4件套 (基础)",
+      "description": "[普通攻击]造成的伤害提升20%",
       "source": "DRIVE_DISK_4PC",
       "context": "IN_COMBAT",
       "target": {
@@ -41,10 +41,30 @@
       },
       "max_stacks": 1,
       "stack_mode": "linear",
-      "trigger_conditions": "[普通攻击]造成的伤害提升20%，装备者为[强攻]角色时",
+      "trigger_conditions": "无条件",
       "out_of_combat_stats": {},
       "in_combat_stats": {
-        "NORMAL_ATK_DMG_": 20.0
+        "NORMAL_ATK_DMG_": 0.2
+      }
+    },
+    {
+      "id": "拂晓生花_4pc_2",
+      "name": "拂晓生花 4件套 (强攻角色)",
+      "description": "装备者为[强攻]角色时，发动[强化特殊技]或[终结技]会使[普通攻击]造成的伤害额外提升20%，持续25秒",
+      "source": "DRIVE_DISK_4PC",
+      "context": "IN_COMBAT",
+      "target": {
+        "target_self": true,
+        "target_enemy": false,
+        "target_teammate": false,
+        "target_bund": false
+      },
+      "max_stacks": 1,
+      "stack_mode": "linear",
+      "trigger_conditions": "装备者为[强攻]角色时，发动[强化特殊技]或[终结技]",
+      "out_of_combat_stats": {},
+      "in_combat_stats": {
+        "NORMAL_ATK_DMG_": 0.2
       }
     }
   ]

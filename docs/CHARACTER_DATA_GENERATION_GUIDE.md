@@ -190,7 +190,7 @@ python scripts/extract_character_info.py 1311
 *   **转换上限**：如果描述中有上限（如"最多提升20%"），主要关注转换比例，忽略上限描述。
 
 ### 4. 属性分类 (`context`)
-*   **OUT_OF_COMBAT**: 
+*   **OUT_OF_COMBAT**:
     *   永久生效、无条件。
     *   例："暴击率提升10%"。
 *   **IN_COMBAT**:
@@ -246,7 +246,7 @@ python scripts/extract_character_info.py 1311
 ### 暴击
 | 属性名 | 代码 | 说明 |
 |--------|------|------|
-| 暴击率 | `CRIT_` / `CRIT_RATE_` | 暴击率百分比加成 |
+| 暴击率 | `CRIT_` / `CRIT_` | 暴击率百分比加成 |
 | 暴击伤害 | `CRIT_DMG_` | 暴击伤害百分比加成 |
 
 ### 能量
@@ -366,7 +366,7 @@ python scripts/extract_character_info.py 1311
 
 某些BUFF可以叠加多层，需要在 `max_stacks` 和 `stack_mode` 中正确配置：
 - `max_stacks`: 最大可叠加层数（如8层）
-- `stack_mode`: 
+- `stack_mode`:
   - `linear`: 每层提供独立效果，可线性叠加
   - `full_only`: 仅满层时生效
 

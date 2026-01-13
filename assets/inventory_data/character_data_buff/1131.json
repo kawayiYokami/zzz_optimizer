@@ -1,54 +1,92 @@
 [
   {
-    "id": "1131_core_passive_7_1",
-    "name": "展旗攻击提升",
-    "description": "苍角发动展旗时，自身攻击力提升，提升数值等同于苍角20%初始攻击力，最高不超过500点，发动展旗并消耗涡流时，该增益效果翻倍，最高不超过1000点",
+    "id": "1131_talent_4",
+    "name": "失温症",
+    "description": "[展旗]攻击命中敌人时，目标的冰属性伤害抗性降低10%，持续8秒。",
+    "source": "TALENT",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "ICE_RES_RED_": 0.10
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[展旗]攻击命中敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1131_talent_6",
+    "name": "朔风侵袭",
+    "description": "[霜染刃旗]状态下，强化[普通攻击]和强化[冲刺攻击]的招式造成的伤害提升45%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "NORMAL_ATK_DMG_": 0.45,
+      "DASH_ATK_DMG_": 0.45
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[霜染刃旗]状态下",
+    "max_stacks": 1
+  },
+  {
+    "id": "1131_core_passive_1",
+    "name": "刃旗助威",
+    "description": "苍角发动[展旗]时，自身攻击力提升，提升数值等同于苍角20%初始攻击力，最高不超过500点。",
     "source": "CORE_PASSIVE",
-    "target": { "target_self": true },
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
     "in_combat_stats": {},
     "out_of_combat_stats": {},
-    "conversion": { "source_stat": "ATK", "target_stat": "ATK", "multiplier": 0.20, "description": "攻击力提升等同于20%初始攻击力，消耗涡流时翻倍" },
-    "trigger_conditions": "发动展旗时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "conversion": {
+        "from_property": "ATK_BASE",
+        "to_property": "ATK",
+        "conversion_ratio": 0.20,
+        "max_value": 500
+    },
+    "trigger_conditions": "发动[展旗]时",
+    "max_stacks": 1
   },
-  {
-    "id": "1131_core_passive_extra_1",
-    "name": "团膳套餐",
-    "description": "队伍中存在与自身属性或阵营相同的角色时触发：苍角消耗涡流发动展旗时，全队角色造成的冰属性伤害提升20%，持续22秒",
+    {
+    "id": "1131_core_passive_2",
+    "name": "刃旗助威-翻倍",
+    "description": "发动[展旗]并消耗[涡流]时，该增益效果翻倍，最高不超过1000点。",
     "source": "CORE_PASSIVE",
-    "target": { "target_self": true, "target_teammate": true },
-    "in_combat_stats": { "ICE_DMG_": 20.0 },
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {},
     "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "与自身属性或阵营相同的角色，且消耗涡流发动展旗时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "conversion": {
+        "from_property": "ATK_BASE",
+        "to_property": "ATK",
+        "conversion_ratio": 0.40,
+        "max_value": 1000
+    },
+    "trigger_conditions": "发动[展旗]并消耗[涡流]时",
+    "max_stacks": 1
   },
   {
-    "id": "1131_talent_4_1",
-    "name": "失温症",
-    "description": "展旗攻击命中敌人时，目标的冰属性伤害抗性降低10%，持续8秒",
-    "source": "TALENT",
-    "target": { "target_self": true, "target_enemy": true },
-    "in_combat_stats": { "ICE_RESISTANCE_": -10.0 },
+    "id": "1131_extra_ability",
+    "name": "团膳套餐",
+    "description": "苍角消耗[涡流]发动[展旗]时，全队角色造成的冰属性伤害提升20%",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {
+      "ICE_DMG_": 0.20
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "展旗攻击命中敌人时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1131_talent_6_1",
-    "name": "朔风侵袭",
-    "description": "霜染刃旗状态下，强化普通攻击和强化冲刺攻击的可发动次数提升至12次，且招式造成的伤害提升45%",
-    "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 45.0 },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "霜染刃旗状态下",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "消耗[涡流]发动[展旗]时",
+    "max_stacks": 1
   }
 ]

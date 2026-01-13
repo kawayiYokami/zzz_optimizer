@@ -24,9 +24,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "位于后场时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ENER_REGEN": 0.1
+          }
         }
       ]
     },
@@ -49,9 +51,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "位于后场时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ENER_REGEN": 0.125
+          }
         }
       ]
     },
@@ -74,9 +78,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "位于后场时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ENER_REGEN": 0.15
+          }
         }
       ]
     },
@@ -99,9 +105,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "位于后场时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ENER_REGEN": 0.175
+          }
         }
       ]
     },
@@ -124,9 +132,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "位于后场时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ENER_REGEN": 0.2
+          }
         }
       ]
     }

@@ -48,12 +48,20 @@ export class Conversion {
   to_property: PropertyType;
   conversion_ratio: number;
   max_value?: number;
+  from_property_threshold?: number; // 源属性阈值，超过此值的部分才参与转换
 
-  constructor(fromProperty: PropertyType, toProperty: PropertyType, conversionRatio: number, maxValue?: number) {
+  constructor(
+    fromProperty: PropertyType,
+    toProperty: PropertyType,
+    conversionRatio: number,
+    maxValue?: number,
+    fromPropertyThreshold?: number
+  ) {
     this.from_property = fromProperty;
     this.to_property = toProperty;
     this.conversion_ratio = conversionRatio;
     this.max_value = maxValue;
+    this.from_property_threshold = fromPropertyThreshold;
   }
 }
 
@@ -134,11 +142,93 @@ export class Buff {
   calculateConversion(sourceValue: number): number {
     if (!this.conversion) return 0;
 
-    let value = sourceValue * this.conversion.conversion_ratio;
+    // 如果有阈值，只有超过阈值的部分才参与转换
+    const threshold = this.conversion.from_property_threshold ?? 0;
+    const effectiveValue = Math.max(0, sourceValue - threshold);
+    
+    let value = effectiveValue * this.conversion.conversion_ratio;
     if (this.conversion.max_value !== undefined && value > this.conversion.max_value) {
       value = this.conversion.max_value;
     }
     return value;
+  }
+
+  /**
+   * 应用局内属性到属性集
+   *
+   * @param props 输入属性集
+   * @returns 应用后的属性集（新实例）
+   */
+  applyInCombatStats(props: PropertyCollection): PropertyCollection {
+    if (!this.is_active || this.in_combat_stats.size === 0) {
+      return props;
+    }
+
+    const result = new PropertyCollection();
+    result.add(props);
+
+    for (const [prop, value] of this.in_combat_stats.entries()) {
+      const currentValue = result.in_combat.get(prop) || 0;
+      result.in_combat.set(prop, currentValue + value);
+    }
+
+    return result;
+  }
+
+  /**
+   * 应用转换类属性到属性集
+   * 基于局内属性（已计算完基础×百分比+固定值后的值）生成转换类属性
+   *
+   * @param props 输入属性集（应该已经包含计算后的局内属性）
+   * @returns 应用后的属性集（新实例）
+   */
+  applyConversionStats(props: PropertyCollection): PropertyCollection {
+    if (!this.is_active || !this.conversion) {
+      return props;
+    }
+
+    const result = new PropertyCollection();
+    result.add(props);
+
+    // 获取源属性的最终值（基础×百分比+固定值后的值）
+    const fromProp = this.conversion.from_property;
+    
+    // 对于ATK_BASE等基础属性，需要计算 base * (1 + percent) + flat
+    let sourceValue = 0;
+    if (fromProp === PropertyType.ATK_BASE) {
+      const base = props.getInCombat(PropertyType.ATK_BASE, 0);
+      const percent = props.getInCombat(PropertyType.ATK_, 0);
+      const flat = props.getInCombat(PropertyType.ATK, 0);
+      sourceValue = base * (1 + percent) + flat;
+    } else if (fromProp === PropertyType.HP_BASE) {
+      const base = props.getInCombat(PropertyType.HP_BASE, 0);
+      const percent = props.getInCombat(PropertyType.HP_, 0);
+      const flat = props.getInCombat(PropertyType.HP, 0);
+      sourceValue = base * (1 + percent) + flat;
+    } else if (fromProp === PropertyType.DEF_BASE) {
+      const base = props.getInCombat(PropertyType.DEF_BASE, 0);
+      const percent = props.getInCombat(PropertyType.DEF_, 0);
+      const flat = props.getInCombat(PropertyType.DEF, 0);
+      sourceValue = base * (1 + percent) + flat;
+    } else {
+      sourceValue = props.getInCombat(fromProp, 0);
+    }
+
+    // 计算转换值
+    const convertedValue = this.calculateConversion(sourceValue);
+    
+    if (convertedValue > 0) {
+      result.addConversion(this.conversion.to_property, convertedValue);
+    }
+
+    return result;
+  }
+
+  /**
+   * 判断是否有局内属性
+   */
+  hasInCombatStats(): boolean {
+    return this.in_combat_stats.size > 0;
   }
 
   /**
@@ -182,65 +272,34 @@ export class Buff {
         (PropertyType as any)[data.conversion.from_property],
         (PropertyType as any)[data.conversion.to_property],
         data.conversion.conversion_ratio,
-        data.conversion.max_value
+        data.conversion.max_value,
+        data.conversion.from_property_threshold
       );
     }
 
-    // 解析in_combat_stats
+    // 解析in_combat_stats（JSON中已是小数形式，如0.35表示35%）
     const inCombatStats = new Map<PropertyType, number>();
     if (data.in_combat_stats) {
       for (const [propName, value] of Object.entries(data.in_combat_stats)) {
         const propType = (PropertyType as any)[propName];
-        const numValue = value as number;
-        // 检查是否为百分比属性，游戏数据是百分比的100倍，需要除以100转换为小数
-        const isPercentType = [
-          PropertyType.CRIT_,
-          PropertyType.CRIT_DMG_,
-          PropertyType.ATK_,
-          PropertyType.HP_,
-          PropertyType.DEF_,
-          PropertyType.PEN_,
-          PropertyType.SHIELD_,
-          PropertyType.IMPACT_,
-          PropertyType.ANOM_MAS_,
-          PropertyType.PHYSICAL_DMG_,
-          PropertyType.FIRE_DMG_,
-          PropertyType.ICE_DMG_,
-          PropertyType.ELECTRIC_DMG_,
-          PropertyType.ETHER_DMG_,
-          PropertyType.ENER_REGEN_
-        ].includes(propType);
-        const finalValue = isPercentType ? numValue / 100 : numValue;
-        inCombatStats.set(propType, finalValue);
+        if (propType === undefined) {
+          console.warn(`[Buff解析] 未知属性类型: ${propName}，值: ${value}，来源: ${data.id || data.name}`);
+          continue;
+        }
+        inCombatStats.set(propType, value as number);
       }
     }
 
-    // 解析out_of_combat_stats
+    // 解析out_of_combat_stats（JSON中已是小数形式）
     const outOfCombatStats = new Map<PropertyType, number>();
     if (data.out_of_combat_stats) {
       for (const [propName, value] of Object.entries(data.out_of_combat_stats)) {
         const propType = (PropertyType as any)[propName];
-        const numValue = value as number;
-        // 检查是否为百分比属性，游戏数据是百分比的100倍，需要除以100转换为小数
-        const isPercentType = [
-          PropertyType.CRIT_,
-          PropertyType.CRIT_DMG_,
-          PropertyType.ATK_,
-          PropertyType.HP_,
-          PropertyType.DEF_,
-          PropertyType.PEN_,
-          PropertyType.SHIELD_,
-          PropertyType.IMPACT_,
-          PropertyType.ANOM_MAS_,
-          PropertyType.PHYSICAL_DMG_,
-          PropertyType.FIRE_DMG_,
-          PropertyType.ICE_DMG_,
-          PropertyType.ELECTRIC_DMG_,
-          PropertyType.ETHER_DMG_,
-          PropertyType.ENER_REGEN_
-        ].includes(propType);
-        const finalValue = isPercentType ? numValue / 100 : numValue;
-        outOfCombatStats.set(propType, finalValue);
+        if (propType === undefined) {
+          console.warn(`[Buff解析] 未知属性类型: ${propName}，值: ${value}，来源: ${data.id || data.name}`);
+          continue;
+        }
+        outOfCombatStats.set(propType, value as number);
       }
     }
 
@@ -304,6 +363,7 @@ export class Buff {
         to_property: PropertyType[this.conversion.to_property],
         conversion_ratio: this.conversion.conversion_ratio,
         max_value: this.conversion.max_value,
+        from_property_threshold: this.conversion.from_property_threshold,
       } : null,
       trigger_conditions: this.trigger_conditions,
       max_stacks: this.max_stacks,

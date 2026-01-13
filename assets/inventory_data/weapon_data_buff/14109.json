@@ -27,8 +27,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 50.0,
-            "ICE_DMG_": 20.0
+            "CRIT_DMG_": 0.5,
+            "ICE_DMG_": 0.2
           }
         },
         {
@@ -48,8 +48,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 50.0,
-            "ICE_DMG_": 20.0
+            "CRIT_DMG_": 0.5,
+            "ICE_DMG_": 0.2
           }
         }
       ]
@@ -76,8 +76,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 57.0,
-            "ICE_DMG_": 23.0
+            "CRIT_DMG_": 0.57,
+            "ICE_DMG_": 0.23
           }
         },
         {
@@ -97,8 +97,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 57.0,
-            "ICE_DMG_": 23.0
+            "CRIT_DMG_": 0.57,
+            "ICE_DMG_": 0.23
           }
         }
       ]
@@ -125,8 +125,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 65.0,
-            "ICE_DMG_": 26.0
+            "CRIT_DMG_": 0.65,
+            "ICE_DMG_": 0.26
           }
         },
         {
@@ -146,8 +146,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 65.0,
-            "ICE_DMG_": 26.0
+            "CRIT_DMG_": 0.65,
+            "ICE_DMG_": 0.26
           }
         }
       ]
@@ -174,8 +174,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 72.0,
-            "ICE_DMG_": 29.0
+            "CRIT_DMG_": 0.72,
+            "ICE_DMG_": 0.29
           }
         },
         {
@@ -195,8 +195,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 72.0,
-            "ICE_DMG_": 29.0
+            "CRIT_DMG_": 0.72,
+            "ICE_DMG_": 0.29
           }
         }
       ]
@@ -223,8 +223,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 80.0,
-            "ICE_DMG_": 32.0
+            "CRIT_DMG_": 0.8,
+            "ICE_DMG_": 0.32
           }
         },
         {
@@ -244,8 +244,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 80.0,
-            "ICE_DMG_": 32.0
+            "CRIT_DMG_": 0.8,
+            "ICE_DMG_": 0.32
           }
         }
       ]

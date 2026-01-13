@@ -24,9 +24,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "属性异常积蓄效率提升40%；装备者造成以太伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ANOM_BUILDUP_": 0.4
+          }
         }
       ]
     },
@@ -49,9 +51,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "属性异常积蓄效率提升46%；装备者造成以太伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ANOM_BUILDUP_": 0.46
+          }
         }
       ]
     },
@@ -74,9 +78,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "属性异常积蓄效率提升52%；装备者造成以太伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ANOM_BUILDUP_": 0.52
+          }
         }
       ]
     },
@@ -99,9 +105,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "属性异常积蓄效率提升58%；装备者造成以太伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ANOM_BUILDUP_": 0.58
+          }
         }
       ]
     },
@@ -124,9 +132,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "属性异常积蓄效率提升64%；装备者造成以太伤害时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ANOM_BUILDUP_": 0.64
+          }
         }
       ]
     }

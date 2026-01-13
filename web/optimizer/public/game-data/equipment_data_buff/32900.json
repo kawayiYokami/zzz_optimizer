@@ -21,7 +21,7 @@
       "stack_mode": "linear",
       "trigger_conditions": [],
       "out_of_combat_stats": {
-        "DASH_ATK_DMG_": 15.0
+        "DASH_ATK_DMG_": 0.15
       },
       "in_combat_stats": {}
     }
@@ -39,12 +39,13 @@
         "target_teammate": false,
         "target_bund": false
       },
-      "max_stacks": 1,
+      "max_stacks": 3,
       "stack_mode": "linear",
       "trigger_conditions": "[追加攻击]或[冲刺攻击]命中敌人时",
       "out_of_combat_stats": {},
       "in_combat_stats": {
-        "DASH_ATK_DMG_": 4.0
+        "ATK_": 0.04,
+        "CRIT_": 0.04
       }
     }
   ]

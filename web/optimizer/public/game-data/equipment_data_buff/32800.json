@@ -21,7 +21,7 @@
       "stack_mode": "linear",
       "trigger_conditions": [],
       "out_of_combat_stats": {
-        "ATK_": 10.0
+        "ATK_": 0.1
       },
       "in_combat_stats": {}
     }
@@ -36,15 +36,15 @@
       "target": {
         "target_self": true,
         "target_enemy": false,
-        "target_teammate": false,
+        "target_teammate": true,
         "target_bund": false
       },
-      "max_stacks": 1,
+      "max_stacks": 3,
       "stack_mode": "linear",
       "trigger_conditions": "队伍中任意角色通过[快速支援]入场时",
       "out_of_combat_stats": {},
       "in_combat_stats": {
-        "COMMON_DMG_": 8.0
+        "COMMON_DMG_": 0.08
       }
     }
   ]

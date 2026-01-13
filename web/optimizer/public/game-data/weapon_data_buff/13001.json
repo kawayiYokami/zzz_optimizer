@@ -22,11 +22,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 3,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "连携技获得充能，终结技消耗",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ULTIMATE_ATK_DMG_": 0.15
+          }
         }
       ]
     },
@@ -47,11 +49,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 3,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "连携技获得充能，终结技消耗",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ULTIMATE_ATK_DMG_": 0.172
+          }
         }
       ]
     },
@@ -72,11 +76,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 3,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "连携技获得充能，终结技消耗",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ULTIMATE_ATK_DMG_": 0.195
+          }
         }
       ]
     },
@@ -97,11 +103,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 3,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "连携技获得充能，终结技消耗",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ULTIMATE_ATK_DMG_": 0.217
+          }
         }
       ]
     },
@@ -122,11 +130,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 3,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "连携技获得充能，终结技消耗",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ULTIMATE_ATK_DMG_": 0.24
+          }
         }
       ]
     }

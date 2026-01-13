@@ -1,66 +1,137 @@
-{
-  "agent_id": "1471",
-  "name": "般岳",
-  "code_name": "BanYue",
-  "rarity": 4,
-  "weapon_type": "命破",
-  "element_type": "火属性",
-  "core_passive_buffs": [
-    {
-      "id": "1471_core_passive_7_2",
-      "name": "CORE_PASSIVE-BUFF2",
-      "description": "队伍中存在[支援]或[击破]角色时触发：\n处于[怒相]状态时，若通过普通攻击派生或者快速键入指令的方式消耗[山威]发动[强化特殊技]时 ，般岳会获得一层[明王]，每层[明王]会使自身造成的火属性伤害提升5%，最多叠加3层，持续8秒，重复触发时刷新持续时间",
-      "source": "CORE_PASSIVE",
-      "context": "IN_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {},
-      "in_combat_stats": {
-        "FIRE_DMG_": 5.0
-      },
-      "trigger_conditions": "[支援]或[击破]角色",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "talent_buffs": [
-    {
-      "id": "1471_talent_6_1",
-      "name": "TALENT-BUFF1",
-      "description": "[明王]提供的火属性伤害增益效果额外提升8%，持续时间提升至30秒",
-      "source": "TALENT",
-      "context": "OUT_OF_COMBAT",
-      "target": {
-        "target_self": true,
-        "target_enemy": false,
-        "target_teammate": false,
-        "target_bund": false
-      },
-      "out_of_combat_stats": {
-        "FIRE_DMG_": 8.0
-      },
-      "in_combat_stats": {},
-      "trigger_conditions": "",
-      "max_stacks": 1,
-      "stack_mode": "full_only"
-    }
-  ],
-  "conversion_buffs": [
-    {
-      "id": "1471_core_passive_7_1",
-      "name": "CORE_PASSIVE-转换BUFF",
-      "description": "般岳会额外根据自身最大生命值提高贯穿力，每1点最大生命值将提高0.1点贯穿力；\n般岳发动招式造成的火属性伤害均为贯穿伤害，无视敌人防御，使用贯穿力作为招式伤害倍率；\n般岳进入战场时即可回复60闪能，在勘域模式中此效果180秒内最多触发一次。\n般岳可以通过以下方式回复[嗔火]：\n每消耗1点闪能，回复0.5点[嗔火]；\n发动[招架支援]时，回复4点[嗔火]；\n通过[闪避：不动如山]成功招架敌人攻击时，回复4点[嗔火]，若触发完美格挡，则改为回复6点[嗔火]，每1秒最多触发一次；\n触发[极限闪避]时，回复4点[嗔火]，每1秒最多触发一次。\n般岳最多拥有150点[嗔火]，拥有120点[嗔火]时，般岳可以通过发动[普通攻击：焚身]进入[怒相]状态，处于[怒相]状态时，般岳无法再获得[嗔火]，当般岳发动[普通攻击：倾山]后，会退出[怒相]状态；\n进入[怒相]状态时，般岳会获得4点[山威]，若般岳拥有[山威]，则发动[强化特殊技]时，不再消耗闪能，转而消耗1点[山威]并回复10点闪能，否则仍会消耗闪能，退出[怒相]状态时，会清空[山威]；\n处于[怒相]状态且有[山威]时，可以长按 <IconMap:Icon_Special> 按固定顺序自动打出四种[强化特殊技]及[普通攻击：倾山]；\n般岳发动[强化特殊技]或[支援突击]时，贯穿力提升300点，造成的火属性伤害提升36%，暴击伤害提升36%，持续30秒，重复触发时刷新持续时间。",
-      "source": "CORE_PASSIVE",
-      "from_property": "HP_BASE",
-      "to_property": "SHEER_FORCE",
-      "conversion_ratio": 0.1,
-      "trigger_conditions": "",
-      "is_active": true
-    }
-  ],
-  "potential_buffs": []
-}
+[
+  {
+    "id": "1471_talent_1_1",
+    "name": "贪欲如火 - 减抗",
+    "description": "处于[战栗]状态的敌人火属性伤害抗性降低10%。",
+    "source": "TALENT",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "FIRE_RES_RED_": 0.1
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "敌人处于[战栗]状态时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1471_talent_1_2",
+    "name": "贪欲如火 - 贯穿伤害",
+    "description": "特定招式命中处于[战栗]状态的敌人时，造成的贯穿伤害提高10%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "PENETRATION_DMG_": 0.1
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "特定招式命中[战栗]状态敌人时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1471_talent_2",
+    "name": "嗔恨如刀",
+    "description": "[核心被动]中的暴击伤害增益效果额外提升15%，火属性伤害增益效果额外提升15%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_DMG_": 0.15,
+      "FIRE_DMG_": 0.15
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动强化特殊技或支援突击时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1471_talent_4",
+    "name": "肃灭单元·零型",
+    "description": "[强化特殊技：狮子吼·怒]、[强化特殊技：山摇·怒]、[普通攻击：倾山]和[普通攻击：摧岳]造成的伤害提升30%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "COMMON_DMG_": 0.3
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动特定招式时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1471_talent_6",
+    "name": "降世明王",
+    "description": "[明王]提供的火属性伤害增益效果额外提升8%。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "FIRE_DMG_": 0.08
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "拥有[明王]效果时",
+    "max_stacks": 3,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1471_core_passive_1",
+    "name": "群山如我 - 贯穿力转换",
+    "description": "般岳会额外根据自身最大生命值提高贯穿力，每1点最大生命值将提高0.1点贯穿力。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": {
+      "from_property": "HP_MAX",
+      "to_property": "PENETRATION_",
+      "conversion_ratio": 0.1
+    },
+    "trigger_conditions": null,
+    "max_stacks": 1
+  },
+  {
+    "id": "1471_core_passive_2",
+    "name": "群山如我 - 增益",
+    "description": "般岳发动[强化特殊技]或[支援突击]时，贯穿力提升300点，造成的火属性伤害提升36%，暴击伤害提升36%。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "PEN": 300,
+      "FIRE_DMG_": 0.36,
+      "CRIT_DMG_": 0.36
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "发动[强化特殊技]或[支援突击]时",
+    "max_stacks": 1
+  },
+  {
+    "id": "1471_extra_ability_1",
+    "name": "绝巅",
+    "description": "处于[怒相]状态时，若通过普通攻击派生或者快速键入指令的方式消耗[山威]发动[强化特殊技]时 ，般岳会获得一层[明王]，每层[明王]会使自身造成的火属性伤害提升5%，最多叠加3层。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "FIRE_DMG_": 0.05
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "消耗[山威]发动[强化特殊技]时",
+    "max_stacks": 3,
+    "stack_mode": "linear"
+  }
+]

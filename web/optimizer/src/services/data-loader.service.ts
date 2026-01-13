@@ -94,6 +94,7 @@ export interface EnemyInfo {
   defense: number;
   stun_max: number;
   can_stun: boolean;
+  stun_vulnerability_multiplier?: number;
   tags: string;
   ice_dmg_resistance: number;
   fire_dmg_resistance: number;

@@ -11,17 +11,6 @@
 
       <div v-show="isStatsSnapshotExpanded" class="mt-4">
         <div v-if="frontAgent" class="space-y-4">
-          <!-- Debug信息 -->
-          <div class="card bg-warning text-warning-content">
-            <div class="card-body p-4">
-              <h4 class="font-bold mb-3">Debug - 原始数据</h4>
-              <pre class="text-xs overflow-auto bg-base-200 text-base-content p-4 rounded">{{ JSON.stringify({
-                self_properties_out: Array.from(frontAgent.getCharacterBaseStats().out_of_combat.entries()),
-                self_properties_in: Array.from(frontAgent.getCharacterBaseStats().in_combat.entries()),
-              }, null, 2) }}</pre>
-            </div>
-          </div>
-
           <!-- 最终战斗属性 -->
           <div class="card bg-base-100">
             <div class="card-body p-4">
@@ -54,18 +43,26 @@
             </div>
           </div>
 
-          <!-- 局内合并面板 -->
+          <!-- 局内非转换面板 -->
           <div class="card bg-base-100">
             <div class="card-body p-4">
-              <h4 class="font-bold mb-3">局内合并面板 (角色+装备+局内buff基础)</h4>
+              <h4 class="font-bold mb-3">局内非转换 (角色+装备+局内buff基础)</h4>
               <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ battleService.getMergedInCombatProperties().format(0, 'in_combat') }}</pre>
             </div>
           </div>
 
-          <!-- 最终面板 -->
+          <!-- 局内转换面板 -->
           <div class="card bg-base-100">
             <div class="card-body p-4">
-              <h4 class="font-bold mb-3">最终面板 (局外+局内+buff计算结果)</h4>
+              <h4 class="font-bold mb-3">局内转换 (转换类buff属性)</h4>
+              <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ PropertyCollection.formatMap(battleService.getMergedInCombatProperties().conversion) }}</pre>
+            </div>
+          </div>
+
+          <!-- 局内最终面板 -->
+          <div class="card bg-base-100">
+            <div class="card-body p-4">
+              <h4 class="font-bold mb-3">局内最终 (非转换+转换合并计算)</h4>
               <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ PropertyCollection.formatMap(battleService.getFinalStats()) }}</pre>
             </div>
           </div>

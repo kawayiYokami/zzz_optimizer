@@ -24,9 +24,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "条件触发",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.075
+          }
         }
       ]
     },
@@ -49,9 +51,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "条件触发",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.086
+          }
         }
       ]
     },
@@ -74,9 +78,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "条件触发",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.09699999999999999
+          }
         }
       ]
     },
@@ -99,9 +105,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "条件触发",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.10800000000000001
+          }
         }
       ]
     },
@@ -124,9 +132,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "条件触发",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAMAGE_TAKEN_RED_": 0.12
+          }
         }
       ]
     }

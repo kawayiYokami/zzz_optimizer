@@ -81,7 +81,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "IMPACT_DMG_": 1.05
+            "IMPACT_DMG_": 0.0105
           }
         }
       ]
@@ -108,7 +108,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "IMPACT_DMG_": 1.22
+            "IMPACT_DMG_": 0.0122
           }
         }
       ]
@@ -135,7 +135,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "IMPACT_DMG_": 1.4
+            "IMPACT_DMG_": 0.014
           }
         }
       ]

@@ -21,7 +21,7 @@
       "stack_mode": "linear",
       "trigger_conditions": [],
       "out_of_combat_stats": {
-        "CRIT_DMG_": 16.0
+        "CRIT_DMG_": 0.16
       },
       "in_combat_stats": {}
     }
@@ -44,7 +44,8 @@
       "trigger_conditions": "异常掌控大于等于115点时",
       "out_of_combat_stats": {},
       "in_combat_stats": {
-        "CRIT_DMG_": 30.0
+        "CRIT_DMG_": 0.3,
+        "CRIT_": 0.12
       }
     }
   ]

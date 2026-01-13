@@ -24,7 +24,8 @@ import { PropertyType, isPercentageProperty, getPropertyCnName, getPropertyTypeB
 export class PropertyCollection {
   out_of_combat: Map<PropertyType, number>;
   in_combat: Map<PropertyType, number>;
-  final: Map<PropertyType, number>; // 最终面板（局外+局内计算后的结果）
+  conversion: Map<PropertyType, number>; // 转换类属性（由转换类buff生成）
+  final: Map<PropertyType, number>; // 最终面板（局外+局内+转换计算后的结果）
 
   constructor(
     outOfCombat?: Map<PropertyType, number> | Record<PropertyType, number>,
@@ -32,6 +33,7 @@ export class PropertyCollection {
   ) {
     this.out_of_combat = outOfCombat instanceof Map ? new Map(outOfCombat) : new Map(Object.entries(outOfCombat || {}) as unknown as [PropertyType, number][]);
     this.in_combat = inCombat instanceof Map ? new Map(inCombat) : new Map(Object.entries(inCombat || {}) as unknown as [PropertyType, number][]);
+    this.conversion = new Map();
     this.final = new Map();
   }
 
@@ -56,6 +58,30 @@ export class PropertyCollection {
   }
 
   /**
+   * 添加转换类属性值
+   *
+   * @param prop 属性类型
+   * @param value 属性值
+   * @returns self (方便链式调用)
+   */
+  addConversion(prop: PropertyType, value: number): PropertyCollection {
+    const currentValue = this.conversion.get(prop) || 0;
+    this.conversion.set(prop, currentValue + value);
+    return this;
+  }
+
+  /**
+   * 获取转换类属性值
+   *
+   * @param prop 属性类型
+   * @param defaultValue 默认值
+   * @returns 属性值
+   */
+  getConversion(prop: PropertyType, defaultValue: number = 0.0): number {
+    return this.conversion.get(prop) ?? defaultValue;
+  }
+
+  /**
    * 累加另一个 PropertyCollection
    *
    * @param other 另一个属性集合
@@ -69,6 +95,10 @@ export class PropertyCollection {
     for (const [prop, value] of other.in_combat.entries()) {
       const currentValue = this.in_combat.get(prop) || 0;
       this.in_combat.set(prop, currentValue + value);
+    }
+    for (const [prop, value] of other.conversion.entries()) {
+      const currentValue = this.conversion.get(prop) || 0;
+      this.conversion.set(prop, currentValue + value);
     }
     return this;
   }
@@ -216,16 +246,18 @@ export class PropertyCollection {
    *
    * 严格遵循三层属性转换流程：
    * 局外属性(1) → 局内属性(2) → 最终属性(3)
-   * 
+   *
    * 算法：
    * - 基础属性 = 基础属性 × (1 + 百分比属性) + 固定值属性
    * - 其他属性直接复制
-   * 
+   * - 最后加上转换类属性
+   *
    * 注意：
    * 1. 只处理局内属性，不访问任何局外属性
    * 2. 不应该涉及任何局外属性
    * 3. 算法与 toCombatStats 完全一致，只是处理的数据源不同
    * 4. 局外属性不直接影响最终属性，必须通过局内属性间接影响
+   * 5. 转换类属性在最后累加到最终属性中
    *
    * @returns 最终属性Map
    */
@@ -234,6 +266,13 @@ export class PropertyCollection {
     
     // 只处理局内属性，将其转换为最终属性
     // 算法与toCombatStats完全一致，只是数据源不同
+    
+    // 0. 先将转换类属性合并到局内属性的临时副本中
+    const mergedInCombat = new Map<PropertyType, number>(this.in_combat);
+    for (const [prop, value] of this.conversion.entries()) {
+      const currentValue = mergedInCombat.get(prop) || 0;
+      mergedInCombat.set(prop, currentValue + value);
+    }
     
     // 1. 处理四大基础属性（ATK/HP/DEF/IMPACT）
     const fourBasicProps = [
@@ -244,10 +283,10 @@ export class PropertyCollection {
     ];
 
     for (const { base, percent, flat } of fourBasicProps) {
-      // 从局内属性获取值
-      const baseValue = this.getInCombat(base, 0);
-      const percentValue = this.getInCombat(percent, 0);
-      const flatValue = flat ? this.getInCombat(flat, 0) : 0;
+      // 从合并后的局内属性获取值
+      const baseValue = mergedInCombat.get(base) || 0;
+      const percentValue = mergedInCombat.get(percent) || 0;
+      const flatValue = flat ? (mergedInCombat.get(flat) || 0) : 0;
       
       // 计算最终值
       const finalValue = baseValue * (1 + percentValue) + flatValue;
@@ -255,7 +294,7 @@ export class PropertyCollection {
     }
 
     // 2. 处理其他所有属性（直接复制，不进行计算）
-    for (const [prop, value] of this.in_combat.entries()) {
+    for (const [prop, value] of mergedInCombat.entries()) {
       // 跳过已经处理的四大基础属性的 base/percent/flat
       if ([
         PropertyType.ATK_BASE, PropertyType.HP_BASE, PropertyType.DEF_BASE, PropertyType.IMPACT,
@@ -279,7 +318,7 @@ export class PropertyCollection {
    * @returns 是否为空
    */
   isEmpty(): boolean {
-    return this.out_of_combat.size === 0 && this.in_combat.size === 0;
+    return this.out_of_combat.size === 0 && this.in_combat.size === 0 && this.conversion.size === 0;
   }
 
   /**

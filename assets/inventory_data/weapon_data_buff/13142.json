@@ -24,9 +24,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]和[终结技]造成的伤害增加25%；队伍中任意角色受到伤害或回复生命时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 0.25
+          }
         }
       ]
     },
@@ -49,9 +51,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]和[终结技]造成的伤害增加28.7%；队伍中任意角色受到伤害或回复生命时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 0.287
+          }
         }
       ]
     },
@@ -74,9 +78,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]和[终结技]造成的伤害增加32.5%；队伍中任意角色受到伤害或回复生命时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 0.325
+          }
         }
       ]
     },
@@ -99,9 +105,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]和[终结技]造成的伤害增加36.2%；队伍中任意角色受到伤害或回复生命时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 0.36200000000000004
+          }
         }
       ]
     },
@@ -124,9 +132,11 @@
           },
           "max_stacks": 1,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "装备者的[强化特殊技]和[终结技]造成的伤害增加40%；队伍中任意角色受到伤害或回复生命时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "ENHANCED_SPECIAL_DMG_": 0.4
+          }
         }
       ]
     }

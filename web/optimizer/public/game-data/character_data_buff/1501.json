@@ -1,12 +1,125 @@
-{
-  "agent_id": "1501",
-  "name": "(Test1)爱芮",
-  "code_name": "Aria",
-  "rarity": 4,
-  "weapon_type": "异常",
-  "element_type": "以太",
-  "core_passive_buffs": [],
-  "talent_buffs": [],
-  "conversion_buffs": [],
-  "potential_buffs": []
-}
+[
+    {
+        "id": "1501_talent_1_1",
+        "name": "天赋一 - 以太异常积蓄抗性穿透",
+        "description": "天赋一: 爱芮的[普通攻击]、[特殊技]，[强化特殊技]对敌人造成伤害时，无视目标10%的以太异常积蓄抗性。",
+        "source": "TALENT",
+        "target": {
+            "target_enemy": true
+        },
+        "in_combat_stats": {
+            "ENEMY_ETHER_ANOMALY_RES_RED_": 0.10
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": [
+            "造成伤害时"
+        ],
+        "max_stacks": 1
+    },
+    {
+        "id": "1501_talent_1_2",
+        "name": "天赋一 - 异放暴击",
+        "description": "天赋一: 自身触发异放时有40%基础暴击率和30%暴击伤害。此效果仅对'异放'伤害生效，无法被模型精确表示。",
+        "source": "TALENT",
+        "target": {
+            "target_self": true
+        },
+        "in_combat_stats": {
+            "CRIT_": 0.40,
+            "CRIT_DMG_": 0.30
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": [
+            "触发异放时"
+        ],
+        "max_stacks": 1
+    },
+    {
+        "id": "1501_talent_1_3",
+        "name": "天赋一 - 异放暴击率转换",
+        "description": "天赋一: 若异常掌控大于180点，每超过1点异常掌控会使该效果的暴击率额外提升0.4%。当前模型无法处理'超过180点'的条件，将对全部异常掌控值进行转换。",
+        "source": "TALENT",
+        "target": {
+            "target_self": true
+        },
+        "in_combat_stats": {},
+        "out_of_combat_stats": {},
+        "conversion": {
+            "from_property": "ANOM_MAS",
+            "to_property": "CRIT_",
+            "conversion_ratio": 0.004
+        },
+        "trigger_conditions": [
+            "触发异放时"
+        ],
+        "max_stacks": 1
+    },
+    {
+        "id": "1501_talent_2",
+        "name": "天赋二 - 防御穿透",
+        "description": "天赋二: [强化状态]持续时间内，爱芮的攻击无视目标25%防御力。",
+        "source": "TALENT",
+        "target": {
+            "target_self": true
+        },
+        "in_combat_stats": {
+            "DEF_SHRED_": 0.25
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": [
+            "强化状态"
+        ],
+        "max_stacks": 1
+    },
+    {
+        "id": "1501_talent_6",
+        "name": "天赋六 - 强化蓄力攻击增伤",
+        "description": "天赋六: [强化蓄力攻击]造成的以太伤害提升20%。",
+        "source": "TALENT",
+        "target": {
+            "target_self": true
+        },
+        "in_combat_stats": {
+            "ETHER_DMG_": 0.20
+        },
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": [
+            "发动强化蓄力攻击"
+        ],
+        "max_stacks": 1
+    },
+    {
+        "id": "1501_core_passive",
+        "name": "核心被动 - 异放",
+        "description": "核心被动: 描述了一个复杂的基于异常精通计算额外伤害的[异放]机制。这部分属于伤害计算逻辑，无法通过属性buff表示。",
+        "source": "CORE_PASSIVE",
+        "target": {},
+        "in_combat_stats": {},
+        "out_of_combat_stats": {},
+        "conversion": null,
+        "trigger_conditions": null,
+        "max_stacks": 1
+    },
+    {
+        "id": "1501_extra_ability",
+        "name": "额外能力 - 异常精通转换",
+        "description": "额外能力: 若爱芮的异常掌控大于180点，每超过1点异常掌控会提升1.5点异常精通。当前模型无法处理'超过180点'的条件，将对全部异常掌控值进行转换。'异常掌控'和'异常精通'可能指向同一属性。",
+        "source": "EXTRA_ABILITY",
+        "target": {
+            "target_self": true
+        },
+        "in_combat_stats": {},
+        "out_of_combat_stats": {},
+        "conversion": {
+            "from_property": "ANOM_MAS",
+            "to_property": "ANOM_MAS",
+            "conversion_ratio": 1.5
+        },
+        "trigger_conditions": null,
+        "max_stacks": 1
+    }
+]

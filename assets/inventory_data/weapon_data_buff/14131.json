@@ -18,15 +18,17 @@
           "context": "IN_COMBAT",
           "target": {
             "target_self": true,
+            "target_teammate": true,
             "target_enemy": false,
-            "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 2,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "消耗能量时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "COMMON_DMG_": 0.1
+          }
         }
       ]
     },
@@ -43,15 +45,17 @@
           "context": "IN_COMBAT",
           "target": {
             "target_self": true,
+            "target_teammate": true,
             "target_enemy": false,
-            "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 2,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "消耗能量时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "COMMON_DMG_": 0.115
+          }
         }
       ]
     },
@@ -68,15 +72,17 @@
           "context": "IN_COMBAT",
           "target": {
             "target_self": true,
+            "target_teammate": true,
             "target_enemy": false,
-            "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 2,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "消耗能量时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "COMMON_DMG_": 0.13
+          }
         }
       ]
     },
@@ -93,15 +99,17 @@
           "context": "IN_COMBAT",
           "target": {
             "target_self": true,
+            "target_teammate": true,
             "target_enemy": false,
-            "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 2,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "消耗能量时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "COMMON_DMG_": 0.145
+          }
         }
       ]
     },
@@ -118,15 +126,17 @@
           "context": "IN_COMBAT",
           "target": {
             "target_self": true,
+            "target_teammate": true,
             "target_enemy": false,
-            "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 2,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "消耗能量时",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "COMMON_DMG_": 0.16
+          }
         }
       ]
     }

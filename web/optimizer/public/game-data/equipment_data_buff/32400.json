@@ -21,7 +21,7 @@
       "stack_mode": "linear",
       "trigger_conditions": [],
       "out_of_combat_stats": {
-        "ELECTRIC_DMG_": 10.0
+        "ELECTRIC_DMG_": 0.1
       },
       "in_combat_stats": {}
     }
@@ -44,7 +44,7 @@
       "trigger_conditions": "当场上存在处于[感电]状态下的敌人时",
       "out_of_combat_stats": {},
       "in_combat_stats": {
-        "ATK_": 28.0
+        "ATK_": 0.28
       }
     }
   ]

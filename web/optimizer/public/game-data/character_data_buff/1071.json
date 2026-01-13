@@ -1,67 +1,118 @@
 [
   {
-    "id": "1071_core_passive_0_1",
-    "name": "坚韧之壁",
-    "description": "凯撒发动强化特殊技：招架反击、连携技、终结技或以防御反击的方式发动强化特殊技：超强力盾击时，为全队提供荣光之盾；荣光之盾存在期间，持有者的攻击力提升1000点，效果结束后仍保留持续5秒。",
-    "source": "CORE_PASSIVE",
-    "target": { "target_self": true, "target_teammate": true },
-    "in_combat_stats": { "ATTACK": 1000 },
+    "id": "1071_talent_1",
+    "name": "楔式进军",
+    "description": "[荣光之盾]存在期间，持有者附近5米范围内敌人的全属性伤害抗性降低15%。",
+    "source": "TALENT",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "ENEMY_RES_RED_": 0.15
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "荣光之盾存在期间",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "[荣光之盾]存在期间",
+    "max_stacks": 1
   },
   {
-    "id": "1071_talent_1_1",
-    "name": "楔式进军",
-    "description": "成为接战状态下的当前操作角色时，凯撒立即为全队提供荣光之盾，300秒内最多触发一次；荣光之盾存在期间，持有者附近5米范围内敌人的全属性伤害抗性降低15%。",
+    "id": "1071_talent_2_1",
+    "name": "异域传承-能量效率",
+    "description": "[荣光之盾]存在期间，凯撒的能量获得效率提升10%",
     "source": "TALENT",
-    "target": { "target_enemy": true },
-    "in_combat_stats": { "ELEMENTAL_RES_ALL": -0.15 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ENER_EFF_": 0.10
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "荣光之盾存在期间，敌人在持有者附近5米范围内",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "[荣光之盾]存在期间",
+    "max_stacks": 1
+  },
+    {
+    "id": "1071_talent_2_2",
+    "name": "异域传承-攻击力提升",
+    "description": "持有者的攻击力提升效果提升至原本的150%。 (1000 * 1.5 = 1500)",
+    "source": "TALENT",
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {
+      "ATK": 500
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[荣光之盾]存在期间",
+    "max_stacks": 1
   },
   {
     "id": "1071_talent_6_1",
-    "name": "霸主之志",
-    "description": "强化特殊技：超强力盾击和支援突击：支援之锋必定触发暴击，招式造成的伤害提升50%，对主要目标造成的伤害额外提升50%；发动上述招式时，自身暴击率提升30%，暴击伤害提升60%，持续15秒。",
+    "name": "霸主之志-伤害提升",
+    "description": "[强化特殊技：超强力盾击]和[支援突击：支援之锋]招式造成的伤害提升50%, 对主要目标额外提升50%。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "COMMON_DMG_": 0.50, "CRIT_RATE_": 0.30, "CRIT_DMG_": 0.60 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "ENHANCED_SPECIAL_DMG_": 1.00,
+      "ASSIST_ATK_DMG_": 1.00
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "发动强化特殊技：超强力盾击或支援突击：支援之锋时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "发动[强化特殊技：超强力盾击]或[支援突击：支援之锋]时",
+    "max_stacks": 1
   },
-  {
+    {
     "id": "1071_talent_6_2",
-    "name": "霸主之志-主要目标",
-    "description": "强化特殊技：超强力盾击和支援突击：支援之锋对主要目标造成的伤害额外提升50%。",
+    "name": "霸主之志-暴击提升",
+    "description": "凯撒发动[强化特殊技：超强力盾击]或[支援突击：支援之锋]时，自身暴击率提升30%，暴击伤害提升60%，持续15秒。",
     "source": "TALENT",
-    "target": { "target_self": true },
-    "in_combat_stats": { "MAIN_TARGET_DMG_": 0.50 },
+    "target": {
+      "target_self": true
+    },
+    "in_combat_stats": {
+      "CRIT_": 0.30,
+      "CRIT_DMG_": 0.60
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "对主要目标发动强化特殊技：超强力盾击或支援突击：支援之锋时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "发动[强化特殊技：超强力盾击]或[支援突击：支援之锋]时",
+    "max_stacks": 1
   },
   {
-    "id": "1071_extra_ability_0_1",
-    "name": "战意激昂",
-    "description": "队伍中存在其他可发动招架支援的角色或与自身阵营相同的角色时触发：凯撒触发精准格挡、防御反击、招架支援或发动普通攻击：此路不通时，对自身附近7米范围内的敌人施加减益效果，使全队角色对其造成的伤害提升25%，持续30秒。",
-    "source": "TALENT",
-    "target": { "target_enemy": true },
-    "in_combat_stats": { "TAKEN_DMG_": 0.25 },
+    "id": "1071_core_passive",
+    "name": "坚韧之壁",
+    "description": "[荣光之盾]存在期间，持有者的攻击力提升1000点",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_teammate": true,
+      "target_bund": true
+    },
+    "in_combat_stats": {
+      "ATK": 1000
+    },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "触发精准格挡、防御反击、招架支援或发动普通攻击：此路不通时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
+    "trigger_conditions": "[荣光之盾]存在期间",
+    "max_stacks": 1
+  },
+  {
+    "id": "1071_extra_ability",
+    "name": "战意激昂",
+    "description": "对自身附近7米范围内的敌人施加减益效果，使全队角色对其造成的伤害提升25%，持续30秒。",
+    "source": "CORE_PASSIVE",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "DMG_INC_": 0.25
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "触发[精准格挡]、[防御反击]、[招架支援]或发动[普通攻击：此路不通！]时",
+    "max_stacks": 1
   }
 ]

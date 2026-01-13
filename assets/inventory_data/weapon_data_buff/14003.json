@@ -22,11 +22,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 6,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "3秒充能，强化特殊技消耗",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAZE_INC_": 0.04
+          }
         }
       ]
     },
@@ -47,11 +49,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 6,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "3秒充能，强化特殊技消耗",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAZE_INC_": 0.046
+          }
         }
       ]
     },
@@ -72,11 +76,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 6,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "3秒充能，强化特殊技消耗",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAZE_INC_": 0.052000000000000005
+          }
         }
       ]
     },
@@ -97,11 +103,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 6,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "3秒充能，强化特殊技消耗",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAZE_INC_": 0.057999999999999996
+          }
         }
       ]
     },
@@ -122,11 +130,13 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 6,
           "stack_mode": "linear",
-          "trigger_conditions": "",
+          "trigger_conditions": "3秒充能，强化特殊技消耗",
           "out_of_combat_stats": {},
-          "in_combat_stats": {}
+          "in_combat_stats": {
+            "DAZE_INC_": 0.064
+          }
         }
       ]
     }

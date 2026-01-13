@@ -27,7 +27,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "FIRE_DMG_": 1.5
+            "FIRE_DMG_": 0.015
           }
         },
         {
@@ -47,8 +47,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "IMPACT_DMG_": 25.0,
-            "FIRE_DMG_": 1.5
+            "IMPACT_DMG_": 0.25,
+            "FIRE_DMG_": 0.015
           }
         }
       ]
@@ -75,7 +75,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "FIRE_DMG_": 1.72
+            "FIRE_DMG_": 0.0172
           }
         },
         {
@@ -95,8 +95,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "IMPACT_DMG_": 28.75,
-            "FIRE_DMG_": 1.72
+            "IMPACT_DMG_": 0.2875,
+            "FIRE_DMG_": 0.0172
           }
         }
       ]
@@ -123,7 +123,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "FIRE_DMG_": 1.95
+            "FIRE_DMG_": 0.0195
           }
         },
         {
@@ -143,8 +143,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "IMPACT_DMG_": 32.5,
-            "FIRE_DMG_": 1.95
+            "IMPACT_DMG_": 0.325,
+            "FIRE_DMG_": 0.0195
           }
         }
       ]
@@ -171,7 +171,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "FIRE_DMG_": 2.17
+            "FIRE_DMG_": 0.0217
           }
         },
         {
@@ -191,8 +191,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "IMPACT_DMG_": 36.25,
-            "FIRE_DMG_": 2.17
+            "IMPACT_DMG_": 0.3625,
+            "FIRE_DMG_": 0.0217
           }
         }
       ]
@@ -219,7 +219,7 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "FIRE_DMG_": 2.4
+            "FIRE_DMG_": 0.024
           }
         },
         {
@@ -239,8 +239,8 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "IMPACT_DMG_": 40.0,
-            "FIRE_DMG_": 2.4
+            "IMPACT_DMG_": 0.4,
+            "FIRE_DMG_": 0.024
           }
         }
       ]

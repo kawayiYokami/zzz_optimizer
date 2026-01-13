@@ -11,24 +11,18 @@
       "description": "发动[连携技]或[终结技]时，全队角色攻击力提升8%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
       "buffs": [
         {
-          "id": "12006_talent_1_stats",
-          "name": "「残响」-Ⅲ型-属性提升",
+          "id": "12006_r1",
+          "name": "强音",
           "description": "发动[连携技]或[终结技]时，全队角色攻击力提升8%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
-          "source": "WENGINE_TALENT",
-          "context": "IN_COMBAT",
+          "source": "12006",
           "target": {
-            "target_self": true,
-            "target_enemy": false,
             "target_teammate": true,
-            "target_bund": false
+            "target_bund": true
           },
-          "max_stacks": 1,
-          "stack_mode": "linear",
-          "trigger_conditions": "",
-          "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 8.0
-          }
+            "ATK_": 0.08
+          },
+          "max_stacks": 1
         }
       ]
     },
@@ -38,24 +32,18 @@
       "description": "发动[连携技]或[终结技]时，全队角色攻击力提升9%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
       "buffs": [
         {
-          "id": "12006_talent_2_stats",
-          "name": "「残响」-Ⅲ型-属性提升",
+          "id": "12006_r2",
+          "name": "强音",
           "description": "发动[连携技]或[终结技]时，全队角色攻击力提升9%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
-          "source": "WENGINE_TALENT",
-          "context": "IN_COMBAT",
+          "source": "12006",
           "target": {
-            "target_self": true,
-            "target_enemy": false,
             "target_teammate": true,
-            "target_bund": false
+            "target_bund": true
           },
-          "max_stacks": 1,
-          "stack_mode": "linear",
-          "trigger_conditions": "",
-          "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 9.0
-          }
+            "ATK_": 0.09
+          },
+          "max_stacks": 1
         }
       ]
     },
@@ -65,24 +53,18 @@
       "description": "发动[连携技]或[终结技]时，全队角色攻击力提升10%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
       "buffs": [
         {
-          "id": "12006_talent_3_stats",
-          "name": "「残响」-Ⅲ型-属性提升",
+          "id": "12006_r3",
+          "name": "强音",
           "description": "发动[连携技]或[终结技]时，全队角色攻击力提升10%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
-          "source": "WENGINE_TALENT",
-          "context": "IN_COMBAT",
+          "source": "12006",
           "target": {
-            "target_self": true,
-            "target_enemy": false,
             "target_teammate": true,
-            "target_bund": false
+            "target_bund": true
           },
-          "max_stacks": 1,
-          "stack_mode": "linear",
-          "trigger_conditions": "",
-          "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 10.0
-          }
+            "ATK_": 0.1
+          },
+          "max_stacks": 1
         }
       ]
     },
@@ -92,24 +74,18 @@
       "description": "发动[连携技]或[终结技]时，全队角色攻击力提升11%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
       "buffs": [
         {
-          "id": "12006_talent_4_stats",
-          "name": "「残响」-Ⅲ型-属性提升",
+          "id": "12006_r4",
+          "name": "强音",
           "description": "发动[连携技]或[终结技]时，全队角色攻击力提升11%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
-          "source": "WENGINE_TALENT",
-          "context": "IN_COMBAT",
+          "source": "12006",
           "target": {
-            "target_self": true,
-            "target_enemy": false,
             "target_teammate": true,
-            "target_bund": false
+            "target_bund": true
           },
-          "max_stacks": 1,
-          "stack_mode": "linear",
-          "trigger_conditions": "",
-          "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 11.0
-          }
+            "ATK_": 0.11
+          },
+          "max_stacks": 1
         }
       ]
     },
@@ -119,24 +95,18 @@
       "description": "发动[连携技]或[终结技]时，全队角色攻击力提升12%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
       "buffs": [
         {
-          "id": "12006_talent_5_stats",
-          "name": "「残响」-Ⅲ型-属性提升",
+          "id": "12006_r5",
+          "name": "强音",
           "description": "发动[连携技]或[终结技]时，全队角色攻击力提升12%，持续10秒，20秒内最多触发一次，同名被动效果之间不可叠加。",
-          "source": "WENGINE_TALENT",
-          "context": "IN_COMBAT",
+          "source": "12006",
           "target": {
-            "target_self": true,
-            "target_enemy": false,
             "target_teammate": true,
-            "target_bund": false
+            "target_bund": true
           },
-          "max_stacks": 1,
-          "stack_mode": "linear",
-          "trigger_conditions": "",
-          "out_of_combat_stats": {},
           "in_combat_stats": {
-            "ATK_": 12.0
-          }
+            "ATK_": 0.12
+          },
+          "max_stacks": 1
         }
       ]
     }
