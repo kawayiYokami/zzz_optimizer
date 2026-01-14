@@ -66,6 +66,10 @@
               <div class="text-sm font-bold">核心技能</div>
               <div class="text-xs text-gray-600">Lv.{{ selectedAgent.core_skill }}</div>
             </div>
+            <div class="card bg-base-200 p-3 col-span-2">
+              <div class="text-sm font-bold">核心属性</div>
+              <div class="text-xs text-gray-600">{{ getCoreSkillStats(selectedAgent) }}</div>
+            </div>
             <div class="card bg-base-200 p-3">
               <div class="text-sm font-bold">稀有度</div>
               <div class="text-xs text-gray-600">{{ selectedAgent.rarity }}</div>
@@ -464,6 +468,71 @@ function getBuffType(buff: any): string {
   };
   
   return buffSourceMap[buff.source] || '未知';
+}
+
+function getCoreSkillStats(agent: Agent): string {
+  const bonuses = agent.getCoreSkillBonuses();
+  
+  // 调试日志
+  console.log('[getCoreSkillStats] 获取到的属性数量:', bonuses.length);
+  console.log('[getCoreSkillStats] 属性详情:', bonuses);
+  
+  if (bonuses.length === 0) {
+    // 检查是否是数据加载失败
+    const charDetail = (agent as any)._charDetail;
+    const zodData = (agent as any)._zodData;
+    
+    if (!charDetail) {
+      console.warn('[getCoreSkillStats] 角色详情未加载');
+      return '数据加载失败（角色详情未加载）';
+    }
+    
+    if (!charDetail.ExtraLevel) {
+      console.warn('[getCoreSkillStats] 角色详情中缺少 ExtraLevel 数据');
+      return '数据加载失败（缺少 ExtraLevel 数据）';
+    }
+    
+    if (!zodData || !zodData.core) {
+      console.warn('[getCoreSkillStats] 存档数据中核心技能等级未设置');
+      return '数据加载失败（核心技能等级未设置）';
+    }
+    
+    const coreKey = zodData.core.toString();
+    const extraData = charDetail.ExtraLevel[coreKey];
+    
+    if (!extraData) {
+      console.warn('[getCoreSkillStats] 核心技能等级 ' + coreKey + ' 对应的数据不存在');
+      return '数据加载失败（核心技能等级 ' + coreKey + ' 对应的数据不存在）';
+    }
+    
+    if (!extraData.Extra) {
+      console.warn('[getCoreSkillStats] 核心技能等级 ' + coreKey + ' 的 Extra 数据不存在');
+      return '数据加载失败（核心技能等级 ' + coreKey + ' 的 Extra 数据不存在）';
+    }
+    
+    console.warn('[getCoreSkillStats] 所有属性值都为 0');
+    return '无加成（所有属性值都为 0）';
+  }
+  
+  const stats: string[] = [];
+  for (const bonus of bonuses) {
+    if (bonus.value !== 0) {
+      let displayValue: string;
+      if (bonus.format?.includes('%')) {
+        displayValue = (bonus.value / 100).toFixed(1) + '%';
+      } else {
+        displayValue = bonus.value.toString();
+      }
+      stats.push(`${bonus.name}: ${displayValue}`);
+    }
+  }
+  
+  if (stats.length === 0) {
+    console.warn('[getCoreSkillStats] 所有属性值都为 0');
+    return '无加成（所有属性值都为 0）';
+  }
+  
+  return stats.join(', ');
 }
 
 function getBuffStats(buff: any): Array<{ name: string; value: string; isPositive: boolean }> {

@@ -74,6 +74,30 @@ export function getWeaponCnName(weaponType: WeaponType): string {
 /**
  * 属性类型
  */
+/**
+ * 游戏数据 Prop ID 到 PropertyType 的映射
+ * 用于将不同来源的相同属性映射到统一的 PropertyType
+ */
+export const PROP_ID_TO_PROPERTY_TYPE: Record<number, number> = {
+  // 暴击率：核心技(20101) -> CRIT_(20103)
+  20101: 20103,
+  // 暴击伤害：核心技(21101) -> CRIT_DMG_(21103)
+  21101: 21103,
+  // 穿透率：核心技(23101) -> PEN_(23103)
+  // 23101 已经是 PEN，但核心技数据中的 23101 实际是穿透率
+  // 异常精通：核心技(31201) -> ANOM_PROF(31203)
+  31201: 31203,
+  // 异常掌控：核心技(31401) -> ANOM_MAS(31303)
+  31401: 31303,
+};
+
+/**
+ * 将游戏数据 Prop ID 转换为 PropertyType
+ */
+export function propIdToPropertyType(propId: number): number {
+  return PROP_ID_TO_PROPERTY_TYPE[propId] ?? propId;
+}
+
 export enum PropertyType {
   // 基础属性
   HP_BASE = 11001, // 基础生命值（角色等级提供）

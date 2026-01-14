@@ -2,7 +2,7 @@
  * 角色模型
  */
 
-import { Rarity, ElementType, WeaponType, PropertyType } from './base';
+import { Rarity, ElementType, WeaponType, PropertyType, propIdToPropertyType, getPropertyCnName } from './base';
 import { PropertyCollection } from './property-collection';
 
 // 命破角色ID列表
@@ -162,6 +162,83 @@ export class Agent {
   // 计算属性加载状态
   private _isSelfPropertiesLoaded: boolean = false;
   private _isBuffsLoaded: boolean = false;
+
+  /**
+   * 获取核心技属性加成（返回 PropertyType）
+   * @returns 核心技属性 Map<PropertyType, value>
+   */
+  getCoreSkillStats(): Map<PropertyType, number> {
+    if (!this._charDetail?.ExtraLevel) {
+      console.warn('[getCoreSkillStats] _charDetail.ExtraLevel 不存在');
+      return new Map();
+    }
+    
+    if (!this._zodData) {
+      console.warn('[getCoreSkillStats] _zodData 不存在');
+      return new Map();
+    }
+    
+    const coreLevel = this._zodData.core;
+    
+    if (!coreLevel || coreLevel < 1) {
+      console.warn('[getCoreSkillStats] 核心技能等级无效:', coreLevel);
+      return new Map();
+    }
+    
+    // 核心技等级 1 无数据，从等级 2 开始才有属性
+    if (coreLevel === 1) {
+      return new Map();
+    }
+    
+    // JSON key = 核心技等级 - 1
+    const coreKey = (coreLevel - 1).toString();
+    const extraData = this._charDetail.ExtraLevel[coreKey];
+    
+    if (!extraData?.Extra) {
+      console.warn('[getCoreSkillStats] ExtraLevel[' + coreKey + '].Extra 不存在');
+      return new Map();
+    }
+    
+    const stats = new Map<PropertyType, number>();
+    for (const bonus of Object.values(extraData.Extra) as any[]) {
+      if (bonus.Prop !== undefined && bonus.Value !== undefined) {
+        // 使用 propIdToPropertyType 转换 Prop ID 到 PropertyType
+        const propId = Number(bonus.Prop);
+        const propertyType = propIdToPropertyType(propId) as PropertyType;
+        const value = Number(bonus.Value) || 0;
+        
+        // 检查 PropertyType 是否有效
+        if (!Object.values(PropertyType).includes(propertyType)) {
+          console.warn(`[getCoreSkillStats] 非法 PropertyType: ${propertyType} (Prop ID: ${propId}, 名称: ${bonus.Name})`);
+          continue;
+        }
+        
+        stats.set(propertyType, value);
+      }
+    }
+    
+    return stats;
+  }
+
+  /**
+   * 获取核心技属性加成（用于UI显示）
+   * @returns 核心技属性数组 [{name, value, format}]
+   */
+  getCoreSkillBonuses(): Array<{name: string; value: number; format: string}> {
+    const stats = this.getCoreSkillStats();
+    const bonuses: Array<{name: string; value: number; format: string}> = [];
+    
+    for (const [propType, value] of stats.entries()) {
+      const name = getPropertyCnName(propType);
+      bonuses.push({
+        name: name,
+        value: value,
+        format: '{0}'
+      });
+    }
+    
+    return bonuses;
+  }
 
   /**
    * 获取角色基础属性（仅角色自身，不含装备、buff）
@@ -358,23 +435,12 @@ export class Agent {
       }
     }
 
-    // 核心技加成
-    let coreHp = 0;
-    let coreAtk = 0;
-    let coreDef = 0;
-    let coreImpact = 0;
-    if (this._charDetail.ExtraLevel) {
-      const coreKey = this._zodData.core.toString();
-      const extraData = this._charDetail.ExtraLevel[coreKey];
-      if (extraData && extraData.Extra) {
-        for (const bonus of Object.values(extraData.Extra) as any[]) {
-          if (bonus.Name === '基础攻击力') coreAtk += bonus.Value;
-          if (bonus.Name === '基础生命值') coreHp += bonus.Value;
-          if (bonus.Name === '基础防御力') coreDef += bonus.Value;
-          if (bonus.Name === '冲击力') coreImpact += bonus.Value;
-        }
-      }
-    }
+    // 核心技加成 - 直接调用 getCoreSkillStats() 方法
+    const coreStats = this.getCoreSkillStats();
+    
+    // 提取需要加到基础属性上的核心技加成
+    const coreAtk = coreStats.get(PropertyType.ATK_BASE) || 0; // 基础攻击力
+    const coreImpact = coreStats.get(PropertyType.IMPACT) || 0; // 冲击力
 
     // 动态填充所有不为 0 的属性
     // 属性名映射：stats 字段名 -> PropertyType -> 转换因子
@@ -415,11 +481,11 @@ export class Agent {
       let finalValue = value;
 
       if (key === 'HpMax') {
-        finalValue = baseHp + promotionHp + coreHp;
+        finalValue = baseHp + promotionHp;
       } else if (key === 'Attack') {
         finalValue = baseAtk + promotionAtk + coreAtk;
       } else if (key === 'Defence') {
-        finalValue = baseDef + promotionDef + coreDef;
+        finalValue = baseDef + promotionDef;
       } else if (key === 'BreakStun') {
         finalValue = value + coreImpact;
       } else if (mapping.divisor) {
@@ -432,6 +498,17 @@ export class Agent {
         // 角色基础属性只属于局外面板
         this.self_properties.out_of_combat.set(mapping.propType, finalValue);
       }
+    }
+
+    // 添加核心技加成的其他属性（非基础属性）
+    for (const [propType, value] of coreStats.entries()) {
+      // 跳过已经处理的基础属性
+      if (propType === PropertyType.ATK_BASE || propType === PropertyType.IMPACT) continue;
+      if (value === 0) continue;
+      
+      // 计算最终值（核心技能属性都是固定值，不需要转换）
+      const current = this.self_properties.out_of_combat.get(propType) || 0;
+      this.self_properties.out_of_combat.set(propType, current + value);
     }
 
     this._isSelfPropertiesLoaded = true;
@@ -538,6 +615,33 @@ export class Agent {
     agent._charDetail = await dataLoader.getCharacterDetail(gameCharId);
     agent._gameCharId = gameCharId;
     agent._zodData = zodData;
+
+    // 验证 _charDetail 是否正确加载
+    if (!agent._charDetail) {
+      console.error(`[fromZodData] 加载角色详情失败: ${gameCharId}`);
+      throw new Error(`加载角色详情失败: ${gameCharId}`);
+    }
+    
+    if (!agent._charDetail.ExtraLevel) {
+      console.warn(`[fromZodData] 角色详情中缺少 ExtraLevel 数据: ${gameCharId}`);
+    } else {
+      console.log(`[fromZodData] 角色详情加载成功: ${gameCharId}`);
+      console.log(`[fromZodData] ExtraLevel 包含的等级:`, Object.keys(agent._charDetail.ExtraLevel));
+    }
+    
+    // 验证核心技能等级
+    if (!zodData.core) {
+      console.warn(`[fromZodData] 存档中核心技能等级未设置: ${zodData.id}`);
+    } else if (zodData.core < 1 || zodData.core > 7) {
+      console.warn(`[fromZodData] 核心技能等级超出范围: ${zodData.core} (有效范围: 1-7)`);
+    } else {
+      console.log(`[fromZodData] 核心技能等级: ${zodData.core}`);
+      if (zodData.core === 1) {
+        console.log(`[fromZodData] 核心技等级 1 无属性数据`);
+      } else {
+        console.log(`[fromZodData] 对应 JSON key: ${zodData.core - 1}`);
+      }
+    }
 
     // 加载技能数据
     const agentName = agent.name_cn || agent.name_en;
