@@ -389,12 +389,12 @@ const equipmentDetails = computed(() => {
       processedSets.add(disk!.set_name);
 
       const count = setCounts[disk!.set_name] || 0;
-      if (count >= 2 && disk!.two_piece_buffs.length > 0) {
-        for (const buff of disk!.two_piece_buffs) {
+      if (count >= 2 && disk!.set_properties.length > 0) {
+        for (const buff of disk!.set_properties) {
           details.push({
             type: 'set_bonus',
             stats: buff.toPropertyCollection(),
-            name: `${disk!.set_name} 2件套`
+            name: `${disk!.set_name} 2件套属性`
           });
         }
       }

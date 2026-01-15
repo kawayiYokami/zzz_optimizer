@@ -247,7 +247,7 @@ export class DamageCalculatorService {
   /**
    * 计算异常积蓄区
    *
-   * 公式：积蓄效率 = (1 + 积蓄效率%) × (1 - 敌人积蓄抗性 - 敌人元素积蓄抗性)
+   * 公式：积蓄区 = (异常掌控 / 100) × (1 + 积蓄效率%) × (1 - 敌人积蓄抗性 - 敌人元素积蓄抗性) × 距离衰减
    * 有效范围：[0, +∞)
    *
    * @param zones 乘区集合
@@ -255,7 +255,7 @@ export class DamageCalculatorService {
    * @returns 异常积蓄乘区
    */
   static calculateAnomalyBuildupZone(zones: ZoneCollection, element: string): number {
-    const buildupEfficiency = zones.getFinal(PropertyType.ANOM_BUILDUP_, 0) / 100.0;
+    const buildupEfficiency = zones.getFinal(PropertyType.ANOM_BUILDUP_, 0);
     
     // 元素特定积蓄效率
     const elementBuildupMap: Record<string, PropertyType> = {
@@ -265,7 +265,7 @@ export class DamageCalculatorService {
       electric: PropertyType.ELECTRIC_ANOMALY_BUILDUP_,
       ether: PropertyType.ETHER_ANOMALY_BUILDUP_,
     };
-    const elBuildupEfficiency = zones.getFinal(elementBuildupMap[element.toLowerCase()] || PropertyType.PHYSICAL_ANOMALY_BUILDUP_, 0) / 100.0;
+    const elBuildupEfficiency = zones.getFinal(elementBuildupMap[element.toLowerCase()] || PropertyType.PHYSICAL_ANOMALY_BUILDUP_, 0);
 
     const buildupRes = zones.getFinal(PropertyType.ANOM_BUILDUP_RES_, 0);
     
@@ -278,7 +278,16 @@ export class DamageCalculatorService {
     };
     const elBuildupRes = zones.getFinal(elementBuildupResMap[element.toLowerCase()] || PropertyType.PHYSICAL_ANOM_BUILDUP_RES_, 0);
 
-    return Math.max(0, (1.0 + buildupEfficiency + elBuildupEfficiency) * (1.0 - buildupRes - elBuildupRes));
+    // 异常掌控区 = 异常掌控 / 100
+    // 异常掌控(ANOM_MAS)是数值属性，每1点提高1%
+    const anomalyMastery = zones.getFinal(PropertyType.ANOM_MAS, 0);
+    const masteryZone = anomalyMastery / 100;
+
+    // 距离衰减区
+    const distanceZone = zones.distance_mult;
+
+    // 公式：积蓄区 = 异常掌控区 × 异常积蓄效率区 × 异常积蓄抗性区 × 距离衰减区
+    return Math.max(0, masteryZone * (1.0 + buildupEfficiency + elBuildupEfficiency) * (1.0 - buildupRes - elBuildupRes) * distanceZone);
   }
 
   /**

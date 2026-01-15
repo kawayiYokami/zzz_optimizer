@@ -135,9 +135,9 @@ export class DriveDisk {
   equipped_agent: string | null = null;
   locked: boolean = false;
 
-  // 套装Buff（从游戏数据加载）
-  two_piece_buffs: Buff[] = [];
-  four_piece_buffs: Buff[] = [];
+  // 套装属性和Buff（从游戏数据加载）
+  set_properties: Buff[] = []; // 2件套属性（静态，直接加面板）
+  set_buffs: Buff[] = []; // 4件套Buff（动态，战斗生效）
 
   constructor(
     id: string,
@@ -233,11 +233,11 @@ export class DriveDisk {
     const collections: PropertyCollection[] = [];
 
     if (setBonus === DriveDiskSetBonus.TWO_PIECE) {
-      for (const buff of this.two_piece_buffs) {
+      for (const buff of this.set_properties) {
         collections.push(buff.toPropertyCollection());
       }
     } else if (setBonus === DriveDiskSetBonus.FOUR_PIECE) {
-      for (const buff of this.four_piece_buffs) {
+      for (const buff of this.set_buffs) {
         collections.push(buff.toPropertyCollection());
       }
     }
@@ -325,16 +325,16 @@ export class DriveDisk {
     try {
       const equipBuffData = await dataLoader.getEquipmentBuff(data.game_id);
 
-      // 2件套Buff
+      // 2件套属性
       if (equipBuffData.two_piece_buffs) {
-        disk.two_piece_buffs = equipBuffData.two_piece_buffs.map((b: any) =>
+        disk.set_properties = equipBuffData.two_piece_buffs.map((b: any) =>
           Buff.fromBuffData(b)
         );
       }
 
       // 4件套Buff
       if (equipBuffData.four_piece_buffs) {
-        disk.four_piece_buffs = equipBuffData.four_piece_buffs.map((b: any) =>
+        disk.set_buffs = equipBuffData.four_piece_buffs.map((b: any) =>
           Buff.fromBuffData(b)
         );
       }
@@ -438,16 +438,16 @@ export class DriveDisk {
     try {
       const equipBuffData = await dataLoader.getEquipmentBuff(gameEquipId);
 
-      // 2件套Buff
+      // 2件套属性
       if (equipBuffData.two_piece_buffs) {
-        disk.two_piece_buffs = equipBuffData.two_piece_buffs.map((b: any) =>
+        disk.set_properties = equipBuffData.two_piece_buffs.map((b: any) =>
           Buff.fromBuffData(b)
         );
       }
 
       // 4件套Buff
       if (equipBuffData.four_piece_buffs) {
-        disk.four_piece_buffs = equipBuffData.four_piece_buffs.map((b: any) =>
+        disk.set_buffs = equipBuffData.four_piece_buffs.map((b: any) =>
           Buff.fromBuffData(b)
         );
       }

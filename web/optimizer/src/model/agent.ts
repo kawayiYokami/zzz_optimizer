@@ -164,6 +164,30 @@ export class Agent {
   private _isBuffsLoaded: boolean = false;
 
   /**
+   * 将核心技能属性名称映射到 PropertyType（根据名称）
+   * @param name 核心技能属性名称
+   * @returns PropertyType 或 null
+   */
+  private _mapCoreSkillNameToPropertyType(name: string): PropertyType | null {
+    const nameToPropMap: Record<string, PropertyType> = {
+      '基础攻击力': PropertyType.ATK_BASE,
+      '攻击力': PropertyType.ATK_BASE,
+      '生命值': PropertyType.HP_BASE,
+      '基础生命值': PropertyType.HP_BASE,
+      '防御力': PropertyType.DEF_BASE,
+      '基础防御力': PropertyType.DEF_BASE,
+      '冲击力': PropertyType.IMPACT,
+      '暴击率': PropertyType.CRIT_,
+      '暴击伤害': PropertyType.CRIT_DMG_,
+      '异常掌控': PropertyType.ANOM_MAS,
+      '异常精通': PropertyType.ANOM_PROF,
+      '穿透率': PropertyType.PEN_,
+      '基础能量自动回复': PropertyType.ENER_REGEN,
+    };
+    return nameToPropMap[name] || null;
+  }
+
+  /**
    * 获取核心技属性加成（返回 PropertyType）
    * @returns 核心技属性 Map<PropertyType, value>
    */
@@ -201,19 +225,27 @@ export class Agent {
     
     const stats = new Map<PropertyType, number>();
     for (const bonus of Object.values(extraData.Extra) as any[]) {
-      if (bonus.Prop !== undefined && bonus.Value !== undefined) {
-        // 使用 propIdToPropertyType 转换 Prop ID 到 PropertyType
-        const propId = Number(bonus.Prop);
-        const propertyType = propIdToPropertyType(propId) as PropertyType;
-        const value = Number(bonus.Value) || 0;
+      if (bonus.Name && bonus.Value !== undefined) {
+        // 使用名称映射到 PropertyType
+        const propertyType = this._mapCoreSkillNameToPropertyType(bonus.Name);
+        let value = Number(bonus.Value) || 0;
         
-        // 检查 PropertyType 是否有效
-        if (!Object.values(PropertyType).includes(propertyType)) {
-          console.warn(`[getCoreSkillStats] 非法 PropertyType: ${propertyType} (Prop ID: ${propId}, 名称: ${bonus.Name})`);
+        // 根据 Format 转换 Value
+        const format = bonus.Format || '';
+        if (format.includes('%')) {
+          // 百分比格式：{0:0.#%} 表示 Value=480 实际上是 4.8%
+          value = value / 10000;
+        }
+        // {0:0.#} 和 {0:0.##} 格式直接使用原始值
+        
+        if (!propertyType) {
+          console.warn(`[getCoreSkillStats] 未知核心技能属性名称: ${bonus.Name} (Prop ID: ${bonus.Prop})`);
           continue;
         }
         
-        stats.set(propertyType, value);
+        // 累加相同 PropertyType 的值（例如"基础攻击力"和"攻击力"都映射到 ATK_BASE）
+        const existingValue = stats.get(propertyType) || 0;
+        stats.set(propertyType, existingValue + value);
       }
     }
     
@@ -253,7 +285,7 @@ export class Agent {
   }
 
   /**
-   * 获取角色+装备属性（角色基础 + 武器 + 驱动盘基础 + 驱动盘两件套）
+   * 获取角色+装备属性（角色基础 + 武器 + 驱动盘基础 + 驱动盘2件套属性）
    *
    * @returns 属性集合
    */
@@ -273,7 +305,7 @@ export class Agent {
       }
     }
 
-    // 4. 获取驱动盘属性和两件套效果
+    // 4. 获取驱动盘属性和2件套属性
     if (this._driveDisks) {
       // 统计不同套装的数量
       const setCounts = new Map<string, number>();
@@ -293,8 +325,8 @@ export class Agent {
         }
       }
 
-      // 计算两件套效果
-      // 遍历所有驱动盘，为每个至少有2件的套装添加两件套效果
+      // 计算2件套属性
+      // 遍历所有驱动盘，为每个至少有2件的套装添加2件套属性
       for (const diskId of this.equipped_drive_disks) {
         if (diskId) {
           const disk = this._driveDisks!.get(diskId);
@@ -302,11 +334,11 @@ export class Agent {
             const setName = disk.set_name;
             const count = setCounts.get(setName) || 0;
 
-            // 如果套装数量 >= 2，添加两件套效果
+            // 如果套装数量 >= 2，添加2件套属性
             if (count >= 2) {
               const twoPieceBonus = disk.getSetBuff(2);
               equipmentStats.add(twoPieceBonus);
-              // 为了避免重复添加同一套装的两件套效果，移除该套装的计数
+              // 为了避免重复添加同一套装的2件套属性，移除该套装的计数
               setCounts.set(setName, 0);
             }
           }
@@ -348,7 +380,7 @@ export class Agent {
   }
 
   /**
-   * 获取角色自身属性（裸 + 武器 + 驱动盘基础 + 所有驱动盘两件套）
+   * 获取角色自身属性（裸 + 武器 + 驱动盘基础 + 所有驱动盘2件套属性）
    *
    * @returns 属性集合
    */
@@ -359,7 +391,7 @@ export class Agent {
   /**
    * 获取战斗属性（角色+装备）
    *
-   * 基础战斗面板 = 角色自身 + 武器固定属性 + 驱动盘固定属性 + 驱动盘2件套
+   * 基础战斗面板 = 角色自身 + 武器固定属性 + 驱动盘固定属性 + 驱动盘2件套属性
    * 最终战斗属性 = 基础战斗面板 + Buff属性
    *
    * @param buffs Buff属性数组（可选）
@@ -368,7 +400,7 @@ export class Agent {
   getCombatStats(buffs?: Buff[]): CombatStats {
     const collections: PropertyCollection[] = [];
 
-    // 1. 角色自身属性 + 装备属性（裸 + 武器 + 驱动盘基础 + 所有驱动盘两件套）
+    // 1. 角色自身属性 + 装备属性（裸 + 武器 + 驱动盘基础 + 所有驱动盘2件套属性）
     collections.push(this.getCharacterEquipmentStats());
 
     // 2. Buff属性
@@ -399,13 +431,11 @@ export class Agent {
   }
 
   /**
-   * 计算角色自身属性（内部方法，懒加载）
+   * 获取成长属性（HP/ATK/DEF + 突破加成）
    */
-  private _calculateSelfProperties(): void {
-    if (!this._charDetail || !this._zodData || !this._charDetail.Stats) {
-      this._isSelfPropertiesLoaded = true;
-      return;
-    }
+  private getGrowthStats(): Map<PropertyType, number> {
+    const growthStats = new Map<PropertyType, number>();
+    if (!this._charDetail?.Stats || !this._zodData) return growthStats;
 
     const stats = this._charDetail.Stats;
     const level = this._zodData.level;
@@ -416,100 +446,102 @@ export class Agent {
       return base + ((level - 1) * growth) / 10000;
     };
 
-    // 计算基础属性值（HP/ATK/DEF 需要加上突破和核心技加成）
-    const baseHp = calcBase(stats.HpMax, stats.HpGrowth);
-    const baseAtk = calcBase(stats.Attack, stats.AttackGrowth);
-    const baseDef = calcBase(stats.Defence, stats.DefenceGrowth);
+    // 1. 计算等级成长基础值
+    let hp = calcBase(stats.HpMax, stats.HpGrowth);
+    let atk = calcBase(stats.Attack, stats.AttackGrowth);
+    let def = calcBase(stats.Defence, stats.DefenceGrowth);
 
-    // 突破加成
-    let promotionHp = 0;
-    let promotionAtk = 0;
-    let promotionDef = 0;
+    // 2. 加上突破加成
     if (promotion > 0 && this._charDetail.Level) {
       const levelKey = (promotion + 1).toString();
       const levelData = this._charDetail.Level[levelKey];
       if (levelData) {
-        promotionHp = levelData.HpMax || 0;
-        promotionAtk = levelData.Attack || 0;
-        promotionDef = levelData.Defence || 0;
+        hp += levelData.HpMax || 0;
+        atk += levelData.Attack || 0;
+        def += levelData.Defence || 0;
       }
     }
 
-    // 核心技加成 - 直接调用 getCoreSkillStats() 方法
-    const coreStats = this.getCoreSkillStats();
+    if (hp > 0) growthStats.set(PropertyType.HP_BASE, hp);
+    if (atk > 0) growthStats.set(PropertyType.ATK_BASE, atk);
+    if (def > 0) growthStats.set(PropertyType.DEF_BASE, def);
+
+    console.log('[_calculateSelfProperties] 成长属性:', { hp, atk, def });
+    return growthStats;
+  }
+
+  /**
+   * 获取基础固定属性（不随等级成长的属性）
+   */
+  private getBaseStats(): Map<PropertyType, number> {
+    const baseStats = new Map<PropertyType, number>();
+    if (!this._charDetail?.Stats) return baseStats;
+
+    const stats = this._charDetail.Stats;
     
-    // 提取需要加到基础属性上的核心技加成
-    const coreAtk = coreStats.get(PropertyType.ATK_BASE) || 0; // 基础攻击力
-    const coreImpact = coreStats.get(PropertyType.IMPACT) || 0; // 冲击力
-
-    // 动态填充所有不为 0 的属性
-    // 属性名映射：stats 字段名 -> PropertyType -> 转换因子
-    const propertyMapping: Record<string, { propType: PropertyType | null; divisor?: number }> = {
-      // 基础属性（需要加上突破和核心技加成）
-      'HpMax': { propType: PropertyType.HP_BASE },
-      'Attack': { propType: PropertyType.ATK_BASE },
-      'Defence': { propType: PropertyType.DEF_BASE },
-
-      // 其他属性（不需要额外加成）
-      'BreakStun': { propType: PropertyType.IMPACT },
-      'Crit': { propType: PropertyType.CRIT_, divisor: 10000 },
-      'CritDamage': { propType: PropertyType.CRIT_DMG_, divisor: 10000 },
-      'CritRes': { propType: null }, // 移除CRIT_映射，避免重复计算
-      'CritDmgRes': { propType: null }, // 暂无对应枚举
-      'ElementAbnormalPower': { propType: PropertyType.ANOM_MAS },
-      'ElementMystery': { propType: PropertyType.ANOM_PROF },
-      'SpRecover': { propType: PropertyType.ENER_REGEN, divisor: 100 },
-      'SpBarPoint': { propType: null }, // 暂无对应枚举
-      'PenDelta': { propType: PropertyType.PEN },
-      'PenRate': { propType: PropertyType.PEN_, divisor: 100 },
-      'Armor': { propType: null }, // 暂无对应枚举
-      'Shield': { propType: PropertyType.SHIELD_ },
-      'Endurance': { propType: null }, // 暂无对应枚举
-      'Stun': { propType: null }, // 暂无对应枚举
-      'Rbl': { propType: null }, // 暂无对应枚举
+    // 属性映射配置
+    const mapping: Record<string, { type: PropertyType, divisor?: number }> = {
+      'BreakStun': { type: PropertyType.IMPACT },
+      'Crit': { type: PropertyType.CRIT_, divisor: 10000 },
+      'CritDamage': { type: PropertyType.CRIT_DMG_, divisor: 10000 },
+      'ElementAbnormalPower': { type: PropertyType.ANOM_MAS },
+      'ElementMystery': { type: PropertyType.ANOM_PROF },
+      'SpRecover': { type: PropertyType.ENER_REGEN, divisor: 100 },
+      'PenDelta': { type: PropertyType.PEN },
+      'PenRate': { type: PropertyType.PEN_, divisor: 100 },
+      'Shield': { type: PropertyType.SHIELD_ },
     };
 
-    for (const [key, value] of Object.entries(stats)) {
-      // 跳过 Growth 字段和其他非数值字段
-      if (key.includes('Growth')) continue;
-      if (typeof value !== 'number' || value === 0) continue;
-
-      const mapping = propertyMapping[key];
-      if (!mapping || mapping.propType === null) continue;
-
-      // 计算最终值
-      let finalValue = value;
-
-      if (key === 'HpMax') {
-        finalValue = baseHp + promotionHp;
-      } else if (key === 'Attack') {
-        finalValue = baseAtk + promotionAtk + coreAtk;
-      } else if (key === 'Defence') {
-        finalValue = baseDef + promotionDef;
-      } else if (key === 'BreakStun') {
-        finalValue = value + coreImpact;
-      } else if (mapping.divisor) {
-        // 对于需要除以divisor的属性，确保使用正确的计算方式
-        finalValue = value / mapping.divisor;
-      }
-
-      // 只添加不为 0 的属性
-      if (finalValue !== 0) {
-        // 角色基础属性只属于局外面板
-        this.self_properties.out_of_combat.set(mapping.propType, finalValue);
+    for (const [key, config] of Object.entries(mapping)) {
+      const value = stats[key as keyof typeof stats];
+      if (typeof value === 'number' && value !== 0) {
+        const finalValue = config.divisor ? value / config.divisor : value;
+        baseStats.set(config.type, finalValue);
       }
     }
 
-    // 添加核心技加成的其他属性（非基础属性）
-    for (const [propType, value] of coreStats.entries()) {
-      // 跳过已经处理的基础属性
-      if (propType === PropertyType.ATK_BASE || propType === PropertyType.IMPACT) continue;
-      if (value === 0) continue;
-      
-      // 计算最终值（核心技能属性都是固定值，不需要转换）
-      const current = this.self_properties.out_of_combat.get(propType) || 0;
-      this.self_properties.out_of_combat.set(propType, current + value);
+    console.log('[_calculateSelfProperties] 固定属性:', Array.from(baseStats.entries()));
+    return baseStats;
+  }
+
+  /**
+   * 计算角色自身属性（内部方法，懒加载）
+   */
+  private _calculateSelfProperties(): void {
+    if (!this._charDetail || !this._zodData || !this._charDetail.Stats) {
+      this._isSelfPropertiesLoaded = true;
+      return;
     }
+
+    console.log('[_calculateSelfProperties] 开始计算角色基础属性');
+
+    // 1. 获取成长属性 (HP/ATK/DEF + 突破)
+    const growthStats = this.getGrowthStats();
+    for (const [prop, value] of growthStats) {
+      this.self_properties.out_of_combat.set(prop, value);
+    }
+
+    // 2. 获取固定属性 (暴击/冲击力等)
+    const baseStats = this.getBaseStats();
+    for (const [prop, value] of baseStats) {
+      const current = this.self_properties.out_of_combat.get(prop) || 0;
+      this.self_properties.out_of_combat.set(prop, current + value);
+    }
+
+    // 3. 获取核心技属性并合并
+    // 注意：getCoreSkillStats 获取的是所有核心技加成，
+    // 其中可能包含 ATK_BASE 和 IMPACT，需要直接叠加到对应属性上
+    const coreStats = this.getCoreSkillStats();
+    console.log('[_calculateSelfProperties] 核心技属性:', Array.from(coreStats.entries()));
+    
+    for (const [prop, value] of coreStats) {
+      const current = this.self_properties.out_of_combat.get(prop) || 0;
+      const newValue = current + value;
+      this.self_properties.out_of_combat.set(prop, newValue);
+      console.log(`[_calculateSelfProperties] 合并核心技属性: ${PropertyType[prop]} ${current} + ${value} = ${newValue}`);
+    }
+
+    console.log('[_calculateSelfProperties] 最终局外属性:', Array.from(this.self_properties.out_of_combat.entries()));
 
     this._isSelfPropertiesLoaded = true;
   }
@@ -690,7 +722,7 @@ export class Agent {
       }
     }
 
-    // 添加驱动盘四件套BUFF
+    // 添加驱动盘4件套Buff
     if (this._driveDisks) {
       // 统计套装数量
       const setCounts = new Map<string, number>();
@@ -704,7 +736,7 @@ export class Agent {
         }
       }
 
-      // 收集每个套装的四件套BUFF
+      // 收集每个套装的4件套Buff
       const processedSets = new Set<string>();
       for (const diskId of this.equipped_drive_disks) {
         if (diskId) {
@@ -718,8 +750,8 @@ export class Agent {
 
           // 如果套装数量 >= 4 且未处理过
           if (count >= 4 && !processedSets.has(setName)) {
-            if (disk.four_piece_buffs && disk.four_piece_buffs.length > 0) {
-              allBuffs.push(...disk.four_piece_buffs);
+            if (disk.set_buffs && disk.set_buffs.length > 0) {
+              allBuffs.push(...disk.set_buffs);
             }
             processedSets.add(setName);
           }

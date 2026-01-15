@@ -11,34 +11,18 @@
 
       <div v-show="isStatsSnapshotExpanded" class="mt-4">
         <div v-if="frontAgent" class="space-y-4">
-          <!-- 最终战斗属性 -->
-          <div class="card bg-base-100">
-            <div class="card-body p-4">
-              <h4 class="font-bold mb-3">最终战斗属性</h4>
-              <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ PropertyCollection.formatMap(battleService.getFinalStats()) }}</pre>
-            </div>
-          </div>
-
           <!-- 角色基础属性面板 -->
           <div class="card bg-base-100">
             <div class="card-body p-4">
-              <h4 class="font-bold mb-3">角色基础属性面板 (仅角色自身，不含装备)</h4>
+              <h4 class="font-bold mb-3">角色自身属性</h4>
               <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ frontAgent.getCharacterBaseStats().format(0, 'separate') }}</pre>
-            </div>
-          </div>
-
-          <!-- 角色+装备属性面板 -->
-          <div class="card bg-base-100">
-            <div class="card-body p-4">
-              <h4 class="font-bold mb-3">角色+装备属性面板 (角色+武器+驱动盘)</h4>
-              <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ frontAgent.getCharacterEquipmentStats().format(0, 'separate') }}</pre>
             </div>
           </div>
 
           <!-- 角色战斗属性面板 -->
           <div class="card bg-base-100">
             <div class="card-body p-4">
-              <h4 class="font-bold mb-3">角色战斗属性面板 (角色+装备的战斗属性)</h4>
+              <h4 class="font-bold mb-3">角色战斗属性</h4>
               <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ frontAgent.getCharacterCombatStats().format(0, 'separate') }}</pre>
             </div>
           </div>
@@ -46,7 +30,7 @@
           <!-- 局内非转换面板 -->
           <div class="card bg-base-100">
             <div class="card-body p-4">
-              <h4 class="font-bold mb-3">局内非转换 (角色+装备+局内buff基础)</h4>
+              <h4 class="font-bold mb-3">局内非转换属性</h4>
               <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ battleService.getMergedInCombatProperties().format(0, 'in_combat') }}</pre>
             </div>
           </div>
@@ -54,7 +38,7 @@
           <!-- 局内转换面板 -->
           <div class="card bg-base-100">
             <div class="card-body p-4">
-              <h4 class="font-bold mb-3">局内转换 (转换类buff属性)</h4>
+              <h4 class="font-bold mb-3">局内转换属性</h4>
               <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ PropertyCollection.formatMap(battleService.getMergedInCombatProperties().conversion) }}</pre>
             </div>
           </div>
@@ -62,7 +46,7 @@
           <!-- 局内最终面板 -->
           <div class="card bg-base-100">
             <div class="card-body p-4">
-              <h4 class="font-bold mb-3">局内最终 (非转换+转换合并计算)</h4>
+              <h4 class="font-bold mb-3">最终属性</h4>
               <pre class="text-xs overflow-auto bg-base-200 p-4 rounded">{{ PropertyCollection.formatMap(battleService.getFinalStats()) }}</pre>
             </div>
           </div>
