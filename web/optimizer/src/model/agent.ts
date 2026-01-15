@@ -466,7 +466,6 @@ export class Agent {
     if (atk > 0) growthStats.set(PropertyType.ATK_BASE, atk);
     if (def > 0) growthStats.set(PropertyType.DEF_BASE, def);
 
-    console.log('[_calculateSelfProperties] 成长属性:', { hp, atk, def });
     return growthStats;
   }
 
@@ -500,7 +499,6 @@ export class Agent {
       }
     }
 
-    console.log('[_calculateSelfProperties] 固定属性:', Array.from(baseStats.entries()));
     return baseStats;
   }
 
@@ -512,8 +510,6 @@ export class Agent {
       this._isSelfPropertiesLoaded = true;
       return;
     }
-
-    console.log('[_calculateSelfProperties] 开始计算角色基础属性');
 
     // 1. 获取成长属性 (HP/ATK/DEF + 突破)
     const growthStats = this.getGrowthStats();
@@ -532,16 +528,12 @@ export class Agent {
     // 注意：getCoreSkillStats 获取的是所有核心技加成，
     // 其中可能包含 ATK_BASE 和 IMPACT，需要直接叠加到对应属性上
     const coreStats = this.getCoreSkillStats();
-    console.log('[_calculateSelfProperties] 核心技属性:', Array.from(coreStats.entries()));
-    
+
     for (const [prop, value] of coreStats) {
       const current = this.self_properties.out_of_combat.get(prop) || 0;
       const newValue = current + value;
       this.self_properties.out_of_combat.set(prop, newValue);
-      console.log(`[_calculateSelfProperties] 合并核心技属性: ${PropertyType[prop]} ${current} + ${value} = ${newValue}`);
     }
-
-    console.log('[_calculateSelfProperties] 最终局外属性:', Array.from(this.self_properties.out_of_combat.entries()));
 
     this._isSelfPropertiesLoaded = true;
   }
@@ -656,23 +648,13 @@ export class Agent {
     
     if (!agent._charDetail.ExtraLevel) {
       console.warn(`[fromZodData] 角色详情中缺少 ExtraLevel 数据: ${gameCharId}`);
-    } else {
-      console.log(`[fromZodData] 角色详情加载成功: ${gameCharId}`);
-      console.log(`[fromZodData] ExtraLevel 包含的等级:`, Object.keys(agent._charDetail.ExtraLevel));
     }
-    
+
     // 验证核心技能等级
     if (!zodData.core) {
       console.warn(`[fromZodData] 存档中核心技能等级未设置: ${zodData.id}`);
     } else if (zodData.core < 1 || zodData.core > 7) {
       console.warn(`[fromZodData] 核心技能等级超出范围: ${zodData.core} (有效范围: 1-7)`);
-    } else {
-      console.log(`[fromZodData] 核心技能等级: ${zodData.core}`);
-      if (zodData.core === 1) {
-        console.log(`[fromZodData] 核心技等级 1 无属性数据`);
-      } else {
-        console.log(`[fromZodData] 对应 JSON key: ${zodData.core - 1}`);
-      }
     }
 
     // 加载技能数据
@@ -778,7 +760,6 @@ export class Agent {
    */
   private async _loadBuffs(): Promise<void> {
     if (!this._dataLoader || !this._gameCharId) {
-      console.warn(`无法加载BUFF数据，缺少_dataLoader或_gameCharId`, { _dataLoader: !!this._dataLoader, _gameCharId: this._gameCharId });
       return;
     }
 

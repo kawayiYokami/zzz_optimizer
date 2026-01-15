@@ -6,12 +6,15 @@
 
 import type { Agent } from '../model/agent';
 import type { Enemy } from '../model/enemy';
-import type { Buff } from '../model/buff';
+import { Buff } from '../model/buff';
 import { Team } from '../model/team';
 import { DamageCalculatorService } from './damage-calculator.service';
 import { PropertyCollection } from '../model/property-collection';
-import { PropertyType, ElementType } from '../model/base';
+import { PropertyType, ElementType, getPropertyCnName } from '../model/base';
 import { RatioSet } from '../model/ratio-set';
+import type { ZodBattleData } from '../model/save-data-zod';
+import type { WEngine } from '../model/wengine';
+import type { DriveDisk } from '../model/drive-disk';
 
 /**
  * 技能伤害参数
@@ -60,9 +63,6 @@ export interface BattleStateSnapshot {
   timestamp: number;
 }
 
-/**
- * Buff信息结构（用于UI显示）
- */
 export interface BuffInfo {
   id: string;
   name: string;
@@ -72,6 +72,20 @@ export interface BuffInfo {
   target: any;
   isActive: boolean; // 是否激活
   isToggleable: boolean; // 是否可开关
+  conversion?: {
+    from_property: string;
+    to_property: string;
+    conversion_ratio: number;
+    max_value?: number;
+    from_property_threshold?: number;
+  } | null;
+}
+
+export interface EquipmentDetail {
+  type: 'wengine' | 'drive_disk' | 'set_bonus';
+  stats: PropertyCollection;
+  rawData?: any; // 原始数据
+  name?: string; // 名称
 }
 
 /**
@@ -98,6 +112,16 @@ export class BattleService {
   // 战斗状态快照
   private currentSnapshot: BattleStateSnapshot | null = null;
   private finalPropertySnapshot: BattleStateSnapshot | null = null;
+
+  // 目标技能 (Skill Name + Segment Index)
+  private targetSkills: Set<string> = new Set();
+
+  // 当前选中的技能（用于UI展示）
+  private selectedSkill: string = '';
+
+  // 敌人状态
+  private isEnemyStunned: boolean = false;
+  private enemyHasCorruptionShield: boolean = false;
 
   constructor() {
     // 初始化
@@ -468,10 +492,156 @@ export class BattleService {
   }
 
   /**
+   * 获取装备详情
+   * @param agentId 角色ID
+   * @param wengines 音擎列表
+   * @param driveDisks 驱动盘列表
+   */
+  getEquipmentDetails(agentId: string, wengines: WEngine[], driveDisks: DriveDisk[]): EquipmentDetail[] {
+    if (!this.team) return [];
+
+    // 查找角色
+    const agent = this.team.allAgents.find(a => a.id === agentId);
+    if (!agent) return [];
+
+    const details: EquipmentDetail[] = [];
+
+    // 1. 获取音擎属性
+    if (agent.equipped_wengine) {
+      const wengine = wengines.find(w => w.id === agent.equipped_wengine);
+      if (wengine) {
+        const wengineStats = wengine.getStatsAtLevel(wengine.level, wengine.breakthrough);
+        details.push({
+          type: 'wengine',
+          stats: wengineStats,
+          rawData: wengine,
+          name: wengine.name
+        });
+      }
+    }
+
+    // 2. 获取驱动盘属性
+    const equippedDisks = agent.equipped_drive_disks
+      .map(diskId => diskId ? driveDisks.find(d => d.id === diskId) : null)
+      .filter((d): d is DriveDisk => !!d);
+
+    for (const disk of equippedDisks) {
+      const diskStats = disk.getStats();
+      details.push({
+        type: 'drive_disk',
+        stats: diskStats,
+        rawData: disk,
+        name: disk.set_name
+      });
+    }
+
+    // 3. 计算套装效果（2件套）
+    if (equippedDisks.length > 0) {
+      const setCounts: Record<string, number> = {};
+      for (const disk of equippedDisks) {
+        if (disk.set_name) {
+          setCounts[disk.set_name] = (setCounts[disk.set_name] || 0) + 1;
+        }
+      }
+
+      const processedSets = new Set<string>();
+      for (const disk of equippedDisks) {
+        if (!disk.set_name) continue;
+        if (processedSets.has(disk.set_name)) continue;
+        processedSets.add(disk.set_name);
+
+        const count = setCounts[disk.set_name] || 0;
+        if (count >= 2 && disk.set_properties.length > 0) {
+          for (const buff of disk.set_properties) {
+            details.push({
+              type: 'set_bonus',
+              stats: buff.toPropertyCollection(),
+              name: `${disk.set_name} 2件套属性`
+            });
+          }
+        }
+      }
+    }
+
+    return details;
+  }
+
+  /**
    * 获取手动Buff列表
    */
   getManualBuffs(): Buff[] {
     return this.manualBuffs;
+  }
+
+  /**
+   * 获取目标技能列表
+   */
+  getTargetSkills(): string[] {
+    return Array.from(this.targetSkills);
+  }
+
+  /**
+   * 切换目标技能选中状态
+   */
+  toggleTargetSkill(skillId: string): void {
+    if (this.targetSkills.has(skillId)) {
+      this.targetSkills.delete(skillId);
+    } else {
+      this.targetSkills.add(skillId);
+    }
+  }
+
+  /**
+   * 设置目标技能列表
+   */
+  setTargetSkills(skillIds: string[]): void {
+    this.targetSkills = new Set(skillIds);
+  }
+
+  /**
+   * 清空目标技能
+   */
+  clearTargetSkills(): void {
+    this.targetSkills.clear();
+  }
+
+  /**
+   * 设置当前选中的技能
+   */
+  setSelectedSkill(skill: string): void {
+    this.selectedSkill = skill;
+  }
+
+  /**
+   * 获取当前选中的技能
+   */
+  getSelectedSkill(): string {
+    return this.selectedSkill;
+  }
+
+  /**
+   * 根据状态名称更新状态
+   * 兼容旧代码的过渡方法，推荐使用 setEnemyStatus
+   */
+  updateEnemyStatus(key: 'stun' | 'shield', value: boolean): void {
+    if (key === 'stun') {
+      this.isEnemyStunned = value;
+    } else if (key === 'shield') {
+      this.enemyHasCorruptionShield = value;
+    }
+  }
+
+  setEnemyStatus(isStunned: boolean, hasCorruptionShield: boolean): void {
+    this.isEnemyStunned = isStunned;
+    this.enemyHasCorruptionShield = hasCorruptionShield;
+  }
+
+  getIsEnemyStunned(): boolean {
+    return this.isEnemyStunned;
+  }
+
+  getEnemyHasCorruptionShield(): boolean {
+    return this.enemyHasCorruptionShield;
   }
 
   // ==================== 生命周期控制 ====================
@@ -756,10 +926,10 @@ export class BattleService {
     return this.getBuffs().map(buff => {
       // 获取buff状态
       const status = this.getBuffStatus(buff.id);
-      
+
       // 合并局内和局外属性
       const stats: Record<string, number> = {};
-      
+
       // 处理out_of_combat_stats
       if (buff.out_of_combat_stats instanceof Map) {
         for (const [key, value] of buff.out_of_combat_stats.entries()) {
@@ -767,7 +937,7 @@ export class BattleService {
           stats[propertyName] = value;
         }
       }
-      
+
       // 处理in_combat_stats
       if (buff.in_combat_stats instanceof Map) {
         for (const [key, value] of buff.in_combat_stats.entries()) {
@@ -775,7 +945,7 @@ export class BattleService {
           stats[propertyName] = (stats[propertyName] || 0) + value;
         }
       }
-      
+
       return {
         id: buff.id || '',
         name: buff.name || '',
@@ -801,6 +971,102 @@ export class BattleService {
    */
   getBuffStatusMap(): Map<string, BuffStatus> {
     return new Map(this.buffStatusMap);
+  }
+
+  /**
+   * 序列化为ZOD数据
+   */
+  toZod(id: string, name: string): ZodBattleData {
+    if (!this.team) {
+      throw new Error('无法保存：未设置队伍');
+    }
+    if (!this.enemy) {
+      throw new Error('无法保存：未设置敌人');
+    }
+
+    // 构建Buff状态字典
+    const activeBuffs: Record<string, boolean> = {};
+    for (const [buffId, status] of this.buffStatusMap.entries()) {
+      activeBuffs[buffId] = status.isActive;
+    }
+
+    // 序列化手动Buff
+    // 注意：这里需要确保Buff对象可以序列化，这里暂时只保存核心信息
+    // 实际项目中可能需要完善Buff的序列化逻辑
+    const simplifiedManualBuffs = this.manualBuffs.map(buff => ({
+      ...buff,
+      // 如果buff有复杂对象引用，可能需要处理
+    }));
+
+    return {
+      id,
+      name,
+      teamId: this.team.id,
+      enemyId: this.enemy.id,
+      enemyStatus: {
+        isStunned: this.isEnemyStunned,
+        hasCorruptionShield: this.enemyHasCorruptionShield
+      },
+      activeBuffs: activeBuffs,
+      manualBuffs: this.manualBuffs.map(b => b.toDict()),
+      targetSkills: Array.from(this.targetSkills), // 序列化目标技能
+      selectedSkill: this.selectedSkill
+    };
+  }
+
+  /**
+   * 从ZOD数据加载状态
+   */
+  async loadFromZod(data: ZodBattleData, team: Team, enemy: Enemy): Promise<void> {
+    console.log(`[BattleService] Loading from Zod data`, data);
+    // 1. 设置基本实体
+    await this.setTeam(team);
+    this.setEnemy(enemy);
+
+    // 恢复敌人状态
+    if (data.enemyStatus) {
+      this.isEnemyStunned = data.enemyStatus.isStunned;
+      this.enemyHasCorruptionShield = data.enemyStatus.hasCorruptionShield;
+    }
+
+    // 2. 恢复手动Buff (必须在恢复开关状态之前)
+    if (data.manualBuffs && Array.isArray(data.manualBuffs)) {
+      // 清除现有的手动buff
+      this.clearManualBuffs();
+
+      // 重新添加保存的手动buff
+      // 注意：这里假设ManualBuff可以直接反序列化，实际上可能需要Buff类的静态方法支持
+      for (const buffData of data.manualBuffs) {
+        const buff = Buff.fromDict(buffData);
+        this.addManualBuff(buff);
+      }
+    }
+
+    // 3. 恢复Buff开关状态
+    if (data.activeBuffs) {
+      for (const [buffId, isActive] of Object.entries(data.activeBuffs)) {
+        // 更新状态
+        const currentStatus = this.buffStatusMap.get(buffId);
+        if (currentStatus) {
+          this.updateBuffStatus(buffId, isActive);
+        }
+      }
+    }
+
+    // 4. 恢复目标技能
+    if (data.targetSkills) {
+      this.setTargetSkills(data.targetSkills);
+    } else {
+      this.clearTargetSkills();
+    }
+
+    // 5. 恢复选中的技能
+    if (data.selectedSkill) {
+      this.selectedSkill = data.selectedSkill;
+    }
+
+    // 6. 计算最终属性
+    this.clearPropertyCache();
   }
 
   /**
@@ -841,12 +1107,12 @@ export class BattleService {
     const agent = this.team.frontAgent;
     const isPenetration = agent.isPenetrationAgent();
     const element = ElementType[agent.element].toLowerCase();
-    
+
     // 获取乘区集合
     const props = this.mergeCombatProperties();
     const enemyStats = this.enemy.getCombatStats();
     const zones = DamageCalculatorService.updateAllZones(props, enemyStats, element);
-    
+
     // 1. 计算直伤/贯穿伤害
     let directDamage = 0;
     if (isPenetration) {
@@ -860,23 +1126,23 @@ export class BattleService {
       const result = DamageCalculatorService.calculateDirectDamageFromRatios(zones, ratios);
       directDamage = result.damage_expected;
     }
-    
+
     // 2. 计算异常触发期望
     const triggerExpectation = this.calculateAnomalyTriggerExpectation(anomalyBuildup, element);
-    
+
     // 3. 计算异常持续伤害
     const anomalyParams = DamageCalculatorService.getAnomalyDotParams(element);
     const anomalyRatios = new RatioSet();
     anomalyRatios.atk_ratio = anomalyParams.totalRatio;
     const anomalyResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, anomalyRatios);
     const anomalyDamage = anomalyResult.damage_expected * triggerExpectation;
-    
+
     // 4. 计算紊乱伤害 (450%)
     const disorderRatios = new RatioSet();
     disorderRatios.atk_ratio = 4.5;
     const disorderResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, disorderRatios);
     const disorderDamage = disorderResult.damage_expected * triggerExpectation;
-    
+
     // 5. 特殊异常伤害（星见雅烈霜 1500%）
     let specialAnomalyDamage = 0;
     const specialConfig = agent.getSpecialAnomalyConfig();
@@ -886,7 +1152,7 @@ export class BattleService {
       const specialResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, specialRatios);
       specialAnomalyDamage = specialResult.damage_expected * triggerExpectation;
     }
-    
+
     return {
       directDamage,
       anomalyDamage,
@@ -903,12 +1169,12 @@ export class BattleService {
    */
   calculateAnomalyTriggerExpectation(anomalyBuildup: number, element: string): number {
     if (!this.enemy) return 0;
-    
+
     const props = this.mergeCombatProperties();
     // 使用伤害计算服务获取完整的乘区（包含属性积蓄效率和抗性）
     const zones = DamageCalculatorService.updateAllZones(props, this.enemy.getCombatStats(), element);
     const enemyThreshold = this.enemy.getCombatStats().getAnomalyThreshold(element);
-    
+
     // zones.accumulate_zone 已经计算了 (1 + 效率) * (1 - 抗性)
     return anomalyBuildup * zones.accumulate_zone / enemyThreshold;
   }

@@ -147,7 +147,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import type { BattleService } from '../../services/battle.service';
 import type { Agent } from '../../model/agent';
 import type { AgentSkill } from '../../model/skill';
@@ -163,15 +163,31 @@ interface Props {
   enemy: any;
   enemyIsStunned: boolean;
   enemyHasCorruptionShield: boolean;
+  selectedSkill?: string;
 }
 
 const props = defineProps<Props>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'toggle-expand'): void;
+  (e: 'update:selectedSkill', value: string): void;
 }>();
 
 const selectedSkillName = ref('');
+
+// 监听props变化更新本地状态
+watch(() => props.selectedSkill, (newVal) => {
+  if (newVal !== undefined && newVal !== selectedSkillName.value) {
+    selectedSkillName.value = newVal;
+  }
+}, { immediate: true });
+
+// 监听本地状态变化向上传递
+watch(selectedSkillName, (newVal) => {
+  if (newVal !== props.selectedSkill) {
+    emit('update:selectedSkill', newVal);
+  }
+});
 
 const availableSkills = computed((): AgentSkill[] => {
   if (!props.frontAgent?.agentSkills) return [];

@@ -47,7 +47,13 @@
                       </div>
 
                       <!-- 技能数据 -->
-                      <div class="flex flex-wrap gap-2 justify-end">
+                      <div class="flex flex-wrap gap-2 justify-end items-center">
+                        <input 
+                          type="checkbox" 
+                          class="checkbox checkbox-primary mr-2 cursor-pointer z-10"
+                          :checked="isSkillSelected(skillName, index)"
+                          @change="toggleSkill(skillName, index)"
+                        />
                         <div class="badge badge-primary badge-lg">
                           伤害倍率: {{ (segment.damageRatio * 100).toFixed(1) }}%
                         </div>
@@ -104,15 +110,18 @@ interface Props {
   frontCharacterId: string | null;
   availableCharacters?: Array<{ id: string; agent: Agent }>;
   isExpanded: boolean;
+  selectedSkills?: string[]; // 选中的技能ID列表
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  availableCharacters: () => []
+  availableCharacters: () => [],
+  selectedSkills: () => []
 });
 
 // Emits
 const emit = defineEmits<{
   (e: 'toggle-expand'): void;
+  (e: 'toggle-skill', skillId: string): void;
 }>();
 
 // Local state
@@ -129,6 +138,19 @@ const selectedCharacter = computed(() => {
   const character = props.availableCharacters.find(c => c.id === props.frontCharacterId) || null;
   return character;
 });
+
+// 判断技能是否选中
+function isSkillSelected(skillName: string, segmentIndex: number): boolean {
+  const skillId = `${skillName}-${segmentIndex}`;
+  return props.selectedSkills.includes(skillId);
+}
+
+// 切换技能选中
+function toggleSkill(skillName: string, segmentIndex: number) {
+  const skillId = `${skillName}-${segmentIndex}`;
+  console.log('[SkillListCard] Emitting toggle-skill:', skillId);
+  emit('toggle-skill', skillId);
+}
 </script>
 
 <style scoped>

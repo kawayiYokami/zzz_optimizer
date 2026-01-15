@@ -284,20 +284,16 @@ export class DataLoaderService {
    * 获取角色Buff数据（按需加载）
    */
   async getCharacterBuff(gameId: string): Promise<any> {
-    console.log(`[DEBUG] 尝试获取角色 ${gameId} 的BUFF数据`);
-    
+
     // 检查缓存
     if (this._characterBuffCache.has(gameId)) {
       const cachedBuff = this._characterBuffCache.get(gameId);
-      console.log(`[DEBUG] 从缓存获取BUFF数据:`, cachedBuff);
       return cachedBuff;
     }
 
     try {
       // 加载数据
-      console.log(`[DEBUG] 从文件加载BUFF数据: /game-data/character_data_buff/${gameId}.json`);
       const buff = await this.loadJsonFile<any>(`/game-data/character_data_buff/${gameId}.json`);
-      console.log(`[DEBUG] 成功加载BUFF数据:`, buff);
       this._characterBuffCache.set(gameId, buff);
       return buff;
     } catch (error) {

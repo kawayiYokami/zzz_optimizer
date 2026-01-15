@@ -30,7 +30,9 @@
       :enemy="selectedEnemy"
       :enemy-is-stunned="enemyIsStunned"
       :enemy-has-corruption-shield="enemyHasCorruptionShield"
+      :selected-skill="currentSelectedSkill"
       @toggle-expand="isCombatZonesExpanded = !isCombatZonesExpanded"
+      @update:selected-skill="onSelectedSkillChange"
     />
 
     <!-- 属性快照卡片 -->
@@ -62,22 +64,25 @@
       :front-character-id="frontCharacterId"
       :available-characters="availableCharacters"
       :is-expanded="isSkillListExpanded"
+      :selected-skills="targetSkills"
       @toggle-expand="isSkillListExpanded = !isSkillListExpanded"
+      @toggle-skill="onToggleSkill"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, type Ref } from 'vue';
+import { ref, computed, watch, onMounted, type Ref } from 'vue';
 import { useSaveStore } from '../../stores/save.store';
 import { useGameDataStore } from '../../stores/game-data.store';
 import { dataLoaderService } from '../../services/data-loader.service';
 import { Agent } from '../../model/agent';
+import { Enemy } from '../../model/enemy';
 import { Team } from '../../model/team';
 import { PropertyCollection } from '../../model/property-collection';
 import type { CombatStats } from '../../model/combat-stats';
-import type { ZodTeamData } from '../../model/save-data-zod';
-import { BattleService } from '../../services/battle.service';
+import type { ZodTeamData, ZodBattleData } from '../../model/save-data-zod';
+import { BattleService, type EquipmentDetail } from '../../services/battle.service';
 import { PropertyType } from '../../model/base';
 
 // 导入新的卡片组件
@@ -109,13 +114,125 @@ const backCharacter2Id = ref<string>('');
 const selectedEnemyId = ref<string>('');
 const enemyIsStunned = ref<boolean>(false);
 const enemyHasCorruptionShield = ref<boolean>(false);
+const currentSelectedSkill = ref<string>(''); // 当前在战斗属性卡片选中的技能
 const enemyLevel = 70; // 敌人固定为70级
+
+// 可用敌人列表
+const availableEnemies = computed(() => {
+  return gameDataStore.allEnemies || [];
+});
+
+// 选中的敌人
+const selectedEnemy = computed(() => {
+  if (!selectedEnemyId.value) return null;
+  return availableEnemies.value.find(e => e.id === selectedEnemyId.value) || null;
+});
 
 // 折叠状态
 const isBuffListExpanded = ref<boolean>(false);
 const isSkillListExpanded = ref<boolean>(false);
 const isStatsSnapshotExpanded = ref<boolean>(false);
 const isCombatZonesExpanded = ref<boolean>(true);
+
+// 自动保存标志，防止加载时触发保存
+const isAutoLoading = ref(false);
+
+// 保存战场状态
+function saveBattleState() {
+  if (isAutoLoading.value) return;
+  if (!selectedTeamId.value || !saveStore.currentRawSave) return;
+  
+  // 仅在服务已就绪时保存（有队伍和敌人）
+  if (battleService.getTeam() && battleService.getEnemy()) {
+    try {
+      const battleId = `battle_${selectedTeamId.value}`;
+      const battleName = `Battle for ${selectedTeamId.value}`;
+      
+      // 更新Service中的敌人状态
+      battleService.setEnemyStatus(enemyIsStunned.value, enemyHasCorruptionShield.value);
+      
+      // 生成ZOD数据 (Logic completely in Service now)
+      const zodData = battleService.toZod(battleId, battleName);
+      
+      // 更新到store
+      const existingIndex = saveStore.currentRawSave.battles.findIndex(b => b.id === battleId);
+      if (existingIndex >= 0) {
+        console.log(`[BattleSimulator] Updating existing save for ${battleId}`, zodData);
+        saveStore.currentRawSave.battles[existingIndex] = zodData;
+      } else {
+        console.log(`[BattleSimulator] Creating new save for ${battleId}`, zodData);
+        saveStore.currentRawSave.battles.push(zodData);
+      }
+      
+      // 持久化
+      saveStore.saveToStorage();
+      console.log('[BattleSimulator] Save to storage called');
+    } catch (e) {
+      console.warn('Auto-save battle state failed:', e);
+    }
+  }
+}
+
+// 加载战场状态
+async function loadBattleState(teamId: string) {
+  if (!saveStore.currentRawSave) return;
+  
+  console.log(`[BattleSimulator] Loading battle state for ${teamId}`);
+  const battleId = `battle_${teamId}`;
+  const battleData = saveStore.currentRawSave.battles.find(b => b.id === battleId);
+  
+  if (battleData) {
+    console.log(`[BattleSimulator] Found save data for ${battleId}`, battleData);
+    isAutoLoading.value = true;
+    try {
+      // 1. 恢复敌人选择
+      if (battleData.enemyId) {
+        selectedEnemyId.value = battleData.enemyId;
+      }
+      
+      // 2. 等待服务更新完成
+      await updateBattleService();
+      
+      // 3. 恢复服务内部状态
+      const team = battleService.getTeam();
+      const enemyInfo = availableEnemies.value.find(e => e.id === battleData.enemyId);
+      
+      if (team && enemyInfo) {
+        const enemy = Enemy.fromGameData(enemyInfo);
+        battleService.setEnemy(enemy);
+        await battleService.loadFromZod(battleData, team, enemy);
+        
+        // 从Service同步UI状态
+        enemyIsStunned.value = battleService.getIsEnemyStunned();
+        enemyHasCorruptionShield.value = battleService.getEnemyHasCorruptionShield();
+        currentSelectedSkill.value = battleService.getSelectedSkill();
+        
+        // 强制刷新UI
+        buffRefreshTrigger.value++; 
+      }
+    } finally {
+      // 延迟重置Loading标志
+      setTimeout(() => {
+        isAutoLoading.value = false;
+      }, 500);
+    }
+  }
+}
+
+// 监听敌人变化，同步到BattleService
+watch(selectedEnemy, (newEnemy) => {
+  if (newEnemy) {
+    const enemy = Enemy.fromGameData(newEnemy);
+    battleService.setEnemy(enemy);
+    // 触发保存
+    saveBattleState();
+  }
+});
+
+// 监听状态变化触发自动保存 (保留其他触发器)
+watch([enemyIsStunned, enemyHasCorruptionShield, buffRefreshTrigger], () => {
+   saveBattleState();
+});
 
 // 可用角色列表（直接使用实例）
 const availableCharacters = computed<Array<{ id: string; name: string; level: number; agent: Agent }>>(() => {
@@ -141,6 +258,27 @@ const selectedTeam = computed(() => {
   return availableTeams.value.find(t => t.id === selectedTeamId.value) || null;
 });
 
+// 初始化：尝试加载上次的战场或默认队伍
+onMounted(() => {
+    // 简单的策略：如果当前存档有队伍，默认选中第一个，并尝试加载其战场状态
+    if (availableTeams.value.length > 0) {
+        // 优先检查是否有任何已保存的战场，如果有，使用最近的一个（这里简化为第一个找到的）
+        if (saveStore.currentRawSave && saveStore.currentRawSave.battles.length > 0) {
+            const lastBattle = saveStore.currentRawSave.battles[0];
+            // 检查该战场的teamId是否存在
+            if (availableTeams.value.some(t => t.id === lastBattle.teamId)) {
+                selectedTeamId.value = lastBattle.teamId;
+                // watcher 会触发 loadBattleState ??? 
+                // 不，selectedTeamId watcher 目前只更新角色ID。我们需要修改 watcher
+            } else {
+                 selectedTeamId.value = availableTeams.value[0].id;
+            }
+        } else {
+            selectedTeamId.value = availableTeams.value[0].id;
+        }
+    }
+});
+
 
 
 // 获取角色名称
@@ -150,16 +288,7 @@ function getCharacterName(agentId: string): string {
   return agent?.name || agentId;
 }
 
-// 可用敌人列表
-const availableEnemies = computed(() => {
-  return gameDataStore.allEnemies || [];
-});
 
-// 选中的敌人
-const selectedEnemy = computed(() => {
-  if (!selectedEnemyId.value) return null;
-  return availableEnemies.value.find(e => e.id === selectedEnemyId.value) || null;
-});
 
 // 显示的抗性列表（仅显示非0的抗性）
 const displayedResistances = computed(() => {
@@ -217,75 +346,70 @@ const frontCharacterSkills = computed(() => {
 });
 
 // 监听队伍选择变化
-watch(selectedTeamId, (newTeamId) => {
+watch(selectedTeamId, async (newTeamId) => {
   if (newTeamId) {
     const team = availableTeams.value.find(t => t.id === newTeamId);
     if (team) {
+      // 先更新角色ID
       frontCharacterId.value = team.frontCharacterId;
       backCharacter1Id.value = team.backCharacter1Id;
       backCharacter2Id.value = team.backCharacter2Id;
+      
+      // 然后尝试加载该队伍的战场存档
+      await loadBattleState(newTeamId);
     }
   }
 });
 
 // 设置前台角色
 function setFrontCharacter(newFrontCharId: string) {
-  if (!selectedTeamId.value || !currentSave.value) return;
+  if (!selectedTeamId.value || !saveStore.currentSave) return;
   
-  const team = availableTeams.value.find(t => t.id === selectedTeamId.value);
-  if (!team) return;
+  const teamData = availableTeams.value.find(t => t.id === selectedTeamId.value);
+  if (!teamData) return;
   
-  // 获取当前队伍的三个角色ID
-  const currentChars = [team.frontCharacterId, team.backCharacter1Id, team.backCharacter2Id];
-  
-  // 确保新前台角色是队伍中的一员
-  if (!currentChars.includes(newFrontCharId)) return;
-  
-  // 确定新的角色分配，保持角色顺序
-  let newFront = newFrontCharId;
-  let newBack1 = '';
-  let newBack2 = '';
-  
-  // 找到新前台角色在当前顺序中的索引
-  const newFrontIndex = currentChars.indexOf(newFrontCharId);
-  
-  if (newFrontIndex === 0) {
-    // 没有变化
-    return;
-  } else {
-    // 重新排列角色顺序，保持原有顺序不变
-    const reorderedChars = [
-      ...currentChars.slice(newFrontIndex),
-      ...currentChars.slice(0, newFrontIndex)
-    ];
-    
-    newFront = reorderedChars[0];
-    newBack1 = reorderedChars[1];
-    newBack2 = reorderedChars[2];
+  // 临时构建Team对象来利用其逻辑
+  // 我们需要构建包含完整Agent对象的数组，因为Team构造函数需要
+  const agentMap = new Map<string, Agent>();
+  for (const char of availableCharacters.value) {
+      agentMap.set(char.id, char.agent);
   }
   
-  // 更新队伍数据
-  const updatedTeam = {
-    ...team,
-    frontCharacterId: newFront,
-    backCharacter1Id: newBack1,
-    backCharacter2Id: newBack2
-  };
-  
-  // 删除旧队伍，添加新队伍
-  currentSave.value.deleteTeam(team.id);
-  currentSave.value.addTeam(updatedTeam);
-  
-  // 同步实例数据到rawSaves
-  saveStore.syncInstanceToRawSave();
-  
-  // 保存到存储
-  saveStore.saveToStorage();
-  
-  // 更新当前选中的角色ID
-  frontCharacterId.value = newFront;
-  backCharacter1Id.value = newBack1;
-  backCharacter2Id.value = newBack2;
+  let tempTeam: Team;
+  try {
+      tempTeam = Team.fromZod(teamData, agentMap);
+  } catch (e) {
+      console.error('Failed to create temp team', e);
+      return;
+  }
+
+  const newFrontAgent = agentMap.get(newFrontCharId);
+  if (!newFrontAgent) return;
+
+  try {
+      // 使用Team模型的逻辑重排
+      tempTeam.frontAgent = newFrontAgent;
+      
+      // 获取新的数据并更新Store
+      const newTeamData = tempTeam.toZodData();
+      
+      // 删除旧队伍，添加新队伍
+      saveStore.currentSave.deleteTeam(teamData.id);
+      saveStore.currentSave.addTeam(newTeamData);
+      
+      // 同步实例数据到rawSaves
+      saveStore.syncInstanceToRawSave();
+      
+      // 保存到存储
+      saveStore.saveToStorage();
+      
+      // 更新当前本地状态
+      frontCharacterId.value = newTeamData.frontCharacterId;
+      backCharacter1Id.value = newTeamData.backCharacter1Id;
+      backCharacter2Id.value = newTeamData.backCharacter2Id;
+  } catch (e) {
+      console.error('Failed to set front character', e);
+  }
 }
 
 // 更新战场服务的角色和buff
@@ -319,17 +443,12 @@ async function updateBattleService() {
   
     // 触发Buff刷新，强制Vue重新计算allBuffs
     buffRefreshTrigger.value++;
+    
+    // 更新完成后尝试保存
+    saveBattleState();
   } finally {
     isUpdating = false;
   }
-}
-
-// 装备详细信息（包含原始数据，用于StatsSnapshotCard）
-interface EquipmentDetail {
-  type: 'wengine' | 'drive_disk' | 'set_bonus';
-  stats: PropertyCollection;
-  rawData?: any; // 原始数据
-  name?: string; // 名称
 }
 
 const equipmentDetails = computed(() => {
@@ -337,71 +456,13 @@ const equipmentDetails = computed(() => {
     return [];
   }
 
-  const char = availableCharacters.value.find(c => c.id === frontCharacterId.value);
-  if (!char) {
-    return [];
-  }
-
-  const details: EquipmentDetail[] = [];
-
-  // 1. 获取音擎属性
-  if (char.agent.equipped_wengine) {
-    const wengine = saveStore.wengines.find(w => w.id === char.agent.equipped_wengine);
-    if (wengine) {
-      const wengineStats = wengine.getStatsAtLevel(wengine.level, wengine.breakthrough);
-      details.push({
-        type: 'wengine',
-        stats: wengineStats,
-        rawData: wengine,
-        name: wengine.name
-      });
-    }
-  }
-
-  // 2. 获取驱动盘属性
-  const driveDisks = char.agent.equipped_drive_disks
-    .map(diskId => diskId ? saveStore.driveDisks.find(d => d.id === diskId) : null)
-    .filter(d => d !== null && d !== undefined);
-
-  for (const disk of driveDisks) {
-    const diskStats = disk!.getStats();
-    details.push({
-      type: 'drive_disk',
-      stats: diskStats,
-      rawData: disk,
-      name: disk!.set_name
-    });
-  }
-
-  // 3. 计算套装效果（2件套）
-  if (driveDisks.length > 0) {
-    const setCounts: Record<string, number> = {};
-    for (const disk of driveDisks) {
-      if (disk!.set_name) {
-        setCounts[disk!.set_name] = (setCounts[disk!.set_name] || 0) + 1;
-      }
-    }
-
-    const processedSets = new Set<string>();
-    for (const disk of driveDisks) {
-      if (!disk!.set_name) continue;
-      if (processedSets.has(disk!.set_name)) continue;
-      processedSets.add(disk!.set_name);
-
-      const count = setCounts[disk!.set_name] || 0;
-      if (count >= 2 && disk!.set_properties.length > 0) {
-        for (const buff of disk!.set_properties) {
-          details.push({
-            type: 'set_bonus',
-            stats: buff.toPropertyCollection(),
-            name: `${disk!.set_name} 2件套属性`
-          });
-        }
-      }
-    }
-  }
-
-  return details;
+  // 调用Service获取详情
+  // 注意：需要传递saveStore中的列表，因为Business Logic不直接持有Store
+  return battleService.getEquipmentDetails(
+      frontCharacterId.value, 
+      saveStore.wengines, 
+      saveStore.driveDisks
+  );
 });
 
 // 装备属性（兼容旧接口，用于StatsSnapshotCard）
@@ -488,7 +549,29 @@ const toggleBuffActive = (buffListType: 'all', buffId: string) => {
   // 直接调用战斗服务类的方法
   const currentStatus = battleService.getBuffIsActive(buffId);
   battleService.updateBuffStatus(buffId, !currentStatus);
+  saveBattleState();
 };
+
+// 目标技能列表 (响应式)
+const targetSkills = computed(() => {
+  buffRefreshTrigger.value; // 依赖刷新触发器
+  return battleService.getTargetSkills();
+});
+
+// 切换目标技能
+function onToggleSkill(skillId: string) {
+  console.log('[BattleSimulator] onToggleSkill received:', skillId);
+  battleService.toggleTargetSkill(skillId);
+  buffRefreshTrigger.value++; // 强制刷新UI
+  saveBattleState();
+}
+
+// 选中技能变化
+function onSelectedSkillChange(skill: string) {
+  currentSelectedSkill.value = skill;
+  battleService.setSelectedSkill(skill);
+  saveBattleState();
+}
 </script>
 
 <style scoped>

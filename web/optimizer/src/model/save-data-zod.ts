@@ -67,6 +67,14 @@ export interface ZodBattleData {
   name: string;
   teamId: string;              // 队伍ID
   enemyId: string;             // 敌人ID
+  enemyStatus?: {
+    isStunned: boolean;
+    hasCorruptionShield: boolean;
+  };
+  activeBuffs?: Record<string, boolean>; // Buff开关状态 {buffId: isActive}
+  manualBuffs?: any[];         // 手动Buff列表（暂存）
+  targetSkills?: string[];     // 目标技能列表
+  selectedSkill?: string;      // 当前选中的技能（用于伤害计算展示）
 }
 
 /**

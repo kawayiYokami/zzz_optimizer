@@ -75,7 +75,7 @@ interface ConversionInfo {
   from_property: string;
   to_property: string;
   conversion_ratio: number;
-  max_value: number;
+  max_value?: number;
 }
 
 // Buff数据结构
@@ -131,7 +131,8 @@ function formatConversion(conv: ConversionInfo): string {
   const ratio = (conv.conversion_ratio * 100).toFixed(0);
   const toPropType = (PropertyType as any)[conv.to_property];
   const isPercent = toPropType !== undefined && isPercentageProperty(toPropType);
-  const max = isPercent ? `${(conv.max_value * 100).toFixed(1)}%` : conv.max_value.toFixed(0);
+  const maxValue = conv.max_value || 0;
+  const max = isPercent ? `${(maxValue * 100).toFixed(1)}%` : maxValue.toFixed(0);
   return `基于 ${from} 的 ${ratio}% 转化为 ${to}，上限 ${max}`;
 }
 
