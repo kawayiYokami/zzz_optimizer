@@ -281,6 +281,7 @@ export const PROPERTY_CN_NAMES: Partial<Record<PropertyType, string>> = {
   // 能量
   [PropertyType.ENER_REGEN_]: "能量自动回复",
   [PropertyType.ENER_REGEN]: "能量自动回复",
+  [PropertyType.BASE_ENER_REGEN]: "基础能量自动回复",
   [PropertyType.ENER_EFF_]: "能量获得效率",
 
   // 冲击力

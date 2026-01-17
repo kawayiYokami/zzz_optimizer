@@ -613,7 +613,7 @@ const startOptimization = async () => {
       discs: prunedDiscs.value,  // 使用剪枝后的驱动盘
       constraints: constraints.value,
       externalBuffs: optimizerService.getTeammateBuffs(),
-      topN: 50,
+      topN: 10,
       callbacks: {
         onProgress: (p) => {
           progress.value = p;

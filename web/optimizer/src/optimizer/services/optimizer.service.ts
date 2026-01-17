@@ -110,6 +110,7 @@ export class OptimizerService {
     private workerResults: Map<number, OptimizationResult> = new Map();
     private fastWorkerResults: Map<number, OptimizationBuildResult[]> = new Map();
     private fastWorkerStats: Map<number, { processed: number; pruned: number; timeMs: number }> = new Map();
+    private fastWorkerProgress: Map<number, number> = new Map();  // workerId -> processedCount
     private completedWorkers = 0;
     private startTime = 0;
 
@@ -498,6 +499,7 @@ export class OptimizerService {
         this.workerResults.clear();
         this.fastWorkerResults.clear();
         this.fastWorkerStats.clear();
+        this.fastWorkerProgress.clear();
         this.completedWorkers = 0;
         this.startTime = performance.now();
         this.topN = options.topN ?? 10;
@@ -569,13 +571,24 @@ export class OptimizerService {
      * 处理快速优化进度
      */
     private handleFastProgress(workerId: number, progress: any): void {
-        // 简化进度处理
+        // 保存该 Worker 的进度
+        this.fastWorkerProgress.set(workerId, progress.processedCount);
+
+        // 聚合所有 Worker 的进度
+        let totalProcessed = 0;
+        for (const count of this.fastWorkerProgress.values()) {
+            totalProcessed += count;
+        }
+
+        const elapsedMs = performance.now() - this.startTime;
+        const speed = totalProcessed / (elapsedMs / 1000);
+
         const aggregated: AggregatedProgress = {
-            totalProcessed: progress.processedCount,
-            totalCombinations: progress.totalCombinations,
-            percentage: (progress.processedCount / progress.totalCombinations) * 100,
-            speed: progress.speed,
-            estimatedTimeRemaining: progress.estimatedTimeRemaining,
+            totalProcessed,
+            totalCombinations: this.totalCombinations,
+            percentage: (totalProcessed / this.totalCombinations) * 100,
+            speed,
+            estimatedTimeRemaining: (this.totalCombinations - totalProcessed) / speed,
             currentBest: null,
         };
 

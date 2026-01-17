@@ -956,6 +956,71 @@ export class Agent {
   }
 
   /**
+   * 获取有效技能等级（考虑影画加成）
+   * 影画3: 5大技能+2
+   * 影画5: 5大技能再+2（总共+4）
+   */
+  getEffectiveSkillLevel(skillType: string): number {
+    const baseLevel = this.getSkillLevel(skillType);
+    let bonus = 0;
+
+    // 影画3给5大技能+2
+    if (this.cinema >= 3) {
+      bonus += 2;
+    }
+
+    // 影画5再给5大技能+2
+    if (this.cinema >= 5) {
+      bonus += 2;
+    }
+
+    return baseLevel + bonus;
+  }
+
+  /**
+   * 调整角色等级 (0-60)
+   */
+  adjustCharacterLevel(delta: number): void {
+    this.level = Math.max(0, Math.min(60, this.level + delta));
+    if (this._zodData) {
+      this._zodData.level = this.level;
+    }
+  }
+
+  /**
+   * 调整技能等级 (1-12)
+   */
+  adjustSkillLevel(skillType: 'normal' | 'dodge' | 'assist' | 'special' | 'chain', delta: number): void {
+    const current = this.skills[skillType];
+    this.skills[skillType] = Math.max(1, Math.min(12, current + delta));
+
+    if (this._zodData) {
+      const zodKey = skillType === 'normal' ? 'basic' : skillType;
+      (this._zodData as any)[zodKey] = this.skills[skillType];
+    }
+  }
+
+  /**
+   * 调整核心技能等级 (1-7)
+   */
+  adjustCoreSkillLevel(delta: number): void {
+    this.core_skill = Math.max(1, Math.min(7, this.core_skill + delta));
+    if (this._zodData) {
+      this._zodData.core = this.core_skill;
+    }
+  }
+
+  /**
+   * 调整影画等级 (0-6)
+   */
+  adjustCinemaLevel(delta: number): void {
+    this.cinema = Math.max(0, Math.min(6, this.cinema + delta));
+    if (this._zodData) {
+      this._zodData.mindscape = this.cinema;
+    }
+  }
+
+  /**
    * 获取所有技能的总倍率
    */
   getTotalSkillRatio(): number {

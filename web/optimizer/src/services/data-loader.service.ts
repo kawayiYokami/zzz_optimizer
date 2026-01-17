@@ -120,7 +120,9 @@ export class DataLoaderService {
   private _equipmentData: Map<string, EquipmentInfo> | null = null;
   private _weaponData: Map<string, WeaponInfo> | null = null;
   private _bangbooData: Map<string, BangbooInfo> | null = null;
+  private _bangbooIndexData: Map<string, any> | null = null; // 新增
   private _enemyData: Map<string, EnemyInfo> | null = null;
+  private _enemyIndexData: Map<string, any> | null = null; // 新增
   private _agentSkills: Map<string, AgentSkillSet> | null = null;
 
   // 详细数据缓存（按需加载）
@@ -197,6 +199,20 @@ export class DataLoaderService {
   }
 
   /**
+   * 获取邦布索引数据 (包含图标)
+   */
+  get bangbooIndexData(): Map<string, any> | null {
+    return this._bangbooIndexData;
+  }
+
+  /**
+   * 获取敌人索引数据 (包含图标)
+   */
+  get enemyIndexData(): Map<string, any> | null {
+    return this._enemyIndexData;
+  }
+
+  /**
    * 获取技能数据
    */
   get agentSkills(): Map<string, AgentSkillSet> | null {
@@ -215,12 +231,22 @@ export class DataLoaderService {
 
     try {
       // 并行加载所有索引文件
-      const [characterData, weaponData, equipmentData, bangbooData, enemyData] = await Promise.all([
+      const [
+        characterData,
+        weaponData,
+        equipmentData,
+        bangbooData,
+        bangbooIndexData,
+        enemyData,
+        enemyIndexData
+      ] = await Promise.all([
         this.loadJsonFile<CharacterInfo>('/game-data/character.json'),
         this.loadJsonFile<WeaponInfo>('/game-data/weapon.json'),
         this.loadJsonFile<EquipmentInfo>('/game-data/equipment.json'),
         this.loadJsonFile<BangbooInfo>('/game-data/bangboo.json'),
+        this.loadJsonFile<any>('/game-data/bangboo_index.json'),
         this.loadJsonFile<EnemyInfo>('/game-data/enemy.json'),
+        this.loadJsonFile<any>('/game-data/enemy_index.json'),
       ]);
 
       // 转换为Map
@@ -228,7 +254,9 @@ export class DataLoaderService {
       this._weaponData = new Map(Object.entries(weaponData));
       this._equipmentData = new Map(Object.entries(equipmentData));
       this._bangbooData = new Map(Object.entries(bangbooData));
+      this._bangbooIndexData = new Map(Object.entries(bangbooIndexData));
       this._enemyData = new Map(Object.entries(enemyData));
+      this._enemyIndexData = new Map(Object.entries(enemyIndexData));
 
       // 加载技能CSV数据
       await this.loadAgentSkills();
@@ -579,7 +607,9 @@ export class DataLoaderService {
     this._equipmentData = null;
     this._weaponData = null;
     this._bangbooData = null;
+    this._bangbooIndexData = null;
     this._enemyData = null;
+    this._enemyIndexData = null;
     this._agentSkills = null;
     this.clearCache();
     this._isInitialized = false;

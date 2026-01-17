@@ -10,6 +10,7 @@
              <ul class="menu menu-horizontal px-1 gap-2">
                <li><a @click="currentView = 'optimizer'" :class="{ 'active': currentView === 'optimizer' }">优化器</a></li>
                <li><a @click="currentView = 'debug'" :class="{ 'active': currentView === 'debug' }">调试工具</a></li>
+               <li><a @click="currentView = 'gallery'" :class="{ 'active': currentView === 'gallery' }">组件画廊</a></li>
              </ul>
            </div>
         </div>
@@ -26,10 +27,12 @@
 import { ref, computed } from 'vue';
 import DebugView from './views/DebugView.vue';
 import OptimizerView from './views/OptimizerView.vue';
+import ComponentGallery from './views/ComponentGallery.vue';
 
 const currentView = ref('optimizer'); // 默认进入优化器
 
 const activeComponent = computed(() => {
+  if (currentView.value === 'gallery') return ComponentGallery;
   return currentView.value === 'optimizer' ? OptimizerView : DebugView;
 });
 </script>
