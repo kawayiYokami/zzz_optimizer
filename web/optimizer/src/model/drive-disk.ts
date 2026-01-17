@@ -2,7 +2,7 @@
  * 驱动盘模型
  */
 
-import { Rarity, PropertyType, StatValue } from './base';
+import { Rarity, PropertyType, StatValue, isPercentageProperty } from './base';
 import { Buff } from './buff';
 import { PropertyCollection } from './property-collection';
 import type { ZodDiscData } from './save-data-zod';
@@ -224,6 +224,52 @@ export class DriveDisk {
   }
 
   /**
+   * 获取副词条（包含强化次数）
+   *
+   * @returns 副词条数组，每项包含属性类型、数值、是否百分比、强化次数
+   */
+  getSubStatsWithRolls(): Array<{
+    prop: PropertyType;
+    value: number;
+    isPercent: boolean;
+    rolls: number;
+  }> {
+    const result: Array<{
+      prop: PropertyType;
+      value: number;
+      isPercent: boolean;
+      rolls: number;
+    }> = [];
+
+    const rarityStr = Rarity[this.rarity] as 'S' | 'A' | 'B';
+
+    for (const [prop, statValue] of this.sub_stats.entries()) {
+      const subStatKey = this.propertyTypeToKey(prop);
+      
+      if (subStatKey && (DriveDiskStats.SUB_STAT_BASE_VALUES[rarityStr] as any)[subStatKey] !== undefined) {
+        // statValue.value 存储的是强化次数（rolls）
+        const rolls = statValue.value;
+        const actualValue = DriveDiskStats.calculateSubStatValue(rarityStr, subStatKey, rolls);
+        
+        // 根据数值判断是否是百分比（小于1的认为是百分比）
+        const isPercent = actualValue < 1;
+        
+        // 强化次数显示为 rolls - 1（因为初始有1条副词条）
+        const displayRolls = Math.max(0, rolls - 1);
+
+        result.push({
+          prop: prop,
+          value: actualValue,
+          isPercent: isPercent,
+          rolls: displayRolls
+        });
+      }
+    }
+
+    return result;
+  }
+
+  /**
    * 获取套装Buff
    *
    * @param setBonus 套装加成类型
@@ -411,7 +457,9 @@ export class DriveDisk {
       for (const substat of zodData.substats) {
         const propType = parsePropertyType(substat.key);
         // value 存储强化次数（rolls），而不是实际数值
-        const statValue = new StatValue(substat.upgrades, false);
+        // 根据属性类型判断是否是百分比属性
+        const isPercent = isPercentageProperty(propType);
+        const statValue = new StatValue(substat.upgrades, isPercent);
         subStats.set(propType, statValue);
       }
     }

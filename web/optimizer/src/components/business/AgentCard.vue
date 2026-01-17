@@ -1,5 +1,5 @@
 <template>
-  <div class="card bg-base-100 shadow-sm border border-base-300 w-32 overflow-hidden relative hover:border-primary transition-colors">
+  <div class="card bg-base-100 shadow-sm border border-base-300 w-28 overflow-hidden relative hover:border-primary transition-colors">
     <!-- Main Image Container -->
     <figure :class="['relative aspect-square w-full bg-base-200', rarityGradientClass]">
         <!-- Avatar -->
@@ -50,12 +50,8 @@ const props = defineProps<{
 }>();
 
 const rarityGradientClass = computed(() => {
-    // Agent doesn't have 'rarity' field in the class definition provided earlier (it was 'rank' in info), 
-    // but the constructor has 'rarity'. Let's check Agent model.
-    // Yes, Agent has 'rarity: Rarity'.
-    // Rarity enum: S=3, A=2, B=1 (from base.ts usually, or defined in Agent file)
-    // Let's assume standard behavior.
-    const isS = props.agent.rarity === 3 || props.agent.rarity === 'S' as any;
+    // Rarity enum: S=4, A=3, B=2 (from base.ts)
+    const isS = props.agent.rarity === 4;
     return isS ? 'bg-gradient-to-br from-orange-600 to-orange-900' : 'bg-gradient-to-br from-purple-600 to-purple-900';
 });
 

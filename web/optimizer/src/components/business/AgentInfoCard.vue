@@ -6,7 +6,7 @@
         <div :class="['absolute inset-0 opacity-10 pointer-events-none bg-gradient-to-r', rarityGradientFrom]"></div>
 
         <!-- Avatar -->
-        <div class="avatar relative z-10">
+        <div class="avatar relative z-10 cursor-pointer hover:scale-105 transition-transform" @click="emit('clickAvatar')">
             <div class="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden bg-base-300">
                 <img v-if="avatarUrl" :src="avatarUrl" :alt="agent.name_cn" class="object-cover" />
                 <div v-else class="w-full h-full flex items-center justify-center text-4xl font-bold opacity-50">{{ agent.name_cn[0] }}</div>
@@ -217,6 +217,10 @@ import SkillList from './SkillList.vue';
 
 const props = defineProps<{
   agent: Agent;
+}>();
+
+const emit = defineEmits<{
+  clickAvatar: [];
 }>();
 
 const activeTab = ref('stats');

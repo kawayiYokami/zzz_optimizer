@@ -2,20 +2,10 @@
   <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-64">
     <!-- Card Header: Rarity color top border -->
     <div :class="['h-1 w-full', rarityColorClass]"></div>
-    
-    <div class="card-body p-3 gap-1">
-      <!-- Header: Level & Lock -->
-      <div class="flex justify-between items-center text-xs">
-        <span class="badge badge-sm badge-neutral">Lv.{{ disk.level }}</span>
-        <button class="btn btn-ghost btn-xs btn-circle" v-if="disk.locked">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-        </button>
-      </div>
 
+    <div class="card-body p-3 gap-1">
       <!-- Icon & Set Name -->
-      <div class="flex items-center gap-2 mt-1">
+      <div class="flex items-center gap-2">
         <div class="avatar">
           <div class="w-10 h-10 rounded-full bg-base-200 p-1 overflow-hidden">
              <img
@@ -29,34 +19,41 @@
              </div>
           </div>
         </div>
-        <div class="flex flex-col overflow-hidden">
-          <span class="font-bold text-sm truncate" :title="disk.set_name">{{ disk.set_name }}</span>
-          <span class="text-xs text-base-content/60">位置 {{ disk.position }}</span>
+        <div class="flex flex-col overflow-hidden flex-1">
+          <span class="font-bold text-sm truncate" :title="disk.set_name">{{ disk.set_name }}[{{ disk.position }}]</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs">Lv.{{ disk.level }}</span>
+            <button class="btn btn-ghost btn-xs btn-circle ml-auto" v-if="disk.locked">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Main Stat -->
-      <div class="bg-base-200 rounded p-2 mt-2 flex justify-between items-center">
-        <span class="text-sm font-semibold text-primary">{{ getMainStatName() }}</span>
-        <span class="text-lg font-bold">{{ getMainStatValue() }}</span>
+      <div class="mt-2 flex justify-between items-center">
+        <span class="text-sm font-semibold">{{ getMainStatName() }}</span>
+        <span class="text-xl font-bold">{{ getMainStatValue() }}</span>
       </div>
 
       <!-- Sub Stats -->
       <div class="divider my-1 text-xs">副词条</div>
-      <ul class="text-xs space-y-1">
-        <li v-for="[prop, stat] in disk.sub_stats" :key="prop" class="flex justify-between items-center">
-          <span class="text-base-content/80">{{ getPropName(prop) }}</span>
-          <div class="flex items-center gap-2">
-            <span>{{ formatValue(stat.value, stat.isPercent) }}</span>
-            <span v-if="stat.value > 0" class="badge badge-xs badge-secondary bg-opacity-20 text-secondary border-none">
-              +{{ stat.value }}
-            </span>
-          </div>
-        </li>
-      </ul>
+      <div class="overflow-x-auto">
+        <table class="table table-sm table-compact">
+          <tbody>
+            <tr v-for="subStat in getSubStatsWithRolls()" :key="subStat.prop">
+              <td class="w-20 py-2">{{ getPropName(subStat.prop) }}</td>
+              <td class="text-right py-0">{{ formatValue(subStat.value, subStat.isPercent) }}</td>
+              <td class="text-right w-8 py-0">+{{ subStat.rolls }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Footer: Equipped By -->
-      <div v-if="disk.equipped_agent" class="mt-2 pt-2 border-t border-base-200 flex items-center gap-1 text-xs text-base-content/60">
+      <div v-if="disk.equipped_agent" class="mt-2 pt-2 border-t border-base-200 flex items-center gap-1 text-xs">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
@@ -95,12 +92,23 @@ function getMainStatName() {
 }
 
 function getMainStatValue() {
-  const val = props.disk.main_stat_value;
-  return formatValue(val.value, val.isPercent);
+  // 从 getStats() 中获取实际计算后的主词条数值
+  const stats = props.disk.getStats();
+  const actualValue = stats.out_of_combat.get(props.disk.main_stat);
+
+  if (actualValue === undefined) {
+    return formatValue(props.disk.main_stat_value.value, props.disk.main_stat_value.isPercent);
+  }
+
+  return formatValue(actualValue, props.disk.main_stat_value.isPercent);
 }
 
 function getPropName(prop: number) {
   return getPropertyCnName(prop);
+}
+
+function getSubStatsWithRolls() {
+  return props.disk.getSubStatsWithRolls();
 }
 
 function formatValue(value: number, isPercent: boolean) {
