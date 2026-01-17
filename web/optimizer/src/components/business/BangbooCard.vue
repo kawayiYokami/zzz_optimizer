@@ -11,7 +11,7 @@
         <div v-else class="w-full h-full flex items-center justify-center text-white/50 text-2xl font-bold bg-black/20">
             {{ bangboo.name_cn[0] }}
         </div>
-        <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-2">
+        <div class="absolute bottom-0 left-0 w-full bg-linear-to-t from-black/80 to-transparent p-2">
             <h3 class="text-white font-bold text-sm truncate">{{ bangboo.name_cn }}</h3>
             <div class="flex items-center gap-1 text-white/80 text-xs">
                 <span class="badge badge-sm badge-ghost border-white/30 text-white">Lv.{{ bangboo.level }}</span>

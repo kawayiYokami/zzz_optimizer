@@ -1,7 +1,16 @@
 <template>
-  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-64 overflow-hidden">
+  <div class="card bg-base-200 shadow-xl compact-card border border-base-300 w-64 overflow-hidden">
     <!-- Image Section with Rarity Gradient -->
     <figure :class="['relative h-32 w-full', rarityGradientClass]">
+        <!-- Weapon Type Icon (Top Left) -->
+        <div class="absolute top-2 left-2 w-6 h-6 bg-black/40 p-0.5 backdrop-blur-sm rounded">
+            <img
+                :src="getWeaponTypeIconUrl()"
+                class="w-full h-full object-contain"
+                :alt="wengine.weapon_type"
+            />
+        </div>
+
         <img
             v-if="wengineIconUrl"
             :src="wengineIconUrl"
@@ -11,10 +20,10 @@
         <div v-else class="w-full h-full flex items-center justify-center text-white/50 text-2xl font-bold bg-black/20">
             {{ wengine.name[0] }}
         </div>
-        <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-2">
-            <h3 class="text-white font-bold text-sm truncate">{{ wengine.name }}</h3>
-            <div class="flex items-center gap-1 text-white/80 text-xs">
-                <span class="badge badge-sm badge-ghost border-white/30 text-white">Lv.{{ wengine.level }}</span>
+        <div class="absolute bottom-0 left-0 w-full bg-linear-to-t from-black/80 to-transparent p-2">
+            <div class="flex items-center gap-2 text-white/80 text-xs">
+                <span class="font-bold text-sm text-white truncate flex-1">{{ wengine.name }}</span>
+                <span>Lv.{{ wengine.level }}</span>
                 <span>R{{ wengine.refinement }}</span>
             </div>
         </div>
@@ -25,11 +34,11 @@
       <div class="flex justify-between items-center bg-base-200 p-2 rounded">
         <div class="flex flex-col">
             <span class="text-xs text-base-content/60">基础攻击力</span>
-            <span class="font-bold text-lg">{{ wengine.base_atk.toFixed(0) }}</span>
+            <span class="font-bold text-lg">{{ baseAtk.toFixed(0) }}</span>
         </div>
-        <div class="flex flex-col items-end" v-if="wengine.rand_stat_type">
-            <span class="text-xs text-base-content/60">{{ getPropName(wengine.rand_stat_type) }}</span>
-            <span class="font-bold text-lg text-secondary">{{ formatValue(wengine.rand_stat, isPercent(wengine.rand_stat_type)) }}</span>
+        <div class="flex flex-col items-end" v-if="randStatType">
+            <span class="text-xs text-base-content/60">{{ getPropName(randStatType) }}</span>
+            <span class="font-bold text-lg text-secondary">{{ formatValue(randStat, isPercent(randStatType)) }}</span>
         </div>
       </div>
 
@@ -37,14 +46,13 @@
       <div class="collapse collapse-arrow border border-base-200 bg-base-100 rounded-box">
         <input type="checkbox" /> 
         <div class="collapse-title text-xs font-medium p-2 min-h-0 flex items-center">
-          <span class="text-primary mr-1">天赋</span>
           <span class="truncate">{{ activeTalentName }}</span>
         </div>
         <div class="collapse-content text-xs p-2 pt-0"> 
           <p class="opacity-80">{{ activeTalentDesc }}</p>
         </div>
       </div>
-      
+
       <!-- Footer: Equipped -->
       <div v-if="wengine.equipped_agent" class="mt-auto pt-2 border-t border-base-200 flex items-center gap-1 text-xs text-base-content/60">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,7 +67,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { WEngine } from '../../model/wengine';
-import { getPropertyCnName, isPercentageProperty, PropertyType } from '../../model/base';
+import { PropertyType, getPropertyCnName, isPercentageProperty } from '../../model/base';
 import { iconService } from '../../services/icon.service';
 
 const props = defineProps<{
@@ -81,12 +89,40 @@ const wengineIconUrl = computed(() => {
     return iconService.getWeaponIconById(props.wengine.wengine_id);
 });
 
+function getWeaponTypeIconUrl() {
+    return iconService.getWeaponTypeIconUrl(props.wengine.weapon_type);
+}
+
 const activeTalent = computed(() => {
     return props.wengine.talents.find(t => t.level === props.wengine.refinement);
 });
 
 const activeTalentName = computed(() => activeTalent.value?.name || '未知天赋');
 const activeTalentDesc = computed(() => activeTalent.value?.description || '无描述');
+
+// 使用 getBaseStats() 获取基础属性
+const baseStats = computed(() => props.wengine.getBaseStats());
+
+// 从属性集合中获取基础攻击力
+const baseAtk = computed(() => {
+  return baseStats.value.out_of_combat.get(PropertyType.ATK_BASE) || 0;
+});
+
+// 从属性集合中获取随机属性
+const randStatType = computed(() => {
+  // 遍历所有属性，找到非基础攻击力的属性
+  for (const [prop, value] of baseStats.value.out_of_combat.entries()) {
+    if (prop !== PropertyType.ATK_BASE && value !== 0) {
+      return prop;
+    }
+  }
+  return null;
+});
+
+const randStat = computed(() => {
+  if (randStatType.value === null) return 0;
+  return baseStats.value.out_of_combat.get(randStatType.value) || 0;
+});
 
 function getPropName(prop: PropertyType) {
   return getPropertyCnName(prop);

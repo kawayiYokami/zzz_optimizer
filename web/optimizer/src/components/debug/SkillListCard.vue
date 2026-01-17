@@ -40,7 +40,7 @@
                   <div class="card-body p-4">
                     <div class="flex justify-between items-start gap-4">
                       <!-- 段名称 -->
-                      <div class="flex-shrink-0">
+                      <div class="shrink-0">
                         <span class="font-semibold text-base">
                           {{ segment.segmentName || '单段' }}
                         </span>

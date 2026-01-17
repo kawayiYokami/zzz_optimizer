@@ -219,31 +219,28 @@ export const useSaveStore = defineStore('save', () => {
   /**
    * 切换存档
    */
-  function switchSave(name: string): boolean {
+  async function switchSave(name: string): Promise<boolean> {
     if (!rawSaves.value.has(name)) {
       return false;
     }
 
-    // 清空当前实例缓存，确保重新生成实例
-    saves.value.clear();
-    
-    // 从rawSaves重新生成当前存档实例
-    const rawSave = rawSaves.value.get(name);
-    if (rawSave) {
-      // 异步生成实例
-      SaveData.fromZod(name, rawSave, dataLoaderService)
-        .then(saveData => {
-          saves.value.set(name, saveData);
-        })
-        .catch(err => {
-          console.error(`Failed to create instance for save ${name}:`, err);
-        });
+    try {
+      // 从rawSaves重新生成当前存档实例
+      const rawSave = rawSaves.value.get(name);
+      if (rawSave) {
+        const saveData = await SaveData.fromZod(name, rawSave, dataLoaderService);
+        saves.value.set(name, saveData);
+      }
+
+      currentSaveName.value = name;
+      saveToStorage();
+
+      return true;
+    } catch (err) {
+      console.error(`Failed to switch to save ${name}:`, err);
+      error.value = err instanceof Error ? err.message : 'Unknown error';
+      return false;
     }
-
-    currentSaveName.value = name;
-    saveToStorage();
-
-    return true;
   }
 
   /**
@@ -382,6 +379,54 @@ export const useSaveStore = defineStore('save', () => {
     // 直接从rawSaves读取所有原始数据
     const dataToSave = Object.fromEntries(rawSaves.value.entries());
     return JSON.stringify(dataToSave, null, 2);
+  }
+
+  /**
+   * 导出单个存档（直接从原始数据读取）
+   */
+  function exportSingleSave(name: string): string {
+    const rawSave = rawSaves.value.get(name);
+    if (!rawSave) {
+      throw new Error(`Save "${name}" not found in storage`);
+    }
+    return JSON.stringify(rawSave, null, 2);
+  }
+
+  /**
+   * 导入存档数据（覆盖或新建）
+   */
+  async function importSaveData(data: any): Promise<void> {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      if (!data || !data.name) {
+        throw new Error('Invalid save data: missing name');
+      }
+
+      const name = data.name;
+
+      // 直接保存原始数据到rawSaves
+      rawSaves.value.set(name, data);
+
+      // 从原始数据生成实例
+      const newSave = await SaveData.fromZod(name, data, dataLoaderService);
+      saves.value.set(name, newSave);
+
+      // 如果是当前存档，更新当前存档
+      if (currentSaveName.value === name) {
+        // 不需要特别处理，因为saves已经更新了
+      }
+
+      // 保存到localStorage
+      saveToStorage();
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Failed to import save data:', err);
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   /**
@@ -706,6 +751,8 @@ export const useSaveStore = defineStore('save', () => {
     exportAsZod,              // 导出ZOD格式（直接从原始数据读取）
     exportSaveDataAsInstance, // 导出实例格式（从实例生成，调试用）
     exportAllSaves,           // 导出所有存档（直接从原始数据读取）
+    exportSingleSave,         // 导出单个存档
+    importSaveData,           // 导入存档数据（覆盖或新建）
     reset,
     equipWengine,             // 装备音擎
     equipDriveDisk,           // 装备驱动盘

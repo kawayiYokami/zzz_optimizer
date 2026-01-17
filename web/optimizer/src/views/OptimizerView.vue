@@ -2,18 +2,6 @@
   <div class="min-h-screen bg-base-200 p-4 md:p-8">
     <div class="max-w-7xl mx-auto space-y-6">
 
-      <!-- Navbar -->
-      <div class="navbar bg-base-100 rounded-box shadow-sm">
-        <div class="flex-1">
-          <a class="btn btn-ghost text-xl">装备优化器 (Beta)</a>
-        </div>
-        <div class="flex-none gap-2">
-          <div class="badge badge-info gap-2">
-            组合数: {{ formatCompact(estimatedCombinations.total) }}
-          </div>
-        </div>
-      </div>
-
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- 配置面板 -->
@@ -215,7 +203,7 @@
 
         <!-- 结果展示 -->
         <div class="lg:col-span-2">
-          <div class="card bg-base-100 shadow-sm min-h-[600px]">
+          <div class="card bg-base-100 shadow-sm min-h-150">
             <div class="card-body">
               <h2 class="card-title flex justify-between items-center">
                 <span>优化结果</span>

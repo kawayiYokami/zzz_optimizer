@@ -21,7 +21,7 @@ import type { AgentSkillSet } from './skill';
 import type { dataLoaderService } from '../services/data-loader.service';
 import type { WEngine } from './wengine';
 import type { DriveDisk } from './drive-disk';
-import { DriveDiskSetBonus } from './drive-disk';
+import { DriveDiskSetBonus, DriveDiskPosition } from './drive-disk';
 
 /**
  * 角色技能等级
@@ -131,6 +131,10 @@ export class Agent {
 
   // 缓存的角色自身属性（在fromZodData中计算，只包含角色基础+成长+突破+核心技能）
   self_properties: PropertyCollection = new PropertyCollection();
+
+  // 缓存的角色+装备属性（角色基础+武器+驱动盘基础+驱动盘2件套属性）
+  private _equipmentStatsCache: PropertyCollection | null = null;
+  private _equipmentStatsCacheValid: boolean = false;
 
   // Buff系统（从游戏数据加载）
   core_passive_buffs: Buff[] = [];
@@ -290,6 +294,11 @@ export class Agent {
    * @returns 属性集合
    */
   getCharacterEquipmentStats(): PropertyCollection {
+    // 如果缓存有效，直接返回
+    if (this._equipmentStatsCacheValid && this._equipmentStatsCache) {
+      return this._equipmentStatsCache;
+    }
+
     // 1. 先获取角色基础属性
     const baseStats = this.getCharacterBaseStats();
 
@@ -345,6 +354,10 @@ export class Agent {
         }
       }
     }
+
+    // 缓存结果
+    this._equipmentStatsCache = equipmentStats;
+    this._equipmentStatsCacheValid = true;
 
     return equipmentStats;
   }
@@ -753,6 +766,68 @@ export class Agent {
     });
 
     return validBuffs;
+  }
+
+  /**
+   * 装备音擎
+   */
+  equipWengine(wengineId: string): void {
+    // 先卸下当前音擎（如果有）
+    if (this.equipped_wengine && this._wengines) {
+      const currentWengine = this._wengines.get(this.equipped_wengine);
+      if (currentWengine) {
+        currentWengine.equipped_agent = null;
+      }
+    }
+
+    // 装备新音擎
+    this.equipped_wengine = wengineId;
+
+    // 设置音擎的装备者
+    if (this._wengines) {
+      const newWengine = this._wengines.get(wengineId);
+      if (newWengine) {
+        newWengine.equipped_agent = this.id;
+      }
+    }
+
+    this.clearPropertyCache();
+  }
+
+  /**
+   * 装备驱动盘
+   */
+  equipDriveDisk(position: DriveDiskPosition, diskId: string): void {
+    // 先卸下当前驱动盘（如果有）
+    const currentDiskId = this.equipped_drive_disks[position];
+    if (currentDiskId && this._driveDisks) {
+      const currentDisk = this._driveDisks.get(currentDiskId);
+      if (currentDisk) {
+        currentDisk.equipped_agent = null;
+      }
+    }
+
+    // 装备新驱动盘
+    this.equipped_drive_disks[position] = diskId;
+
+    // 设置驱动盘的装备者
+    if (this._driveDisks) {
+      const newDisk = this._driveDisks.get(diskId);
+      if (newDisk) {
+        newDisk.equipped_agent = this.id;
+      }
+    }
+
+    this.clearPropertyCache();
+  }
+
+  /**
+   * 清除属性缓存
+   */
+  clearPropertyCache(): void {
+    // 清除装备属性缓存
+    this._equipmentStatsCacheValid = false;
+    this._equipmentStatsCache = null;
   }
 
   /**

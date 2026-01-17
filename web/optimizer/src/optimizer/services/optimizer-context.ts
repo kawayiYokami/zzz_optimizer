@@ -44,7 +44,7 @@ export interface SkillParams {
     id: string;
     name: string;
     ratio: number;
-    element: string;
+    element: ElementType;
     tags: string[];
     isPenetration: boolean;
     anomalyBuildup?: number;

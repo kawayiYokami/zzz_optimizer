@@ -3,7 +3,7 @@
     <!-- Header: Character Basic Info -->
     <div class="bg-base-200 p-4 flex items-center gap-6 relative overflow-hidden">
         <!-- Background Decoration (Optional) -->
-        <div :class="['absolute inset-0 opacity-10 pointer-events-none bg-gradient-to-r', rarityGradientFrom]"></div>
+        <div :class="['absolute inset-0 opacity-10 pointer-events-none bg-linear-to-r', rarityGradientFrom]"></div>
 
         <!-- Avatar -->
         <div class="avatar relative z-10 cursor-pointer hover:scale-105 transition-transform" @click="emit('clickAvatar')">
@@ -29,7 +29,7 @@
 
             <!-- 第二行：等级控制 -->
             <div class="flex items-center gap-2 mb-1.5">
-                <span class="text-sm opacity-60 min-w-[3rem]">Lv.{{ agent.level }}</span>
+                <span class="text-sm opacity-60 min-w-12">Lv.{{ agent.level }}</span>
                 <input
                     type="range"
                     min="1"
@@ -59,18 +59,21 @@
 
     <!-- Tabs Navigation -->
     <div class="tabs tabs-lifted px-4 pt-2 bg-base-200/50">
-      <a class="tab tab-lg" :class="{ 'tab-active': activeTab === 'stats' }" @click="activeTab = 'stats'">属性面板</a>
+      <a class="tab tab-lg" :class="{ 'tab-active': activeTab === 'stats' }" @click="activeTab = 'stats'">属性</a>
       <a class="tab tab-lg" :class="{ 'tab-active': activeTab === 'skills' }" @click="activeTab = 'skills'">技能</a>
-      <a class="tab tab-lg" :class="{ 'tab-active': activeTab === 'buffs' }" @click="activeTab = 'buffs'">BUFF</a>
-      <a class="tab tab-lg" :class="{ 'tab-active': activeTab === 'equipment' }" @click="activeTab = 'equipment'">装备方案</a>
+      <a class="tab tab-lg" :class="{ 'tab-active': activeTab === 'buffs' }" @click="activeTab = 'buffs'">增益</a>
+      <a class="tab tab-lg" :class="{ 'tab-active': activeTab === 'equipment' }" @click="activeTab = 'equipment'">装备</a>
     </div>
 
     <!-- Tab Content Container -->
     <div class="card-body p-0 bg-base-100 border-t border-base-300 flex-1 overflow-hidden relative">
-        
+
         <!-- Tab 1: Stats -->
         <div v-if="activeTab === 'stats'" class="h-full overflow-y-auto p-6">
-            <PropertySetCard :agent="agent" display-type="in" />
+            <PropertySetCard
+                :property-collection="agent.getCharacterCombatStats()"
+                :conversion-buffs="agent.conversion_buffs"
+            />
         </div>
 
         <!-- Tab 2: Skills -->
@@ -80,33 +83,6 @@
 
         <!-- Tab 3: Buffs -->
         <div v-if="activeTab === 'buffs'" class="h-full overflow-y-auto p-6 space-y-6">
-            <!-- Core Skill Level -->
-            <section>
-                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                    <span class="w-1 h-6 bg-accent rounded"></span>
-                    核心技能
-                </h3>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 p-2">
-                        <img :src="iconService.getSkillIconUrl('core')" alt="核心技" class="w-full h-full object-contain" />
-                    </div>
-                    <span class="text-sm opacity-60 flex-shrink-0 w-12">Lv.{{ agent.core_skill }}</span>
-                    <div class="flex-1 max-w-xs">
-                        <input
-                            type="range"
-                            min="1"
-                            max="7"
-                            :value="agent.core_skill"
-                            @input="adjustCoreSkill"
-                            class="range range-xs"
-                            step="1"
-                        />
-                    </div>
-                </div>
-            </section>
-
-            <div class="divider"></div>
-
             <!-- Active Buffs -->
             <section>
                 <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
@@ -124,30 +100,11 @@
                             {{ buff.description || buff.name || '未知效果' }}
                         </div>
                         <div class="collapse-content text-sm">
-                            <div v-if="buff.stats && Object.keys(buff.stats).length > 0" class="overflow-x-auto mt-2">
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>属性名称</th>
-                                            <th class="text-right">属性值</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(value, prop) in buff.stats" :key="prop" class="hover">
-                                            <td>{{ formatPropName(prop) }}</td>
-                                            <td class="text-right font-mono font-bold">{{ formatValue(value, isPercent(Number(prop))) }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div v-if="buff.conversion" class="mt-2 p-2 bg-base-300 rounded">
-                                <div class="text-sm font-semibold mb-1">转换类属性</div>
-                                <div class="text-sm space-y-1">
-                                    <div>{{ formatPropName(buff.conversion.from_property) }} → {{ formatPropName(buff.conversion.to_property) }} ({{ (buff.conversion.conversion_ratio * 100).toFixed(1) }}%)</div>
-                                    <div v-if="buff.conversion.from_property_threshold" class="text-xs opacity-70">起始值: {{ buff.conversion.from_property_threshold }}</div>
-                                    <div v-if="buff.conversion.max_value" class="text-xs opacity-70">上限: {{ buff.conversion.max_value }}</div>
-                                </div>
-                            </div>
+                            <PropertySetCard
+                                :property-collection="createPropertyCollectionFromBuff(buff)"
+                                :conversion-buffs="buff.conversion ? [buff] : []"
+                                :no-card="true"
+                            />
                         </div>
                     </div>
                 </div>
@@ -155,65 +112,116 @@
         </div>
 
         <!-- Tab 3: Equipment -->
-        <div v-if="activeTab === 'equipment'" class="h-full overflow-y-auto p-6 space-y-6">
-            
-            <!-- W-Engine Section -->
-            <section>
-                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                    <span class="w-1 h-6 bg-accent rounded"></span>
-                    音擎 (W-Engine)
-                </h3>
-                <div v-if="agent.equipped_wengine" class="bg-base-200 p-4 rounded-xl flex items-center gap-4 border border-base-300">
-                    <div class="w-16 h-16 bg-base-300 rounded-lg flex items-center justify-center font-bold text-2xl text-base-content/20">W</div>
-                    <!-- Detailed WEngine Card or Component would go here. For now simpler display -->
-                    <div>
-                        <div class="font-bold text-lg">ID: {{ agent.equipped_wengine }}</div>
-                        <div class="text-sm opacity-60">需要关联详细音擎数据以显示更多信息</div>
-                    </div>
+
+                <div v-if="activeTab === 'equipment'" class="h-full overflow-y-auto p-6 space-y-6">
+
+
+
+                    <!-- W-Engine Section -->
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                            <span class="w-1 h-6 bg-accent rounded"></span>
+                            音擎
+                        </h3>
+
+                        <div v-if="equippedWEngine" class="cursor-pointer hover:ring-2 hover:ring-primary transition-all" @click="openEquipmentSelector('wengine')">
+                            <WEngineCard :wengine="equippedWEngine" />
+                        </div>
+                        <div v-else class="alert alert-warning shadow-sm cursor-pointer hover:alert-info transition-colors" @click="openEquipmentSelector('wengine')">
+                            <span>点击装备音擎</span>
+                        </div>
+                    </section>
+
+
+
+                    <div class="divider"></div>
+
+
+
+                    <!-- Drive Disks Section -->
+
+                    <section>
+
+                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                            <span class="w-1 h-6 bg-info rounded"></span>
+                            驱动盘
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div v-for="(disk, idx) in equippedDriveDisks" :key="idx"
+                                 class="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                                 @click="openEquipmentSelector('drive-disk', idx as DriveDiskPosition)">
+                                <DriveDiskCard v-if="disk" :disk="disk" />
+                                <div v-else class="aspect-4/3 bg-base-200 rounded-lg border border-base-300 flex flex-col items-center justify-center relative p-2 hover:border-primary transition-colors cursor-pointer group">
+                                    <span class="absolute top-2 left-2 text-xs font-mono opacity-40">{{ idx + 1 }}</span>
+                                    <span class="text-2xl opacity-20 font-bold">+</span>
+                                    <span class="text-xs opacity-40">点击装备</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+
+
+
                 </div>
-                <div v-else class="alert alert-warning shadow-sm">
-                    <span>未装备音擎</span>
-                </div>
-            </section>
 
-            <div class="divider"></div>
+            </div>
 
-            <!-- Drive Disks Section -->
-            <section>
-                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                    <span class="w-1 h-6 bg-info rounded"></span>
-                    驱动盘 (Drive Disks)
-                </h3>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div v-for="(diskId, idx) in agent.equipped_drive_disks" :key="idx" 
-                         class="aspect-[4/3] bg-base-200 rounded-lg border border-base-300 flex flex-col items-center justify-center relative p-2 hover:border-primary transition-colors cursor-pointer group">
-                        <span class="absolute top-2 left-2 text-xs font-mono opacity-40">{{ idx + 1 }}</span>
-                        <template v-if="diskId">
-                            <span class="font-bold text-sm">已装备</span>
-                            <span class="text-xs opacity-50 truncate w-full text-center">{{ diskId }}</span>
-                        </template>
-                        <template v-else>
-                            <span class="text-2xl opacity-20 font-bold">+</span>
-                            <span class="text-xs opacity-40">空置</span>
-                        </template>
-                    </div>
-                </div>
-            </section>
 
-        </div>
 
-    </div>
+            <!-- 装备选择弹窗 -->
+
+
+
+                <EquipmentSelector
+
+
+
+                  :is-open="showEquipmentSelector"
+
+
+
+                  :type="equipmentSelectorType"
+
+
+
+                  :position="selectedDriveDiskPosition"
+
+
+
+                  :agent-id="agent.id"
+
+
+
+                  @close="showEquipmentSelector = false"
+
+
+
+                  @select="selectEquipment"
+
+
+
+                />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { Agent } from '../../model/agent';
 import { PropertyType, WeaponType, getPropertyCnName, isPercentageProperty, getWeaponCnName } from '../../model/base';
 import { BuffSource, Buff } from '../../model/buff';
+import { PropertyCollection } from '../../model/property-collection';
 import { iconService } from '../../services/icon.service';
+import { useSaveStore } from '../../stores/save.store';
 import PropertySetCard from './PropertySetCard.vue';
 import SkillList from './SkillList.vue';
+import EquipmentSelector from './EquipmentSelector.vue';
+import WEngineCard from './WEngineCard.vue';
+import DriveDiskCard from './DriveDiskCard.vue';
+import { DriveDiskPosition } from '../../model/drive-disk';
+
+const saveStore = useSaveStore();
 
 const props = defineProps<{
   agent: Agent;
@@ -271,9 +279,83 @@ const advancedProps = computed(() => {
 // Buffs
 const allBuffs = ref<Buff[]>([]);
 
-// 异步加载Buff数据
+// 加载 Buff 数据
+async function loadBuffs() {
+    try {
+        allBuffs.value = await props.agent.getAllBuffs();
+    } catch (error) {
+        console.error('加载 Buff 失败:', error);
+        allBuffs.value = [];
+    }
+}
+
+// 已装备的音擎
+const equippedWEngine = computed(() => {
+    if (!props.agent.equipped_wengine) return null;
+    return saveStore.wengines.find(w => w.id === props.agent.equipped_wengine) || null;
+});
+
+// 已装备的驱动盘
+const equippedDriveDisks = computed(() => {
+    return props.agent.equipped_drive_disks.map(diskId => {
+        if (!diskId) return null;
+        return saveStore.driveDisks.find(d => d.id === diskId) || null;
+    });
+});
+
+// 装备选择弹窗状态
+const showEquipmentSelector = ref(false);
+const equipmentSelectorType = ref<'drive-disk' | 'wengine'>('drive-disk');
+const selectedDriveDiskPosition = ref<DriveDiskPosition | undefined>(undefined);
+
+// 打开装备选择弹窗
+function openEquipmentSelector(type: 'drive-disk' | 'wengine', position?: number) {
+    equipmentSelectorType.value = type;
+    // position 是数组索引 (0-5)，转换为 DriveDiskPosition (1-6)
+    if (type === 'drive-disk' && position !== undefined) {
+        selectedDriveDiskPosition.value = (position + 1) as DriveDiskPosition;
+    } else {
+        selectedDriveDiskPosition.value = undefined;
+    }
+    showEquipmentSelector.value = true;
+}
+
+// 选择装备
+function selectEquipment(item: any) {
+    if (equipmentSelectorType.value === 'wengine') {
+        if (item === null) {
+            // 卸载音擎
+            saveStore.equipWengine(props.agent.id, null);
+        } else {
+            // 装备音擎
+            saveStore.equipWengine(props.agent.id, item.id);
+        }
+        // 清除属性缓存
+        props.agent.clearPropertyCache();
+    } else {
+        if (item === null) {
+            // 卸载驱动盘
+            if (selectedDriveDiskPosition.value !== undefined) {
+                saveStore.equipDriveDisk(props.agent.id, null, selectedDriveDiskPosition.value);
+            }
+        } else {
+            // 装备驱动盘
+            if (selectedDriveDiskPosition.value !== undefined) {
+                saveStore.equipDriveDisk(props.agent.id, item.id, selectedDriveDiskPosition.value);
+            }
+        }
+        // 清除属性缓存
+        props.agent.clearPropertyCache();
+    }
+}
+
 onMounted(async () => {
-    allBuffs.value = await props.agent.getAllBuffs();
+    await loadBuffs();
+});
+
+// 监听 agent 变化，重新加载 BUFF
+watch(() => props.agent, async () => {
+    await loadBuffs();
 });
 
 // Helper Functions
@@ -315,12 +397,12 @@ function getSkillLabel(key: string) {
 function getBuffSourceBadgeClass(source: BuffSource | string) {
     // Simple logic to color code buff sources
     const s = typeof source === 'string' ? source : BuffSource[source];
-    
+
     if (s === 'AGENT_CORE' || s === 'CORE_PASSIVE') return 'badge-warning';
     if (s === 'AGENT_TALENT' || s === 'TALENT') return 'badge-info';
     if (s === 'WENGINE' || s === 'WENGINE_TALENT') return 'badge-accent';
     if (s === 'DRIVE_DISK_2PC' || s === 'DRIVE_DISK_4PC') return 'badge-success';
-    
+
     return 'badge-ghost';
 }
 
@@ -340,6 +422,15 @@ function formatPropName(prop: string | number) {
     } catch (e) {
         return `[错误:${prop}]`;
     }
+}
+
+// 从 Buff 创建 PropertyCollection
+function createPropertyCollectionFromBuff(buff: Buff): PropertyCollection {
+    const collection = new PropertyCollection();
+    collection.in_combat = new Map(buff.in_combat_stats);
+    collection.out_of_combat = new Map(buff.out_of_combat_stats);
+    collection.conversion = new Map();
+    return collection;
 }
 
 function adjustCoreSkill(event: Event): void {

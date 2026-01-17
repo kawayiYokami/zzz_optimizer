@@ -263,6 +263,16 @@ export class DriveDisk {
           isPercent: isPercent,
           rolls: displayRolls
         });
+      } else {
+        // 记录无法识别的副词条
+        console.warn(`驱动盘副词条无法识别:`, {
+          diskId: this.id,
+          diskName: this.set_name,
+          propId: prop,
+          propKey: subStatKey,
+          rolls: statValue.value,
+          rarity: rarityStr
+        });
       }
     }
 

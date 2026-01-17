@@ -224,7 +224,7 @@ export interface SerializedSkill {
     /** 技能倍率 */
     ratio: number;
     /** 技能元素类型 */
-    element: string;
+    element: ElementType;
     /** 技能标签（用于匹配增伤） */
     tags: string[];
     /** 是否是贯穿技能 */

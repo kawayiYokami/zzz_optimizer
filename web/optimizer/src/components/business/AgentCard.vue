@@ -14,7 +14,7 @@
         <div v-else class="w-full h-full flex items-center justify-center text-white/50 text-4xl font-bold bg-black/20">
             {{ agent.name_cn[0] }}
         </div>
-        
+
         <!-- Element Icon (Top Left) -->
         <div class="absolute top-1 left-1 w-6 h-6 rounded-full bg-black/40 p-0.5 backdrop-blur-sm">
             <img
@@ -56,20 +56,13 @@ const rarityGradientClass = computed(() => {
 });
 
 const agentIconUrl = computed(() => {
-    console.log(`[AgentCard] Getting icon for agent:`, {
-        game_id: props.agent.game_id,
-        name: props.agent.name_cn
-    });
-    
     // 使用 game_id 获取半身像图标
     const url = iconService.getCharacterCropById(props.agent.game_id);
-    console.log(`[AgentCard] Icon URL:`, url);
     return url;
 });
 
 const elementIconUrl = computed(() => {
     const url = iconService.getElementIconUrl(props.agent.element);
-    console.log(`[AgentCard] Element icon URL:`, url);
     return url;
 });
 
@@ -105,10 +98,6 @@ function handleImageError(event: Event) {
 
 function handleImageLoad(event: Event) {
     const img = event.target as HTMLImageElement;
-    console.log(`[AgentCard] Successfully loaded agent icon:`, {
-        src: img.src,
-        agent: props.agent.name_cn
-    });
 }
 
 function handleElementIconError(event: Event) {
@@ -122,10 +111,6 @@ function handleElementIconError(event: Event) {
 
 function handleElementIconLoad(event: Event) {
     const img = event.target as HTMLImageElement;
-    console.log(`[AgentCard] Successfully loaded element icon:`, {
-        src: img.src,
-        element: props.agent.element
-    });
 }
 </script>
 

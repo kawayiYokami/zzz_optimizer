@@ -1,5 +1,5 @@
 <template>
-  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-64">
+  <div class="card bg-base-200 shadow-xl compact-card border border-base-300 w-64">
     <!-- Card Header: Rarity color top border -->
     <div :class="['h-1 w-full', rarityColorClass]"></div>
 
@@ -88,7 +88,16 @@ const diskIconUrl = computed(() => {
 });
 
 function getMainStatName() {
-  return getPropertyCnName(props.disk.main_stat);
+  const propName = getPropertyCnName(props.disk.main_stat);
+  // 检查主词条是否无法识别
+  if (propName === props.disk.main_stat.toString()) {
+    console.warn(`无法识别的驱动盘主词条:`, {
+      diskId: props.disk.id,
+      diskName: props.disk.set_name,
+      propId: props.disk.main_stat
+    });
+  }
+  return propName;
 }
 
 function getMainStatValue() {
@@ -108,11 +117,29 @@ function getPropName(prop: number) {
 }
 
 function getSubStatsWithRolls() {
-  return props.disk.getSubStatsWithRolls();
+  const subStats = props.disk.getSubStatsWithRolls();
+  
+  // 检查是否有无法识别的词条
+  subStats.forEach(subStat => {
+    const propName = getPropertyCnName(subStat.prop);
+    if (propName === subStat.prop.toString()) {
+      console.warn(`无法识别的驱动盘词条:`, {
+        diskId: props.disk.id,
+        diskName: props.disk.set_name,
+        propId: subStat.prop,
+        value: subStat.value,
+        isPercent: subStat.isPercent,
+        rolls: subStat.rolls
+      });
+    }
+  });
+  
+  return subStats;
 }
 
 function formatValue(value: number, isPercent: boolean) {
-  if (isPercent) {
+  // 如果明确是百分比，或者数值小于1，都显示百分比格式
+  if (isPercent || Math.abs(value) < 1) {
     return (value * 100).toFixed(1) + '%';
   }
   return value.toFixed(0);

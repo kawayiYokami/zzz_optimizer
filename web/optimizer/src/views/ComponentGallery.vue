@@ -1,49 +1,54 @@
 <template>
   <div class="p-8 space-y-8 bg-base-100 min-h-screen">
-    <div class="prose max-w-none">
-      <h1>组件画廊 (Component Gallery)</h1>
-      <p class="text-lg opacity-80">展示绝区零 (ZZZ) 核心业务实体卡片组件。</p>
-    </div>
-
-    <!-- Section 1: Agent Card -->
-    <section>
-      <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">角色卡片 (AgentCard)</h2>
-      <div class="flex flex-wrap gap-4">
-        <AgentCard v-if="realAgent" :agent="realAgent" />
-        <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
+    <div class="max-w-4xl mx-auto space-y-8">
+      <div class="prose">
+        <h1>组件画廊 (Component Gallery)</h1>
+        <p class="text-lg opacity-80">展示绝区零 (ZZZ) 核心业务实体卡片组件。</p>
       </div>
-    </section>
 
-    <!-- Section 1.5: Agent Info Card -->
-    <section>
-      <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">角色详情卡片 (AgentInfoCard)</h2>
-      <div class="w-full">
-        <AgentInfoCard v-if="realAgent" :agent="realAgent" />
-        <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
-      </div>
-    </section>
+      <!-- Section 1: Agent Card -->
+      <section>
+        <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">角色卡片 (AgentCard)</h2>
+        <div class="flex flex-wrap gap-4">
+          <AgentCard v-if="realAgent" :agent="realAgent" />
+          <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
+        </div>
+      </section>
 
-    <!-- Section 1.6: Property Set Card -->
-    <section>
-      <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">属性集卡片 (PropertySetCard)</h2>
-      <div class="w-full">
-        <PropertySetCard v-if="realAgent" :agent="realAgent" />
-        <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
-      </div>
-    </section>
+      <!-- Section 1.5: Agent Info Card -->
+      <section>
+        <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">角色详情卡片 (AgentInfoCard)</h2>
+        <div class="w-full">
+          <AgentInfoCard v-if="realAgent" :agent="realAgent" />
+          <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
+        </div>
+      </section>
 
-    <!-- Section 1.7: Skill List -->
-    <section>
-      <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">技能列表 (SkillList)</h2>
-      <div class="w-full">
-        <SkillList v-if="realAgent" :agent="realAgent" />
-        <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
-      </div>
-    </section>
+      <!-- Section 1.6: Property Set Card -->
+      <section>
+        <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">属性集卡片 (PropertySetCard)</h2>
+        <div class="w-full">
+          <PropertySetCard 
+            v-if="realAgent" 
+            :property-collection="realAgent.getCharacterCombatStats()" 
+            :conversion-buffs="realAgent.conversion_buffs" 
+          />
+          <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
+        </div>
+      </section>
 
-    <!-- Section 2: W-Engine Card -->
-    <section>
-      <h2 class="text-2xl font-bold mb-4 border-l-4 border-secondary pl-3">音擎卡片 (WEngineCard)</h2>
+      <!-- Section 1.7: Skill List -->
+      <section>
+        <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">技能列表 (SkillList)</h2>
+        <div class="w-full">
+          <SkillList v-if="realAgent" :agent="realAgent" />
+          <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
+        </div>
+      </section>
+
+      <!-- Section 2: W-Engine Card -->
+      <section>
+        <h2 class="text-2xl font-bold mb-4 border-l-4 border-secondary pl-3">音擎卡片 (WEngineCard)</h2>
       <div class="flex flex-wrap gap-4">
         <WEngineCard v-if="realWEngine" :wengine="realWEngine" />
          <div v-else class="alert alert-warning">未找到音擎数据，请确保已加载存档。</div>
@@ -84,7 +89,7 @@
         <BuffCard :buff="mockBuff" />
       </div>
     </section>
-
+    </div>
   </div>
 </template>
 

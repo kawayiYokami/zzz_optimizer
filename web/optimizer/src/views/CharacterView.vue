@@ -1,42 +1,89 @@
 <template>
-  <div class="flex flex-col h-[calc(100vh-4rem)] overflow-hidden">
+  <div class="flex flex-col h-full min-h-0">
     <!-- 主体区域 -->
     <div
-      class="flex-1 grid gap-2 p-2 overflow-hidden character-view-grid"
+      class="flex-1 grid gap-2 p-2 overflow-hidden character-view-grid min-h-0"
     >
       <!-- 左侧：筛选栏 + 角色列表 -->
       <div class="flex flex-col gap-2 overflow-hidden">
         <!-- 筛选控制栏 -->
-        <div class="flex flex-wrap items-center justify-center bg-base-100 rounded-lg shadow-sm">
-          <!-- 元素类型筛选 -->
-          <div class="flex items-center gap-1 p-1 bg-base-200 rounded-lg">
-            <label v-for="element in elementTypes" :key="element.value"
-                   class="btn btn-xs btn-ghost p-1 w-7 h-7 min-h-0 rounded"
-                   :class="{ 'bg-primary text-primary-content': filters.elements.includes(element.value) }">
-              <input
-                type="checkbox"
-                :value="element.value"
-                v-model="filters.elements"
-                class="hidden"
-              />
-              <img :src="getElementIcon(element.value)" :alt="element.label" class="w-5 h-5 object-contain" />
-            </label>
+        <div class="flex flex-col gap-2 p-2 bg-base-100 rounded-lg">
+          <!-- 元素类型、武器类型、稀有度筛选合并为一行 -->
+          <div class="join w-full">
+            <!-- 元素类型筛选 -->
+            <div class="dropdown dropdown-end join-item flex-1">
+              <div tabindex="0" role="button" class="btn btn-sm w-full justify-between">
+                元素
+                <span v-if="filters.elements.length > 0" class="badge badge-primary badge-sm">{{ filters.elements.length }}</span>
+              </div>
+              <ul tabindex="0" class="dropdown-content z-1 menu p-2 shadow-lg bg-base-100 rounded-box w-32">
+                <li v-for="element in elementTypes" :key="element.value">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      :value="element.value"
+                      v-model="filters.elements"
+                      class="checkbox checkbox-sm"
+                    />
+                    <img :src="element.icon" :alt="element.label" class="w-5 h-5 object-contain" />
+                    <span>{{ element.label }}</span>
+                  </label>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 武器类型筛选 -->
+            <div class="dropdown dropdown-end join-item flex-1">
+              <div tabindex="0" role="button" class="btn btn-sm w-full justify-between">
+                武器
+                <span v-if="filters.weaponTypes.length > 0" class="badge badge-primary badge-sm">{{ filters.weaponTypes.length }}</span>
+              </div>
+              <ul tabindex="0" class="dropdown-content z-1 menu p-2 shadow-lg bg-base-100 rounded-box w-32">
+                <li v-for="weaponType in weaponTypes" :key="weaponType.value">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      :value="weaponType.value"
+                      v-model="filters.weaponTypes"
+                      class="checkbox checkbox-sm"
+                    />
+                    <img :src="weaponType.icon" :alt="weaponType.label" class="w-5 h-5 object-contain" />
+                    <span>{{ weaponType.label }}</span>
+                  </label>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 稀有度筛选 -->
+            <div class="dropdown dropdown-end join-item flex-1">
+              <div tabindex="0" role="button" class="btn btn-sm w-full justify-between">
+                稀有度
+                <span v-if="filters.rarities.length > 0" class="badge badge-primary badge-sm">{{ filters.rarities.length }}</span>
+              </div>
+              <ul tabindex="0" class="dropdown-content z-1 menu p-2 shadow-lg bg-base-100 rounded-box w-24">
+                <li v-for="rarity in rarities" :key="rarity.value">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      :value="rarity.value"
+                      v-model="filters.rarities"
+                      class="checkbox checkbox-sm"
+                    />
+                    <span>{{ rarity.label }}</span>
+                  </label>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          <!-- 武器类型筛选 -->
-          <div class="flex items-center gap-1 p-1 bg-base-200 rounded-lg">
-            <label v-for="weaponType in weaponTypes" :key="weaponType.value"
-                   class="btn btn-xs btn-ghost p-1 w-7 h-7 min-h-0 rounded"
-                   :class="{ 'bg-primary text-primary-content': filters.weaponTypes.includes(weaponType.value) }">
-              <input
-                type="checkbox"
-                :value="weaponType.value"
-                v-model="filters.weaponTypes"
-                class="hidden"
-              />
-              <img :src="getWeaponTypeIcon(weaponType.value)" :alt="weaponType.label" class="w-5 h-5 object-contain" />
-            </label>
-          </div>
+          <!-- 清除筛选 -->
+          <button
+            v-if="hasActiveFilters"
+            @click="clearFilters"
+            class="btn btn-xs btn-outline w-full"
+          >
+            清除筛选
+          </button>
         </div>
 
         <!-- 角色列表 -->
@@ -46,25 +93,16 @@
             <div
               v-for="agent in filteredAndSortedAgents"
               :key="agent.id"
-              class="hover-3d cursor-pointer transition-all duration-300"
-              :class="{ 'ring-2 ring-primary ring-offset-2 ring-offset-base-100 scale-105 shadow-lg shadow-primary/50': selectedAgentId === agent.id }"
+              class="cursor-pointer transition-all duration-300 hover:scale-105"
+              :class="{ 'ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-lg shadow-primary/50': selectedAgentId === agent.id }"
               @click="selectAgent(agent.id)"
             >
               <AgentCard :agent="agent" />
-              <!-- 8 empty divs needed for the 3D effect -->
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
             </div>
           </div>
 
           <!-- 空状态 -->
-          <div v-if="filteredAndSortedAgents.length === 0" class="flex flex-col items-center justify-center min-h-[400px] text-base-content/50 text-xl">
+          <div v-if="filteredAndSortedAgents.length === 0" class="flex flex-col items-center justify-center min-h-100 text-base-content/50 text-xl">
             <div class="text-6xl mb-4">🔍</div>
             <p>没有找到符合条件的角色</p>
           </div>
@@ -182,19 +220,19 @@ const filters = ref({
 
 // 筛选选项
 const elementTypes = [
-  { value: ElementType.PHYSICAL, label: '物理' },
-  { value: ElementType.FIRE, label: '火' },
-  { value: ElementType.ICE, label: '冰' },
-  { value: ElementType.ELECTRIC, label: '雷' },
-  { value: ElementType.ETHER, label: '以太' },
+  { value: ElementType.PHYSICAL, label: '物理', icon: iconService.getElementIconUrl(ElementType.PHYSICAL) },
+  { value: ElementType.FIRE, label: '火', icon: iconService.getElementIconUrl(ElementType.FIRE) },
+  { value: ElementType.ICE, label: '冰', icon: iconService.getElementIconUrl(ElementType.ICE) },
+  { value: ElementType.ELECTRIC, label: '雷', icon: iconService.getElementIconUrl(ElementType.ELECTRIC) },
+  { value: ElementType.ETHER, label: '以太', icon: iconService.getElementIconUrl(ElementType.ETHER) },
 ];
 
 const weaponTypes = [
-  { value: WeaponType.ATTACK, label: '强攻' },
-  { value: WeaponType.STUN, label: '击破' },
-  { value: WeaponType.ANOMALY, label: '异常' },
-  { value: WeaponType.SUPPORT, label: '支援' },
-  { value: WeaponType.DEFENSE, label: '防护' },
+  { value: WeaponType.ATTACK, label: '强攻', icon: iconService.getWeaponTypeIconUrl(WeaponType.ATTACK) },
+  { value: WeaponType.STUN, label: '击破', icon: iconService.getWeaponTypeIconUrl(WeaponType.STUN) },
+  { value: WeaponType.ANOMALY, label: '异常', icon: iconService.getWeaponTypeIconUrl(WeaponType.ANOMALY) },
+  { value: WeaponType.SUPPORT, label: '支援', icon: iconService.getWeaponTypeIconUrl(WeaponType.SUPPORT) },
+  { value: WeaponType.DEFENSE, label: '防护', icon: iconService.getWeaponTypeIconUrl(WeaponType.DEFENSE) },
 ];
 
 const rarities = [
@@ -276,6 +314,12 @@ function clearWeaponFilters() {
 }
 
 function clearRarityFilters() {
+  filters.value.rarities = [];
+}
+
+function clearFilters() {
+  filters.value.elements = [];
+  filters.value.weaponTypes = [];
   filters.value.rarities = [];
 }
 
@@ -395,5 +439,12 @@ onMounted(() => {
   .character-view-grid {
     grid-template-columns: 25rem 1fr;
   }
+}
+
+/* 禁用按钮激活状态 */
+.no-active:active,
+.no-active:focus-visible {
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 </style>

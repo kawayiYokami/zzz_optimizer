@@ -31,8 +31,7 @@ export class IconService {
    * @param type 图标类型 (avatar, circle, crop)
    */
   public getCharacterIconUrl(iconCode: string, type: CharacterIconType = CharacterIconType.AVATAR): string {
-    console.log('[IconService.getCharacterIconUrl] Input:', { iconCode, type });
-    
+
     if (!iconCode) {
       console.warn('[IconService.getCharacterIconUrl] Empty iconCode provided');
       return '';
@@ -40,7 +39,6 @@ export class IconService {
 
     // 移除可能的路径和扩展名
     let filename = this.extractFilename(iconCode);
-    console.log('[IconService.getCharacterIconUrl] Extracted filename:', filename);
 
     // 根据类型调整文件名
     // 假设基础 filename 是 "IconRoleXX"
@@ -70,7 +68,6 @@ export class IconService {
     }
 
     const finalUrl = `${ASSETS_BASE_URL}/${filename}.webp`;
-    console.log('[IconService.getCharacterIconUrl] Final URL:', finalUrl);
     return finalUrl;
   }
 
@@ -104,22 +101,20 @@ export class IconService {
    * @param type 图标类型
    */
   private getCharacterIconById(characterId: string, type: CharacterIconType): string {
-    console.log('[IconService.getCharacterIconById] Input:', { characterId, type });
-    
+
     const dataLoader = DataLoaderService.getInstance();
     const character = dataLoader.characterData?.get(characterId);
-    
+
     if (!character) {
       console.warn('[IconService.getCharacterIconById] Character not found:', characterId);
       return '';
     }
-    
+
     if (!character.icon) {
       console.warn('[IconService.getCharacterIconById] Character has no icon:', characterId, character);
       return '';
     }
-    
-    console.log('[IconService.getCharacterIconById] Character icon:', character.icon);
+
     return this.getCharacterIconUrl(character.icon, type);
   }
 
@@ -140,7 +135,7 @@ export class IconService {
   public getWeaponIconById(weaponId: string): string {
     const dataLoader = DataLoaderService.getInstance();
     const weapon = dataLoader.weaponData?.get(weaponId);
-    
+
     // 如果找到了数据且有icon字段，直接使用
     if (weapon && weapon.icon) {
       return this.getWeaponIconUrl(weapon.icon);
@@ -151,7 +146,7 @@ export class IconService {
     if (weaponId.startsWith('Weapon_')) {
       return `${ASSETS_BASE_URL}/${weaponId}.webp`;
     }
-    
+
     // 尝试构造 S 级图标作为默认
     return `${ASSETS_BASE_URL}/Weapon_S_${weaponId}.webp`;
   }
@@ -188,14 +183,14 @@ export class IconService {
     const filename = this.extractFilename(iconPath);
     return `${ASSETS_BASE_URL}/${filename}.webp`;
   }
-  
+
   /**
    * 通过邦布ID获取图标
    * @param bangbooId 邦布ID
    */
   public getBangbooIconById(bangbooId: string): string {
     const dataLoader = DataLoaderService.getInstance();
-    
+
     // 尝试从 bangboo_index.json 获取图标
     const bangbooIndex = dataLoader.bangbooIndexData?.get(bangbooId);
     if (bangbooIndex && bangbooIndex.icon) {
@@ -220,28 +215,20 @@ export class IconService {
    * @param enemyId 敌人ID
    */
   public getEnemyIconById(enemyId: string): string {
-    console.log('[IconService.getEnemyIconById] Input enemyId:', enemyId);
-    
+
     const dataLoader = DataLoaderService.getInstance();
     const enemy = dataLoader.enemyData?.get(enemyId);
-    
+
     if (!enemy) {
       console.warn('[IconService.getEnemyIconById] Enemy not found:', enemyId);
       return '';
     }
-
-    console.log('[IconService.getEnemyIconById] Enemy found:', {
-      CHS: enemy.CHS,
-      code_name: enemy.code_name,
-      full_name: enemy.full_name
-    });
 
     // 优先通过中文名匹配 enemy_index
     const enemyIndexData = dataLoader.enemyIndexData;
     if (enemyIndexData && enemy.CHS) {
       for (const [indexId, entry] of enemyIndexData.entries()) {
         if (entry.CHS === enemy.CHS && entry.icon) {
-          console.log('[IconService.getEnemyIconById] Found match by CHS name! Index ID:', indexId, 'Icon:', entry.icon);
           return this.getEnemyIconUrl(entry.icon);
         }
       }
@@ -253,13 +240,12 @@ export class IconService {
       for (const entry of enemyIndexData.values()) {
         if (entry.icon && typeof entry.icon === 'string') {
           if (entry.icon.includes(codeName)) {
-            console.log('[IconService.getEnemyIconById] Found match by code_name! Icon:', entry.icon);
             return this.getEnemyIconUrl(entry.icon);
           }
         }
       }
     }
-    
+
     // 如果找不到匹配，尝试直接构造
     console.warn('[IconService.getEnemyIconById] No icon found, using fallback for code_name:', codeName);
     return codeName ? `${ASSETS_BASE_URL}/${codeName}.webp` : '';
@@ -270,7 +256,6 @@ export class IconService {
    * @param element 属性名称 (如 "Ice", "Fire", "Electric", "Physical", "Ether")
    */
   public getElementIconUrl(element: string | number): string {
-    console.log('[IconService.getElementIconUrl] Input:', element);
 
     if (!element) {
       console.warn('[IconService.getElementIconUrl] Empty element provided');
@@ -291,13 +276,11 @@ export class IconService {
 
     if (idMap[elementStr]) {
       elementStr = idMap[elementStr];
-      console.log('[IconService.getElementIconUrl] Converted element ID to name:', elementStr);
     }
 
     // 首字母大写
     const normalized = elementStr.charAt(0).toUpperCase() + elementStr.slice(1).toLowerCase();
     const finalUrl = `${ASSETS_BASE_URL}/Icon${normalized}.webp`;
-    console.log('[IconService.getElementIconUrl] Final URL:', finalUrl);
     return finalUrl;
   }
 
@@ -346,12 +329,10 @@ export class IconService {
    */
   private extractFilename(path: string): string {
     if (!path) return '';
-    console.log('[IconService] Extracting filename from:', path);
     // 获取最后一部分
     const basename = path.split('/').pop() || path;
     // 移除扩展名
     const result = basename.replace(/\.(png|jpg|jpeg|webp)$/i, '');
-    console.log('[IconService] Extracted filename:', result);
     return result;
   }
 }
