@@ -2,7 +2,7 @@
  * 音擎模型
  */
 
-import { PropertyType } from './base';
+import { PropertyType, WeaponType } from './base';
 import { Buff } from './buff';
 import { PropertyCollection } from './property-collection';
 import type { ZodWengineData } from './save-data-zod';
@@ -114,6 +114,7 @@ export class WEngine {
   equipped_agent: string | null = null; // 装备角色ID
 
   // 游戏数据（从游戏数据文件读取，不存储在存档中）
+  weapon_type: WeaponType = WeaponType.ATTACK; // 武器类型（强攻/击破/异常/支援/防护）
   base_atk: number = 0.0; // 基础攻击力
   rand_stat_type: PropertyType | null = null; // 副属性类型
   rand_stat: number = 0.0; // 副属性基础值
@@ -243,6 +244,9 @@ export class WEngine {
 
     // 加载音擎详细数据和Buff数据（仅在找到游戏数据时加载）
     if (weaponInfo) {
+      // 设置武器类型
+      wengine.weapon_type = weaponInfo.type as WeaponType;
+
       try {
         const wengineDetail = await dataLoader.getWeaponDetail(data.wengine_id);
         const wengineBuffData = await dataLoader.getWeaponBuff(data.wengine_id);
@@ -384,6 +388,7 @@ export class WEngine {
     wengine.refinement = zodData.modification; // ZOD的modification对应refinement
     wengine.breakthrough = zodData.promotion;
     wengine.equipped_agent = zodData.location || null;
+    wengine.weapon_type = weaponInfo.type as WeaponType;
 
     // 5. 加载音擎详细数据和Buff数据
     try {
