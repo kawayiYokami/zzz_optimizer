@@ -283,11 +283,11 @@
     "icon": "Weapon_S_1491",
     "rank": 4,
     "type": 4,
-    "EN": "Sunna Test W-Engine",
-    "desc": "Item_Weapon_S_1491_ShortDesc",
+    "EN": "Song of Thoughts",
+    "desc": "...",
     "KO": "Item_Weapon_S_1491_Name",
-    "CHS": "(Test1)千夏测试音擎",
-    "JA": "千夏テスト用音動機"
+    "CHS": "思络成歌",
+    "JA": "この思いを歌へ"
   },
   "12015": {
     "icon": "Weapon_B_Common_15",
@@ -483,11 +483,11 @@
     "icon": "Weapon_S_1501",
     "rank": 4,
     "type": 3,
-    "EN": "Aria Test W-Engine",
-    "desc": "Item_Weapon_S_1501_ShortDesc",
+    "EN": "Angel in the Shell",
+    "desc": "...",
     "KO": "Item_Weapon_S_1501_Name",
-    "CHS": "(Test1)爱芮测试音擎",
-    "JA": "アリアテスト用音動機"
+    "CHS": "壳中之灵",
+    "JA": "殻の中の魂"
   },
   "14124": {
     "icon": "Weapon_S_1241",

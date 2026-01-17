@@ -121,14 +121,14 @@
     "element": 200,
     "hit": 102,
     "camp": 13,
-    "icon": "",
+    "icon": "IconRole58",
     "potential": [],
     "EN": "Avatar_Female_Size01_Summer",
     "skin": {
       "3114910": {
         "Name": "AvatarSkin_Summer_Name_000",
         "Desc": "AvatarSkin_Summer_Desc_000",
-        "Image": "IconRole41"
+        "Image": "IconRole58"
       }
     },
     "desc": "Partner_ProfileDesc_1491",
@@ -144,7 +144,14 @@
     "hit": 103,
     "camp": 6,
     "icon": "IconRole35",
-    "potential": [],
+    "potential": [
+      120100,
+      120101,
+      120102,
+      120103,
+      120104,
+      120105
+    ],
     "EN": "Harumasa",
     "skin": {
       "3112010": {
@@ -507,7 +514,14 @@
     "hit": 102,
     "camp": 2,
     "icon": "IconRole18",
-    "potential": [],
+    "potential": [
+      114100,
+      114101,
+      114102,
+      114103,
+      114104,
+      114105
+    ],
     "EN": "Lycaon",
     "skin": {
       "3111410": {
@@ -1041,19 +1055,19 @@
     "element": 205,
     "hit": 102,
     "camp": 13,
-    "icon": "",
+    "icon": "IconRole57",
     "potential": [],
     "EN": "Aria",
     "skin": {
       "3115010": {
         "Name": "AvatarSkin_Aria_Name_000",
         "Desc": "AvatarSkin_Aria_Desc_000",
-        "Image": "IconRole47"
+        "Image": "IconRole57"
       }
     },
     "desc": "Partner_ProfileDesc_1501",
     "KO": "아리아",
-    "CHS": "(Test1)爱芮",
+    "CHS": "爱芮",
     "JA": "アリア"
   },
   "1271": {
