@@ -95,7 +95,7 @@
     "out_of_combat_stats": {},
     "conversion": {
       "from_property": "ENERGY_REGEN_",
-      "to_property": "ALL_DMG_INC_",
+      "to_property": "DMG_",
       "conversion_ratio": 0.2,
       "max_value": 0.2
     },
