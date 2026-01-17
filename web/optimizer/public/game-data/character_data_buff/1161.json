@@ -48,7 +48,7 @@
         "description": "在轻拳起攻或刺拳连击期间耗尽[士气]，自动衔接发动强力终结一击时，强力终结一击造成的伤害提升30%。",
         "source": "TALENT",
         "target": { "target_self": true },
-        "in_combat_stats": { "ALL_DMG_INC_": 0.30 },
+        "in_combat_stats": { "DMG_": 0.30 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "耗尽士气并发动强力终结一击时",

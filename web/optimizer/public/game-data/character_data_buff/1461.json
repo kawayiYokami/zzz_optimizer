@@ -90,7 +90,7 @@
         "description": "[明攻][强袭]同时存在时，「席德」与[正兵]同时获得[围杀]状态，造成的伤害提升25%。",
         "source": "CORE_PASSIVE",
         "target": { "target_teammate": true, "target_bund": true },
-        "in_combat_stats": { "ALL_DMG_INC_": 0.25 },
+        "in_combat_stats": { "DMG_": 0.25 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "[明攻]和[强袭]同时存在时",

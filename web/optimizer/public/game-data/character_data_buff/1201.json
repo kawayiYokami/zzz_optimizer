@@ -54,7 +54,7 @@
         "description": "悠真攻击命中处于失衡状态或属性异常状态下的敌人时，自身造成的伤害提升40%。",
         "source": "CORE_PASSIVE",
         "target": { "target_self": true },
-        "in_combat_stats": { "ALL_DMG_INC_": 0.40 },
+        "in_combat_stats": { "DMG_": 0.40 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "攻击命中特定状态敌人时",

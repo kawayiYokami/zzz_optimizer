@@ -25,8 +25,8 @@
       "target_bund": true
     },
     "in_combat_stats": {
-      "ALL_ANOMALY_DMG_": 0.06,
-      "ALL_DMG_INC_": 0.06
+      "ANOMALY_DMG_": 0.06,
+      "DMG_": 0.06
     },
     "out_of_combat_stats": {},
     "conversion": null,
@@ -43,7 +43,7 @@
       "target_bund": true
     },
     "in_combat_stats": {
-      "ALL_DMG_INC_": 0.15
+      "DMG_": 0.15
     },
     "out_of_combat_stats": {},
     "conversion": null,
@@ -60,7 +60,7 @@
       "target_bund": true
     },
     "in_combat_stats": {
-      "ANOMALY_BUILDUP_": 0.15
+      "ANOM_BUILDUP_": 0.15
     },
     "out_of_combat_stats": {},
     "conversion": null,
@@ -77,7 +77,7 @@
     },
     "in_combat_stats": {
       "SUPPORT_ATK_DMG_": 0.3,
-      "ANOMALY_BUILDUP_": 0.2
+      "ANOM_BUILDUP_": 0.2
     },
     "out_of_combat_stats": {},
     "conversion": null,
@@ -94,7 +94,7 @@
       "target_bund": true
     },
     "in_combat_stats": {
-      "ALL_DMG_INC_": 0.0105
+      "DMG_": 0.0105
     },
     "out_of_combat_stats": {},
     "conversion": null,
@@ -132,7 +132,7 @@
       "target_bund": true
     },
     "in_combat_stats": {
-      "ALL_DMG_INC_": 0.15
+      "DMG_": 0.15
     },
     "out_of_combat_stats": {},
     "conversion": null,
@@ -152,7 +152,7 @@
     "out_of_combat_stats": {},
     "conversion": {
       "from_property": "ANOM_MAS",
-      "to_property": "ANOMALY_BUILDUP_",
+      "to_property": "ANOM_BUILDUP_",
       "conversion_ratio": 0.002,
       "max_value": 0.2
     },
@@ -172,7 +172,7 @@
     "out_of_combat_stats": {},
     "conversion": {
       "from_property": "ANOM_MAS",
-      "to_property": "ALL_ANOMALY_DMG_",
+      "to_property": "ANOMALY_DMG_",
       "conversion_ratio": 0.002,
       "max_value": 0.2
     },

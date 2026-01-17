@@ -17,7 +17,7 @@
         "description": "成为接战状态下的当前操作角色时，丽娜造成的伤害提升15%。",
         "source": "TALENT",
         "target": { "target_self": true },
-        "in_combat_stats": { "ALL_DMG_INC_": 0.15 },
+        "in_combat_stats": { "DMG_": 0.15 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "成为接战角色时",

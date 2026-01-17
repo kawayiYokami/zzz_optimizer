@@ -41,7 +41,7 @@
         "description": "[强化特殊技：狮子吼·怒]、[强化特殊技：山摇·怒]、[普通攻击：倾山]和[普通攻击：摧岳]造成的伤害提升30%。",
         "source": "TALENT",
         "target": { "target_self": true },
-        "in_combat_stats": { "ALL_DMG_INC_": 0.30 },
+        "in_combat_stats": { "DMG_": 0.30 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "发动特定招式时",

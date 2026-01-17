@@ -73,7 +73,7 @@
       "target_bund": true
     },
     "in_combat_stats": {
-      "ALL_DMG_INC_": 0.025
+      "DMG_": 0.025
     },
     "out_of_combat_stats": {},
     "conversion": null,

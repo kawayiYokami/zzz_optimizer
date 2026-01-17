@@ -24,8 +24,15 @@ STATIC_ICONS = [
     "IconIce.webp",
     "IconElectric.webp",
     "IconEther.webp",
+    # 武器类型图标
+    "IconAttackType.webp",
+    "IconStun.webp",
+    "IconAnomaly.webp",
+    "IconDefense.webp",
+    "IconRupture.webp",
+    "IconSupport.webp",
     # 邦布 (暂时硬编码示例，如果找到规律后续添加)
-    # "BangbooGarageRole07.webp", 
+    # "BangbooGarageRole07.webp",
 ]
 
 def ensure_dir(directory):
