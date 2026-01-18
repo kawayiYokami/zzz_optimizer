@@ -230,6 +230,7 @@ export class DataLoaderService {
     this._isLoading = true;
 
     try {
+      console.log('[DataLoaderService] 开始初始化...');
       // 并行加载所有索引文件
       const [
         characterData,
@@ -249,6 +250,13 @@ export class DataLoaderService {
         this.loadJsonFile<any>('/game-data/enemy_index.json'),
       ]);
 
+      console.log('[DataLoaderService] 角色数据数量:', Object.keys(characterData).length);
+      console.log('[DataLoaderService] 音擎数据数量:', Object.keys(weaponData).length);
+      console.log('[DataLoaderService] 驱动盘数据数量:', Object.keys(equipmentData).length);
+      console.log('[DataLoaderService] 邦布数据数量:', Object.keys(bangbooData).length);
+      console.log('[DataLoaderService] 敌人数据数量:', Object.keys(enemyData).length);
+      console.log('[DataLoaderService] 敌人索引数据数量:', Object.keys(enemyIndexData).length);
+
       // 转换为Map
       this._characterData = new Map(Object.entries(characterData));
       this._weaponData = new Map(Object.entries(weaponData));
@@ -262,6 +270,7 @@ export class DataLoaderService {
       await this.loadAgentSkills();
 
       this._isInitialized = true;
+      console.log('[DataLoaderService] 初始化完成');
     } catch (error) {
       console.error('Failed to initialize DataLoaderService:', error);
       throw error;

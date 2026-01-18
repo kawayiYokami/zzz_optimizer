@@ -1,7 +1,10 @@
 <template>
   <div
-    class="card bg-base-100 shadow-sm border border-base-300 cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all"
-    @click="$emit('click', team.id)"
+    class="card bg-base-100 shadow-sm border border-base-300 transition-all"
+    :class="{
+      'cursor-pointer hover:shadow-md hover:scale-[1.02]': clickable
+    }"
+    @click="clickable ? $emit('click', team.id) : null"
   >
     <div class="card-body p-3">
       <!-- Header -->
@@ -60,6 +63,7 @@ import { iconService } from '../../services/icon.service';
 
 const props = defineProps<{
   team: Team;
+  clickable?: boolean;
 }>();
 
 const emit = defineEmits<{

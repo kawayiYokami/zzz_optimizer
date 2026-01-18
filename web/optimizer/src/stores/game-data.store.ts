@@ -17,26 +17,32 @@ export const useGameDataStore = defineStore('gameData', () => {
 
   // 计算属性
   const allCharacters = computed(() => {
+    // 依赖 isInitialized 以确保数据加载完成后重新计算
+    if (!isInitialized.value) return [];
     const data = dataLoaderService.characterData;
     return data ? Array.from(data.values()) : [];
   });
 
   const allWeapons = computed(() => {
+    if (!isInitialized.value) return [];
     const data = dataLoaderService.weaponData;
     return data ? Array.from(data.values()) : [];
   });
 
   const allEquipments = computed(() => {
+    if (!isInitialized.value) return [];
     const data = dataLoaderService.equipmentData;
     return data ? Array.from(data.values()) : [];
   });
 
   const allBangboos = computed(() => {
+    if (!isInitialized.value) return [];
     const data = dataLoaderService.bangbooData;
     return data ? Array.from(data.values()) : [];
   });
 
   const allEnemies = computed(() => {
+    if (!isInitialized.value) return [];
     const data = dataLoaderService.enemyData;
     return data ? Array.from(data.values()) : [];
   });

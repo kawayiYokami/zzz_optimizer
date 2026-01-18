@@ -211,6 +211,31 @@ export class IconService {
   }
 
   /**
+   * 检查敌人是否有图标
+   * @param enemyId 敌人ID
+   */
+  public hasEnemyIcon(enemyId: string): boolean {
+    const dataLoader = DataLoaderService.getInstance();
+    const enemy = dataLoader.enemyData?.get(enemyId);
+
+    if (!enemy) {
+      return false;
+    }
+
+    // 优先通过中文名匹配 enemy_index
+    const enemyIndexData = dataLoader.enemyIndexData;
+    if (enemyIndexData && enemy.CHS) {
+      for (const [indexId, entry] of enemyIndexData.entries()) {
+        if (entry.CHS === enemy.CHS && entry.icon) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * 通过敌人ID获取图标
    * @param enemyId 敌人ID
    */
@@ -220,7 +245,6 @@ export class IconService {
     const enemy = dataLoader.enemyData?.get(enemyId);
 
     if (!enemy) {
-      console.warn('[IconService.getEnemyIconById] Enemy not found:', enemyId);
       return '';
     }
 
@@ -234,21 +258,8 @@ export class IconService {
       }
     }
 
-    // 如果中文名没找到，尝试通过 code_name 匹配
-    const codeName = enemy.code_name;
-    if (codeName && enemyIndexData) {
-      for (const entry of enemyIndexData.values()) {
-        if (entry.icon && typeof entry.icon === 'string') {
-          if (entry.icon.includes(codeName)) {
-            return this.getEnemyIconUrl(entry.icon);
-          }
-        }
-      }
-    }
-
-    // 如果找不到匹配，尝试直接构造
-    console.warn('[IconService.getEnemyIconById] No icon found, using fallback for code_name:', codeName);
-    return codeName ? `${ASSETS_BASE_URL}/${codeName}.webp` : '';
+    // 如果找不到匹配，返回空字符串
+    return '';
   }
 
   /**

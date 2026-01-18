@@ -1,5 +1,11 @@
 <template>
-  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-72 overflow-hidden">
+  <div
+    class="card bg-base-100 shadow-xl compact-card border border-base-300 w-72 overflow-hidden transition-all"
+    :class="{
+      'cursor-pointer hover:shadow-2xl hover:scale-[1.02]': clickable
+    }"
+    @click="clickable ? $emit('click', enemy.id) : null"
+  >
     <!-- Image Section -->
     <figure class="relative h-24 w-full bg-base-200">
         <img
@@ -84,6 +90,11 @@ import { iconService } from '../../services/icon.service';
 
 const props = defineProps<{
   enemy: Enemy;
+  clickable?: boolean;
+}>();
+
+const emit = defineEmits<{
+  click: [enemyId: string];
 }>();
 
 const enemyIconUrl = computed(() => {
