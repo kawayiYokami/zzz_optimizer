@@ -721,6 +721,80 @@ export const useSaveStore = defineStore('save', () => {
     saveToStorage();
   }
 
+  /**
+   * 创建队伍
+   */
+  function createTeam(name: string, frontAgentId: string, backAgent1Id?: string, backAgent2Id?: string): string | null {
+    if (!currentSaveName.value) {
+      return null;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!save || !rawSave) {
+      return null;
+    }
+
+    // 创建ZodTeamData
+    const teamId = save.getNextTeamId();
+    const newTeam: import('../model/save-data-zod').ZodTeamData = {
+      id: teamId,
+      name,
+      frontCharacterId: frontAgentId,
+      backCharacter1Id: backAgent1Id || '',
+      backCharacter2Id: backAgent2Id || '',
+    };
+
+    // 添加到SaveData
+    save.addTeam(newTeam);
+
+    // 同步到rawSaves
+    syncInstanceToRawSave();
+
+    return teamId;
+  }
+
+  /**
+   * 更新队伍
+   */
+  function updateTeam(teamId: string, updates: Partial<import('../model/save-data-zod').ZodTeamData>): boolean {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    if (!save) {
+      return false;
+    }
+
+    try {
+      save.updateTeam(teamId, updates);
+      syncInstanceToRawSave();
+      return true;
+    } catch (error) {
+      console.error('更新队伍失败:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 删除队伍
+   */
+  function deleteTeam(teamId: string): boolean {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    if (!save) {
+      return false;
+    }
+
+    save.deleteTeam(teamId);
+    syncInstanceToRawSave();
+    return true;
+  }
+
   return {
     // 状态
     saves,
@@ -757,5 +831,8 @@ export const useSaveStore = defineStore('save', () => {
     equipWengine,             // 装备音擎
     equipDriveDisk,           // 装备驱动盘
     syncInstanceToRawSave,    // 同步实例数据到rawSaves
+    createTeam,               // 创建队伍
+    updateTeam,               // 更新队伍
+    deleteTeam,               // 删除队伍
   };
 });

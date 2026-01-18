@@ -82,6 +82,9 @@ export class SaveData {
   // 缓存管理
   private _cache: Map<string, any>;
   private _isCacheValid: boolean;
+  private _cachedAgentList: Agent[] | null = null;
+  private _cachedDriveDiskList: DriveDisk[] | null = null;
+  private _cachedWEngineList: WEngine[] | null = null;
 
   constructor(name: string) {
     this.name = name;
@@ -123,6 +126,9 @@ export class SaveData {
   private _invalidateCache(): void {
     this._cache.clear();
     this._isCacheValid = false;
+    this._cachedAgentList = null;
+    this._cachedDriveDiskList = null;
+    this._cachedWEngineList = null;
   }
   
   /**
@@ -689,21 +695,30 @@ export class SaveData {
    * 获取所有角色
    */
   getAllAgents(): Agent[] {
-    return Array.from(this.agents.values());
+    if (!this._cachedAgentList) {
+      this._cachedAgentList = Array.from(this.agents.values());
+    }
+    return this._cachedAgentList;
   }
 
   /**
    * 获取所有驱动盘
    */
   getAllDriveDisks(): DriveDisk[] {
-    return Array.from(this.drive_disks.values());
+    if (!this._cachedDriveDiskList) {
+      this._cachedDriveDiskList = Array.from(this.drive_disks.values());
+    }
+    return this._cachedDriveDiskList;
   }
 
   /**
    * 获取所有音擎
    */
   getAllWEngines(): WEngine[] {
-    return Array.from(this.wengines.values());
+    if (!this._cachedWEngineList) {
+      this._cachedWEngineList = Array.from(this.wengines.values());
+    }
+    return this._cachedWEngineList;
   }
 
   /**

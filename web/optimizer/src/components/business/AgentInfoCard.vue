@@ -1,12 +1,12 @@
 <template>
-  <div class="card bg-base-100 shadow-xl border border-base-300 w-full max-w-4xl mx-auto overflow-hidden flex flex-col h-full">
+  <div class="card bg-base-100 shadow-xl border border-base-300 w-full max-w-4xl mx-auto overflow-hidden flex flex-col">
     <!-- Header: Character Basic Info -->
     <div class="bg-base-200 p-4 flex items-center gap-6 relative overflow-hidden">
         <!-- Background Decoration (Optional) -->
-        <div :class="['absolute inset-0 opacity-10 pointer-events-none bg-linear-to-r', rarityGradientFrom]"></div>
+        <div class="absolute inset-0 opacity-10 pointer-events-none" :style="{ background: `linear-gradient(to right, ${rarityColor}, transparent)` }"></div>
 
         <!-- Avatar -->
-        <div class="avatar relative z-10 cursor-pointer hover:scale-105 transition-transform" @click="emit('clickAvatar')">
+        <div class="avatar relative z-10 cursor-pointer transform-gpu transition-transform hover:scale-105" @click="emit('clickAvatar')">
             <div class="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden bg-base-300">
                 <img v-if="avatarUrl" :src="avatarUrl" :alt="agent.name_cn" class="object-cover" />
                 <div v-else class="w-full h-full flex items-center justify-center text-4xl font-bold opacity-50">{{ agent.name_cn[0] }}</div>
@@ -69,7 +69,7 @@
     <div class="card-body p-0 bg-base-100 border-t border-base-300 flex-1 overflow-hidden relative">
 
         <!-- Tab 1: Stats -->
-        <div v-if="activeTab === 'stats'" class="h-full overflow-y-auto p-6">
+        <div v-show="activeTab === 'stats'" class="h-full overflow-y-auto p-6">
             <PropertySetCard
                 :property-collection="agent.getCharacterCombatStats()"
                 :conversion-buffs="agent.conversion_buffs"
@@ -77,12 +77,12 @@
         </div>
 
         <!-- Tab 2: Skills -->
-        <div v-if="activeTab === 'skills'" class="h-full overflow-y-auto p-6">
+        <div v-show="activeTab === 'skills'" class="h-full overflow-y-auto p-6">
             <SkillList :agent="agent" />
         </div>
 
         <!-- Tab 3: Buffs -->
-        <div v-if="activeTab === 'buffs'" class="h-full overflow-y-auto p-6 space-y-6">
+        <div v-show="activeTab === 'buffs'" class="h-full overflow-y-auto p-6 space-y-6">
             <!-- Active Buffs -->
             <section>
                 <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
@@ -113,7 +113,7 @@
 
         <!-- Tab 3: Equipment -->
 
-                <div v-if="activeTab === 'equipment'" class="h-full overflow-y-auto p-6 space-y-6">
+                <div v-show="activeTab === 'equipment'" class="h-full overflow-y-auto p-6 space-y-6">
 
 
 
@@ -238,9 +238,8 @@ const avatarUrl = computed(() => iconService.getCharacterCircleById(props.agent.
 const elementUrl = computed(() => iconService.getElementIconUrl(props.agent.element));
 
 // Rarity Color
-const rarityGradientFrom = computed(() => {
-    // Should be based on rarity, hardcoded for now
-    return 'from-orange-500/20 to-transparent';
+const rarityColor = computed(() => {
+    return props.agent.rarity === 4 ? 'rgba(249, 115, 22, 0.2)' : 'rgba(168, 85, 247, 0.2)';
 });
 // Stats Helpers
 const finalStats = computed(() => {

@@ -88,7 +88,7 @@
         </div>
 
         <!-- Empty State -->
-        <div v-if="filteredItems.length === 0" class="flex flex-col items-center justify-center min-h-[200px] text-base-content/50">
+        <div v-if="filteredItems.length === 0" class="flex flex-col items-center justify-center min-h-50 text-base-content/50">
           <div class="text-4xl mb-2">🔍</div>
           <p>没有找到符合条件的装备</p>
         </div>

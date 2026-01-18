@@ -10,20 +10,13 @@
 
 <!-- 属性表格 -->
 <div v-if="activeTab !== 'conversion'" class="overflow-x-auto">
-<table class="table table-sm">
-<thead>
-<tr>
-<th>属性名称</th>
-<th class="text-right">属性值</th>
-</tr>
-</thead>
-<tbody>
-<tr v-for="[prop, value] in filteredProps" :key="prop" class="hover">
-<td>{{ getPropName(prop) }}</td>
-<td class="text-right font-mono font-bold">{{ formatValue(value, isPercent(prop)) }}</td>
-</tr>
-</tbody>
-</table>
+<div class="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 text-sm p-2">
+  <template v-for="[prop, value] in filteredProps" :key="prop">
+    <div class="text-base-content/80">{{ getPropName(prop) }}</div>
+    <div class="text-right font-mono font-bold">{{ formatValue(value, isPercent(prop)) }}</div>
+    <div class="col-span-2 border-b border-base-200/50 last:border-0 h-px w-full"></div>
+  </template>
+</div>
 </div>
 
 <!-- 转换类属性 -->

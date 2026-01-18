@@ -15,6 +15,7 @@
               class="menu dropdown-content bg-base-100 text-base-content rounded-box z-1 mt-3 w-52 p-2 shadow">
               <li><a @click="currentView = 'optimizer'" :class="{ 'active': currentView === 'optimizer' }">优化</a></li>
               <li><a @click="currentView = 'characters'" :class="{ 'active': currentView === 'characters' }">角色</a></li>
+              <li><a @click="currentView = 'teams'" :class="{ 'active': currentView === 'teams' }">队伍</a></li>
               <li><a @click="currentView = 'wengines'" :class="{ 'active': currentView === 'wengines' }">音擎</a></li>
               <li><a @click="currentView = 'drive-disks'" :class="{ 'active': currentView === 'drive-disks' }">驱动盘</a></li>
               <li><a @click="currentView = 'saves'" :class="{ 'active': currentView === 'saves' }">存档</a></li>
@@ -30,6 +31,7 @@
           <ul class="menu menu-horizontal px-1 gap-2">
             <li><a @click="currentView = 'optimizer'" :class="{ 'active': currentView === 'optimizer' }">优化</a></li>
             <li><a @click="currentView = 'characters'" :class="{ 'active': currentView === 'characters' }">角色</a></li>
+            <li><a @click="currentView = 'teams'" :class="{ 'active': currentView === 'teams' }">队伍</a></li>
             <li><a @click="currentView = 'wengines'" :class="{ 'active': currentView === 'wengines' }">音擎</a></li>
             <li><a @click="currentView = 'drive-disks'" :class="{ 'active': currentView === 'drive-disks' }">驱动盘</a></li>
             <li><a @click="currentView = 'saves'" :class="{ 'active': currentView === 'saves' }">存档</a></li>
@@ -67,6 +69,7 @@ import DebugView from './views/DebugView.vue';
 import OptimizerView from './views/OptimizerView.vue';
 import ComponentGallery from './views/ComponentGallery.vue';
 import CharacterView from './views/CharacterView.vue';
+import TeamView from './views/TeamView.vue';
 import DriveDiskView from './views/DriveDiskView.vue';
 import WEngineView from './views/WEngineView.vue';
 import SaveManagementView from './views/SaveManagementView.vue';
@@ -78,6 +81,7 @@ const isDev = import.meta.env.DEV; // 开发模式标志
 const activeComponent = computed(() => {
   if (currentView.value === 'gallery') return ComponentGallery;
   if (currentView.value === 'characters') return CharacterView;
+  if (currentView.value === 'teams') return TeamView;
   if (currentView.value === 'wengines') return WEngineView;
   if (currentView.value === 'drive-disks') return DriveDiskView;
   if (currentView.value === 'saves') return SaveManagementView;

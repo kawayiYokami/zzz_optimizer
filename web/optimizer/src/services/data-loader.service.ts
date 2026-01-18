@@ -126,12 +126,12 @@ export class DataLoaderService {
   private _agentSkills: Map<string, AgentSkillSet> | null = null;
 
   // 详细数据缓存（按需加载）
-  private _characterDetailCache: Map<string, any> = new Map();
-  private _characterBuffCache: Map<string, any> = new Map();
-  private _weaponDetailCache: Map<string, any> = new Map();
-  private _weaponBuffCache: Map<string, any> = new Map();
-  private _equipmentDetailCache: Map<string, any> = new Map();
-  private _equipmentBuffCache: Map<string, any> = new Map();
+  private _characterDetailCache: Map<string, Promise<any>> = new Map();
+  private _characterBuffCache: Map<string, Promise<any>> = new Map();
+  private _weaponDetailCache: Map<string, Promise<any>> = new Map();
+  private _weaponBuffCache: Map<string, Promise<any>> = new Map();
+  private _equipmentDetailCache: Map<string, Promise<any>> = new Map();
+  private _equipmentBuffCache: Map<string, Promise<any>> = new Map();
 
   // 加载状态
   private _isLoading = false;
@@ -302,10 +302,10 @@ export class DataLoaderService {
     }
 
     // 加载数据
-    const detail = await this.loadJsonFile<any>(`/game-data/character/${gameId}.json`);
-    this._characterDetailCache.set(gameId, detail);
+    const promise = this.loadJsonFile<any>(`/game-data/character/${gameId}.json`);
+    this._characterDetailCache.set(gameId, promise);
 
-    return detail;
+    return promise;
   }
 
   /**
@@ -315,27 +315,28 @@ export class DataLoaderService {
 
     // 检查缓存
     if (this._characterBuffCache.has(gameId)) {
-      const cachedBuff = this._characterBuffCache.get(gameId);
-      return cachedBuff;
+      return this._characterBuffCache.get(gameId);
     }
 
-    try {
-      // 加载数据
-      const buff = await this.loadJsonFile<any>(`/game-data/character_data_buff/${gameId}.json`);
-      this._characterBuffCache.set(gameId, buff);
-      return buff;
-    } catch (error) {
-      console.error(`[ERROR] 加载BUFF数据失败: /game-data/character_data_buff/${gameId}.json`, error);
-      // 返回一个空的BUFF数据对象，避免后续处理出错
-      const emptyBuff = {
-        core_passive_buffs: [],
-        talent_buffs: [],
-        mindscape_buffs: [],
-        conversion_buffs: []
-      };
-      this._characterBuffCache.set(gameId, emptyBuff);
-      return emptyBuff;
-    }
+    // 创建 Promise
+    const promise = (async () => {
+      try {
+        // 加载数据
+        return await this.loadJsonFile<any>(`/game-data/character_data_buff/${gameId}.json`);
+      } catch (error) {
+        console.error(`[ERROR] 加载BUFF数据失败: /game-data/character_data_buff/${gameId}.json`, error);
+        // 返回一个空的BUFF数据对象，避免后续处理出错
+        return {
+          core_passive_buffs: [],
+          talent_buffs: [],
+          mindscape_buffs: [],
+          conversion_buffs: []
+        };
+      }
+    })();
+    
+    this._characterBuffCache.set(gameId, promise);
+    return promise;
   }
 
   /**
@@ -348,10 +349,10 @@ export class DataLoaderService {
     }
 
     // 加载数据
-    const detail = await this.loadJsonFile<any>(`/game-data/weapon/${gameId}.json`);
-    this._weaponDetailCache.set(gameId, detail);
+    const promise = this.loadJsonFile<any>(`/game-data/weapon/${gameId}.json`);
+    this._weaponDetailCache.set(gameId, promise);
 
-    return detail;
+    return promise;
   }
 
   /**
@@ -364,10 +365,10 @@ export class DataLoaderService {
     }
 
     // 加载数据
-    const buff = await this.loadJsonFile<any>(`/game-data/weapon_data_buff/${gameId}.json`);
-    this._weaponBuffCache.set(gameId, buff);
+    const promise = this.loadJsonFile<any>(`/game-data/weapon_data_buff/${gameId}.json`);
+    this._weaponBuffCache.set(gameId, promise);
 
-    return buff;
+    return promise;
   }
 
   /**
@@ -380,10 +381,10 @@ export class DataLoaderService {
     }
 
     // 加载数据
-    const detail = await this.loadJsonFile<any>(`/game-data/equipment/${gameId}.json`);
-    this._equipmentDetailCache.set(gameId, detail);
+    const promise = this.loadJsonFile<any>(`/game-data/equipment/${gameId}.json`);
+    this._equipmentDetailCache.set(gameId, promise);
 
-    return detail;
+    return promise;
   }
 
   /**
@@ -396,10 +397,10 @@ export class DataLoaderService {
     }
 
     // 加载数据
-    const buff = await this.loadJsonFile<any>(`/game-data/equipment_data_buff/${gameId}.json`);
-    this._equipmentBuffCache.set(gameId, buff);
+    const promise = this.loadJsonFile<any>(`/game-data/equipment_data_buff/${gameId}.json`);
+    this._equipmentBuffCache.set(gameId, promise);
 
-    return buff;
+    return promise;
   }
 
   /**

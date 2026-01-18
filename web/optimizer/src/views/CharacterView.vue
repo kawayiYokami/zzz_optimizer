@@ -2,115 +2,75 @@
   <div class="flex flex-col h-full min-h-0">
     <!-- 主体区域 -->
     <div
-      class="flex-1 grid gap-2 p-2 overflow-hidden character-view-grid min-h-0"
+      class="flex-1 grid gap-2 p-0 character-view-grid min-h-0 h-full"
     >
-      <!-- 左侧：筛选栏 + 角色列表 -->
-      <div class="flex flex-col gap-2 overflow-hidden">
-        <!-- 筛选控制栏 -->
-        <div class="flex flex-col gap-2 p-2 bg-base-100 rounded-lg">
-          <!-- 元素类型、武器类型、稀有度筛选合并为一行 -->
-          <div class="join w-full">
-            <!-- 元素类型筛选 -->
-            <div class="dropdown dropdown-end join-item flex-1">
-              <div tabindex="0" role="button" class="btn btn-sm w-full justify-between">
-                元素
-                <span v-if="filters.elements.length > 0" class="badge badge-primary badge-sm">{{ filters.elements.length }}</span>
-              </div>
-              <ul tabindex="0" class="dropdown-content z-1 menu p-2 shadow-lg bg-base-100 rounded-box w-32">
-                <li v-for="element in elementTypes" :key="element.value">
-                  <label class="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      :value="element.value"
-                      v-model="filters.elements"
-                      class="checkbox checkbox-sm"
-                    />
-                    <img :src="element.icon" :alt="element.label" class="w-5 h-5 object-contain" />
-                    <span>{{ element.label }}</span>
-                  </label>
-                </li>
-              </ul>
-            </div>
+      <!-- 第一列：角色列表 -->
+      <div class="overflow-y-auto">
+        <!-- 过滤按钮区域 -->
+        <div class="p-2 flex flex-wrap gap-2">
+          <!-- 元素类型过滤 -->
+          <button
+            v-for="element in elementTypes"
+            :key="'element-' + element.value"
+            @click="toggleFilter('elements', element.value)"
+            class="btn btn-ghost btn-square flex items-center justify-center shrink-0"
+            :class="{ 'btn-active': filters.elements.includes(element.value) }"
+            :title="element.label"
+          >
+            <img :src="element.icon" :alt="element.label" class="w-8 h-8 object-contain shrink-0" />
+          </button>
 
-            <!-- 武器类型筛选 -->
-            <div class="dropdown dropdown-end join-item flex-1">
-              <div tabindex="0" role="button" class="btn btn-sm w-full justify-between">
-                武器
-                <span v-if="filters.weaponTypes.length > 0" class="badge badge-primary badge-sm">{{ filters.weaponTypes.length }}</span>
-              </div>
-              <ul tabindex="0" class="dropdown-content z-1 menu p-2 shadow-lg bg-base-100 rounded-box w-32">
-                <li v-for="weaponType in weaponTypes" :key="weaponType.value">
-                  <label class="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      :value="weaponType.value"
-                      v-model="filters.weaponTypes"
-                      class="checkbox checkbox-sm"
-                    />
-                    <img :src="weaponType.icon" :alt="weaponType.label" class="w-5 h-5 object-contain" />
-                    <span>{{ weaponType.label }}</span>
-                  </label>
-                </li>
-              </ul>
-            </div>
+          <!-- 武器类型过滤 -->
+          <button
+            v-for="weaponType in weaponTypes"
+            :key="'weapon-' + weaponType.value"
+            @click="toggleFilter('weaponTypes', weaponType.value)"
+            class="btn btn-ghost btn-square flex items-center justify-center shrink-0"
+            :class="{ 'btn-active': filters.weaponTypes.includes(weaponType.value) }"
+            :title="weaponType.label"
+          >
+            <img :src="weaponType.icon" :alt="weaponType.label" class="w-8 h-8 object-contain shrink-0" />
+          </button>
 
-            <!-- 稀有度筛选 -->
-            <div class="dropdown dropdown-end join-item flex-1">
-              <div tabindex="0" role="button" class="btn btn-sm w-full justify-between">
-                稀有度
-                <span v-if="filters.rarities.length > 0" class="badge badge-primary badge-sm">{{ filters.rarities.length }}</span>
-              </div>
-              <ul tabindex="0" class="dropdown-content z-1 menu p-2 shadow-lg bg-base-100 rounded-box w-24">
-                <li v-for="rarity in rarities" :key="rarity.value">
-                  <label class="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      :value="rarity.value"
-                      v-model="filters.rarities"
-                      class="checkbox checkbox-sm"
-                    />
-                    <span>{{ rarity.label }}</span>
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <!-- 稀有度过滤 -->
+          <button
+            v-for="rarity in rarities"
+            :key="'rarity-' + rarity.value"
+            @click="toggleFilter('rarities', rarity.value)"
+            class="btn btn-ghost btn-square flex items-center justify-center shrink-0"
+            :class="{ 'btn-active': filters.rarities.includes(rarity.value) }"
+            :title="rarity.label"
+          >
+            <span class="text-sm font-bold whitespace-nowrap">{{ rarity.label }}</span>
+          </button>
 
           <!-- 清除筛选 -->
           <button
             v-if="hasActiveFilters"
             @click="clearFilters"
-            class="btn btn-xs btn-outline w-full"
+            class="btn btn-ghost ml-auto shrink-0"
+            title="清除筛选"
           >
-            清除筛选
+            ✕ 清除筛选
           </button>
         </div>
 
-        <!-- 角色列表 -->
-        <div class="flex-1 overflow-y-auto">
-          <!-- 角色网格 -->
-          <div class="flex flex-wrap justify-center gap-4">
-            <div
-              v-for="agent in filteredAndSortedAgents"
-              :key="agent.id"
-              class="cursor-pointer transition-all duration-300 hover:scale-105"
-              :class="{ 'ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-lg shadow-primary/50': selectedAgentId === agent.id }"
-              @click="selectAgent(agent.id)"
-            >
-              <AgentCard :agent="agent" />
-            </div>
-          </div>
-
-          <!-- 空状态 -->
-          <div v-if="filteredAndSortedAgents.length === 0" class="flex flex-col items-center justify-center min-h-100 text-base-content/50 text-xl">
-            <div class="text-6xl mb-4">🔍</div>
-            <p>没有找到符合条件的角色</p>
+        <!-- 角色网格 -->
+        <div class="flex flex-wrap justify-center gap-4">
+          <div
+            v-for="agent in filteredAndSortedAgents"
+            :key="agent.id"
+            class="cursor-pointer transform-gpu transition-transform duration-200 hover:scale-105"
+            :class="{ 'ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-lg shadow-primary/50': selectedAgentId === agent.id }"
+            @click="selectAgent(agent.id)"
+          >
+            <AgentCard :agent="agent" />
           </div>
         </div>
       </div>
 
       <!-- 右侧：角色详情 -->
-      <div class="overflow-y-auto pr-2">
+      <div class="overflow-y-auto p-4 h-full min-h-0">
         <AgentInfoCard
           v-if="selectedAgent"
           :agent="selectedAgent"
@@ -323,6 +283,16 @@ function clearFilters() {
   filters.value.rarities = [];
 }
 
+function toggleFilter(filterType: 'elements' | 'weaponTypes' | 'rarities', value: ElementType | WeaponType | Rarity) {
+  const filterArray = filters.value[filterType] as (ElementType | WeaponType | Rarity)[];
+  const index = filterArray.indexOf(value);
+  if (index === -1) {
+    filterArray.push(value);
+  } else {
+    filterArray.splice(index, 1);
+  }
+}
+
 function getElementIcon(element: ElementType): string {
   return iconService.getElementIconUrl(element);
 }
@@ -431,7 +401,7 @@ onMounted(() => {
 
 @media (min-width: 768px) {
   .character-view-grid {
-    grid-template-columns: 16rem 1fr;
+    grid-template-columns: 17rem 1fr;
   }
 }
 

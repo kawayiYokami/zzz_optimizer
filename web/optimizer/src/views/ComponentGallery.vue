@@ -24,14 +24,22 @@
         </div>
       </section>
 
-      <!-- Section 1.6: Property Set Card -->
+      <!-- Section 1.6: Team List -->
+      <section>
+        <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">队伍管理 (TeamList)</h2>
+        <div class="w-full">
+          <TeamList />
+        </div>
+      </section>
+
+      <!-- Section 1.7: Property Set Card -->
       <section>
         <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">属性集卡片 (PropertySetCard)</h2>
         <div class="w-full">
-          <PropertySetCard 
-            v-if="realAgent" 
-            :property-collection="realAgent.getCharacterCombatStats()" 
-            :conversion-buffs="realAgent.conversion_buffs" 
+          <PropertySetCard
+            v-if="realAgent"
+            :property-collection="realAgent.getCharacterCombatStats()"
+            :conversion-buffs="realAgent.conversion_buffs"
           />
           <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
         </div>
@@ -104,6 +112,7 @@ import DriveDiskCard from '../components/business/DriveDiskCard.vue';
 import BangbooCard from '../components/business/BangbooCard.vue';
 import EnemyCard from '../components/business/EnemyCard.vue';
 import BuffCard from '../components/business/BuffCard.vue';
+import TeamList from '../components/business/TeamList.vue';
 import { MockData } from '../utils/mock-data';
 import { useSaveStore } from '../stores/save.store';
 import { dataLoaderService } from '../services/data-loader.service';
@@ -141,7 +150,7 @@ const realBangboo = ref<Bangboo | null>(null);
 onMounted(async () => {
     console.log('[ComponentGallery] onMounted - Starting initialization');
     console.log('[ComponentGallery] saveStore.agents.length:', saveStore.agents.length);
-    
+
     // Ensure data is loaded
     if (!dataLoaderService.isInitialized) {
         console.log('[ComponentGallery] Initializing dataLoaderService...');
@@ -171,7 +180,7 @@ onMounted(async () => {
             console.log('[ComponentGallery] Bangboo 54021 loaded:', realBangboo.value.name_cn, 'ID:', realBangboo.value.id);
         }
     }
-    
+
     console.log('[ComponentGallery] onMounted - Completed');
 });
 

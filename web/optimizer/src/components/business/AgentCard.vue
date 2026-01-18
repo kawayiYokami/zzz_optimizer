@@ -16,7 +16,7 @@
         </div>
 
         <!-- Element Icon (Top Left) -->
-        <div class="absolute top-1 left-1 w-6 h-6 rounded-full bg-black/40 p-0.5 backdrop-blur-sm">
+        <div class="absolute top-1 left-1 w-6 h-6 rounded-full bg-black/60 p-0.5">
             <img
                 v-if="elementIconUrl"
                 :src="elementIconUrl"
@@ -27,7 +27,7 @@
         </div>
 
         <!-- Level (Bottom Right inside image) -->
-        <div class="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur-sm font-mono">
+        <div class="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">
             Lv.{{ agent.level }}
         </div>
     </figure>

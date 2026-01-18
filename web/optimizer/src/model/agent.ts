@@ -132,10 +132,6 @@ export class Agent {
   // 缓存的角色自身属性（在fromZodData中计算，只包含角色基础+成长+突破+核心技能）
   self_properties: PropertyCollection = new PropertyCollection();
 
-  // 缓存的角色+装备属性（角色基础+武器+驱动盘基础+驱动盘2件套属性）
-  private _equipmentStatsCache: PropertyCollection | null = null;
-  private _equipmentStatsCacheValid: boolean = false;
-
   // Buff系统（从游戏数据加载）
   core_passive_buffs: Buff[] = [];
   talent_buffs: Buff[] = [];
@@ -1056,9 +1052,13 @@ export class Agent {
    * 调整角色等级 (0-60)
    */
   adjustCharacterLevel(delta: number): void {
+    const oldLevel = this.level;
     this.level = Math.max(0, Math.min(60, this.level + delta));
-    if (this._zodData) {
-      this._zodData.level = this.level;
+    if (this.level !== oldLevel) {
+      this.clearPropertyCache();
+      if (this._zodData) {
+        this._zodData.level = this.level;
+      }
     }
   }
 
@@ -1067,11 +1067,18 @@ export class Agent {
    */
   adjustSkillLevel(skillType: 'normal' | 'dodge' | 'assist' | 'special' | 'chain', delta: number): void {
     const current = this.skills[skillType];
-    this.skills[skillType] = Math.max(1, Math.min(12, current + delta));
+    const newValue = Math.max(1, Math.min(12, current + delta));
+    
+    if (newValue !== current) {
+      this.skills[skillType] = newValue;
+      // 技能等级目前不直接影响属性面板（除了核心技），但如果有被动关联技能等级，则需要清除缓存
+      // 为了安全起见，暂时清除缓存
+      this.clearPropertyCache();
 
-    if (this._zodData) {
-      const zodKey = skillType === 'normal' ? 'basic' : skillType;
-      (this._zodData as any)[zodKey] = this.skills[skillType];
+      if (this._zodData) {
+        const zodKey = skillType === 'normal' ? 'basic' : skillType;
+        (this._zodData as any)[zodKey] = this.skills[skillType];
+      }
     }
   }
 
@@ -1079,9 +1086,17 @@ export class Agent {
    * 调整核心技能等级 (1-7)
    */
   adjustCoreSkillLevel(delta: number): void {
+    const oldCore = this.core_skill;
     this.core_skill = Math.max(1, Math.min(7, this.core_skill + delta));
-    if (this._zodData) {
-      this._zodData.core = this.core_skill;
+    
+    if (this.core_skill !== oldCore) {
+      this.clearPropertyCache(); // 核心技能直接影响基础属性
+      // 核心技能等级变化也可能影响 self_properties
+      this._isSelfPropertiesLoaded = false;
+      
+      if (this._zodData) {
+        this._zodData.core = this.core_skill;
+      }
     }
   }
 
@@ -1089,9 +1104,21 @@ export class Agent {
    * 调整影画等级 (0-6)
    */
   adjustCinemaLevel(delta: number): void {
+    const oldCinema = this.cinema;
     this.cinema = Math.max(0, Math.min(6, this.cinema + delta));
-    if (this._zodData) {
-      this._zodData.mindscape = this.cinema;
+    
+    if (this.cinema !== oldCinema) {
+      this.clearPropertyCache();
+      // 影画可能解锁新的 Buff，需要重新加载 Buff
+      this._isBuffsLoaded = false;
+      this.core_passive_buffs = [];
+      this.talent_buffs = [];
+      this.potential_buffs = [];
+      this.conversion_buffs = [];
+      
+      if (this._zodData) {
+        this._zodData.mindscape = this.cinema;
+      }
     }
   }
 
