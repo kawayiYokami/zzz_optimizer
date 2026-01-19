@@ -97,11 +97,11 @@ function toggleTheme() {
 function updateTheme() {
   const html = document.documentElement;
   if (isDark.value) {
-    html.setAttribute('data-theme', 'dark');
-    localStorage.setItem('theme', 'dark');
+    html.setAttribute('data-theme', 'halloween');
+    localStorage.setItem('theme', 'halloween');
   } else {
-    html.setAttribute('data-theme', 'light');
-    localStorage.setItem('theme', 'light');
+    html.setAttribute('data-theme', 'cupcake');
+    localStorage.setItem('theme', 'cupcake');
   }
 }
 
@@ -109,7 +109,7 @@ function updateTheme() {
 onMounted(() => {
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme) {
-    isDark.value = savedTheme === 'dark';
+    isDark.value = savedTheme === 'halloween';
   } else {
     // 检测系统主题偏好
     isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
