@@ -10,13 +10,26 @@
 
 <!-- 属性表格 -->
 <div v-if="activeTab !== 'conversion'" class="overflow-x-auto">
-<div class="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 text-sm p-2">
-  <template v-for="[prop, value] in filteredProps" :key="prop">
-    <div class="text-base-content/80">{{ getPropName(prop) }}</div>
-    <div class="text-right font-mono font-bold">{{ formatValue(value, isPercent(prop)) }}</div>
-    <div class="col-span-2 border-b border-base-200/50 last:border-0 h-px w-full"></div>
-  </template>
-</div>
+  <div class="grid grid-cols-2 gap-x-8 gap-y-1 text-sm p-2">
+    <!-- 左列：核心属性 -->
+    <div class="space-y-1">
+      <template v-for="[prop, value] in filteredProps.leftProps" :key="prop">
+        <div class="flex justify-between items-center w-full border-b border-base-200/50 pb-1">
+          <span class="text-base-content/80 truncate pr-2" :title="getPropName(prop)">{{ getPropName(prop) }}</span>
+          <span class="text-right font-mono font-bold shrink-0">{{ formatValue(value, isPercent(prop)) }}</span>
+        </div>
+      </template>
+    </div>
+    <!-- 右列：其他属性 -->
+    <div class="space-y-1">
+      <template v-for="[prop, value] in filteredProps.rightProps" :key="prop">
+        <div class="flex justify-between items-center w-full border-b border-base-200/50 pb-1">
+          <span class="text-base-content/80 truncate pr-2" :title="getPropName(prop)">{{ getPropName(prop) }}</span>
+          <span class="text-right font-mono font-bold shrink-0">{{ formatValue(value, isPercent(prop)) }}</span>
+        </div>
+      </template>
+    </div>
+  </div>
 </div>
 
 <!-- 转换类属性 -->
@@ -47,12 +60,19 @@ const props = withDefaults(defineProps<{
   propertyCollection: PropertyCollection;
   conversionBuffs?: Buff[];
   noCard?: boolean;
+  defaultActiveTab?: 'out' | 'in' | 'conversion';
 }>(), {
   conversionBuffs: () => [],
-  noCard: true
+  noCard: true,
+  defaultActiveTab: 'out'
 });
 
 const activeTab = ref<'out' | 'in' | 'conversion'>('out');
+
+// 如果提供了 defaultActiveTab，则使用它
+if (props.defaultActiveTab) {
+  activeTab.value = props.defaultActiveTab;
+}
 
 const tabNames: Record<'out' | 'in' | 'conversion', string> = {
   'out': '局外属性',
@@ -82,6 +102,30 @@ const availableTabs = computed(() => {
   return tabs;
 });
 
+// 核心属性列表（显示在左侧）
+const CORE_PROPS = [
+  PropertyType.HP_BASE,
+  PropertyType.HP,
+  PropertyType.HP_,
+  PropertyType.DEF_BASE,
+  PropertyType.DEF,
+  PropertyType.DEF_,
+  PropertyType.ATK_BASE,
+  PropertyType.ATK,
+  PropertyType.ATK_,
+  PropertyType.IMPACT,
+  PropertyType.IMPACT_,
+  PropertyType.CRIT_,
+  PropertyType.CRIT_DMG_,
+  PropertyType.PEN,
+  PropertyType.PEN_,
+  PropertyType.ENER_REGEN,
+  PropertyType.ENER_REGEN_,
+  PropertyType.ANOM_PROF,
+  PropertyType.ANOM_MAS,
+  PropertyType.ANOM_MAS_
+];
+
 // 根据当前标签页过滤属性
 const filteredProps = computed(() => {
   let stats: Map<PropertyType, number>;
@@ -94,13 +138,56 @@ const filteredProps = computed(() => {
     stats = props.propertyCollection.conversion;
   }
 
-  return Array.from(stats.entries()).filter(([_, value]) => value !== 0);
+  const allProps = Array.from(stats.entries()).filter(([_, value]) => value !== 0);
+  
+  // 分离核心属性和其他属性
+  let leftProps = allProps.filter(([prop]) => CORE_PROPS.includes(prop));
+  let rightProps = allProps.filter(([prop]) => !CORE_PROPS.includes(prop));
+
+  // 如果右侧没有属性，将左侧属性分一半到右侧
+  if (rightProps.length === 0 && leftProps.length > 1) {
+    const half = Math.ceil(leftProps.length / 2);
+    rightProps = leftProps.slice(half);
+    leftProps = leftProps.slice(0, half);
+  }
+
+  // 自定义排序顺序：基础属性 -> 暴击 -> 穿透 -> 能量 -> 异常
+  const sortOrder = CORE_PROPS;
+  // 只有在没有进行分割的情况下才需要对左侧进行完整排序（如果分割了，其实是按顺序切分的，这里再排一次也没问题）
+  const sortFunc = (a: [PropertyType, number], b: [PropertyType, number]) => {
+    return sortOrder.indexOf(a[0]) - sortOrder.indexOf(b[0]);
+  };
+  
+  // 注意：如果分割了，rightProps 其实也是 CORE_PROPS 的一部分，也应该排序
+  // 但由于 filter 出来的顺序本来就不确定，所以最好是先把 allProps 排好序，然后再分
+  
+  // 更好的做法：先排序，再分割
+  const allCoreProps = allProps.filter(([prop]) => CORE_PROPS.includes(prop));
+  allCoreProps.sort(sortFunc);
+  
+  const otherProps = allProps.filter(([prop]) => !CORE_PROPS.includes(prop));
+
+  if (otherProps.length === 0 && allCoreProps.length > 1) {
+    const half = Math.ceil(allCoreProps.length / 2);
+    leftProps = allCoreProps.slice(0, half);
+    rightProps = allCoreProps.slice(half);
+  } else {
+    leftProps = allCoreProps;
+    rightProps = otherProps;
+  }
+
+  return { leftProps, rightProps };
 });
 
 // 自动切换到第一个可用的标签页
 watch(availableTabs, (newTabs) => {
   if (newTabs.length > 0 && !newTabs.includes(activeTab.value)) {
-    activeTab.value = newTabs[0];
+    // 优先尝试使用 defaultActiveTab
+    if (newTabs.includes(props.defaultActiveTab)) {
+      activeTab.value = props.defaultActiveTab;
+    } else {
+      activeTab.value = newTabs[0];
+    }
   }
 }, { immediate: true });
 

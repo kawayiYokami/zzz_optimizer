@@ -8,250 +8,50 @@
         <div class="lg:col-span-1 space-y-4">
 
           <!-- 战斗配置 -->
-          <div class="card bg-base-100 shadow-sm">
-            <div class="card-body p-4">
-              <h3 class="font-bold text-sm">战斗配置</h3>
-              <!-- 当前队伍卡片（可点击选择） -->
-              <div v-if="currentTeam" class="mt-2">
-                <TeamCard
-                  :team="currentTeam"
-                  @click="showTeamSelector = true"
-                  :clickable="true"
-                />
-              </div>
-              <div v-else class="mt-2 text-sm text-base-content/60 text-center py-4">
-                暂无队伍，请先创建队伍
-              </div>
-              <!-- 队伍选择按钮 -->
-              <button
-                class="btn btn-base-200 w-full mt-2"
-                @click="showTeamSelector = true"
-              >
-                选择队伍
-              </button>
-
-              <!-- 分割线 -->
-              <div class="divider my-3"></div>
-
-              <!-- 技能配置 -->
-              <h3 class="font-bold text-sm">技能配置</h3>
-              <div class="flex flex-col gap-2 mt-2">
-                <!-- 已选技能（上方） -->
-                <div class="flex flex-wrap gap-1">
-                  <button
-                    v-for="skill in selectedSkills"
-                    :key="skill.key"
-                    class="badge badge-primary cursor-pointer hover:badge-secondary"
-                    @click="toggleSkill(skill.key)"
-                  >
-                    {{ skill.name }}
-                  </button>
-                </div>
-                <!-- 分割线 -->
-                <div class="divider my-1"></div>
-                <!-- 未选技能（下方） -->
-                <div class="flex flex-wrap gap-1">
-                  <button
-                    v-for="skill in unselectedSkills"
-                    :key="skill.key"
-                    class="badge badge-ghost cursor-pointer hover:badge-primary"
-                    @click="toggleSkill(skill.key)"
-                  >
-                    {{ skill.name }}
-                  </button>
-                </div>
-              </div>
-
-              <!-- 分割线 -->
-              <div class="divider my-3"></div>
-
-              <!-- Buff 配置 -->
-              <h3 class="font-bold text-sm">Buff 配置</h3>
-              <!-- Buff 选择 -->
-              <div class="flex flex-col gap-2 mt-2">
-                <!-- 已选 Buff（上方） -->
-                <div class="flex flex-wrap gap-1">
-                  <button
-                    v-for="buff in selectedBuffs"
-                    :key="buff.id"
-                    class="badge badge-primary cursor-pointer hover:badge-secondary"
-                    @click="toggleBuff(buff.id)"
-                  >
-                    {{ buff.name }}
-                  </button>
-                </div>
-                <!-- 分割线 -->
-                <div class="divider my-1"></div>
-                <!-- 未选 Buff（下方） -->
-                <div class="flex flex-wrap gap-1">
-                  <button
-                    v-for="buff in unselectedBuffs"
-                    :key="buff.id"
-                    class="badge badge-ghost cursor-pointer hover:badge-primary"
-                    @click="toggleBuff(buff.id)"
-                  >
-                    {{ buff.name }}
-                  </button>
-                </div>
-              </div>
-
-              <!-- 分割线 -->
-              <div class="divider my-2"></div>
-
-              <!-- 敌人配置 -->
-              <h3 class="font-bold text-sm">敌人配置</h3>
-              <!-- 当前敌人卡片（可点击选择） -->
-              <div v-if="selectedEnemy" class="mt-2 flex justify-center">
-                <EnemyCard
-                  :enemy="selectedEnemy"
-                  @click="showEnemySelector = true"
-                  :clickable="true"
-                />
-              </div>
-              <div v-else class="mt-2 text-sm text-base-content/60 text-center py-4">
-                暂无敌人，请选择敌人
-              </div>
-              <!-- 敌人选择按钮 -->
-              <button
-                class="btn btn-base-200 w-full mt-2"
-                @click="showEnemySelector = true"
-              >
-                选择敌人
-              </button>
-            </div>
-          </div>
+          <BattleConfigCard
+            :current-team="currentTeam"
+            :selected-enemy="selectedEnemy"
+            :selected-skills="selectedSkills"
+            :unselected-skills="unselectedSkills"
+            :selected-buffs="selectedBuffs"
+            :unselected-buffs="unselectedBuffs"
+            @update:selected-team-id="selectedTeamId = $event"
+            @update:selected-enemy-id="selectedEnemyId = $event"
+            @toggle-skill="toggleSkill"
+            @toggle-buff="toggleBuff"
+            @edit-team="onTeamChange"
+            @create-team="onTeamChange"
+          />
 
           <!-- 计算设置和组合明细 -->
-          <div class="card bg-base-100 shadow-sm">
-            <div class="card-body p-4">
-              <h3 class="font-bold text-sm">计算设置</h3>
-              <div class="space-y-4 mt-2">
-                <!-- Worker 数量 -->
-                <div>
-                  <div class="flex justify-between text-xs mb-1">
-                    <span>Worker 数量</span>
-                    <span>{{ workerCount }}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="16"
-                    v-model.number="workerCount"
-                    class="range range-xs range-primary"
-                  />
-                </div>
-                <!-- 驱动盘等级 -->
-                <div>
-                  <div class="flex justify-between text-xs mb-1">
-                    <span>驱动盘最低等级</span>
-                    <span>{{ minDiscLevel }}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="15"
-                    v-model.number="minDiscLevel"
-                    class="range range-xs range-primary"
-                  />
-                </div>
-              </div>
-
-              <!-- 有效词条 -->
-              <div class="divider my-2"></div>
-              <h3 class="font-bold text-sm">有效词条</h3>
-              <div class="flex flex-col gap-2 mt-2">
-                <!-- 已选词条（上方） -->
-                <div class="flex flex-wrap gap-1">
-                  <button
-                    v-for="stat in selectedStats"
-                    :key="stat.value"
-                    class="badge badge-primary cursor-pointer hover:badge-secondary"
-                    @click="toggleEffectiveStat(stat.value)"
-                  >
-                    {{ stat.label }}
-                  </button>
-                </div>
-                <!-- 分割线 -->
-                <div class="divider my-1"></div>
-                <!-- 未选词条（下方） -->
-                <div class="flex flex-wrap gap-1">
-                  <button
-                    v-for="stat in unselectedStats"
-                    :key="stat.value"
-                    class="badge badge-ghost cursor-pointer hover:badge-primary"
-                    @click="toggleEffectiveStat(stat.value)"
-                  >
-                    {{ stat.label }}
-                  </button>
-                </div>
-              </div>
-
-              <!-- 组合明细 -->
-              <div class="divider my-2"></div>
-              <h3 class="font-bold text-sm">组合明细</h3>
-              <div class="grid grid-cols-3 gap-2 mt-2">
-                <!-- 剪枝统计 -->
-                <div v-if="pruningStats.removed > 0" class="col-span-3 text-xs text-success">
-                  支配剪枝: {{ pruningStats.before }} → {{ pruningStats.after }} (-{{ pruningStats.removed }})
-                </div>
-                <!-- 位置组合数 -->
-                <div v-for="slot in [1,2,3,4,5,6]" :key="slot" class="card bg-base-200 p-2 text-center">
-                  <div class="text-xs text-base-content/60">位置 {{ slot }}</div>
-                  <div class="font-mono font-bold text-sm">{{ formatCompact(estimatedCombinations.breakdown[`slot${slot}`] || 0) }}</div>
-                </div>
-                <!-- 总计 -->
-                <div class="col-span-3 text-center mt-2">
-                  <div class="text-xs text-base-content/60">总计</div>
-                  <div class="font-mono font-bold text-primary text-lg">{{ formatCompact(estimatedCombinations.total) }}</div>
-                </div>
-              </div>
-
-              <!-- 开始优化按钮 -->
-              <div class="divider my-2"></div>
-              <button
-                class="btn btn-primary w-full"
-                :disabled="!canStart || isRunning"
-                @click="startOptimization"
-              >
-                <span v-if="isRunning" class="loading loading-spinner loading-sm"></span>
-                {{ isRunning ? '正在计算...' : '开始优化' }}
-              </button>
-              <button
-                v-if="isRunning"
-                class="btn btn-error w-full mt-2"
-                @click="cancelOptimization"
-              >
-                取消
-              </button>
-
-              <!-- 进度条 -->
-              <div v-if="isRunning || progress" class="mt-4">
-                <div class="flex justify-between text-xs mb-1">
-                  <span>进度</span>
-                  <span>{{ progressPercentage.toFixed(1) }}%</span>
-                </div>
-                <progress class="progress progress-primary w-full" :value="progressPercentage" max="100"></progress>
-                <div class="grid grid-cols-3 gap-2 mt-2 text-center">
-                  <div>
-                    <div class="text-xs text-base-content/60">已处理</div>
-                    <div class="text-sm font-bold">{{ formatCompact(progress?.totalProcessed || 0) }}</div>
-                  </div>
-                  <div>
-                    <div class="text-xs text-base-content/60">速度</div>
-                    <div class="text-sm font-bold">{{ formatCompact(progress?.speed || 0) }}/s</div>
-                  </div>
-                  <div>
-                    <div class="text-xs text-base-content/60">剩余</div>
-                    <div class="text-sm font-bold">{{ formatTime(progress?.estimatedTimeRemaining || 0) }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <CalculationConfigCard
+            :worker-count="workerCount"
+            :min-disc-level="minDiscLevel"
+            :is-running="isRunning"
+            :progress="progress"
+            :selected-stats="selectedStats"
+            :unselected-stats="unselectedStats"
+            :pruning-stats="pruningStats"
+            :estimated-combinations="estimatedCombinations"
+            :can-start="canStart"
+            @update:worker-count="workerCount = $event"
+            @update:min-disc-level="minDiscLevel = $event"
+            @toggle-effective-stat="toggleEffectiveStat"
+            @start-optimization="startOptimization"
+            @cancel-optimization="cancelOptimization"
+          />
         </div>
 
         <!-- 结果展示 -->
-        <div class="lg:col-span-2">
+        <div class="lg:col-span-2 space-y-6">
+          
+          <!-- 战斗信息卡 -->
+          <BattleInfoCard
+            ref="battleInfoCardRef"
+            :battle-service="battleService"
+            :selected-skill-keys="selectedSkillKeys"
+          />
+
           <div class="card bg-base-100 shadow-sm min-h-150">
             <div class="card-body">
               <h2 class="card-title flex justify-between items-center">
@@ -347,38 +147,6 @@
 
       </div>
     </div>
-
-    <!-- 队伍选择弹窗 -->
-    <TeamList
-      v-if="showTeamSelector"
-      @edit="(teamId) => { showTeamSelector = false; editingTeamId = teamId; showTeamEditModal = true; }"
-      @create="() => { showTeamSelector = false; editingTeamId = undefined; showTeamEditModal = true; }"
-      @cancel="showTeamSelector = false"
-    />
-
-    <!-- 队伍编辑弹窗 -->
-    <TeamEditModal
-      v-if="showTeamEditModal"
-      :team-id="editingTeamId"
-      :show="showTeamEditModal"
-      @saved="(teamId) => { showTeamEditModal = false; selectedTeamId = teamId; }"
-      @deleted="() => { showTeamEditModal = false; selectedTeamId = ''; }"
-      @cancel="showTeamEditModal = false"
-    />
-
-    <!-- 敌人选择弹窗 -->
-    <dialog v-if="showEnemySelector" class="modal modal-open">
-      <div class="modal-box w-150 max-w-full relative flex flex-col max-h-[85vh]">
-        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10" @click="showEnemySelector = false">✕</button>
-        <h3 class="font-bold text-lg mb-4 flex-shrink-0">选择敌人</h3>
-        <div class="flex-1 overflow-y-auto min-h-0 pr-2">
-          <EnemyList @select="(enemyId) => { showEnemySelector = false; selectedEnemyId = enemyId; }" />
-        </div>
-      </div>
-      <form method="dialog" class="modal-backdrop" @click.prevent="showEnemySelector = false">
-        <button>close</button>
-      </form>
-    </dialog>
   </div>
 </template>
 
@@ -398,11 +166,9 @@ import { PropertyType } from '../model/base';
 import { Enemy } from '../model/enemy';
 import type { Team } from '../model/team';
 import { BattleService } from '../services/battle.service';
-import TeamCard from '../components/business/TeamCard.vue';
-import TeamEditModal from '../components/business/TeamEditModal.vue';
-import TeamList from '../components/business/TeamList.vue';
-import EnemyCard from '../components/business/EnemyCard.vue';
-import EnemyList from '../components/business/EnemyList.vue';
+import BattleConfigCard from '../components/business/BattleConfigCard.vue';
+import CalculationConfigCard from '../components/business/CalculationConfigCard.vue';
+import BattleInfoCard from '../components/business/BattleInfoCard.vue';
 
 const saveStore = useSaveStore();
 const gameDataStore = useGameDataStore();
@@ -423,17 +189,11 @@ const workerCount = ref(Math.max(1, navigator.hardwareConcurrency - 1));
 const minDiscLevel = ref(15); // 默认只用15级盘
 const expandedBuildIndex = ref<number | null>(null);  // 展开的结果行索引
 
-// 队伍选择相关
-const showTeamSelector = ref(false);
-const showTeamEditModal = ref(false);
-const editingTeamId = ref<string | undefined>();
-
-// 敌人选择相关
-const showEnemySelector = ref(false);
+const battleInfoCardRef = ref<InstanceType<typeof BattleInfoCard> | null>(null);
 
 // Buff 配置相关
 const selectedEnemyId = ref('');  // 默认不选择敌人
-const selectedBuffIds = ref<string[]>([]);
+const disabledBuffIds = ref<string[]>([]); // 存储被禁用的 Buff ID (黑名单模式)
 const buffsVersion = ref(0);  // 用于触发 Buff UI 更新
 
 // 敌人列表
@@ -589,16 +349,19 @@ const unselectedSkills = computed(() => {
 
 // Buff 列表
 const availableBuffs = computed(() => {
+  buffsVersion.value; // 触发响应式依赖
   if (!currentTeam.value) return [];
   return battleService.getAllBuffs();
 });
 
 const selectedBuffs = computed(() => {
-  return availableBuffs.value.filter(buff => selectedBuffIds.value.includes(buff.id));
+  // 黑名单模式：不在 disabledBuffIds 中的为选中
+  return availableBuffs.value.filter(buff => !disabledBuffIds.value.includes(buff.id));
 });
 
 const unselectedBuffs = computed(() => {
-  return availableBuffs.value.filter(buff => !selectedBuffIds.value.includes(buff.id));
+  // 黑名单模式：在 disabledBuffIds 中的为未选中
+  return availableBuffs.value.filter(buff => disabledBuffIds.value.includes(buff.id));
 });
 
 // 加载配置
@@ -619,8 +382,11 @@ const loadConfig = () => {
       if (config.selectedSkillKeys) {
         selectedSkillKeys.value = config.selectedSkillKeys;
       }
-      if (config.selectedBuffIds) {
-        selectedBuffIds.value = config.selectedBuffIds;
+      if (config.disabledBuffIds) {
+        disabledBuffIds.value = config.disabledBuffIds;
+      }
+      if (config.selectedEnemyId) {
+        selectedEnemyId.value = config.selectedEnemyId;
       }
     }
   } catch (e) {
@@ -636,7 +402,8 @@ const saveConfig = () => {
       workerCount: workerCount.value,
       minDiscLevel: minDiscLevel.value,
       selectedSkillKeys: selectedSkillKeys.value,
-      selectedBuffIds: selectedBuffIds.value,
+      disabledBuffIds: disabledBuffIds.value,
+      selectedEnemyId: selectedEnemyId.value,
     };
     localStorage.setItem('optimizer_config', JSON.stringify(config));
   } catch (e) {
@@ -654,6 +421,8 @@ const onTeamChange = async () => {
     await updateBattleService();
     // 增加 buffsVersion 触发 Buff UI 更新
     buffsVersion.value++;
+    // 刷新战斗信息卡
+    battleInfoCardRef.value?.refresh();
   }
 };
 
@@ -683,33 +452,52 @@ const toggleSkill = (skillKey: string) => {
 };
 
 const toggleBuff = (buffId: string) => {
-  const index = selectedBuffIds.value.indexOf(buffId);
+  const index = disabledBuffIds.value.indexOf(buffId);
   if (index >= 0) {
-    selectedBuffIds.value.splice(index, 1);
-    battleService.removeBuff(buffId);
+    // 之前在黑名单中（未激活），现在移除（激活）
+    disabledBuffIds.value.splice(index, 1);
+    battleService.updateBuffStatus(buffId, true);
   } else {
-    const buff = availableBuffs.value.find(b => b.id === buffId);
-    if (buff) {
-      battleService.addBuff(buff);
-      selectedBuffIds.value.push(buffId);
-    }
+    // 之前不在黑名单中（激活），现在添加（禁用）
+    disabledBuffIds.value.push(buffId);
+    battleService.updateBuffStatus(buffId, false);
   }
   buffsVersion.value++;
+  // 刷新战斗信息卡
+  battleInfoCardRef.value?.refresh();
 };
 
 const updateBattleService = async () => {
   const team = currentTeam.value;
   const enemy = selectedEnemy.value;
 
-  if (!team || !enemy) return;
+  // 设置队伍（不依赖敌人）
+  if (team) {
+    await battleService.setTeam(team);
+  }
 
-  // 设置队伍和敌人
-  await battleService.setTeam(team);
-  battleService.setEnemy(enemy);
-  battleService.setEnemyStatus(false, false);
+  // 设置敌人（可选）
+  if (enemy) {
+    battleService.setEnemy(enemy);
+    // 保持之前的状态，不重置敌人状态
+    // battleService.setEnemyStatus(false, false);
+  }
+
+  // 同步 Buff 状态
+  // BattleService 默认全开，我们需要根据 disabledBuffIds 关闭对应的 Buff
+  const allBuffs = battleService.getAllBuffs();
+  allBuffs.forEach(buff => {
+    if (disabledBuffIds.value.includes(buff.id)) {
+      battleService.updateBuffStatus(buff.id, false);
+    } else {
+      battleService.updateBuffStatus(buff.id, true);
+    }
+  });
 
   // 刷新 Buff 列表
   buffsVersion.value++;
+  // 刷新战斗信息卡
+  battleInfoCardRef.value?.refresh();
 };
 
 const saveCurrentPreset = () => {
@@ -879,10 +667,7 @@ const cancelOptimization = () => {
 onMounted(async () => {
   console.log('[OptimizerView] onMounted 开始');
   // 1. 初始化游戏数据
-  console.log('[OptimizerView] 开始初始化游戏数据...');
   await gameDataStore.initialize();
-  console.log('[OptimizerView] 游戏数据初始化完成');
-  console.log('[OptimizerView] 敌人数据数量:', gameDataStore.allEnemies?.length || 0);
 
   // 2. 加载存档
   await saveStore.loadFromStorage();
@@ -900,7 +685,7 @@ onMounted(async () => {
 });
 
 // 监听配置变化并自动保存
-watch([constraints, workerCount, minDiscLevel, selectedSkillKeys, selectedBuffIds], () => {
+watch([constraints, workerCount, minDiscLevel, selectedSkillKeys, disabledBuffIds, selectedEnemyId], () => {
   saveConfig();
 }, { deep: true });
 

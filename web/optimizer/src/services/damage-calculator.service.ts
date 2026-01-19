@@ -65,6 +65,10 @@ export interface DirectDamageResult {
   distance_mult: number; // 距离衰减区
   is_penetration: boolean; // 是否贯穿伤害
   penetration_dmg_bonus: number; // 贯穿增伤
+  
+  // 新增直伤专用乘区
+  skill_ratio_mult: number; // 技能倍率区
+  special_dmg_mult: number; // 特殊技能增伤区
 }
 
 /**
@@ -88,6 +92,10 @@ export interface AnomalyDamageResult {
   res_mult: number; // 抗性区
   dmg_taken_mult: number; // 承伤区
   stun_vuln_mult: number; // 失衡易伤区
+  
+  // 新增异常专用乘区
+  anomaly_buildup_zone: number; // 积蓄区
+  anomaly_mastery_zone: number; // 掌控区
 }
 
 /**
@@ -348,7 +356,7 @@ export class DamageCalculatorService {
   /**
    * 常规伤害计算
    */
-  static calculateDirectDamageFromRatios(zones: ZoneCollection, ratios: RatioSet): DamageResult {
+  static calculateDirectDamageFromRatios(zones: ZoneCollection, ratios: RatioSet): DirectDamageResult {
     const base = this.calculateBaseDamageZone(zones, ratios);
     const dmgBonus = this.calculateDmgBonusFromZones(zones, ratios);
     const mult = dmgBonus * zones.def_mult * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult;
@@ -360,13 +368,30 @@ export class DamageCalculatorService {
       damage_no_crit: Math.ceil(base * mult),
       damage_crit: Math.ceil(base * mult * (1 + critDmg)),
       damage_expected: Math.ceil(base * mult * (1 + critRate * critDmg)),
+      base_damage: base,
+      skill_ratio: ratios.atk_ratio,
+      element: ElementType[ratios.element]?.toLowerCase() || 'physical',
+      atk_zone: zones.getFinal(PropertyType.ATK_BASE, 0) + zones.getFinal(PropertyType.ATK, 0),
+      dmg_bonus: dmgBonus,
+      crit_rate: critRate,
+      crit_dmg: critDmg,
+      crit_zone: 1 + critRate * critDmg,
+      def_mult: zones.def_mult,
+      res_mult: zones.res_mult,
+      dmg_taken_mult: zones.dmg_taken_mult,
+      stun_vuln_mult: zones.stun_vuln_mult,
+      distance_mult: zones.distance_mult,
+      is_penetration: false,
+      penetration_dmg_bonus: 0,
+      skill_ratio_mult: ratios.atk_ratio,
+      special_dmg_mult: 1.0,
     };
   }
 
   /**
    * 贯穿伤害计算（无防御区，有贯穿增伤区）
    */
-  static calculatePenetrationDamage(zones: ZoneCollection, ratios: RatioSet): DamageResult {
+  static calculatePenetrationDamage(zones: ZoneCollection, ratios: RatioSet): DirectDamageResult {
     const base = this.calculateBaseDamageZone(zones, ratios);
     const dmgBonus = this.calculateDmgBonusFromZones(zones, ratios);
     const penBonus = 1 + zones.getFinal(PropertyType.SHEER_DMG_, 0);
@@ -379,6 +404,23 @@ export class DamageCalculatorService {
       damage_no_crit: Math.ceil(base * mult),
       damage_crit: Math.ceil(base * mult * (1 + critDmg)),
       damage_expected: Math.ceil(base * mult * (1 + critRate * critDmg)),
+      base_damage: base,
+      skill_ratio: ratios.atk_ratio,
+      element: ElementType[ratios.element]?.toLowerCase() || 'physical',
+      atk_zone: zones.getFinal(PropertyType.ATK_BASE, 0) + zones.getFinal(PropertyType.ATK, 0),
+      dmg_bonus: dmgBonus,
+      crit_rate: critRate,
+      crit_dmg: critDmg,
+      crit_zone: 1 + critRate * critDmg,
+      def_mult: 1.0, // 贯穿无视防御
+      res_mult: zones.res_mult,
+      dmg_taken_mult: zones.dmg_taken_mult,
+      stun_vuln_mult: zones.stun_vuln_mult,
+      distance_mult: zones.distance_mult,
+      is_penetration: true,
+      penetration_dmg_bonus: penBonus,
+      skill_ratio_mult: ratios.atk_ratio,
+      special_dmg_mult: 1.0,
     };
   }
 

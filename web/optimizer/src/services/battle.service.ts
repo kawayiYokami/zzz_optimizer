@@ -37,7 +37,8 @@ export interface TotalDamageResult {
   disorderDamage: number;       // 紊乱伤害期望 (450%)
   specialAnomalyDamage: number; // 特殊异常伤害（烈霜等）
   totalDamage: number;          // 总伤害期望
-  triggerExpectation: number;   // 异常触发期望
+  triggerExpectation: number;   // 异常触发期望 (归一化进度)
+  anomalyThreshold: number;     // 敌人异常阈值
 }
 
 /**
@@ -1159,8 +1160,18 @@ export class BattleService {
       disorderDamage,
       specialAnomalyDamage,
       totalDamage: directDamage + anomalyDamage + disorderDamage + specialAnomalyDamage,
-      triggerExpectation
+      triggerExpectation,
+      anomalyThreshold: this.getAnomalyThreshold(element)
     };
+  }
+
+  /**
+   * 计算异常触发期望 (用于展示)
+   * 返回敌人异常条阈值
+   */
+  getAnomalyThreshold(element: string): number {
+    if (!this.enemy) return 0;
+    return this.enemy.getCombatStats().getAnomalyThreshold(element);
   }
 
   /**
@@ -1176,6 +1187,9 @@ export class BattleService {
     const enemyThreshold = this.enemy.getCombatStats().getAnomalyThreshold(element);
 
     // zones.accumulate_zone 已经计算了 (1 + 效率) * (1 - 抗性)
-    return anomalyBuildup * zones.accumulate_zone / enemyThreshold;
+    // 这里的返回值其实是触发进度 (0.5 = 50%)
+    // 但调用方可能把它作为期望次数，如果积蓄值远超阈值
+    // 这里我们返回归一化后的进度值
+    return (anomalyBuildup * zones.accumulate_zone) / enemyThreshold;
   }
 }

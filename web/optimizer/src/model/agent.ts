@@ -163,6 +163,10 @@ export class Agent {
   private _isSelfPropertiesLoaded: boolean = false;
   private _isBuffsLoaded: boolean = false;
 
+  // 装备属性缓存
+  private _equipmentStatsCacheValid: boolean = false;
+  private _equipmentStatsCache: PropertyCollection | null = null;
+
   /**
    * 将核心技能属性名称映射到 PropertyType（根据名称）
    * @param name 核心技能属性名称

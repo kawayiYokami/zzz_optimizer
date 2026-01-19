@@ -1129,9 +1129,14 @@ export class OptimizerContext {
 
         // 遍历驱动盘的所有属性
         for (const [prop, value] of props.out_of_combat.entries()) {
+            // 判断是否为主词条
+            const isMainStat = (prop === disc.main_stat);
+
             // 直接匹配
             if (effectiveStats.includes(prop)) {
-                result.set(prop, (result.get(prop) ?? 0) + value);
+                // 主词条按10倍权重计算，副词条按1倍权重
+                const weight = isMainStat ? 10 : 1;
+                result.set(prop, (result.get(prop) ?? 0) + value * weight);
                 continue;
             }
 
@@ -1139,7 +1144,9 @@ export class OptimizerContext {
             const percentType = this.FLAT_TO_PERCENT_MAP[prop];
             if (percentType && effectiveStats.includes(percentType)) {
                 // 固定值转换为等效百分比值（这里用原始值的 1/3 作为权重）
-                result.set(percentType, (result.get(percentType) ?? 0) + value / 3);
+                // 主词条按10倍权重计算，副词条按1倍权重
+                const weight = isMainStat ? 10 : 1;
+                result.set(percentType, (result.get(percentType) ?? 0) + (value / 3) * weight);
             }
         }
 
@@ -1149,7 +1156,9 @@ export class OptimizerContext {
     /**
      * 检查 discA 是否被 discB 支配
      *
-     * 支配条件：B 在每个有效词条上都 >= A，且至少有一个 > A
+     * 支配条件（满足任一即可）：
+     * 1. 维度支配：B 在每个有效词条上都 >= A，且至少有一个 > A
+     * 2. 得分支配：B 的总得分 - A 的总得分 >= 5
      *
      * @returns true 表示 A 被 B 支配，A 应该被丢弃
      */
@@ -1157,6 +1166,7 @@ export class OptimizerContext {
         valuesA: Map<PropertyType, number>,
         valuesB: Map<PropertyType, number>
     ): boolean {
+        // 条件1：维度支配
         let allLessOrEqual = true;
         let atLeastOneLess = false;
 
@@ -1173,13 +1183,24 @@ export class OptimizerContext {
             }
         }
 
-        return allLessOrEqual && atLeastOneLess;
+        const dominatedByDimensions = allLessOrEqual && atLeastOneLess;
+
+        // 条件2：得分支配
+        let scoreA = 0, scoreB = 0;
+        for (const [stat, valueA] of valuesA.entries()) {
+            scoreA += valueA;
+            scoreB += valuesB.get(stat) ?? 0;
+        }
+        const dominatedByScore = (scoreB - scoreA) >= 5;
+
+        // 满足任一条件即被支配
+        return dominatedByDimensions || dominatedByScore;
     }
 
     /**
      * 对一组驱动盘进行支配关系剪枝
      *
-     * 输入：同套装 + 同位置 + 同主词条的驱动盘
+     * 输入：同套装 + 同位置的驱动盘
      * 输出：移除被支配的盘后的列表
      *
      * @param discs 同组驱动盘
@@ -1246,11 +1267,11 @@ export class OptimizerContext {
             return discs;
         }
 
-        // 按 setId + position + mainStat 分组
+        // 按 setId + position 分组（移除 main_stat，让不同主词条的盘也能互相比较）
         const groups = new Map<string, DriveDisk[]>();
 
         for (const disc of discs) {
-            const key = `${disc.game_id}_${disc.position}_${disc.main_stat}`;
+            const key = `${disc.game_id}_${disc.position}`;
             if (!groups.has(key)) {
                 groups.set(key, []);
             }

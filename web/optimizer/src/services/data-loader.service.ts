@@ -6,7 +6,11 @@
  * 2. 个人数据（从导出的JSON文件加载）
  */
 
-import type { AgentSkillSet, AgentSkill, AgentSkillSegment } from '../model/skill';
+import type {
+  AgentSkillSet,
+  AgentSkill,
+  AgentSkillSegment,
+} from "../model/skill";
 
 /**
  * 角色基础信息
@@ -230,7 +234,7 @@ export class DataLoaderService {
     this._isLoading = true;
 
     try {
-      console.log('[DataLoaderService] 开始初始化...');
+      console.log("[DataLoaderService] 开始初始化...");
       // 并行加载所有索引文件
       const [
         characterData,
@@ -239,24 +243,16 @@ export class DataLoaderService {
         bangbooData,
         bangbooIndexData,
         enemyData,
-        enemyIndexData
+        enemyIndexData,
       ] = await Promise.all([
-        this.loadJsonFile<CharacterInfo>('/game-data/character.json'),
-        this.loadJsonFile<WeaponInfo>('/game-data/weapon.json'),
-        this.loadJsonFile<EquipmentInfo>('/game-data/equipment.json'),
-        this.loadJsonFile<BangbooInfo>('/game-data/bangboo.json'),
-        this.loadJsonFile<any>('/game-data/bangboo_index.json'),
-        this.loadJsonFile<EnemyInfo>('/game-data/enemy.json'),
-        this.loadJsonFile<any>('/game-data/enemy_index.json'),
+        this.loadJsonFile<CharacterInfo>("/game-data/character.json"),
+        this.loadJsonFile<WeaponInfo>("/game-data/weapon.json"),
+        this.loadJsonFile<EquipmentInfo>("/game-data/equipment.json"),
+        this.loadJsonFile<BangbooInfo>("/game-data/bangboo.json"),
+        this.loadJsonFile<any>("/game-data/bangboo_index.json"),
+        this.loadJsonFile<EnemyInfo>("/game-data/enemy.json"),
+        this.loadJsonFile<any>("/game-data/enemy_index.json"),
       ]);
-
-      console.log('[DataLoaderService] 角色数据数量:', Object.keys(characterData).length);
-      console.log('[DataLoaderService] 音擎数据数量:', Object.keys(weaponData).length);
-      console.log('[DataLoaderService] 驱动盘数据数量:', Object.keys(equipmentData).length);
-      console.log('[DataLoaderService] 邦布数据数量:', Object.keys(bangbooData).length);
-      console.log('[DataLoaderService] 敌人数据数量:', Object.keys(enemyData).length);
-      console.log('[DataLoaderService] 敌人索引数据数量:', Object.keys(enemyIndexData).length);
-
       // 转换为Map
       this._characterData = new Map(Object.entries(characterData));
       this._weaponData = new Map(Object.entries(weaponData));
@@ -270,9 +266,9 @@ export class DataLoaderService {
       await this.loadAgentSkills();
 
       this._isInitialized = true;
-      console.log('[DataLoaderService] 初始化完成');
+      console.log("[DataLoaderService] 初始化完成");
     } catch (error) {
-      console.error('Failed to initialize DataLoaderService:', error);
+      console.error("Failed to initialize DataLoaderService:", error);
       throw error;
     } finally {
       this._isLoading = false;
@@ -290,14 +286,21 @@ export class DataLoaderService {
 
     const text = await response.text();
     // 检查是否是HTML页面（404错误页面等）
-    if (text.trim().startsWith('<!doctype') || text.trim().startsWith('<html')) {
-      throw new Error(`Failed to load ${path}: Server returned HTML instead of JSON`);
+    if (
+      text.trim().startsWith("<!doctype") ||
+      text.trim().startsWith("<html")
+    ) {
+      throw new Error(
+        `Failed to load ${path}: Server returned HTML instead of JSON`
+      );
     }
 
     try {
       return JSON.parse(text) as Record<string, T>;
     } catch (err) {
-      throw new Error(`Failed to parse JSON from ${path}: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to parse JSON from ${path}: ${err instanceof Error ? err.message : "Unknown error"}`
+      );
     }
   }
 
@@ -311,7 +314,9 @@ export class DataLoaderService {
     }
 
     // 加载数据
-    const promise = this.loadJsonFile<any>(`/game-data/character/${gameId}.json`);
+    const promise = this.loadJsonFile<any>(
+      `/game-data/character/${gameId}.json`
+    );
     this._characterDetailCache.set(gameId, promise);
 
     return promise;
@@ -321,7 +326,6 @@ export class DataLoaderService {
    * 获取角色Buff数据（按需加载）
    */
   async getCharacterBuff(gameId: string): Promise<any> {
-
     // 检查缓存
     if (this._characterBuffCache.has(gameId)) {
       return this._characterBuffCache.get(gameId);
@@ -331,19 +335,24 @@ export class DataLoaderService {
     const promise = (async () => {
       try {
         // 加载数据
-        return await this.loadJsonFile<any>(`/game-data/character_data_buff/${gameId}.json`);
+        return await this.loadJsonFile<any>(
+          `/game-data/character_data_buff/${gameId}.json`
+        );
       } catch (error) {
-        console.error(`[ERROR] 加载BUFF数据失败: /game-data/character_data_buff/${gameId}.json`, error);
+        console.error(
+          `[ERROR] 加载BUFF数据失败: /game-data/character_data_buff/${gameId}.json`,
+          error
+        );
         // 返回一个空的BUFF数据对象，避免后续处理出错
         return {
           core_passive_buffs: [],
           talent_buffs: [],
           mindscape_buffs: [],
-          conversion_buffs: []
+          conversion_buffs: [],
         };
       }
     })();
-    
+
     this._characterBuffCache.set(gameId, promise);
     return promise;
   }
@@ -374,7 +383,9 @@ export class DataLoaderService {
     }
 
     // 加载数据
-    const promise = this.loadJsonFile<any>(`/game-data/weapon_data_buff/${gameId}.json`);
+    const promise = this.loadJsonFile<any>(
+      `/game-data/weapon_data_buff/${gameId}.json`
+    );
     this._weaponBuffCache.set(gameId, promise);
 
     return promise;
@@ -390,7 +401,9 @@ export class DataLoaderService {
     }
 
     // 加载数据
-    const promise = this.loadJsonFile<any>(`/game-data/equipment/${gameId}.json`);
+    const promise = this.loadJsonFile<any>(
+      `/game-data/equipment/${gameId}.json`
+    );
     this._equipmentDetailCache.set(gameId, promise);
 
     return promise;
@@ -406,7 +419,9 @@ export class DataLoaderService {
     }
 
     // 加载数据
-    const promise = this.loadJsonFile<any>(`/game-data/equipment_data_buff/${gameId}.json`);
+    const promise = this.loadJsonFile<any>(
+      `/game-data/equipment_data_buff/${gameId}.json`
+    );
     this._equipmentBuffCache.set(gameId, promise);
 
     return promise;
@@ -467,7 +482,7 @@ export class DataLoaderService {
    */
   async loadAgentSkills(): Promise<void> {
     try {
-      const csvUrl = '/game-data/csv/代理人技能数据.csv';
+      const csvUrl = "/game-data/csv/代理人技能数据.csv";
       const response = await fetch(csvUrl);
       if (!response.ok) {
         throw new Error(`Failed to load ${csvUrl}: ${response.statusText}`);
@@ -475,14 +490,14 @@ export class DataLoaderService {
       const csvText = await response.text();
 
       // 手动解析CSV
-      const lines = csvText.split('\n').filter(line => line.trim());
+      const lines = csvText.split("\n").filter((line) => line.trim());
       if (lines.length === 0) {
         this._agentSkills = new Map();
         return;
       }
 
       // 解析表头
-      const headers = lines[0].split(',').map(h => h.trim());
+      const headers = lines[0].split(",").map((h) => h.trim());
 
       // 查找关键列的索引
       const getIndex = (name: string) => {
@@ -493,23 +508,23 @@ export class DataLoaderService {
         return index;
       };
 
-      const agentNameIdx = getIndex('代理人');
-      const skillNameIdx = getIndex('技能');
-      const segmentNameIdx = getIndex('段');
-      const damageRatioIdx = getIndex('伤害倍率');
-      const damageRatioGrowthIdx = getIndex('伤害倍率成长');
-      const stunRatioIdx = getIndex('失衡倍率');
-      const stunRatioGrowthIdx = getIndex('失衡倍率成长');
-      const energyRecoveryIdx = getIndex('能量回复');
-      const anomalyBuildupIdx = getIndex('异常积蓄');
-      const decibelRecoveryIdx = getIndex('喧响值回复');
-      const flashEnergyAccumulationIdx = getIndex('闪能累积');
-      const corruptionShieldReductionIdx = getIndex('秽盾削减值');
-      const skillTypeIdx = getIndex('技能类型');
-      const attackTypeIdx = getIndex('攻击类型');
-      const energyExtraCostIdx = getIndex('能量额外消耗');
-      const specialEnergyIdx = getIndex('特殊能量');
-      const distanceDecayIdx = getIndex('距离衰减');
+      const agentNameIdx = getIndex("代理人");
+      const skillNameIdx = getIndex("技能");
+      const segmentNameIdx = getIndex("段");
+      const damageRatioIdx = getIndex("伤害倍率");
+      const damageRatioGrowthIdx = getIndex("伤害倍率成长");
+      const stunRatioIdx = getIndex("失衡倍率");
+      const stunRatioGrowthIdx = getIndex("失衡倍率成长");
+      const energyRecoveryIdx = getIndex("能量回复");
+      const anomalyBuildupIdx = getIndex("异常积蓄");
+      const decibelRecoveryIdx = getIndex("喧响值回复");
+      const flashEnergyAccumulationIdx = getIndex("闪能累积");
+      const corruptionShieldReductionIdx = getIndex("秽盾削减值");
+      const skillTypeIdx = getIndex("技能类型");
+      const attackTypeIdx = getIndex("攻击类型");
+      const energyExtraCostIdx = getIndex("能量额外消耗");
+      const specialEnergyIdx = getIndex("特殊能量");
+      const distanceDecayIdx = getIndex("距离衰减");
 
       // 解析数据行
       const skillsMap = new Map<string, AgentSkillSet>();
@@ -518,14 +533,14 @@ export class DataLoaderService {
         const line = lines[i].trim();
         if (!line) continue;
 
-        const values = line.split(',');
+        const values = line.split(",");
 
         // 获取值的辅助函数
-        const getValue = (index: number, defaultValue: any = ''): any => {
+        const getValue = (index: number, defaultValue: any = ""): any => {
           if (index === -1 || index >= values.length) {
             return defaultValue;
           }
-          const value = values[index]?.trim() || '';
+          const value = values[index]?.trim() || "";
           return value;
         };
 
@@ -542,20 +557,23 @@ export class DataLoaderService {
           agentName,
           skillName,
           segmentName,
-          damageRatio: parseFloat(getValue(damageRatioIdx, '0')) || 0,
-          damageRatioGrowth: parseFloat(getValue(damageRatioGrowthIdx, '0')) || 0,
-          stunRatio: parseFloat(getValue(stunRatioIdx, '0')) || 0,
-          stunRatioGrowth: parseFloat(getValue(stunRatioGrowthIdx, '0')) || 0,
-          energyRecovery: parseFloat(getValue(energyRecoveryIdx, '0')) || 0,
-          anomalyBuildup: parseFloat(getValue(anomalyBuildupIdx, '0')) || 0,
-          decibelRecovery: parseFloat(getValue(decibelRecoveryIdx, '0')) || 0,
-          flashEnergyAccumulation: parseFloat(getValue(flashEnergyAccumulationIdx, '0')) || 0,
-          corruptionShieldReduction: parseFloat(getValue(corruptionShieldReductionIdx, '0')) || 0,
-          skillType: parseInt(getValue(skillTypeIdx, '0')) || 0,
-          attackType: parseInt(getValue(attackTypeIdx, '0')) || 0,
-          energyExtraCost: parseFloat(getValue(energyExtraCostIdx, '0')) || 0,
-          specialEnergy: getValue(specialEnergyIdx, ''),
-          distanceDecay: getValue(distanceDecayIdx, ''),
+          damageRatio: parseFloat(getValue(damageRatioIdx, "0")) || 0,
+          damageRatioGrowth:
+            parseFloat(getValue(damageRatioGrowthIdx, "0")) || 0,
+          stunRatio: parseFloat(getValue(stunRatioIdx, "0")) || 0,
+          stunRatioGrowth: parseFloat(getValue(stunRatioGrowthIdx, "0")) || 0,
+          energyRecovery: parseFloat(getValue(energyRecoveryIdx, "0")) || 0,
+          anomalyBuildup: parseFloat(getValue(anomalyBuildupIdx, "0")) || 0,
+          decibelRecovery: parseFloat(getValue(decibelRecoveryIdx, "0")) || 0,
+          flashEnergyAccumulation:
+            parseFloat(getValue(flashEnergyAccumulationIdx, "0")) || 0,
+          corruptionShieldReduction:
+            parseFloat(getValue(corruptionShieldReductionIdx, "0")) || 0,
+          skillType: parseInt(getValue(skillTypeIdx, "0")) || 0,
+          attackType: parseInt(getValue(attackTypeIdx, "0")) || 0,
+          energyExtraCost: parseFloat(getValue(energyExtraCostIdx, "0")) || 0,
+          specialEnergy: getValue(specialEnergyIdx, ""),
+          distanceDecay: getValue(distanceDecayIdx, ""),
         };
 
         // 按agentName分组
@@ -580,9 +598,9 @@ export class DataLoaderService {
       }
 
       this._agentSkills = skillsMap;
-    console.log(`成功加载 ${skillsMap.size} 个角色的技能数据`);
+      console.log(`成功加载 ${skillsMap.size} 个角色的技能数据`);
     } catch (error) {
-      console.error('加载技能数据失败:', error);
+      console.error("加载技能数据失败:", error);
       this._agentSkills = new Map();
     }
   }
