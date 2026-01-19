@@ -1,81 +1,108 @@
 <template>
-  <div class="flex flex-col h-full min-h-0">
-    <!-- 主体区域 -->
+  <div class="flex h-full min-h-0 relative">
+    <!-- 左侧：列表区域 -->
+    <!-- 桌面端显示 (lg:block)；移动端在未显示详情时显示 -->
     <div
-      class="flex-1 grid gap-2 p-0 character-view-grid min-h-0 h-full"
+      class="flex-1 overflow-y-auto p-4 bg-base-200 lg:w-1/3 lg:max-w-md lg:flex-none lg:border-r lg:border-base-300 min-h-0"
+      :class="{ 'hidden': showMobileDetail, 'block': !showMobileDetail, 'lg:block': true }"
     >
-      <!-- 第一列：角色列表 -->
-      <div class="overflow-y-auto">
-        <!-- 过滤按钮区域 -->
-        <div class="p-2 flex flex-wrap gap-2">
-          <!-- 元素类型过滤 -->
-          <button
-            v-for="element in elementTypes"
-            :key="'element-' + element.value"
-            @click="toggleFilter('elements', element.value)"
-            class="btn btn-ghost btn-square flex items-center justify-center shrink-0"
-            :class="{ 'btn-active': filters.elements.includes(element.value) }"
-            :title="element.label"
-          >
-            <img :src="element.icon" :alt="element.label" class="w-8 h-8 object-contain shrink-0" />
-          </button>
+      <!-- 主容器 -->
+      <div class="max-w-6xl mx-auto flex flex-col gap-4">
+        
+        <!-- 1. 筛选与控制区 -->
+        <div class="card bg-base-100 shadow-md">
+          <div class="card-body p-4">
+            <!-- 顶部工具栏：控制区 -->
+            <div class="flex justify-end mb-4" v-if="hasActiveFilters">
+              <button class="btn btn-ghost text-error btn-sm" @click="clearFilters">
+                清除筛选
+              </button>
+            </div>
 
-          <!-- 武器类型过滤 -->
-          <button
-            v-for="weaponType in weaponTypes"
-            :key="'weapon-' + weaponType.value"
-            @click="toggleFilter('weaponTypes', weaponType.value)"
-            class="btn btn-ghost btn-square flex items-center justify-center shrink-0"
-            :class="{ 'btn-active': filters.weaponTypes.includes(weaponType.value) }"
-            :title="weaponType.label"
-          >
-            <img :src="weaponType.icon" :alt="weaponType.label" class="w-8 h-8 object-contain shrink-0" />
-          </button>
+            <!-- 元素类型过滤 -->
+            <div class="flex flex-wrap gap-2 justify-center mb-4">
+              <button
+                v-for="element in elementTypes"
+                :key="'element-' + element.value"
+                @click="toggleFilter('elements', element.value)"
+                class="btn btn-circle btn-lg border border-base-300 p-0"
+                :class="{ 'btn-primary': filters.elements.includes(element.value) }"
+                :title="element.label"
+              >
+                <img :src="element.icon" :alt="element.label" class="w-10 h-10 object-contain" />
+              </button>
+            </div>
 
-          <!-- 稀有度过滤 -->
-          <button
-            v-for="rarity in rarities"
-            :key="'rarity-' + rarity.value"
-            @click="toggleFilter('rarities', rarity.value)"
-            class="btn btn-ghost btn-square flex items-center justify-center shrink-0"
-            :class="{ 'btn-active': filters.rarities.includes(rarity.value) }"
-            :title="rarity.label"
-          >
-            <span class="text-sm font-bold whitespace-nowrap">{{ rarity.label }}</span>
-          </button>
-
-          <!-- 清除筛选 -->
-          <button
-            v-if="hasActiveFilters"
-            @click="clearFilters"
-            class="btn btn-ghost ml-auto shrink-0"
-            title="清除筛选"
-          >
-            ✕ 清除筛选
-          </button>
+            <!-- 武器类型过滤 -->
+            <div class="flex flex-wrap gap-2 justify-center">
+              <button
+                v-for="weaponType in weaponTypes"
+                :key="'weapon-' + weaponType.value"
+                @click="toggleFilter('weaponTypes', weaponType.value)"
+                class="btn btn-circle btn-lg border border-base-300 p-0"
+                :class="{ 'btn-primary': filters.weaponTypes.includes(weaponType.value) }"
+                :title="weaponType.label"
+              >
+                <img :src="weaponType.icon" :alt="weaponType.label" class="w-10 h-10 object-contain" />
+              </button>
+            </div>
+          </div>
         </div>
 
-        <!-- 角色网格 -->
-        <div class="flex flex-wrap justify-center gap-4">
-          <div
-            v-for="agent in filteredAndSortedAgents"
-            :key="agent.id"
-            class="cursor-pointer transform-gpu transition-transform duration-200 hover:scale-105"
-            :class="{ 'ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-lg shadow-primary/50': selectedAgentId === agent.id }"
-            @click="selectAgent(agent.id)"
-          >
-            <AgentCard :agent="agent" />
+        <!-- 2. 角色列表区 -->
+        <div class="min-h-[200px] pb-20 lg:pb-0">
+          <div v-if="filteredAndSortedAgents.length === 0" class="text-center py-10 text-base-content/50">
+            <div class="text-4xl mb-2">🔍</div>
+            <p>没有找到符合条件的代理人</p>
+          </div>
+          
+          <div class="flex flex-wrap justify-center gap-4">
+            <div
+              v-for="agent in filteredAndSortedAgents"
+              :key="agent.id"
+              class="cursor-pointer transform-gpu transition-transform duration-200 hover:scale-105"
+              :class="{ 'ring-4 ring-primary ring-offset-2 ring-offset-base-200 rounded-box z-10': selectedAgentId === agent.id }"
+              @click="selectAgent(agent.id)"
+            >
+              <AgentCard :agent="agent" />
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 右侧：角色详情 -->
-      <div class="overflow-y-auto p-4 h-full min-h-0">
-        <AgentInfoCard
-          v-if="selectedAgent"
-          :agent="selectedAgent"
-          @click-avatar="openFullImageModal"
-        />
+    <!-- 右侧：详情区域 -->
+    <!-- 桌面端显示 (lg:block)；移动端在 showMobileDetail=true 时覆盖显示 (fixed inset-0) -->
+    <div
+      class="bg-base-100 overflow-y-auto min-h-0"
+      :class="{
+        'fixed inset-0 z-50': showMobileDetail,
+        'hidden': !showMobileDetail,
+        'lg:static lg:block lg:flex-1': true
+      }"
+    >
+      <!-- 移动端顶部导航栏 -->
+      <div class="lg:hidden navbar bg-base-100 sticky top-0 z-10 shadow-sm border-b border-base-200">
+         <div class="flex-none">
+           <button @click="closeMobileDetail" class="btn btn-ghost btn-circle">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+             </svg>
+           </button>
+         </div>
+         <div class="flex-1">
+           <span class="font-bold text-lg">角色详情</span>
+         </div>
+      </div>
+
+      <!-- 详情内容 -->
+      <div class="p-4 lg:p-8 h-full">
+        <div v-if="selectedAgent" class="max-w-4xl mx-auto h-full">
+          <AgentInfoCard
+            :agent="selectedAgent"
+            @click-avatar="openFullImageModal"
+          />
+        </div>
         <div v-else class="flex flex-col items-center justify-center h-full text-base-content/50 text-xl">
           <div class="text-6xl mb-4">👈</div>
           <p>请选择角色查看详情</p>
@@ -151,7 +178,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useSaveStore } from '../stores/save.store';
 import AgentCard from '../components/business/AgentCard.vue';
 import AgentInfoCard from '../components/business/AgentInfoCard.vue';
-import { ElementType, WeaponType, Rarity } from '../model/base';
+import { ElementType, WeaponType } from '../model/base';
 import { iconService } from '../services/icon.service';
 import type { Agent } from '../model/agent';
 
@@ -160,8 +187,9 @@ const saveStore = useSaveStore();
 // 状态
 const selectedAgentId = ref<string | null>(null);
 const showFullImageModal = ref(false);
-const sortBy = ref<'rarity' | 'id-desc'>('rarity');
+const sortBy = ref<'rarity'>('rarity'); // 简化排序，默认按稀有度
 const sortAscending = ref(false);
+const showMobileDetail = ref(false); // 控制移动端详情页显示
 
 // 全身立绘缩放和拖动状态
 const imageContainer = ref<HTMLElement | null>(null);
@@ -175,7 +203,6 @@ const dragStart = ref({ x: 0, y: 0 });
 const filters = ref({
   elements: [] as ElementType[],
   weaponTypes: [] as WeaponType[],
-  rarities: [] as Rarity[],
 });
 
 // 筛选选项
@@ -193,11 +220,6 @@ const weaponTypes = [
   { value: WeaponType.ANOMALY, label: '异常', icon: iconService.getWeaponTypeIconUrl(WeaponType.ANOMALY) },
   { value: WeaponType.SUPPORT, label: '支援', icon: iconService.getWeaponTypeIconUrl(WeaponType.SUPPORT) },
   { value: WeaponType.DEFENSE, label: '防护', icon: iconService.getWeaponTypeIconUrl(WeaponType.DEFENSE) },
-];
-
-const rarities = [
-  { value: Rarity.S, label: 'S级' },
-  { value: Rarity.A, label: 'A级' },
 ];
 
 // 计算属性
@@ -219,22 +241,15 @@ const filteredAndSortedAgents = computed(() => {
     );
   }
 
-  if (filters.value.rarities.length > 0) {
-    result = result.filter(agent =>
-      filters.value.rarities.includes(agent.rarity)
-    );
-  }
-
   // 应用排序
   result.sort((a, b) => {
     let comparison = 0;
 
-    if (sortBy.value === 'rarity') {
-      // 稀有度排序（S级=4, A级=3）
-      comparison = b.rarity - a.rarity;
-    } else if (sortBy.value === 'id-desc') {
-      // ID逆序
-      comparison = b.game_id.localeCompare(a.game_id);
+    // 稀有度排序（S级=4, A级=3）
+    comparison = b.rarity - a.rarity;
+    // 稀有度相同时按等级降序
+    if (comparison === 0) {
+      comparison = b.level - a.level;
     }
 
     return sortAscending.value ? -comparison : comparison;
@@ -250,8 +265,7 @@ const selectedAgent = computed(() => {
 
 const hasActiveFilters = computed(() => {
   return filters.value.elements.length > 0 ||
-         filters.value.weaponTypes.length > 0 ||
-         filters.value.rarities.length > 0;
+         filters.value.weaponTypes.length > 0;
 });
 
 // 方法
@@ -273,18 +287,13 @@ function clearWeaponFilters() {
   filters.value.weaponTypes = [];
 }
 
-function clearRarityFilters() {
-  filters.value.rarities = [];
-}
-
 function clearFilters() {
   filters.value.elements = [];
   filters.value.weaponTypes = [];
-  filters.value.rarities = [];
 }
 
-function toggleFilter(filterType: 'elements' | 'weaponTypes' | 'rarities', value: ElementType | WeaponType | Rarity) {
-  const filterArray = filters.value[filterType] as (ElementType | WeaponType | Rarity)[];
+function toggleFilter(filterType: 'elements' | 'weaponTypes', value: ElementType | WeaponType) {
+  const filterArray = filters.value[filterType] as (ElementType | WeaponType)[];
   const index = filterArray.indexOf(value);
   if (index === -1) {
     filterArray.push(value);
@@ -395,26 +404,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.character-view-grid {
-  grid-template-columns: 9rem 1fr;
-}
-
-@media (min-width: 768px) {
-  .character-view-grid {
-    grid-template-columns: 17rem 1fr;
-  }
-}
-
-@media (min-width: 1280px) {
-  .character-view-grid {
-    grid-template-columns: 25rem 1fr;
-  }
-}
-
-/* 禁用按钮激活状态 */
-.no-active:active,
-.no-active:focus-visible {
-  background-color: transparent !important;
-  box-shadow: none !important;
-}
 </style>

@@ -270,39 +270,43 @@ export const useGameDataStore = defineStore('gameData', () => {
       return _driveDiskSetsCache.value;
     }
 
-    // 获取所有驱动盘装备
-    const equipments = allEquipments.value.filter(e => e.type === 'DriveDisc');
+    // 直接获取 equipmentData Map
+    const equipmentData = dataLoaderService.equipmentData;
+    if (!equipmentData) {
+      return [];
+    }
+
     const setsMap = new Map<string, DriveDiskSetInfo>();
 
-    // 按套装ID分组
-    for (const equip of equipments) {
-      if (!setsMap.has(equip.setId)) {
-        // 加载Buff数据获取4件套描述
-        try {
-          const buffs = await dataLoaderService.getEquipmentBuff(equip.setId);
-          
-          // 提取4件套描述
-          let fourPieceDescription = '无4件套效果';
-          if (buffs && buffs.four_piece_effect) {
-            fourPieceDescription = buffs.four_piece_effect;
-          }
+    // 遍历所有套装（equipmentData 的所有条目都是驱动盘套装）
+    for (const [setId, equipInfo] of equipmentData.entries()) {
+      // 提取套装名称（优先中文）
+      const setName = equipInfo.CHS?.name || equipInfo.EN?.name || setId;
 
-          setsMap.set(equip.setId, {
-            id: equip.setId,
-            name: equip.setName,
-            icon: equip.icon,
-            fourPieceDescription: fourPieceDescription
-          });
-        } catch (err) {
-          console.warn(`加载驱动盘套装Buff数据失败: ${equip.setId}`, err);
-          // 即使加载失败，也创建基本信息
-          setsMap.set(equip.setId, {
-            id: equip.setId,
-            name: equip.setName,
-            icon: equip.icon,
-            fourPieceDescription: '加载失败'
-          });
+      try {
+        // 加载Buff数据获取4件套描述
+        const buffs = await dataLoaderService.getEquipmentBuff(setId);
+
+        let fourPieceDescription = '无4件套效果';
+        if (buffs && buffs.four_piece_effect) {
+          fourPieceDescription = buffs.four_piece_effect;
         }
+
+        setsMap.set(setId, {
+          id: setId,
+          name: setName,
+          icon: equipInfo.icon,
+          fourPieceDescription: fourPieceDescription
+        });
+      } catch (err) {
+        console.warn(`加载驱动盘套装Buff数据失败: ${setId}`, err);
+        // 即使加载失败，也创建基本信息
+        setsMap.set(setId, {
+          id: setId,
+          name: setName,
+          icon: equipInfo.icon,
+          fourPieceDescription: '加载失败'
+        });
       }
     }
 

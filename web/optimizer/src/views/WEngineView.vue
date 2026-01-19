@@ -17,7 +17,7 @@
                   class="btn btn-circle btn-lg border border-base-300 p-0"
                   :class="{ 'btn-primary': filters.weaponTypes.length === 1 && filters.weaponTypes[0] === weaponType.value }"
                 >
-                  <img :src="getWeaponTypeIcon(weaponType.value)" :alt="weaponType.label" class="w-10 h-10 object-contain" style="filter: drop-shadow(0 0 4px rgba(0,0,0,0.8));" />
+                  <img :src="getWeaponTypeIcon(weaponType.value)" :alt="weaponType.label" class="w-10 h-10 object-contain" />
                 </button>
               </div>
             </div>

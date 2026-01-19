@@ -1153,12 +1153,6 @@ export class OptimizerContext {
             return score > 0;
         });
 
-        // 只在组内有有效词条时输出日志
-        if (hasEffectiveDisc) {
-            console.log('[DOMINANCE] 同组驱动盘数量:', discs.length);
-            console.log('[DOMINANCE] 有效词条:', effectiveStats);
-        }
-
         // 预计算每个盘的有效词条数值和总分
         const discValues = discs.map(disc => {
             const values = this.getEffectiveStatValues(disc, effectiveStats);
@@ -1167,23 +1161,11 @@ export class OptimizerContext {
             return { disc, values, totalScore };
         });
 
-        // 只在组内有有效词条时输出详细日志
-        if (hasEffectiveDisc) {
-            // 输出每个盘的有效词条数
-            discValues.forEach((dv, idx) => {
-                const statsStr = Array.from(dv.values.entries()).map(([k, v]) => `${k}:${v}`).join(', ');
-                console.log(`[DOMINANCE] 盘${idx}: main_stat=${dv.disc.main_stat}, 有效词条=[${statsStr}], 总分=${dv.totalScore}`);
-            });
-        }
-
         // 步骤1：按总分排序（降序）
         discValues.sort((a, b) => b.totalScore - a.totalScore);
 
         // 获取最高分
         const maxScore = discValues[0].totalScore;
-        if (hasEffectiveDisc) {
-            console.log('[DOMINANCE] 最高分:', maxScore);
-        }
 
         // 步骤2：得分剪枝（低于最高分5分的抛弃）
         const scorePruned: number[] = [];
@@ -1221,10 +1203,6 @@ export class OptimizerContext {
                 }
             }
         }
-
-        dimensionPruned.forEach(idx => {
-            console.log(`[DOMINANCE] 盘${idx} 所有词条都不如其他盘, 抛弃`);
-        });
 
         // 返回未被支配的盘
         return afterScorePruning
@@ -1308,9 +1286,6 @@ export class OptimizerContext {
 
             result.push(...this.filterDominatedDiscs(group, effectiveStats));
         }
-
-        console.log(`[DOMINANCE] 剪枝总览: 总组数=${totalGroups}, 包含有效词条的组数=${effectiveGroups}, 有效词条=${JSON.stringify(effectiveStats)}`);
-
         return result;
     }
 }

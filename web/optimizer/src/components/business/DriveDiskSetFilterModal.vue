@@ -1,6 +1,6 @@
 <template>
   <dialog class="modal" :open="modelValue">
-    <div class="modal-box max-w-2xl overflow-visible">
+    <div class="modal-box max-w-6xl overflow-visible">
       <!-- Header -->
       <div class="flex items-center justify-between mb-4">
         <h3 class="font-bold text-lg">驱动盘套装过滤</h3>
@@ -15,42 +15,48 @@
         <span>选择需要激活的四件套效果。未选择的套装将不会提供4件套加成。</span>
       </div>
 
-      <!-- 套装列表 -->
-      <div class="max-h-96 overflow-y-auto space-y-2">
+      <!-- 套装列表 - 使用网格布局 -->
+      <div class="max-h-[600px] overflow-y-auto">
         <!-- 加载中 -->
         <div v-if="isLoading" class="flex justify-center py-8">
           <span class="loading loading-spinner loading-lg"></span>
         </div>
 
-        <!-- 套装卡片 -->
-        <div
-          v-for="set in availableSets"
-          :key="set.id"
-          class="card card-compact bg-base-200 cursor-pointer hover:bg-base-300 transition-colors"
-          :class="{ 'ring-2 ring-primary': activeSets.includes(set.id) }"
-          @click="toggleSet(set.id)"
-        >
-          <div class="card-body p-3 flex gap-3 items-start">
-            <!-- 勾选框 -->
-            <input
-              type="checkbox"
-              class="checkbox checkbox-primary mt-1"
-              :checked="activeSets.includes(set.id)"
-              @click.stop="toggleSet(set.id)"
-            />
+        <!-- 套装网格 -->
+        <div v-else class="grid grid-cols-4 gap-3">
+          <!-- 套装卡片 -->
+          <div
+            v-for="set in availableSets"
+            :key="set.id"
+            class="card card-compact bg-base-200 cursor-pointer hover:bg-base-300 transition-colors"
+            :class="{ 'ring-2 ring-primary': activeSets.includes(set.id) }"
+            @click="toggleSet(set.id)"
+          >
+            <div class="card-body p-3 flex gap-3 items-start">
+              <!-- 套装图标 -->
+              <img
+                :src="getSetIconUrl(set.icon)"
+                class="w-14 h-14 rounded-lg object-cover bg-base-300 flex-shrink-0"
+                :alt="set.name"
+              />
 
-            <!-- 套装图标 -->
-            <img
-              :src="set.icon"
-              class="w-12 h-12 rounded-lg object-cover bg-base-300"
-              :alt="set.name"
-            />
+              <!-- 右侧：开关和名字（上下排布） -->
+              <div class="flex-1 min-w-0 flex flex-col gap-2">
+                <!-- 勾选框 -->
+                <input
+                  type="checkbox"
+                  class="checkbox checkbox-primary self-start"
+                  :checked="activeSets.includes(set.id)"
+                  @click.stop="toggleSet(set.id)"
+                />
 
-            <!-- 套装信息 -->
-            <div class="flex-1 min-w-0">
-              <div class="font-bold text-base">{{ set.name }}</div>
-              <div class="text-sm text-base-content/70 mt-1 line-clamp-2">
-                4件套：{{ set.fourPieceDescription }}
+                <!-- 套装信息 -->
+                <div>
+                  <div class="font-bold text-sm mb-1">{{ set.name }}</div>
+                  <div class="text-xs text-base-content/70 line-clamp-3">
+                    4件套：{{ set.fourPieceDescription }}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -75,6 +81,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import { useGameDataStore } from '../../stores/game-data.store';
+import { iconService } from '../../services/icon.service';
 
 // Props
 interface Props {
@@ -153,6 +160,11 @@ function close(): void {
   emit('update:modelValue', false);
 }
 
+// 获取套装图标URL
+function getSetIconUrl(iconPath: string): string {
+  return iconService.getEquipmentIconUrl(iconPath);
+}
+
 // 组件挂载时预加载数据
 onMounted(() => {
   if (props.modelValue) {
@@ -165,6 +177,13 @@ onMounted(() => {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

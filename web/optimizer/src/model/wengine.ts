@@ -259,19 +259,15 @@ export class WEngine {
         // 设置副属性类型（从 RandProperty.Name 推断）
         if (wengineDetail.RandProperty) {
           const randPropName = wengineDetail.RandProperty.Name || wengineDetail.RandProperty.Name2;
+          const randPropFormat = wengineDetail.RandProperty.Format || '';
+          const isPercent = randPropFormat.includes('%');
           // 根据名称推断属性类型
-          if (randPropName.includes('攻击力') && randPropName.includes('%')) {
-            wengine.rand_stat_type = PropertyType.ATK_;
-          } else if (randPropName.includes('攻击力')) {
-            wengine.rand_stat_type = PropertyType.ATK;
-          } else if (randPropName.includes('生命值') && randPropName.includes('%')) {
-            wengine.rand_stat_type = PropertyType.HP_;
+          if (randPropName.includes('攻击力')) {
+            wengine.rand_stat_type = isPercent ? PropertyType.ATK_ : PropertyType.ATK;
           } else if (randPropName.includes('生命值')) {
-            wengine.rand_stat_type = PropertyType.HP;
-          } else if (randPropName.includes('防御力') && randPropName.includes('%')) {
-            wengine.rand_stat_type = PropertyType.DEF_;
+            wengine.rand_stat_type = isPercent ? PropertyType.HP_ : PropertyType.HP;
           } else if (randPropName.includes('防御力')) {
-            wengine.rand_stat_type = PropertyType.DEF;
+            wengine.rand_stat_type = isPercent ? PropertyType.DEF_ : PropertyType.DEF;
           } else if (randPropName.includes('暴击率')) {
             wengine.rand_stat_type = PropertyType.CRIT_;
           } else if (randPropName.includes('暴击伤害')) {
@@ -280,6 +276,8 @@ export class WEngine {
             wengine.rand_stat_type = PropertyType.PEN_;
           } else if (randPropName.includes('异常精通')) {
             wengine.rand_stat_type = PropertyType.ANOM_PROF;
+          } else if (randPropName.includes('能量自动回复')) {
+            wengine.rand_stat_type = PropertyType.ENER_REGEN_;
           }
         }
 
@@ -295,7 +293,8 @@ export class WEngine {
               PropertyType.HP_,
               PropertyType.DEF_,
               PropertyType.PEN_,
-              PropertyType.SHIELD_
+              PropertyType.SHIELD_,
+              PropertyType.ENER_REGEN_
             ].includes(wengine.rand_stat_type);
           }
           // 游戏数据是万分比，百分比属性需要除以10000转换为小数
@@ -403,19 +402,15 @@ export class WEngine {
       // 设置副属性类型（从 RandProperty.Name 推断）
       if (wengineDetail.RandProperty) {
         const randPropName = wengineDetail.RandProperty.Name || wengineDetail.RandProperty.Name2;
+        const randPropFormat = wengineDetail.RandProperty.Format || '';
+        const isPercent = randPropFormat.includes('%');
         // 根据名称推断属性类型
-        if (randPropName.includes('攻击力') && randPropName.includes('%')) {
-          wengine.rand_stat_type = PropertyType.ATK_;
-        } else if (randPropName.includes('攻击力')) {
-          wengine.rand_stat_type = PropertyType.ATK;
-        } else if (randPropName.includes('生命值') && randPropName.includes('%')) {
-          wengine.rand_stat_type = PropertyType.HP_;
+        if (randPropName.includes('攻击力')) {
+          wengine.rand_stat_type = isPercent ? PropertyType.ATK_ : PropertyType.ATK;
         } else if (randPropName.includes('生命值')) {
-          wengine.rand_stat_type = PropertyType.HP;
-        } else if (randPropName.includes('防御力') && randPropName.includes('%')) {
-          wengine.rand_stat_type = PropertyType.DEF_;
+          wengine.rand_stat_type = isPercent ? PropertyType.HP_ : PropertyType.HP;
         } else if (randPropName.includes('防御力')) {
-          wengine.rand_stat_type = PropertyType.DEF;
+          wengine.rand_stat_type = isPercent ? PropertyType.DEF_ : PropertyType.DEF;
         } else if (randPropName.includes('暴击率')) {
           wengine.rand_stat_type = PropertyType.CRIT_;
         } else if (randPropName.includes('暴击伤害')) {
@@ -424,28 +419,29 @@ export class WEngine {
           wengine.rand_stat_type = PropertyType.PEN_;
         } else if (randPropName.includes('异常精通')) {
           wengine.rand_stat_type = PropertyType.ANOM_PROF;
+        } else if (randPropName.includes('能量自动回复')) {
+          wengine.rand_stat_type = PropertyType.ENER_REGEN_;
         }
       }
 
       // 设置副属性基础值
-        if (wengineDetail.RandProperty && wengineDetail.RandProperty.Value !== undefined) {
-          // 根据属性类型判断是否是百分比属性
-          let isPercentType = false;
-          if (wengine.rand_stat_type) {
-            isPercentType = [
-              PropertyType.CRIT_,
-              PropertyType.CRIT_DMG_,
-              PropertyType.ATK_,
-              PropertyType.HP_,
-              PropertyType.DEF_,
-              PropertyType.PEN_,
-              PropertyType.SHIELD_
-            ].includes(wengine.rand_stat_type);
-          }
-          // 游戏数据是万分比，百分比属性需要除以10000转换为小数
-          wengine.rand_stat = isPercentType ? wengineDetail.RandProperty.Value / 10000 : wengineDetail.RandProperty.Value;
-        }
-
+            if (wengineDetail.RandProperty && wengineDetail.RandProperty.Value !== undefined) {
+              // 根据属性类型判断是否是百分比属性
+              let isPercentType = false;
+              if (wengine.rand_stat_type) {
+                isPercentType = [
+                              PropertyType.CRIT_,
+                              PropertyType.CRIT_DMG_,
+                              PropertyType.ATK_,
+                              PropertyType.HP_,
+                              PropertyType.DEF_,
+                              PropertyType.PEN_,
+                              PropertyType.SHIELD_,
+                              PropertyType.ENER_REGEN_
+                            ].includes(wengine.rand_stat_type);              }
+              // 游戏数据是万分比，百分比属性需要除以10000转换为小数
+              wengine.rand_stat = isPercentType ? wengineDetail.RandProperty.Value / 10000 : wengineDetail.RandProperty.Value;
+            }
       // 设置等级成长数据（从 Level 获取）
       if (wengineDetail.Level) {
         for (const [level, data] of Object.entries(wengineDetail.Level)) {
