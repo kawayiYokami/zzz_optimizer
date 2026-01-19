@@ -1109,56 +1109,132 @@ export class OptimizerContext {
     /**
      * 获取驱动盘在有效词条上的数值映射
      *
+     * 使用词条数计算：
+     * - 主词条 = 10条
+     * - 副词条 = 1条（强化次数）
+     * - 固定值属性 = 0.33条（1/3折算）
+     *
      * @param disc 驱动盘
      * @param effectiveStats 有效词条列表
-     * @returns 有效词条 -> 数值的映射
+     * @returns 有效词条 -> 词条数的映射（所有有效词条都有值，包括0）
      */
     private static getEffectiveStatValues(
         disc: DriveDisk,
         effectiveStats: PropertyType[]
     ): Map<PropertyType, number> {
-        const result = new Map<PropertyType, number>();
-        if (!effectiveStats.length) return result;
+        // 获取详细词条分布（用于维度剪枝）
+        return disc.getEffectiveStatDetails(effectiveStats);
+    }
 
-        // 初始化所有有效词条为 0
-        for (const stat of effectiveStats) {
-            result.set(stat, 0);
+    /**
+     * 对一组驱动盘进行支配关系剪枝
+     *
+     * 剪枝流程：
+     * 1. 按有效词条总分排序（降序）
+     * 2. 得分剪枝：低于最高分5分的抛弃
+     * 3. 维度剪枝：所有有效词条都不如的也抛弃
+     *
+     * @param discs 同组驱动盘（同套装 + 同位置）
+     * @param effectiveStats 有效词条列表
+     * @returns 过滤后的驱动盘列表
+     */
+    private static filterDominatedDiscs(
+        discs: DriveDisk[],
+        effectiveStats: PropertyType[]
+    ): DriveDisk[] {
+        if (discs.length <= 1 || !effectiveStats.length) {
+            return discs;
         }
 
-        const props = disc.getStats();
+        // 检查组内是否有包含有效词条的盘
+        const hasEffectiveDisc = discs.some(disc => {
+            const score = disc.getEffectiveStatCounts(effectiveStats);
+            return score > 0;
+        });
 
-        // 遍历驱动盘的所有属性
-        for (const [prop, value] of props.out_of_combat.entries()) {
-            // 判断是否为主词条
-            const isMainStat = (prop === disc.main_stat);
+        // 只在组内有有效词条时输出日志
+        if (hasEffectiveDisc) {
+            console.log('[DOMINANCE] 同组驱动盘数量:', discs.length);
+            console.log('[DOMINANCE] 有效词条:', effectiveStats);
+        }
 
-            // 直接匹配
-            if (effectiveStats.includes(prop)) {
-                // 主词条按10倍权重计算，副词条按1倍权重
-                const weight = isMainStat ? 10 : 1;
-                result.set(prop, (result.get(prop) ?? 0) + value * weight);
-                continue;
-            }
+        // 预计算每个盘的有效词条数值和总分
+        const discValues = discs.map(disc => {
+            const values = this.getEffectiveStatValues(disc, effectiveStats);
+            // 直接使用 getEffectiveStatCounts() 获取总分
+            const totalScore = disc.getEffectiveStatCounts(effectiveStats);
+            return { disc, values, totalScore };
+        });
 
-            // 固定值匹配百分比（按 1/3 折算）
-            const percentType = this.FLAT_TO_PERCENT_MAP[prop];
-            if (percentType && effectiveStats.includes(percentType)) {
-                // 固定值转换为等效百分比值（这里用原始值的 1/3 作为权重）
-                // 主词条按10倍权重计算，副词条按1倍权重
-                const weight = isMainStat ? 10 : 1;
-                result.set(percentType, (result.get(percentType) ?? 0) + (value / 3) * weight);
+        // 只在组内有有效词条时输出详细日志
+        if (hasEffectiveDisc) {
+            // 输出每个盘的有效词条数
+            discValues.forEach((dv, idx) => {
+                const statsStr = Array.from(dv.values.entries()).map(([k, v]) => `${k}:${v}`).join(', ');
+                console.log(`[DOMINANCE] 盘${idx}: main_stat=${dv.disc.main_stat}, 有效词条=[${statsStr}], 总分=${dv.totalScore}`);
+            });
+        }
+
+        // 步骤1：按总分排序（降序）
+        discValues.sort((a, b) => b.totalScore - a.totalScore);
+
+        // 获取最高分
+        const maxScore = discValues[0].totalScore;
+        if (hasEffectiveDisc) {
+            console.log('[DOMINANCE] 最高分:', maxScore);
+        }
+
+        // 步骤2：得分剪枝（低于最高分5分的抛弃）
+        const scorePruned: number[] = [];
+        const afterScorePruning: typeof discValues = [];
+        for (let i = 0; i < discValues.length; i++) {
+            const dv = discValues[i];
+            const diff = maxScore - dv.totalScore;
+            if (diff >= 5) {
+                scorePruned.push(i);
+            } else {
+                afterScorePruning.push(dv);
             }
         }
 
-        return result;
+        if (afterScorePruning.length <= 1) {
+            return afterScorePruning.map(item => item.disc);
+        }
+
+        // 步骤3：维度剪枝（所有有效词条都不如的也抛弃）
+        const dimensionPruned: Set<number> = new Set();
+        for (let i = 0; i < afterScorePruning.length; i++) {
+            if (dimensionPruned.has(i)) continue;
+
+            for (let j = 0; j < afterScorePruning.length; j++) {
+                if (i === j) continue;
+                if (dimensionPruned.has(j)) continue;
+
+                const a = afterScorePruning[i];
+                const b = afterScorePruning[j];
+
+                // 检查 a 是否被 b 支配（所有词条都不如）
+                if (this.isDominated(a.values, b.values)) {
+                    dimensionPruned.add(i);
+                    break;
+                }
+            }
+        }
+
+        dimensionPruned.forEach(idx => {
+            console.log(`[DOMINANCE] 盘${idx} 所有词条都不如其他盘, 抛弃`);
+        });
+
+        // 返回未被支配的盘
+        return afterScorePruning
+            .filter((_, idx) => !dimensionPruned.has(idx))
+            .map(item => item.disc);
     }
 
     /**
      * 检查 discA 是否被 discB 支配
      *
-     * 支配条件（满足任一即可）：
-     * 1. 维度支配：B 在每个有效词条上都 >= A，且至少有一个 > A
-     * 2. 得分支配：B 的总得分 - A 的总得分 >= 5
+     * 支配条件：B 在每个有效词条上都 >= A，且至少有一个 > A
      *
      * @returns true 表示 A 被 B 支配，A 应该被丢弃
      */
@@ -1166,7 +1242,6 @@ export class OptimizerContext {
         valuesA: Map<PropertyType, number>,
         valuesB: Map<PropertyType, number>
     ): boolean {
-        // 条件1：维度支配
         let allLessOrEqual = true;
         let atLeastOneLess = false;
 
@@ -1183,73 +1258,7 @@ export class OptimizerContext {
             }
         }
 
-        const dominatedByDimensions = allLessOrEqual && atLeastOneLess;
-
-        // 条件2：得分支配
-        let scoreA = 0, scoreB = 0;
-        for (const [stat, valueA] of valuesA.entries()) {
-            scoreA += valueA;
-            scoreB += valuesB.get(stat) ?? 0;
-        }
-        const dominatedByScore = (scoreB - scoreA) >= 5;
-
-        // 满足任一条件即被支配
-        return dominatedByDimensions || dominatedByScore;
-    }
-
-    /**
-     * 对一组驱动盘进行支配关系剪枝
-     *
-     * 输入：同套装 + 同位置的驱动盘
-     * 输出：移除被支配的盘后的列表
-     *
-     * @param discs 同组驱动盘
-     * @param effectiveStats 有效词条列表
-     * @returns 过滤后的驱动盘列表
-     */
-    private static filterDominatedDiscs(
-        discs: DriveDisk[],
-        effectiveStats: PropertyType[]
-    ): DriveDisk[] {
-        if (discs.length <= 1 || !effectiveStats.length) {
-            return discs;
-        }
-
-        // 预计算每个盘的有效词条数值
-        const discValues = discs.map(disc => ({
-            disc,
-            values: this.getEffectiveStatValues(disc, effectiveStats),
-        }));
-
-        // 标记被支配的盘
-        const dominated = new Set<number>();
-
-        for (let i = 0; i < discValues.length; i++) {
-            if (dominated.has(i)) continue;
-
-            for (let j = i + 1; j < discValues.length; j++) {
-                if (dominated.has(j)) continue;
-
-                const a = discValues[i];
-                const b = discValues[j];
-
-                // 检查 a 是否被 b 支配
-                if (this.isDominated(a.values, b.values)) {
-                    dominated.add(i);
-                    break;  // a 被支配，跳出内层循环
-                }
-
-                // 检查 b 是否被 a 支配
-                if (this.isDominated(b.values, a.values)) {
-                    dominated.add(j);
-                }
-            }
-        }
-
-        // 返回未被支配的盘
-        return discValues
-            .filter((_, idx) => !dominated.has(idx))
-            .map(item => item.disc);
+        return allLessOrEqual && atLeastOneLess;
     }
 
     /**
@@ -1280,9 +1289,26 @@ export class OptimizerContext {
 
         // 对每组进行支配关系剪枝
         const result: DriveDisk[] = [];
+        let totalGroups = 0;
+        let effectiveGroups = 0;
+
         for (const group of groups.values()) {
+            totalGroups++;
+
+            // 检查组内是否有包含有效词条的盘
+            const hasEffectiveDisc = group.some(disc => {
+                const score = disc.getEffectiveStatCounts(effectiveStats);
+                return score > 0;
+            });
+
+            if (hasEffectiveDisc) {
+                effectiveGroups++;
+            }
+
             result.push(...this.filterDominatedDiscs(group, effectiveStats));
         }
+
+        console.log(`[DOMINANCE] 剪枝总览: 总组数=${totalGroups}, 包含有效词条的组数=${effectiveGroups}, 有效词条=${JSON.stringify(effectiveStats)}`);
 
         return result;
     }

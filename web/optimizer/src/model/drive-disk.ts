@@ -280,6 +280,122 @@ export class DriveDisk {
   }
 
   /**
+   * 获取用于支配关系剪枝的有效词条总分
+   *
+   * 计算规则：
+   * - 主词条 = 10条
+   * - 副词条 = 1条（强化次数）
+   * - 固定值属性（HP/ATK/DEF/PEN）= 0.33条（1/3折算）
+   *
+   * @param effectiveStats 有效词条列表
+   * @returns 有效词条总分
+   */
+  getEffectiveStatCounts(effectiveStats: PropertyType[]): number {
+    let totalScore = 0;
+
+    // 固定值到百分比的映射
+    const flatToPercentMap: Partial<Record<PropertyType, PropertyType>> = {
+      [PropertyType.ATK]: PropertyType.ATK_,
+      [PropertyType.HP]: PropertyType.HP_,
+      [PropertyType.DEF]: PropertyType.DEF_,
+      [PropertyType.PEN]: PropertyType.PEN_,
+    };
+
+    // 检查属性是否是有效词条（支持固定值映射）
+    const isEffectiveStat = (prop: PropertyType): boolean => {
+      // 直接匹配
+      if (effectiveStats.includes(prop)) return true;
+      // 固定值映射到百分比
+      const percentType = flatToPercentMap[prop];
+      return percentType !== undefined && effectiveStats.includes(percentType);
+    };
+
+    // 主词条：10条（如果属于有效词条）
+    if (isEffectiveStat(this.main_stat)) {
+      totalScore += 10;
+    }
+
+    // 副词条：1条（强化次数，如果属于有效词条）
+    for (const [prop, statValue] of this.sub_stats.entries()) {
+      if (!isEffectiveStat(prop)) continue;
+
+      const rolls = statValue.value; // 强化次数（词条数）
+
+      // 判断是否是固定值属性
+      const isFlatValue = [
+        PropertyType.HP,
+        PropertyType.ATK,
+        PropertyType.DEF,
+        PropertyType.PEN
+      ].includes(prop);
+
+      // 固定值属性按 1/3 折算
+      const count = isFlatValue ? rolls / 3 : rolls;
+      totalScore += count;
+    }
+
+    return totalScore;
+  }
+
+  /**
+   * 获取用于支配关系剪枝的有效词条详细分布
+   *
+   * 计算规则：
+   * - 主词条 = 10条
+   * - 副词条 = 1条（强化次数）
+   * - 固定值属性（HP/ATK/DEF/PEN）= 0.33条（1/3折算）
+   *
+   * @param effectiveStats 有效词条列表
+   * @returns 有效词条类型 -> 词条数的映射（只包含有效词条）
+   */
+  getEffectiveStatDetails(effectiveStats: PropertyType[]): Map<PropertyType, number> {
+    const result = new Map<PropertyType, number>();
+
+    // 固定值到百分比的映射
+    const flatToPercentMap: Partial<Record<PropertyType, PropertyType>> = {
+      [PropertyType.ATK]: PropertyType.ATK_,
+      [PropertyType.HP]: PropertyType.HP_,
+      [PropertyType.DEF]: PropertyType.DEF_,
+      [PropertyType.PEN]: PropertyType.PEN_,
+    };
+
+    // 检查属性是否是有效词条（支持固定值映射）
+    const isEffectiveStat = (prop: PropertyType): boolean => {
+      // 直接匹配
+      if (effectiveStats.includes(prop)) return true;
+      // 固定值映射到百分比
+      const percentType = flatToPercentMap[prop];
+      return percentType !== undefined && effectiveStats.includes(percentType);
+    };
+
+    // 主词条：10条（如果属于有效词条）
+    if (isEffectiveStat(this.main_stat)) {
+      result.set(this.main_stat, 10);
+    }
+
+    // 副词条：1条（强化次数，如果属于有效词条）
+    for (const [prop, statValue] of this.sub_stats.entries()) {
+      if (!isEffectiveStat(prop)) continue;
+
+      const rolls = statValue.value; // 强化次数（词条数）
+
+      // 判断是否是固定值属性
+      const isFlatValue = [
+        PropertyType.HP,
+        PropertyType.ATK,
+        PropertyType.DEF,
+        PropertyType.PEN
+      ].includes(prop);
+
+      // 固定值属性按 1/3 折算
+      const count = isFlatValue ? rolls / 3 : rolls;
+      result.set(prop, (result.get(prop) ?? 0) + count);
+    }
+
+    return result;
+  }
+
+  /**
    * 获取套装Buff
    *
    * @param setBonus 套装加成类型
