@@ -103,14 +103,20 @@ export class FastEvaluator {
         }
       }
       if (count >= 4) {
-        const fourPiece = setBonus.fourPiece;
-        for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
-          this.accumulator[j] += fourPiece[j];
-        }
-        // 4 件套 Buff
-        if (setBonus.fourPieceBuff) {
+        // 检查套装是否在激活列表中
+        const isActive = this.precomputed.activeDiskSets.includes(setBonus.setId);
+
+        // 只有激活的套装才提供4件套效果
+        if (isActive) {
+          const fourPiece = setBonus.fourPiece;
           for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
-            this.accumulator[j] += setBonus.fourPieceBuff[j];
+            this.accumulator[j] += fourPiece[j];
+          }
+          // 4 件套 Buff
+          if (setBonus.fourPieceBuff) {
+            for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
+              this.accumulator[j] += setBonus.fourPieceBuff[j];
+            }
           }
         }
       }

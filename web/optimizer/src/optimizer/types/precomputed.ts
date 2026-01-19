@@ -161,6 +161,12 @@ export interface PrecomputedData {
    * 套装 ID 到索引的映射
    */
   setIdToIdx: Record<string, number>;
+
+  /**
+   * 激活的驱动盘套装 ID 列表
+   * 只有在此列表中的套装才会提供 4 件套效果
+   */
+  activeDiskSets: string[];
 }
 
 /**
@@ -238,5 +244,6 @@ export function createEmptyPrecomputedData(): PrecomputedData {
     },
     agentLevel: 60,
     setIdToIdx: {},
+    activeDiskSets: [],
   };
 }

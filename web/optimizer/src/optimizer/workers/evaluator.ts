@@ -177,7 +177,7 @@ export class Evaluator {
             const setBonus = this.setBonusMap.get(setId);
             if (!setBonus) continue;
 
-            // 2 件套加成
+            // 2 件套加成（始终生效）
             if (count >= 2) {
                 for (const [propKey, value] of Object.entries(setBonus.twoPieceStats)) {
                     const propType = Number(propKey) as PropertyType;
@@ -188,19 +188,25 @@ export class Evaluator {
                 }
             }
 
-            // 4 件套加成
+            // 4 件套加成（需要检查是否激活）
             if (count >= 4) {
-                for (const [propKey, value] of Object.entries(setBonus.fourPieceStats)) {
-                    const propType = Number(propKey) as PropertyType;
-                    if (value !== undefined && value !== 0) {
-                        const current = props.out_of_combat.get(propType) ?? 0;
-                        props.out_of_combat.set(propType, current + value);
-                    }
-                }
+                // 检查套装是否在激活列表中
+                const isActive = this.request.constraints.activeDiskSets.includes(setId);
 
-                // 4 件套 Buff
-                for (const buff of setBonus.fourPieceBuffs) {
-                    this.applyBuffData(props, buff);
+                // 只有激活的套装才提供4件套效果
+                if (isActive) {
+                    for (const [propKey, value] of Object.entries(setBonus.fourPieceStats)) {
+                        const propType = Number(propKey) as PropertyType;
+                        if (value !== undefined && value !== 0) {
+                            const current = props.out_of_combat.get(propType) ?? 0;
+                            props.out_of_combat.set(propType, current + value);
+                        }
+                    }
+
+                    // 4 件套 Buff
+                    for (const buff of setBonus.fourPieceBuffs) {
+                        this.applyBuffData(props, buff);
+                    }
                 }
             }
         }

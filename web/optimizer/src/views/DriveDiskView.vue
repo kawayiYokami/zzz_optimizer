@@ -1,71 +1,48 @@
 <template>
   <div class="flex flex-col h-full min-h-0">
-    <div class="flex flex-1 min-h-0">
-      <!-- 左侧过滤栏 -->
-      <div class="w-64 bg-base-100 border-r border-base-300 shrink-0 overflow-y-auto">
-        <div class="p-4 space-y-6">
-          <!-- 等级筛选 -->
-          <div>
-            <div class="flex items-center justify-between">
-              <div class="font-semibold text-sm">满级</div>
-              <input
-                type="checkbox"
-                v-model="filters.maxLevel"
-                class="toggle toggle-sm"
-              />
-            </div>
-          </div>
-
-          <!-- 部位筛选 -->
-          <div>
-            <div class="font-semibold text-sm mb-2">部位</div>
-            <div class="join w-full">
-              <button
-                v-for="position in positions"
-                :key="position.value"
-                @click="togglePosition(position.value)"
-                class="btn btn-sm flex-1 join-item"
-                :class="{ 'btn-active': filters.positions.includes(position.value) }"
-              >
-                {{ position.label }}
-              </button>
-            </div>
-          </div>
-
-          <!-- 套装筛选 -->
-          <div>
-            <details class="collapse collapse-arrow bg-base-200" open>
-              <summary class="collapse-title font-semibold text-sm">套装</summary>
-              <div class="collapse-content">
-                <div class="space-y-2 pt-2">
-                  <label v-for="set in availableSets" :key="set" class="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      :value="set"
-                      v-model="filters.sets"
-                      class="checkbox checkbox-sm"
-                    />
-                    <img :src="getSetIcon(set)" :alt="set" class="w-6 h-6 object-contain" />
-                    <span class="text-sm truncate flex-1">{{ set }}</span>
-                  </label>
-                </div>
+    <!-- 右侧滚动区域 -->
+    <div class="flex-1 overflow-y-auto p-4 min-h-0 bg-base-200">
+      <!-- 主容器（6XL宽度） -->
+      <div class="max-w-6xl mx-auto">
+        <!-- 过滤卡片 -->
+        <div class="card bg-base-100 shadow-md mb-4">
+          <div class="card-body p-4">
+            <!-- 套装过滤 -->
+            <div class="mb-4">
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="set in availableSets"
+                  :key="set"
+                  @click="toggleSet(set)"
+                  class="btn btn-circle btn-lg border border-base-300 p-0"
+                  :class="{ 'btn-primary': filters.sets.includes(set) }"
+                >
+                  <img :src="getSetIcon(set)" :alt="set" class="w-10 h-10 object-contain" />
+                </button>
               </div>
-            </details>
+            </div>
+
+            <!-- 分割线 -->
+            <div class="divider my-3"></div>
+
+            <!-- 部位按钮 -->
+            <div>
+              <div class="join w-full">
+                <button
+                  v-for="position in positions"
+                  :key="position.value"
+                  @click="selectPosition(position.value)"
+                  class="btn btn-sm flex-1 join-item"
+                  :class="{ 'btn-primary': filters.positions.length === 1 && filters.positions[0] === position.value }"
+                >
+                  {{ position.label }}
+                </button>
+              </div>
+            </div>
           </div>
-
-          <!-- 清除筛选 -->
-          <button
-            v-if="filters.sets.length > 0 || filters.positions.length > 0 || filters.maxLevel"
-            @click="clearFilters"
-            class="btn btn-sm btn-outline w-full"
-          >
-            清除筛选 ({{ filters.sets.length + filters.positions.length + (filters.maxLevel ? 1 : 0) }})
-          </button>
         </div>
-      </div>
 
-      <!-- 右侧滚动区域 -->
-      <div class="flex-1 overflow-y-auto p-4 min-h-0 bg-base-200">
+        <!-- 驱动盘列表 -->
         <div class="flex flex-wrap justify-center gap-4">
           <DriveDiskCard
             v-for="disk in filteredAndSortedDisks"
@@ -96,8 +73,7 @@ const saveStore = useSaveStore();
 // 筛选条件
 const filters = ref({
   sets: [] as string[],
-  positions: [] as DriveDiskPosition[],
-  maxLevel: false,
+  positions: [DriveDiskPosition.SLOT_1] as DriveDiskPosition[],
 });
 
 // 部位选项
@@ -142,15 +118,6 @@ const filteredAndSortedDisks = computed(() => {
     );
   }
 
-  // 应用等级筛选
-  if (filters.value.maxLevel) {
-    // 打开：只显示满级
-    result = result.filter(disk => disk.level === 15);
-  } else {
-    // 关闭：只显示未满级
-    result = result.filter(disk => disk.level < 15);
-  }
-
   // 排序：先按套装，再按部位，再按稀有度
   result.sort((a, b) => {
     // 套装名称排序
@@ -167,21 +134,24 @@ const filteredAndSortedDisks = computed(() => {
   return result;
 });
 
-// 切换部位
-function togglePosition(position: DriveDiskPosition) {
-  const index = filters.value.positions.indexOf(position);
-  if (index === -1) {
-    filters.value.positions.push(position);
-  } else {
-    filters.value.positions.splice(index, 1);
-  }
+// 选择部位（单选模式）
+function selectPosition(position: DriveDiskPosition) {
+  filters.value.positions = [position];
 }
 
-// 清除筛选
-function clearFilters() {
+// 清除套装筛选
+function clearSetFilters() {
   filters.value.sets = [];
-  filters.value.positions = [];
-  filters.value.maxLevel = false;
+}
+
+// 切换套装筛选
+function toggleSet(setName: string) {
+  const index = filters.value.sets.indexOf(setName);
+  if (index === -1) {
+    filters.value.sets.push(setName);
+  } else {
+    filters.value.sets.splice(index, 1);
+  }
 }
 
 // 获取套装图标

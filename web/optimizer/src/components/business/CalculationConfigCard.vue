@@ -65,6 +65,43 @@
         </div>
       </div>
 
+      <!-- 套装过滤 -->
+      <div class="divider my-2"></div>
+      <h3 class="font-bold text-sm">套装过滤</h3>
+      <div class="flex flex-col gap-2 mt-2">
+        <!-- 激活的套装徽章 -->
+        <div class="flex flex-wrap gap-1">
+          <!-- 无选择时 -->
+          <div v-if="activeDiskSets.length === 0" class="badge badge-ghost">
+            无（不激活任何四件套）
+          </div>
+          <!-- 有选择时 -->
+          <div
+            v-for="setId in activeDiskSets"
+            :key="setId"
+            class="badge badge-primary badge-outline cursor-pointer hover:badge-error"
+            @click="removeSet(setId)"
+            :title="'点击移除: ' + getSetName(setId)"
+          >
+            {{ getSetName(setId) }} ✕
+          </div>
+        </div>
+        <!-- 配置按钮 -->
+        <button
+          class="btn btn-sm btn-outline"
+          @click="openSetFilter"
+        >
+          配置套装过滤
+        </button>
+      </div>
+
+      <!-- 套装过滤弹窗 -->
+      <DriveDiskSetFilterModal
+        v-model="showSetFilterModal"
+        :active-sets="activeDiskSets"
+        @update:active-sets="emit('update:activeDiskSets', $event)"
+      />
+
       <!-- 组合明细 -->
       <div class="divider my-2"></div>
       <h3 class="font-bold text-sm">组合明细</h3>
@@ -130,9 +167,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { AggregatedProgress } from '../../optimizer/services';
 import type { PropertyType } from '../../model/base';
+import { useGameDataStore } from '../../stores/game-data.store';
+import DriveDiskSetFilterModal from './DriveDiskSetFilterModal.vue';
 
 // Props
 interface StatOption {
@@ -161,6 +200,7 @@ interface Props {
   pruningStats: PruningStats;
   estimatedCombinations: CombinationEstimate;
   canStart: boolean;
+  activeDiskSets: string[]; // 激活的驱动盘套装ID列表
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -173,6 +213,7 @@ const props = withDefaults(defineProps<Props>(), {
   pruningStats: () => ({ before: 0, after: 0, removed: 0 }),
   estimatedCombinations: () => ({ total: 0, breakdown: {} }),
   canStart: false,
+  activeDiskSets: () => [],
 });
 
 // Emits
@@ -182,9 +223,14 @@ interface Emits {
   'toggleEffectiveStat': [stat: PropertyType];
   'startOptimization': [];
   'cancelOptimization': [];
+  'update:activeDiskSets': [sets: string[]];
 }
 
 const emit = defineEmits<Emits>();
+
+// 状态
+const gameDataStore = useGameDataStore();
+const showSetFilterModal = ref(false);
 
 // 计算属性
 const progressPercentage = computed(() => {
@@ -210,4 +256,21 @@ const formatTime = (seconds: number) => {
   const s = Math.ceil(seconds % 60);
   return `${m}m${s}s`;
 };
+
+// 打开套装过滤弹窗
+function openSetFilter(): void {
+  showSetFilterModal.value = true;
+}
+
+// 移除套装
+function removeSet(setId: string): void {
+  const newSets = props.activeDiskSets.filter(id => id !== setId);
+  emit('update:activeDiskSets', newSets);
+}
+
+// 获取套装名称
+function getSetName(setId: string): string {
+  const info = gameDataStore.getEquipmentInfo(setId);
+  return info?.setName ?? setId;
+}
 </script>

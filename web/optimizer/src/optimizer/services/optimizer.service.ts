@@ -996,6 +996,7 @@ export class OptimizerService {
                 mainStatScore: 10,
                 pruneThreshold: 10,
             },
+            activeDiskSets: [],
         };
     }
 

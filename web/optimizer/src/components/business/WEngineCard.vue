@@ -1,5 +1,5 @@
 <template>
-  <div class="card bg-base-200 shadow-xl compact-card border border-base-300 w-64 overflow-hidden">
+  <div class="card bg-base-200 shadow-xl compact-card border border-base-300 w-52 overflow-hidden">
     <!-- Image Section with Rarity Gradient -->
     <figure :class="['relative h-32 w-full', rarityGradientClass]">
         <!-- Weapon Type Icon (Top Left) -->
@@ -142,6 +142,6 @@ function formatValue(value: number, isPercent: boolean) {
 
 <style scoped>
 .compact-card {
-  min-height: 280px;
+  min-height: 220px;
 }
 </style>

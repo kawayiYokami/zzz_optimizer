@@ -673,6 +673,11 @@ function parsePropertyType(key: string): PropertyType {
     'anomaly_proficiency': PropertyType.ANOM_PROF,
     'impact': PropertyType.IMPACT,
     'impact_': PropertyType.IMPACT_,
+    'physical_dmg_': PropertyType.PHYSICAL_DMG_,
+    'fire_dmg_': PropertyType.FIRE_DMG_,
+    'ice_dmg_': PropertyType.ICE_DMG_,
+    'electric_dmg_': PropertyType.ELECTRIC_DMG_,
+    'ether_dmg_': PropertyType.ETHER_DMG_,
     // 驼峰形式
     'energyRegen': PropertyType.ENER_REGEN,
     'energyRegen_': PropertyType.ENER_REGEN_,

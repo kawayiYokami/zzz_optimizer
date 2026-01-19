@@ -1,5 +1,5 @@
 <template>
-  <div class="card bg-base-200 shadow-xl compact-card border border-base-300 w-64">
+  <div class="card bg-base-200 shadow-xl compact-card border border-base-300 w-52">
     <!-- Card Header: Rarity color top border -->
     <div :class="['h-1 w-full', rarityColorClass]"></div>
 
@@ -44,9 +44,8 @@
         <table class="table table-sm table-compact">
           <tbody>
             <tr v-for="subStat in getSubStatsWithRolls()" :key="subStat.prop">
-              <td class="w-20 py-2">{{ getPropName(subStat.prop) }}</td>
+              <td class="py-2">{{ getPropName(subStat.prop) }}{{ subStat.rolls > 0 ? ` +${subStat.rolls}` : '' }}</td>
               <td class="text-right py-0">{{ formatValue(subStat.value, subStat.isPercent) }}</td>
-              <td class="text-right w-8 py-0">+{{ subStat.rolls }}</td>
             </tr>
           </tbody>
         </table>
@@ -148,6 +147,6 @@ function formatValue(value: number, isPercent: boolean) {
 
 <style scoped>
 .compact-card {
-  min-height: 280px;
+  min-height: 220px;
 }
 </style>

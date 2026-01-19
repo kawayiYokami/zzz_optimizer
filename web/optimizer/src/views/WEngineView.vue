@@ -1,51 +1,30 @@
 <template>
   <div class="flex flex-col h-full min-h-0">
-    <div class="flex flex-1 min-h-0">
-      <!-- 左侧过滤栏 -->
-      <div class="w-48 bg-base-100 border-r border-base-300 shrink-0 overflow-y-auto">
-        <div class="p-4 space-y-6">
-          <!-- 等级筛选 -->
-          <div>
-            <div class="flex items-center justify-between">
-              <div class="font-semibold text-sm">满级</div>
-              <input
-                type="checkbox"
-                v-model="filters.maxLevel"
-                class="toggle toggle-sm"
-              />
+    <!-- 右侧滚动区域 -->
+    <div class="flex-1 overflow-y-auto p-4 min-h-0 bg-base-200">
+      <!-- 主容器（6XL宽度） -->
+      <div class="max-w-6xl mx-auto">
+        <!-- 过滤卡片 -->
+        <div class="card bg-base-100 shadow-md mb-4">
+          <div class="card-body p-4">
+            <!-- 武器类型过滤 -->
+            <div>
+              <div class="flex flex-wrap justify-center gap-2">
+                <button
+                  v-for="weaponType in weaponTypes"
+                  :key="weaponType.value"
+                  @click="selectWeaponType(weaponType.value)"
+                  class="btn btn-circle btn-lg border border-base-300 p-0"
+                  :class="{ 'btn-primary': filters.weaponTypes.length === 1 && filters.weaponTypes[0] === weaponType.value }"
+                >
+                  <img :src="getWeaponTypeIcon(weaponType.value)" :alt="weaponType.label" class="w-10 h-10 object-contain" style="filter: drop-shadow(0 0 4px rgba(0,0,0,0.8));" />
+                </button>
+              </div>
             </div>
           </div>
-
-          <!-- 武器类型筛选 -->
-          <div>
-            <div class="font-semibold text-sm mb-2">武器类型</div>
-            <div class="join join-vertical w-full">
-              <button
-                v-for="weaponType in weaponTypes"
-                :key="weaponType.value"
-                @click="toggleWeaponType(weaponType.value)"
-                class="btn btn-sm join-item"
-                :class="{ 'btn-active': filters.weaponTypes.includes(weaponType.value) }"
-              >
-                <img :src="getWeaponTypeIcon(weaponType.value)" :alt="weaponType.label" class="w-5 h-5 object-contain mr-2" />
-                {{ weaponType.label }}
-              </button>
-            </div>
-          </div>
-
-          <!-- 清除筛选 -->
-          <button
-            v-if="filters.weaponTypes.length > 0 || filters.maxLevel"
-            @click="clearFilters"
-            class="btn btn-sm btn-outline w-full"
-          >
-            清除筛选 ({{ filters.weaponTypes.length + (filters.maxLevel ? 1 : 0) }})
-          </button>
         </div>
-      </div>
 
-      <!-- 右侧滚动区域 -->
-      <div class="flex-1 overflow-y-auto p-4 min-h-0 bg-base-200">
+        <!-- 音擎列表 -->
         <div class="flex flex-wrap justify-center gap-4">
           <WEngineCard
             v-for="wengine in filteredAndSortedWEngines"
@@ -75,8 +54,7 @@ const saveStore = useSaveStore();
 
 // 筛选条件
 const filters = ref({
-  weaponTypes: [] as WeaponType[],
-  maxLevel: false,
+  weaponTypes: [WeaponType.ATTACK] as WeaponType[],
 });
 
 // 武器类型选项
@@ -102,20 +80,11 @@ const filteredAndSortedWEngines = computed(() => {
     );
   }
 
-  // 应用等级筛选
-  if (filters.value.maxLevel) {
-    // 打开：只显示满级
-    result = result.filter(wengine => wengine.level === 60);
-  } else {
-    // 关闭：只显示未满级
-    result = result.filter(wengine => wengine.level < 60);
-  }
-
   // 排序：按等级（从高到低），再按序号（从大到小）
   result.sort((a, b) => {
     // 等级排序（从高到低）
     if (a.level !== b.level) return b.level - a.level;
-    
+
     // 序号排序（从大到小）
     return b.id.localeCompare(a.id);
   });
@@ -123,20 +92,9 @@ const filteredAndSortedWEngines = computed(() => {
   return result;
 });
 
-// 切换武器类型
-function toggleWeaponType(weaponType: WeaponType) {
-  const index = filters.value.weaponTypes.indexOf(weaponType);
-  if (index === -1) {
-    filters.value.weaponTypes.push(weaponType);
-  } else {
-    filters.value.weaponTypes.splice(index, 1);
-  }
-}
-
-// 清除筛选
-function clearFilters() {
-  filters.value.weaponTypes = [];
-  filters.value.maxLevel = false;
+// 选择武器类型（单选模式）
+function selectWeaponType(weaponType: WeaponType) {
+  filters.value.weaponTypes = [weaponType];
 }
 
 // 获取武器类型图标

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card bg-base-100 shadow-xl compact-card border border-base-300 w-72 overflow-hidden transition-all"
+    class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52 overflow-hidden transition-all"
     :class="{
       'cursor-pointer hover:shadow-2xl hover:scale-[1.02]': clickable
     }"
@@ -74,7 +74,7 @@
       </div>
       
       <!-- Stun Vulnerability -->
-      <div v-if="enemy.can_stun" class="text-xs flex justify-between bg-yellow-50 dark:bg-yellow-900/20 p-1 px-2 rounded text-yellow-700 dark:text-yellow-500">
+      <div v-if="enemy.can_stun" class="text-xs flex justify-between bg-base-200 p-1 px-2 rounded">
         <span>失衡易伤倍率</span>
         <span class="font-bold">{{ (enemy.stun_vulnerability_multiplier * 100).toFixed(0) }}%</span>
       </div>
@@ -132,6 +132,6 @@ function getResClass(val: number) {
 
 <style scoped>
 .compact-card {
-  min-height: 280px;
+  min-height: 220px;
 }
 </style>

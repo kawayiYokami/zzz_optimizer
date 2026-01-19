@@ -245,10 +245,78 @@ export const useGameDataStore = defineStore('gameData', () => {
   }
 
   /**
+   * 驱动盘套装信息接口
+   */
+  interface DriveDiskSetInfo {
+    id: string;              // 套装ID
+    name: string;            // 套装中文名称
+    icon: string;            // 套装图标URL
+    fourPieceDescription: string; // 4件套效果描述
+  }
+
+  /**
+   * 驱动盘套装缓存
+   */
+  const _driveDiskSetsCache = ref<DriveDiskSetInfo[] | null>(null);
+
+  /**
+   * 获取所有驱动盘套装信息
+   *
+   * @returns 驱动盘套装信息列表
+   */
+  async function getDriveDiskSets(): Promise<DriveDiskSetInfo[]> {
+    // 如果已缓存，直接返回
+    if (_driveDiskSetsCache.value !== null) {
+      return _driveDiskSetsCache.value;
+    }
+
+    // 获取所有驱动盘装备
+    const equipments = allEquipments.value.filter(e => e.type === 'DriveDisc');
+    const setsMap = new Map<string, DriveDiskSetInfo>();
+
+    // 按套装ID分组
+    for (const equip of equipments) {
+      if (!setsMap.has(equip.setId)) {
+        // 加载Buff数据获取4件套描述
+        try {
+          const buffs = await dataLoaderService.getEquipmentBuff(equip.setId);
+          
+          // 提取4件套描述
+          let fourPieceDescription = '无4件套效果';
+          if (buffs && buffs.four_piece_effect) {
+            fourPieceDescription = buffs.four_piece_effect;
+          }
+
+          setsMap.set(equip.setId, {
+            id: equip.setId,
+            name: equip.setName,
+            icon: equip.icon,
+            fourPieceDescription: fourPieceDescription
+          });
+        } catch (err) {
+          console.warn(`加载驱动盘套装Buff数据失败: ${equip.setId}`, err);
+          // 即使加载失败，也创建基本信息
+          setsMap.set(equip.setId, {
+            id: equip.setId,
+            name: equip.setName,
+            icon: equip.icon,
+            fourPieceDescription: '加载失败'
+          });
+        }
+      }
+    }
+
+    // 缓存结果
+    _driveDiskSetsCache.value = Array.from(setsMap.values());
+    return _driveDiskSetsCache.value;
+  }
+
+  /**
    * 清除缓存
    */
   function clearCache(): void {
     dataLoaderService.clearCache();
+    _driveDiskSetsCache.value = null;
   }
 
   /**
@@ -293,6 +361,7 @@ export const useGameDataStore = defineStore('gameData', () => {
     getWeaponBuff,
     getEquipmentDetail,
     getEquipmentBuff,
+    getDriveDiskSets,
     clearCache,
     reset,
   };

@@ -34,11 +34,13 @@
             :pruning-stats="pruningStats"
             :estimated-combinations="estimatedCombinations"
             :can-start="canStart"
+            :active-disk-sets="constraints.activeDiskSets"
             @update:worker-count="workerCount = $event"
             @update:min-disc-level="minDiscLevel = $event"
             @toggle-effective-stat="toggleEffectiveStat"
             @start-optimization="startOptimization"
             @cancel-optimization="cancelOptimization"
+            @update:active-disk-sets="constraints.activeDiskSets = $event"
           />
         </div>
 
@@ -219,7 +221,29 @@ const constraints = ref<OptimizationConstraints>({
     mainStatScore: 10,
     pruneThreshold: 10,
   },
+  activeDiskSets: [], // 激活的驱动盘套装ID列表
 });
+
+// 加载套装过滤配置
+onMounted(() => {
+  const saved = localStorage.getItem('zzz_optimizer_active_disk_sets');
+  if (saved) {
+    try {
+      constraints.value.activeDiskSets = JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to load active disk sets:', e);
+    }
+  }
+});
+
+// 保存套装过滤配置
+watch(
+  () => constraints.value.activeDiskSets,
+  (newSets) => {
+    localStorage.setItem('zzz_optimizer_active_disk_sets', JSON.stringify(newSets));
+  },
+  { deep: true }
+);
 
 // 计算属性
 const teams = computed(() => saveStore.teamInstances);

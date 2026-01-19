@@ -1062,6 +1062,7 @@ export class OptimizerContext {
             skillParams,
             agentLevel: agent.level,
             setIdToIdx,
+            activeDiskSets: constraints.activeDiskSets ?? [],
         };
 
         return {

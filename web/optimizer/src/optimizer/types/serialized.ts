@@ -195,6 +195,12 @@ export interface OptimizationConstraints {
      * 有效词条剪枝配置
      */
     effectiveStatPruning?: EffectiveStatPruningConfig;
+    /**
+     * 激活的驱动盘套装 ID 列表
+     * 只有在此列表中的套装才会提供 4 件套效果
+     * 空数组表示不激活任何 4 件套效果
+     */
+    activeDiskSets: string[];
 }
 
 /**

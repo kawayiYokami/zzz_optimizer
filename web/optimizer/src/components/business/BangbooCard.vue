@@ -1,5 +1,5 @@
 <template>
-  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-64 overflow-hidden">
+  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52 overflow-hidden">
     <!-- Image Section -->
     <figure :class="['relative h-32 w-full', rarityGradientClass]">
         <img
@@ -13,10 +13,6 @@
         </div>
         <div class="absolute bottom-0 left-0 w-full bg-linear-to-t from-black/80 to-transparent p-2">
             <h3 class="text-white font-bold text-sm truncate">{{ bangboo.name_cn }}</h3>
-            <div class="flex items-center gap-1 text-white/80 text-xs">
-                <span class="badge badge-sm badge-ghost border-white/30 text-white">Lv.{{ bangboo.level }}</span>
-                <span>{{ bangboo.refinement }}星</span>
-            </div>
         </div>
     </figure>
 
@@ -77,6 +73,6 @@ const bangbooIconUrl = computed(() => {
 
 <style scoped>
 .compact-card {
-  min-height: 240px;
+  min-height: 220px;
 }
 </style>
