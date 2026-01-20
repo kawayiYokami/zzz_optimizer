@@ -34,12 +34,16 @@
             :estimated-combinations="estimatedCombinations"
             :can-start="canStart"
             :active-disk-sets="constraints.activeDiskSets"
+            :pruned-discs="prunedDiscs"
+            :filtered-discs="filteredDiscs"
+            :constraints="constraints"
             @update:worker-count="workerCount = $event"
             @update:min-disc-level="minDiscLevel = $event"
             @toggle-effective-stat="toggleEffectiveStat"
             @start-optimization="startOptimization"
             @cancel-optimization="cancelOptimization"
             @update:active-disk-sets="constraints.activeDiskSets = $event"
+            @update:main-stat-filters="handleMainStatFiltersUpdate"
           />
         </div>
 
@@ -218,7 +222,7 @@ const selectedEnemy = computed(() => {
 
 // 约束配置
 const constraints = ref<OptimizationConstraints>({
-  mainStatFilters: { 4: [], 5: [], 6: [] },
+  mainStatFilters: { 4: [], 5: [], 6: [] }, // 主词条限定器
   requiredSets: [],
   pinnedSlots: {},
   setMode: 'any',
@@ -231,27 +235,6 @@ const constraints = ref<OptimizationConstraints>({
   },
   activeDiskSets: [], // 激活的驱动盘套装ID列表
 });
-
-// 加载套装过滤配置
-onMounted(() => {
-  const saved = localStorage.getItem('zzz_optimizer_active_disk_sets');
-  if (saved) {
-    try {
-      constraints.value.activeDiskSets = JSON.parse(saved);
-    } catch (e) {
-      console.error('Failed to load active disk sets:', e);
-    }
-  }
-});
-
-// 保存套装过滤配置
-watch(
-  () => constraints.value.activeDiskSets,
-  (newSets) => {
-    localStorage.setItem('zzz_optimizer_active_disk_sets', JSON.stringify(newSets));
-  },
-  { deep: true }
-);
 
 // 计算属性
 const teams = computed(() => saveStore.teamInstances);
@@ -415,12 +398,17 @@ const loadTeamOptimizationConfig = (teamId: string) => {
       saveStore.updateTeamOptimizationConfig(teamId, config);
     }
 
+    console.log(`[Optimizer] 加载配置前 - activeDiskSets:`, constraints.value.activeDiskSets);
+    console.log(`[Optimizer] 加载配置前 - effectiveStats:`, constraints.value.effectiveStatPruning?.effectiveStats);
+
     // 应用配置到界面
     constraints.value = config.constraints;
     selectedSkillKeys.value = config.selectedSkillKeys;
     disabledBuffIds.value = config.disabledBuffIds;
     selectedEnemyId.value = config.selectedEnemyId;
 
+    console.log(`[Optimizer] 加载配置后 - activeDiskSets:`, constraints.value.activeDiskSets);
+    console.log(`[Optimizer] 加载配置后 - effectiveStats:`, constraints.value.effectiveStatPruning?.effectiveStats);
     console.log(`[Optimizer] 已加载队伍 ${team.name} 的配置 - selectedEnemyId: ${config.selectedEnemyId}`);
   } catch (e) {
     console.error('[Optimizer] Failed to load team config:', e);
@@ -483,6 +471,14 @@ const toggleEffectiveStat = (stat: PropertyType) => {
   } else {
     stats.push(stat);
   }
+};
+
+// 处理主词条限定器更新
+const handleMainStatFiltersUpdate = (data: { slot: number; filters: PropertyType[] }) => {
+  if (!constraints.value.mainStatFilters) {
+    constraints.value.mainStatFilters = {};
+  }
+  constraints.value.mainStatFilters[data.slot] = data.filters;
 };
 
 const toggleSkill = (skillKey: string) => {
@@ -730,6 +726,11 @@ watch([constraints, selectedSkillKeys, disabledBuffIds, selectedEnemyId], () => 
     saveTeamOptimizationConfig(selectedTeamId.value);
   }
 }, { deep: true });
+
+// 监听队伍切换
+watch(selectedTeamId, () => {
+  onTeamChange();
+});
 
 // 监听敌人变化
 watch(selectedEnemyId, () => {

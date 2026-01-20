@@ -107,9 +107,27 @@
           支配剪枝: {{ pruningStats.before }} → {{ pruningStats.after }} (-{{ pruningStats.removed }})
         </div>
         <!-- 位置组合数 -->
-        <div v-for="slot in [1,2,3,4,5,6]" :key="slot" class="card bg-base-200 p-2 text-center">
+        <div
+          v-for="slot in [1,2,3,4,5,6]"
+          :key="slot"
+          class="card bg-base-200 p-2 text-center cursor-pointer hover:bg-base-300 transition-colors"
+          @click="openSlotFilter(slot)"
+        >
           <div class="text-xs text-base-content/60">位置 {{ slot }}</div>
           <div class="font-mono font-bold text-sm">{{ formatCompact(estimatedCombinations.breakdown[`slot${slot}`] || 0) }}</div>
+          <!-- 456位置主词条限定显示 -->
+          <div v-if="slot >= 4 && getSlotMainStatFilters(slot).length > 0" class="mt-1">
+            <div class="flex flex-wrap gap-0.5 justify-center">
+              <span
+                v-for="stat in getSlotMainStatFilters(slot)"
+                :key="stat"
+                class="badge badge-xs badge-primary"
+                :title="'主词条限定: ' + getStatName(stat)"
+              >
+                {{ getStatName(stat) }}
+              </span>
+            </div>
+          </div>
         </div>
         <!-- 总计 -->
         <div class="col-span-3 text-center mt-2">
@@ -117,6 +135,17 @@
           <div class="font-mono font-bold text-primary text-lg">{{ formatCompact(estimatedCombinations.total) }}</div>
         </div>
       </div>
+
+
+      <!-- 驱动盘位置限定弹窗 -->
+      <DriveDiskSlotFilterModal
+        v-model="showSlotFilterModal"
+        :slot="selectedSlot"
+        :available-discs="getSlotAvailableDiscs(selectedSlot)"
+        :excluded-discs="getSlotExcludedDiscs(selectedSlot)"
+        :main-stat-filters="getSlotMainStatFilters(selectedSlot)"
+        @update:main-stat-filters="updateSlotMainStatFilters"
+      />
 
       <!-- 开始优化按钮 -->
       <div class="divider my-2"></div>
@@ -167,8 +196,10 @@ import { computed, ref, watch } from 'vue';
 import type { AggregatedProgress } from '../../optimizer/services';
 import type { PropertyType } from '../../model/base';
 import { useGameDataStore } from '../../stores/game-data.store';
+import DriveDiskSlotFilterModal from './DriveDiskSlotFilterModal.vue';
 import { iconService } from '../../services/icon.service';
 import DriveDiskSetFilterModal from './DriveDiskSetFilterModal.vue';
+import { getPropertyCnName } from '../../model/base';
 
 // Props
 interface StatOption {
@@ -198,6 +229,9 @@ interface Props {
   estimatedCombinations: CombinationEstimate;
   canStart: boolean;
   activeDiskSets: string[]; // 激活的驱动盘套装ID列表
+  prunedDiscs: any[]; // 剪枝后的驱动盘
+  filteredDiscs: any[]; // 等级过滤后的驱动盘
+  constraints: any; // 约束配置（包含主词条限定器）
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -211,6 +245,9 @@ const props = withDefaults(defineProps<Props>(), {
   estimatedCombinations: () => ({ total: 0, breakdown: {} }),
   canStart: false,
   activeDiskSets: () => [],
+  prunedDiscs: () => [],
+  filteredDiscs: () => [],
+  constraints: () => ({}),
 });
 
 // Emits
@@ -221,6 +258,7 @@ interface Emits {
   'startOptimization': [];
   'cancelOptimization': [];
   'update:activeDiskSets': [sets: string[]];
+  'update:mainStatFilters': [filters: any]; // 更新主词条限定器
 }
 
 const emit = defineEmits<Emits>();
@@ -228,6 +266,8 @@ const emit = defineEmits<Emits>();
 // 状态
 const gameDataStore = useGameDataStore();
 const showSetFilterModal = ref(false);
+const showSlotFilterModal = ref(false);
+const selectedSlot = ref<number>(1);
 
 // 计算属性
 const progressPercentage = computed(() => {
@@ -276,5 +316,40 @@ function getSetIconUrl(setId: string): string {
   const info = gameDataStore.getEquipmentInfo(setId);
   if (!info?.icon) return '';
   return iconService.getEquipmentIconUrl(info.icon);
+}
+
+// 获取属性名称
+function getStatName(stat: PropertyType): string {
+  return getPropertyCnName(stat);
+}
+
+// 打开位置限定弹窗
+function openSlotFilter(slot: number): void {
+  selectedSlot.value = slot;
+  showSlotFilterModal.value = true;
+}
+
+// 获取指定位置的可用驱动盘
+function getSlotAvailableDiscs(slot: number) {
+  return props.prunedDiscs.filter(d => d.position === slot);
+}
+
+// 获取指定位置被排除的驱动盘
+function getSlotExcludedDiscs(slot: number) {
+  const prunedIds = new Set(props.prunedDiscs.map(d => d.id));
+  return props.filteredDiscs.filter(d => d.position === slot && !prunedIds.has(d.id));
+}
+
+// 获取指定位置的主词条限定器
+function getSlotMainStatFilters(slot: number): PropertyType[] {
+  return props.constraints.mainStatFilters?.[slot] || [];
+}
+
+// 更新位置的主词条限定器
+function updateSlotMainStatFilters(filters: PropertyType[]): void {
+  emit('update:mainStatFilters', {
+    slot: selectedSlot.value,
+    filters: filters
+  });
 }
 </script>

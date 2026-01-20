@@ -429,6 +429,17 @@ export class OptimizerContext {
             }
         }
 
+        // 主词条限定剪枝（456位置）
+        const mainStatFilters = constraints.mainStatFilters ?? {};
+        if (Object.keys(mainStatFilters).length > 0) {
+            const beforeCount = filteredDiscs.length;
+            filteredDiscs = this.applyMainStatFilterPruning(filteredDiscs, mainStatFilters);
+            const afterCount = filteredDiscs.length;
+            if (beforeCount !== afterCount) {
+                console.log(`[Optimizer] 主词条限定剪枝: ${beforeCount} -> ${afterCount} (移除 ${beforeCount - afterCount} 个不符合限定的盘)`);
+            }
+        }
+
         // 按位置分组驱动盘
         const discsByPosition = this.groupDiscsByPosition(filteredDiscs);
 
@@ -949,6 +960,17 @@ export class OptimizerContext {
             }
         }
 
+        // 5.2 主词条限定剪枝（456位置）
+        const mainStatFilters = constraints.mainStatFilters ?? {};
+        if (Object.keys(mainStatFilters).length > 0) {
+            const beforeCount = filteredDiscs.length;
+            filteredDiscs = this.applyMainStatFilterPruning(filteredDiscs, mainStatFilters);
+            const afterCount = filteredDiscs.length;
+            if (beforeCount !== afterCount) {
+                console.log(`[Optimizer] 主词条限定剪枝: ${beforeCount} -> ${afterCount} (移除 ${beforeCount - afterCount} 个不符合限定的盘)`);
+            }
+        }
+
         for (const disc of filteredDiscs) {
             const slotIdx = disc.position - 1;
             if (slotIdx < 0 || slotIdx > 5) continue;
@@ -1293,5 +1315,32 @@ export class OptimizerContext {
             result.push(...this.filterDominatedDiscs(group, effectiveStats));
         }
         return result;
+    }
+
+    /**
+     * 主词条限定剪枝
+     *
+     * 只保留主词条在限定列表中的驱动盘（456位置）
+     *
+     * @param discs 驱动盘列表
+     * @param mainStatFilters 主词条限定器 { [position]: PropertyType[] }
+     * @returns 剪枝后的驱动盘列表
+     */
+    static applyMainStatFilterPruning(
+        discs: DriveDisk[],
+        mainStatFilters: Record<number, PropertyType[]>
+    ): DriveDisk[] {
+        return discs.filter(disc => {
+            const position = disc.position;
+            const filters = mainStatFilters[position];
+
+            // 如果该位置没有设置限定，保留所有盘
+            if (!filters || filters.length === 0) {
+                return true;
+            }
+
+            // 只保留主词条在限定列表中的盘
+            return filters.includes(disc.main_stat);
+        });
     }
 }
