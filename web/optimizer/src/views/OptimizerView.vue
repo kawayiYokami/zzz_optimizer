@@ -19,7 +19,6 @@
             @update:selected-enemy-id="selectedEnemyId = $event"
             @toggle-skill="toggleSkill"
             @toggle-buff="toggleBuff"
-            @edit-team="onTeamChange"
             @create-team="onTeamChange"
           />
 
@@ -46,7 +45,7 @@
 
         <!-- 结果展示 -->
         <div class="lg:col-span-2 space-y-6">
-          
+
           <!-- 战斗信息卡 -->
           <BattleInfoCard
             ref="battleInfoCardRef"
@@ -64,7 +63,6 @@
               </h2>
 
               <div v-if="results.length === 0 && !isRunning" class="flex flex-col items-center justify-center h-96 text-base-content/50">
-                <div class="text-6xl mb-4">📊</div>
                 <p>请在左侧配置并开始优化</p>
               </div>
 
@@ -168,6 +166,7 @@ import { PropertyType } from '../model/base';
 import { Enemy } from '../model/enemy';
 import type { Team } from '../model/team';
 import { BattleService } from '../services/battle.service';
+import { PresetGenerator } from '../services/preset-generator.service';
 import BattleConfigCard from '../components/business/BattleConfigCard.vue';
 import CalculationConfigCard from '../components/business/CalculationConfigCard.vue';
 import BattleInfoCard from '../components/business/BattleInfoCard.vue';
@@ -187,7 +186,7 @@ const progress = ref<AggregatedProgress | null>(null);
 const results = ref<OptimizationBuild[]>([]);
 const totalTime = ref(0);
 const presets = ref<OptimizationPreset[]>([]);
-const workerCount = ref(Math.max(1, navigator.hardwareConcurrency - 1));
+const workerCount = ref(16);
 const minDiscLevel = ref(15); // 默认只用15级盘
 const expandedBuildIndex = ref<number | null>(null);  // 展开的结果行索引
 
@@ -336,11 +335,11 @@ const effectiveStatOptions = [
   { value: PropertyType.PEN_, label: '穿透' },
   // 异常
   { value: PropertyType.ANOM_PROF, label: '异常精通' },
-  { value: PropertyType.ANOM_MAS, label: '异常掌控' },
+  { value: PropertyType.ANOM_MAS_, label: '异常掌控%' },
   // 冲击力
-  { value: PropertyType.IMPACT_, label: '冲击力' },
+  { value: PropertyType.IMPACT_, label: '冲击力%' },
   // 能量
-  { value: PropertyType.ENER_REGEN_, label: '能量回复' },
+  { value: PropertyType.ENER_REGEN_, label: '能量回复%' },
   // 属性伤害加成
   { value: PropertyType.PHYSICAL_DMG_, label: '物理伤害' },
   { value: PropertyType.FIRE_DMG_, label: '火伤害' },
@@ -388,50 +387,56 @@ const unselectedBuffs = computed(() => {
   return availableBuffs.value.filter(buff => disabledBuffIds.value.includes(buff.id));
 });
 
-// 加载配置
-const loadConfig = () => {
+// 从队伍加载配置
+const loadTeamOptimizationConfig = (teamId: string) => {
   try {
-    const configJson = localStorage.getItem('optimizer_config');
-    if (configJson) {
-      const config = JSON.parse(configJson);
-      if (config.constraints) {
-        constraints.value = config.constraints;
-      }
-      if (config.workerCount !== undefined) {
-        workerCount.value = config.workerCount;
-      }
-      if (config.minDiscLevel !== undefined) {
-        minDiscLevel.value = config.minDiscLevel;
-      }
-      if (config.selectedSkillKeys) {
-        selectedSkillKeys.value = config.selectedSkillKeys;
-      }
-      if (config.disabledBuffIds) {
-        disabledBuffIds.value = config.disabledBuffIds;
-      }
-      if (config.selectedEnemyId) {
-        selectedEnemyId.value = config.selectedEnemyId;
-      }
+    const team = teams.value.find(t => t.id === teamId);
+    if (!team) {
+      console.warn(`[Optimizer] 队伍 ${teamId} 不存在`);
+      return;
     }
+
+    let config = team.optimizationConfig;
+
+    // 如果队伍没有配置，生成智能推荐配置
+    if (!config) {
+      console.log(`[Optimizer] 队伍 ${team.name} 没有配置，生成智能推荐配置`);
+      config = PresetGenerator.generateRecommendedConfig(team);
+      // 保存到队伍
+      saveStore.updateTeamOptimizationConfig(teamId, config);
+    }
+
+    // 应用配置到界面
+    constraints.value = config.constraints;
+    selectedSkillKeys.value = config.selectedSkillKeys;
+    disabledBuffIds.value = config.disabledBuffIds;
+    selectedEnemyId.value = config.selectedEnemyId;
+
+    console.log(`[Optimizer] 已加载队伍 ${team.name} 的配置`);
   } catch (e) {
-    console.error('[Optimizer] Failed to load config:', e);
+    console.error('[Optimizer] Failed to load team config:', e);
   }
 };
 
-// 保存配置
-const saveConfig = () => {
+// 保存配置到当前队伍
+const saveTeamOptimizationConfig = (teamId: string) => {
   try {
     const config = {
       constraints: constraints.value,
-      workerCount: workerCount.value,
-      minDiscLevel: minDiscLevel.value,
       selectedSkillKeys: selectedSkillKeys.value,
       disabledBuffIds: disabledBuffIds.value,
       selectedEnemyId: selectedEnemyId.value,
+      lastUpdated: new Date().toISOString(),
     };
-    localStorage.setItem('optimizer_config', JSON.stringify(config));
+
+    const success = saveStore.updateTeamOptimizationConfig(teamId, config);
+    if (success) {
+      console.log(`[Optimizer] 已保存队伍配置`);
+    } else {
+      console.error(`[Optimizer] 保存队伍配置失败`);
+    }
   } catch (e) {
-    console.error('[Optimizer] Failed to save config:', e);
+    console.error('[Optimizer] Failed to save team config:', e);
   }
 };
 
@@ -447,6 +452,8 @@ const onTeamChange = async () => {
     buffsVersion.value++;
     // 刷新战斗信息卡
     battleInfoCardRef.value?.refresh();
+    // 加载队伍的优化配置
+    loadTeamOptimizationConfig(team.id);
   }
 };
 
@@ -699,18 +706,18 @@ onMounted(async () => {
   optimizerService.initializeFastWorkers(workerCount.value);
   // 4. 加载预设
   presets.value = optimizerService.loadPresets();
-  // 5. 加载配置
-  loadConfig();
-  // 6. 自动选择第一个队伍
+  // 5. 自动选择第一个队伍
   if (teams.value.length > 0 && !selectedTeamId.value) {
     selectedTeamId.value = teams.value[0].id;
     await onTeamChange();
   }
 });
 
-// 监听配置变化并自动保存
-watch([constraints, workerCount, minDiscLevel, selectedSkillKeys, disabledBuffIds, selectedEnemyId], () => {
-  saveConfig();
+// 监听配置变化并自动保存到当前队伍
+watch([constraints, selectedSkillKeys, disabledBuffIds, selectedEnemyId], () => {
+  if (selectedTeamId.value) {
+    saveTeamOptimizationConfig(selectedTeamId.value);
+  }
 }, { deep: true });
 
 // 监听敌人变化

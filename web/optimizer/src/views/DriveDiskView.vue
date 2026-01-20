@@ -5,7 +5,7 @@
       <!-- 主容器（6XL宽度） -->
       <div class="max-w-6xl mx-auto">
         <!-- 过滤卡片 -->
-        <div class="card bg-base-100 shadow-md mb-4">
+        <div class="card bg-base-100 shadow-md mb-4 mx-6">
           <div class="card-body p-4">
             <!-- 套装过滤 -->
             <div class="mb-4">
@@ -15,7 +15,7 @@
                   :key="set"
                   @click="toggleSet(set)"
                   class="btn btn-circle btn-lg border border-base-300 p-0"
-                  :class="{ 'btn-primary': filters.sets.includes(set) }"
+                  :class="{ 'bg-neutral text-neutral-content': filters.sets.includes(set) }"
                 >
                   <img :src="getSetIcon(set)" :alt="set" class="w-10 h-10 object-contain" />
                 </button>
@@ -33,7 +33,7 @@
                   :key="position.value"
                   @click="selectPosition(position.value)"
                   class="btn btn-sm flex-1 join-item"
-                  :class="{ 'btn-primary': filters.positions.length === 1 && filters.positions[0] === position.value }"
+                  :class="{ 'bg-neutral text-neutral-content': filters.positions.length === 1 && filters.positions[0] === position.value }"
                 >
                   {{ position.label }}
                 </button>

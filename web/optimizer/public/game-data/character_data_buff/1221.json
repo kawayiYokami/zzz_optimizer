@@ -40,7 +40,7 @@
       "target_enemy": true
     },
     "in_combat_stats": {
-      "DEF_PEN_": 0.16
+      "DEF_IGN_": 0.16
     },
     "out_of_combat_stats": {},
     "conversion": null,

@@ -795,6 +795,61 @@ export const useSaveStore = defineStore('save', () => {
     return true;
   }
 
+  /**
+   * 更新队伍的优化配置
+   */
+  function updateTeamOptimizationConfig(
+    teamId: string,
+    config: import('../model/team').TeamOptimizationConfig
+  ): boolean {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    if (!save) {
+      return false;
+    }
+
+    try {
+      // 获取队伍实例
+      const team = save.getAllTeamInstances().find(t => t.id === teamId);
+      if (!team) {
+        console.error(`队伍 ${teamId} 不存在`);
+        return false;
+      }
+
+      // 更新优化配置
+      team.optimizationConfig = config;
+
+      // 同步到rawSaves
+      syncInstanceToRawSave();
+      return true;
+    } catch (error) {
+      console.error('更新队伍优化配置失败:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 获取队伍的优化配置
+   */
+  function getTeamOptimizationConfig(
+    teamId: string
+  ): import('../model/team').TeamOptimizationConfig | undefined {
+    if (!currentSaveName.value) {
+      return undefined;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    if (!save) {
+      return undefined;
+    }
+
+    const team = save.getAllTeamInstances().find(t => t.id === teamId);
+    return team?.optimizationConfig;
+  }
+
   return {
     // 状态
     saves,
@@ -834,5 +889,7 @@ export const useSaveStore = defineStore('save', () => {
     createTeam,               // 创建队伍
     updateTeam,               // 更新队伍
     deleteTeam,               // 删除队伍
+    updateTeamOptimizationConfig, // 更新队伍优化配置
+    getTeamOptimizationConfig,    // 获取队伍优化配置
   };
 });

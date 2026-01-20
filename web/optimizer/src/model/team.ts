@@ -5,12 +5,25 @@
 
 import type { Agent } from './agent';
 import type { ZodTeamData } from './save-data-zod';
+import type { OptimizationConstraints } from '../optimizer/types';
+
+/**
+ * 优化配置接口
+ */
+export interface TeamOptimizationConfig {
+  constraints: OptimizationConstraints;
+  selectedSkillKeys: string[];
+  disabledBuffIds: string[];
+  selectedEnemyId: string;
+  lastUpdated: string;
+}
 
 export class Team {
   private _agents: Agent[] = [];
   private _bond: any | null = null; // 邦布实例暂时留空，使用any类型
   private _id: string;
   private _name: string;
+  private _optimizationConfig: TeamOptimizationConfig | undefined;
 
   /**
    * 构造函数
@@ -18,8 +31,15 @@ export class Team {
    * @param id 队伍ID
    * @param name 队伍名称
    * @param bond 邦布实例（可选）
+   * @param optimizationConfig 优化配置（可选）
    */
-  constructor(agents: Agent[], id: string = '', name: string = '', bond: any | null = null) {
+  constructor(
+    agents: Agent[],
+    id: string = '',
+    name: string = '',
+    bond: any | null = null,
+    optimizationConfig?: TeamOptimizationConfig
+  ) {
     if (agents.length < 1 || agents.length > 3) {
       throw new Error('队伍成员数量必须在1-3个之间');
     }
@@ -27,6 +47,7 @@ export class Team {
     this._id = id;
     this._name = name;
     this._bond = bond;
+    this._optimizationConfig = optimizationConfig;
   }
 
   /**
@@ -55,6 +76,20 @@ export class Team {
    */
   set name(value: string) {
     this._name = value;
+  }
+
+  /**
+   * 获取优化配置
+   */
+  get optimizationConfig(): TeamOptimizationConfig | undefined {
+    return this._optimizationConfig;
+  }
+
+  /**
+   * 设置优化配置
+   */
+  set optimizationConfig(config: TeamOptimizationConfig | undefined) {
+    this._optimizationConfig = config;
   }
 
   /**
@@ -137,13 +172,13 @@ export class Team {
    */
   static fromZod(zodTeam: ZodTeamData, agentsMap: Map<string, Agent>): Team {
     const agents: Agent[] = [];
-    
+
     // 添加前台角色
     const frontAgent = agentsMap.get(zodTeam.frontCharacterId);
     if (frontAgent) {
       agents.push(frontAgent);
     }
-    
+
     // 添加后台角色1
     if (zodTeam.backCharacter1Id) {
       const backAgent1 = agentsMap.get(zodTeam.backCharacter1Id);
@@ -151,7 +186,7 @@ export class Team {
         agents.push(backAgent1);
       }
     }
-    
+
     // 添加后台角色2
     if (zodTeam.backCharacter2Id) {
       const backAgent2 = agentsMap.get(zodTeam.backCharacter2Id);
@@ -159,13 +194,13 @@ export class Team {
         agents.push(backAgent2);
       }
     }
-    
+
     // 至少需要一个角色
     if (agents.length === 0) {
       throw new Error('队伍必须至少包含一个角色');
     }
-    
-    return new Team(agents, zodTeam.id, zodTeam.name);
+
+    return new Team(agents, zodTeam.id, zodTeam.name, null, zodTeam.optimizationConfig);
   }
 
   /**
@@ -178,7 +213,8 @@ export class Team {
       name: this._name,
       frontCharacterId: this._agents[0].id,
       backCharacter1Id: this._agents[1]?.id || '',
-      backCharacter2Id: this._agents[2]?.id || ''
+      backCharacter2Id: this._agents[2]?.id || '',
+      optimizationConfig: this._optimizationConfig
     };
   }
 

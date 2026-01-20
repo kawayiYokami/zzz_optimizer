@@ -42,7 +42,7 @@
       "target_self": true
     },
     "in_combat_stats": {
-      "DEF_PEN_": 0.2
+      "DEF_IGN_": 0.2
     },
     "out_of_combat_stats": {},
     "conversion": null,

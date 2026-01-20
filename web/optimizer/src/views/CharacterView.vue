@@ -1,112 +1,83 @@
 <template>
-  <div class="flex h-full min-h-0 relative">
-    <!-- 左侧：列表区域 -->
-    <!-- 桌面端显示 (lg:block)；移动端在未显示详情时显示 -->
-    <div
-      class="flex-1 overflow-y-auto p-4 bg-base-200 lg:w-1/3 lg:max-w-md lg:flex-none lg:border-r lg:border-base-300 min-h-0"
-      :class="{ 'hidden': showMobileDetail, 'block': !showMobileDetail, 'lg:block': true }"
-    >
-      <!-- 主容器 -->
-      <div class="max-w-6xl mx-auto flex flex-col gap-4">
+  <div class="min-h-screen bg-base-200 p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         
-        <!-- 1. 筛选与控制区 -->
-        <div class="card bg-base-100 shadow-md">
-          <div class="card-body p-4">
-            <!-- 顶部工具栏：控制区 -->
-            <div class="flex justify-end mb-4" v-if="hasActiveFilters">
-              <button class="btn btn-ghost text-error btn-sm" @click="clearFilters">
-                清除筛选
-              </button>
-            </div>
+        <!-- Sidebar: 角色列表 -->
+        <div class="lg:col-span-1">
+          <div class="card bg-base-100 shadow-sm h-fit">
+            <div class="card-body p-4">
+              
+              <!-- 筛选与控制区 -->
+              <div class="mb-4">
+                <!-- 元素类型过滤 -->
+                <div class="flex flex-wrap gap-2 justify-center mb-4">
+                  <button
+                    v-for="element in elementTypes"
+                    :key="'element-' + element.value"
+                    @click="toggleFilter('elements', element.value)"
+                    class="btn btn-circle border border-base-300 p-0"
+                    :class="{ 'bg-neutral text-neutral-content': filters.elements.includes(element.value) }"
+                    :title="element.label"
+                  >
+                    <img :src="element.icon" :alt="element.label" class="w-10 h-10 object-contain" />
+                  </button>
+                </div>
 
-            <!-- 元素类型过滤 -->
-            <div class="flex flex-wrap gap-2 justify-center mb-4">
-              <button
-                v-for="element in elementTypes"
-                :key="'element-' + element.value"
-                @click="toggleFilter('elements', element.value)"
-                class="btn btn-circle btn-lg border border-base-300 p-0"
-                :class="{ 'btn-primary': filters.elements.includes(element.value) }"
-                :title="element.label"
-              >
-                <img :src="element.icon" :alt="element.label" class="w-10 h-10 object-contain" />
-              </button>
-            </div>
+                <!-- 武器类型过滤 -->
+                <div class="flex flex-wrap gap-2 justify-center">
+                  <button
+                    v-for="weaponType in weaponTypes"
+                    :key="'weapon-' + weaponType.value"
+                    @click="toggleFilter('weaponTypes', weaponType.value)"
+                    class="btn btn-circle border border-base-300 p-0"
+                    :class="{ 'bg-neutral text-neutral-content': filters.weaponTypes.includes(weaponType.value) }"
+                    :title="weaponType.label"
+                  >
+                    <img :src="weaponType.icon" :alt="weaponType.label" class="w-10 h-10 object-contain" />
+                  </button>
+                </div>
+              </div>
 
-            <!-- 武器类型过滤 -->
-            <div class="flex flex-wrap gap-2 justify-center">
-              <button
-                v-for="weaponType in weaponTypes"
-                :key="'weapon-' + weaponType.value"
-                @click="toggleFilter('weaponTypes', weaponType.value)"
-                class="btn btn-circle btn-lg border border-base-300 p-0"
-                :class="{ 'btn-primary': filters.weaponTypes.includes(weaponType.value) }"
-                :title="weaponType.label"
-              >
-                <img :src="weaponType.icon" :alt="weaponType.label" class="w-10 h-10 object-contain" />
-              </button>
+              <!-- 角色列表区 -->
+              <div>
+                <div v-if="filteredAndSortedAgents.length === 0" class="text-center py-10 text-base-content/50">
+                  <div class="text-4xl mb-2">🔍</div>
+                  <p>没有找到符合条件的代理人</p>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-4">
+                  <div
+                    v-for="agent in filteredAndSortedAgents"
+                    :key="agent.id"
+                    class="cursor-pointer transform-gpu transition-transform duration-200 hover:scale-105"
+                    :class="{ 'ring-4 ring-primary ring-offset-2 ring-offset-base-200 rounded-box': selectedAgentId === agent.id }"
+                    @click="selectAgent(agent.id)"
+                  >
+                    <AgentCard :agent="agent" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- 2. 角色列表区 -->
-        <div class="min-h-[200px] pb-20 lg:pb-0">
-          <div v-if="filteredAndSortedAgents.length === 0" class="text-center py-10 text-base-content/50">
-            <div class="text-4xl mb-2">🔍</div>
-            <p>没有找到符合条件的代理人</p>
+        <!-- Main Content: 角色详情 -->
+        <div class="lg:col-span-3">
+          <div v-if="selectedAgent" class="max-w-4xl mx-auto">
+            <AgentInfoCard
+              :agent="selectedAgent"
+              @click-avatar="openFullImageModal"
+            />
           </div>
-          
-          <div class="flex flex-wrap justify-center gap-4">
-            <div
-              v-for="agent in filteredAndSortedAgents"
-              :key="agent.id"
-              class="cursor-pointer transform-gpu transition-transform duration-200 hover:scale-105"
-              :class="{ 'ring-4 ring-primary ring-offset-2 ring-offset-base-200 rounded-box z-10': selectedAgentId === agent.id }"
-              @click="selectAgent(agent.id)"
-            >
-              <AgentCard :agent="agent" />
+          <div v-else class="card bg-base-100 shadow-xl min-h-[600px]">
+            <div class="card-body flex flex-col items-center justify-center h-full text-base-content/50 text-xl">
+              <div class="text-6xl mb-4">👈</div>
+              <p>请选择角色查看详情</p>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- 右侧：详情区域 -->
-    <!-- 桌面端显示 (lg:block)；移动端在 showMobileDetail=true 时覆盖显示 (fixed inset-0) -->
-    <div
-      class="bg-base-100 overflow-y-auto min-h-0"
-      :class="{
-        'fixed inset-0 z-50': showMobileDetail,
-        'hidden': !showMobileDetail,
-        'lg:static lg:block lg:flex-1': true
-      }"
-    >
-      <!-- 移动端顶部导航栏 -->
-      <div class="lg:hidden navbar bg-base-100 sticky top-0 z-10 shadow-sm border-b border-base-200">
-         <div class="flex-none">
-           <button @click="closeMobileDetail" class="btn btn-ghost btn-circle">
-             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-             </svg>
-           </button>
-         </div>
-         <div class="flex-1">
-           <span class="font-bold text-lg">角色详情</span>
-         </div>
-      </div>
-
-      <!-- 详情内容 -->
-      <div class="p-4 lg:p-8 h-full">
-        <div v-if="selectedAgent" class="max-w-4xl mx-auto h-full">
-          <AgentInfoCard
-            :agent="selectedAgent"
-            @click-avatar="openFullImageModal"
-          />
-        </div>
-        <div v-else class="flex flex-col items-center justify-center h-full text-base-content/50 text-xl">
-          <div class="text-6xl mb-4">👈</div>
-          <p>请选择角色查看详情</p>
-        </div>
       </div>
     </div>
 
@@ -189,7 +160,6 @@ const selectedAgentId = ref<string | null>(null);
 const showFullImageModal = ref(false);
 const sortBy = ref<'rarity'>('rarity'); // 简化排序，默认按稀有度
 const sortAscending = ref(false);
-const showMobileDetail = ref(false); // 控制移动端详情页显示
 
 // 全身立绘缩放和拖动状态
 const imageContainer = ref<HTMLElement | null>(null);

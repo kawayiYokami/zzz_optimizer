@@ -6,7 +6,7 @@
         <!-- Worker 数量 -->
         <div>
           <div class="flex justify-between text-xs mb-1">
-            <span>Worker 数量</span>
+            <span>并行数</span>
             <span>{{ workerCount }}</span>
           </div>
           <input
@@ -35,40 +35,8 @@
         </div>
       </div>
 
-      <!-- 有效词条 -->
-      <div class="divider my-2"></div>
-      <h3 class="font-bold text-sm">有效词条</h3>
-      <div class="flex flex-col gap-2 mt-2">
-        <!-- 已选词条（上方） -->
-        <div class="flex flex-wrap gap-1">
-          <button
-            v-for="stat in selectedStats"
-            :key="stat.value"
-            class="badge badge-primary cursor-pointer hover:badge-secondary"
-            @click="emit('toggleEffectiveStat', stat.value)"
-          >
-            {{ stat.label }}
-          </button>
-        </div>
-        <!-- 分割线 -->
-        <div class="divider my-1"></div>
-        <!-- 未选词条（下方） -->
-        <div class="flex flex-wrap gap-1">
-          <button
-            v-for="stat in unselectedStats"
-            :key="stat.value"
-            class="badge badge-ghost cursor-pointer hover:badge-primary"
-            @click="emit('toggleEffectiveStat', stat.value)"
-          >
-            {{ stat.label }}
-          </button>
-        </div>
-      </div>
-
-      <!-- 套装过滤 -->
-      <div class="divider my-2"></div>
-      <h3 class="font-bold text-sm">套装过滤</h3>
-      <div class="flex flex-col gap-2 mt-2">
+      <!-- 套装激活 -->
+              <div class="divider text-xs font-bold text-base-content/50 my-2">套装激活</div>      <div class="flex flex-col gap-2 mt-2">
         <!-- 激活的套装徽章 -->
         <div class="flex flex-wrap gap-1">
           <!-- 无选择时 -->
@@ -79,32 +47,60 @@
           <div
             v-for="setId in activeDiskSets"
             :key="setId"
-            class="badge badge-primary badge-outline cursor-pointer hover:badge-error"
+            class="badge badge-primary badge-outline cursor-pointer hover:badge-error gap-1"
             @click="removeSet(setId)"
             :title="'点击移除: ' + getSetName(setId)"
           >
+            <img
+              v-if="getSetIconUrl(setId)"
+              :src="getSetIconUrl(setId)"
+              class="w-5 h-5 rounded"
+              :alt="getSetName(setId)"
+            />
             {{ getSetName(setId) }} ✕
           </div>
         </div>
         <!-- 配置按钮 -->
         <button
-          class="btn btn-sm btn-outline"
+          class="btn btn-base-200 w-full"
           @click="openSetFilter"
         >
-          配置套装过滤
+          配置套装激活
         </button>
       </div>
 
-      <!-- 套装过滤弹窗 -->
+      <!-- 套装激活弹窗 -->
       <DriveDiskSetFilterModal
         v-model="showSetFilterModal"
         :active-sets="activeDiskSets"
         @update:active-sets="emit('update:activeDiskSets', $event)"
       />
 
+      <!-- 有效词条 -->
+      <div class="divider text-xs font-bold text-base-content/50 my-2">有效词条</div>
+      <div class="flex flex-wrap gap-1.5 mt-2">
+        <button
+          v-for="stat in selectedStats"
+          :key="stat.value"
+          class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200"
+          :class="'badge-primary font-medium shadow-sm'"
+          @click="emit('toggleEffectiveStat', stat.value)"
+        >
+          {{ stat.label }}
+        </button>
+        <button
+          v-for="stat in unselectedStats"
+          :key="stat.value"
+          class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200"
+          :class="'badge-ghost border-base-300 text-base-content/60'"
+          @click="emit('toggleEffectiveStat', stat.value)"
+        >
+          {{ stat.label }}
+        </button>
+      </div>
+
       <!-- 组合明细 -->
-      <div class="divider my-2"></div>
-      <h3 class="font-bold text-sm">组合明细</h3>
+      <div class="divider text-xs font-bold text-base-content/50 my-2">组合明细</div>
       <div class="grid grid-cols-3 gap-2 mt-2">
         <!-- 剪枝统计 -->
         <div v-if="pruningStats.removed > 0" class="col-span-3 text-xs text-success">
@@ -167,10 +163,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { AggregatedProgress } from '../../optimizer/services';
 import type { PropertyType } from '../../model/base';
 import { useGameDataStore } from '../../stores/game-data.store';
+import { iconService } from '../../services/icon.service';
 import DriveDiskSetFilterModal from './DriveDiskSetFilterModal.vue';
 
 // Props
@@ -257,7 +254,7 @@ const formatTime = (seconds: number) => {
   return `${m}m${s}s`;
 };
 
-// 打开套装过滤弹窗
+// 打开套装激活弹窗
 function openSetFilter(): void {
   showSetFilterModal.value = true;
 }
@@ -271,6 +268,13 @@ function removeSet(setId: string): void {
 // 获取套装名称
 function getSetName(setId: string): string {
   const info = gameDataStore.getEquipmentInfo(setId);
-  return info?.setName ?? setId;
+  return info?.CHS?.name ?? info?.EN?.name ?? setId;
+}
+
+// 获取套装图标URL
+function getSetIconUrl(setId: string): string {
+  const info = gameDataStore.getEquipmentInfo(setId);
+  if (!info?.icon) return '';
+  return iconService.getEquipmentIconUrl(info.icon);
 }
 </script>

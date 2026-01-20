@@ -285,7 +285,7 @@ export class DriveDisk {
    * 计算规则：
    * - 主词条 = 10条
    * - 副词条 = 1条（强化次数）
-   * - 固定值属性（HP/ATK/DEF/PEN）= 0.33条（1/3折算）
+   * - 固定值属性（HP/ATK/DEF/PEN）如果用户选择的是百分比属性，按 1/3 折算
    *
    * @param effectiveStats 有效词条列表
    * @returns 有效词条总分
@@ -310,6 +310,18 @@ export class DriveDisk {
       return percentType !== undefined && effectiveStats.includes(percentType);
     };
 
+    // 获取用户选择的有效词条类型（用于判断是否需要折算）
+    const getEffectiveStatType = (prop: PropertyType): PropertyType | null => {
+      // 直接匹配
+      if (effectiveStats.includes(prop)) return prop;
+      // 固定值映射到百分比
+      const percentType = flatToPercentMap[prop];
+      if (percentType !== undefined && effectiveStats.includes(percentType)) {
+        return percentType;
+      }
+      return null;
+    };
+
     // 主词条：10条（如果属于有效词条）
     if (isEffectiveStat(this.main_stat)) {
       totalScore += 10;
@@ -320,17 +332,14 @@ export class DriveDisk {
       if (!isEffectiveStat(prop)) continue;
 
       const rolls = statValue.value; // 强化次数（词条数）
+      const effectiveType = getEffectiveStatType(prop);
 
-      // 判断是否是固定值属性
-      const isFlatValue = [
-        PropertyType.HP,
-        PropertyType.ATK,
-        PropertyType.DEF,
-        PropertyType.PEN
-      ].includes(prop);
+      // 如果用户选择的是百分比属性，而当前是固定值属性，按 1/3 折算
+      const shouldDiscount = effectiveType !== null &&
+        flatToPercentMap[prop] === effectiveType;
 
-      // 固定值属性按 1/3 折算
-      const count = isFlatValue ? rolls / 3 : rolls;
+      // 固定值属性按 1/3 折算（当用户选择的是百分比属性时）
+      const count = shouldDiscount ? rolls / 3 : rolls;
       totalScore += count;
     }
 
@@ -343,7 +352,7 @@ export class DriveDisk {
    * 计算规则：
    * - 主词条 = 10条
    * - 副词条 = 1条（强化次数）
-   * - 固定值属性（HP/ATK/DEF/PEN）= 0.33条（1/3折算）
+   * - 固定值属性（HP/ATK/DEF/PEN）如果用户选择的是百分比属性，按 1/3 折算
    *
    * @param effectiveStats 有效词条列表
    * @returns 有效词条类型 -> 词条数的映射（只包含有效词条）
@@ -368,6 +377,18 @@ export class DriveDisk {
       return percentType !== undefined && effectiveStats.includes(percentType);
     };
 
+    // 获取用户选择的有效词条类型（用于判断是否需要折算）
+    const getEffectiveStatType = (prop: PropertyType): PropertyType | null => {
+      // 直接匹配
+      if (effectiveStats.includes(prop)) return prop;
+      // 固定值映射到百分比
+      const percentType = flatToPercentMap[prop];
+      if (percentType !== undefined && effectiveStats.includes(percentType)) {
+        return percentType;
+      }
+      return null;
+    };
+
     // 主词条：10条（如果属于有效词条）
     if (isEffectiveStat(this.main_stat)) {
       result.set(this.main_stat, 10);
@@ -378,17 +399,14 @@ export class DriveDisk {
       if (!isEffectiveStat(prop)) continue;
 
       const rolls = statValue.value; // 强化次数（词条数）
+      const effectiveType = getEffectiveStatType(prop);
 
-      // 判断是否是固定值属性
-      const isFlatValue = [
-        PropertyType.HP,
-        PropertyType.ATK,
-        PropertyType.DEF,
-        PropertyType.PEN
-      ].includes(prop);
+      // 如果用户选择的是百分比属性，而当前是固定值属性，按 1/3 折算
+      const shouldDiscount = effectiveType !== null &&
+        flatToPercentMap[prop] === effectiveType;
 
-      // 固定值属性按 1/3 折算
-      const count = isFlatValue ? rolls / 3 : rolls;
+      // 固定值属性按 1/3 折算（当用户选择的是百分比属性时）
+      const count = shouldDiscount ? rolls / 3 : rolls;
       result.set(prop, (result.get(prop) ?? 0) + count);
     }
 

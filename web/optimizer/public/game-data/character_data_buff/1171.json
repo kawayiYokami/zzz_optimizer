@@ -17,7 +17,7 @@
         "description": "触发[余烬]效果时，将对敌人施加[热意洞穿]，最多叠加5层。受到我方攻击时，目标每拥有一层[热意洞穿]，本次攻击的穿透率提升4%。",
         "source": "TALENT",
         "target": { "target_self": true },
-        "in_combat_stats": { "DEF_PEN_": 0.04 },
+        "in_combat_stats": { "DEF_IGN_": 0.04 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "攻击拥有[热意洞穿]的敌人时",

@@ -17,7 +17,7 @@
         "description": "代理人[围杀]状态的增益效果生效时，该代理人造成的伤害无视20%防御力。",
         "source": "TALENT",
         "target": { "target_teammate": true, "target_bund": true },
-        "in_combat_stats": { "DEF_PEN_": 0.20 },
+        "in_combat_stats": { "DEF_IGN_": 0.20 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "拥有[围杀]状态时",

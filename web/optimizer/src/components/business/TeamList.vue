@@ -1,13 +1,19 @@
 <template>
   <div class="max-w-4xl mx-auto space-y-4">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-      <!-- Existing Teams -->
-      <TeamCard
+      <!-- Existing Teams with name -->
+      <div
         v-for="team in teamInstances"
         :key="team.id"
-        :team="team"
-        @click="$emit('edit', team.id)"
-      />
+        class="flex flex-col gap-2"
+      >
+        <div class="text-center font-bold text-sm">{{ team.name }}</div>
+        <TeamCard
+          :team="team"
+          :clickable="true"
+          @click="$emit('select', team.id)"
+        />
+      </div>
 
       <!-- New Team Card (Always present) -->
       <div
@@ -32,6 +38,7 @@ import TeamCard from './TeamCard.vue';
 
 const emit = defineEmits<{
   edit: [teamId: string];
+  select: [teamId: string];
   create: [];
 }>();
 

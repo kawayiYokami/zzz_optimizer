@@ -5,7 +5,7 @@
       <!-- 主容器（6XL宽度） -->
       <div class="max-w-6xl mx-auto">
         <!-- 过滤卡片 -->
-        <div class="card bg-base-100 shadow-md mb-4">
+        <div class="card bg-base-100 shadow-md mb-4 mx-6">
           <div class="card-body p-4">
             <!-- 武器类型过滤 -->
             <div>
@@ -15,7 +15,7 @@
                   :key="weaponType.value"
                   @click="selectWeaponType(weaponType.value)"
                   class="btn btn-circle btn-lg border border-base-300 p-0"
-                  :class="{ 'btn-primary': filters.weaponTypes.length === 1 && filters.weaponTypes[0] === weaponType.value }"
+                  :class="{ 'bg-neutral text-neutral-content': filters.weaponTypes.length === 1 && filters.weaponTypes[0] === weaponType.value }"
                 >
                   <img :src="getWeaponTypeIcon(weaponType.value)" :alt="weaponType.label" class="w-10 h-10 object-contain" />
                 </button>

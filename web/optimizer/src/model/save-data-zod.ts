@@ -4,6 +4,8 @@
  * 直接存储ZOD格式，不做任何转换
  */
 
+import type { OptimizationConstraints } from '../optimizer/types';
+
 export interface ZodCharacterData {
   key: string;          // CodeName: "Anby"
   level: number;
@@ -57,6 +59,23 @@ export interface ZodTeamData {
   frontCharacterId: string;    // 前台角色ID
   backCharacter1Id: string;    // 后台角色1ID
   backCharacter2Id: string;    // 后台角色2ID
+
+  /**
+   * 优化配置（可选）
+   * 每个队伍可以有独立的优化配置
+   */
+  optimizationConfig?: {
+    /** 优化约束 */
+    constraints: OptimizationConstraints;
+    /** 选中的技能键列表 */
+    selectedSkillKeys: string[];
+    /** 禁用的Buff ID列表（黑名单模式） */
+    disabledBuffIds: string[];
+    /** 选中的敌人ID */
+    selectedEnemyId: string;
+    /** 最后更新时间 */
+    lastUpdated: string;
+  };
 }
 
 /**

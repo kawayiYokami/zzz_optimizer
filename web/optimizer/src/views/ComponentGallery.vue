@@ -1,5 +1,5 @@
 <template>
-  <div class="p-8 space-y-8 bg-base-100 min-h-screen">
+  <div class="p-8 space-y-8 bg-base-200 min-h-screen">
     <div class="max-w-4xl mx-auto space-y-8">
       <div class="prose">
         <h1>组件画廊 (Component Gallery)</h1>
@@ -36,12 +36,16 @@
       <section>
         <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">属性集卡片 (PropertySetCard)</h2>
         <div class="w-full">
-          <PropertySetCard
-            v-if="realAgent"
-            :property-collection="realAgent.getCharacterCombatStats()"
-            :conversion-buffs="realAgent.conversion_buffs"
-          />
-          <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <PropertySetCard
+                v-if="realAgent"
+                :property-collection="realAgent.getCharacterCombatStats()"
+                :conversion-buffs="realAgent.conversion_buffs"
+              />
+              <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -49,8 +53,12 @@
       <section>
         <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">技能列表 (SkillList)</h2>
         <div class="w-full">
-          <SkillList v-if="realAgent" :agent="realAgent" />
-          <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <SkillList v-if="realAgent" :agent="realAgent" />
+              <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>
+            </div>
+          </div>
         </div>
       </section>
 

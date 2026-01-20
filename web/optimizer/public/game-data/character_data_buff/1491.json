@@ -83,7 +83,7 @@
       "target_teammate": true
     },
     "in_combat_stats": {
-      "ALL_DMG_": 0.2
+      "DMG_": 0.2
     },
     "out_of_combat_stats": {},
     "conversion": null,

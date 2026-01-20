@@ -12,31 +12,31 @@
             </div>
             <ul
               tabindex="-1"
-              class="menu dropdown-content bg-base-100 text-base-content rounded-box z-1 mt-3 w-52 p-2 shadow">
-              <li><a @click="currentView = 'optimizer'" :class="{ 'active': currentView === 'optimizer' }">优化</a></li>
-              <li><a @click="currentView = 'characters'" :class="{ 'active': currentView === 'characters' }">角色</a></li>
-              <li><a @click="currentView = 'teams'" :class="{ 'active': currentView === 'teams' }">队伍</a></li>
-              <li><a @click="currentView = 'wengines'" :class="{ 'active': currentView === 'wengines' }">音擎</a></li>
-              <li><a @click="currentView = 'drive-disks'" :class="{ 'active': currentView === 'drive-disks' }">驱动盘</a></li>
-              <li><a @click="currentView = 'saves'" :class="{ 'active': currentView === 'saves' }">存档</a></li>
-              <li v-if="isDev"><a @click="currentView = 'debug'" :class="{ 'active': currentView === 'debug' }">调试</a></li>
-              <li v-if="isDev"><a @click="currentView = 'gallery'" :class="{ 'active': currentView === 'gallery' }">画廊</a></li>
+              class="menu dropdown-content bg-base-100 text-base-content rounded-box z-1 mt-3 w-52 p-2 shadow text-base font-bold">
+              <NavigationButton label="优化" icon="ri-rocket-2-line" :is-active="currentView === 'optimizer'" @click="currentView = 'optimizer'" />
+              <NavigationButton label="角色" icon="ri-user-3-line" :is-active="currentView === 'characters'" @click="currentView = 'characters'" />
+              <NavigationButton label="队伍" icon="ri-team-line" :is-active="currentView === 'teams'" @click="currentView = 'teams'" />
+              <NavigationButton label="音擎" icon="ri-sword-line" :is-active="currentView === 'wengines'" @click="currentView = 'wengines'" />
+              <NavigationButton label="驱动盘" icon="ri-disc-line" :is-active="currentView === 'drive-disks'" @click="currentView = 'drive-disks'" />
+              <NavigationButton label="存档" icon="ri-folder-3-line" :is-active="currentView === 'saves'" @click="currentView = 'saves'" />
+              <NavigationButton v-if="isDev" label="调试" icon="ri-code-s-slash-line" :is-active="currentView === 'debug'" @click="currentView = 'debug'" />
+              <NavigationButton v-if="isDev" label="画廊" icon="ri-gallery-line" :is-active="currentView === 'gallery'" @click="currentView = 'gallery'" />
             </ul>
           </div>
-          <a class="btn btn-ghost normal-case">ZZZ Optimizer Dev</a>
+          <a class="btn btn-ghost normal-case text-xl font-bold">绝区零优化器</a>
         </div>
 
         <!-- Desktop Menu (navbar-center) -->
         <div class="navbar-center hidden lg:flex">
-          <ul class="menu menu-horizontal px-1 gap-2">
-            <li><a @click="currentView = 'optimizer'" :class="{ 'active': currentView === 'optimizer' }">优化</a></li>
-            <li><a @click="currentView = 'characters'" :class="{ 'active': currentView === 'characters' }">角色</a></li>
-            <li><a @click="currentView = 'teams'" :class="{ 'active': currentView === 'teams' }">队伍</a></li>
-            <li><a @click="currentView = 'wengines'" :class="{ 'active': currentView === 'wengines' }">音擎</a></li>
-            <li><a @click="currentView = 'drive-disks'" :class="{ 'active': currentView === 'drive-disks' }">驱动盘</a></li>
-            <li><a @click="currentView = 'saves'" :class="{ 'active': currentView === 'saves' }">存档</a></li>
-            <li v-if="isDev"><a @click="currentView = 'debug'" :class="{ 'active': currentView === 'debug' }">调试</a></li>
-            <li v-if="isDev"><a @click="currentView = 'gallery'" :class="{ 'active': currentView === 'gallery' }">画廊</a></li>
+          <ul class="menu menu-horizontal px-1 gap-2 text-lg font-bold">
+            <NavigationButton label="优化" icon="ri-rocket-2-line" :is-active="currentView === 'optimizer'" @click="currentView = 'optimizer'" />
+            <NavigationButton label="角色" icon="ri-user-3-line" :is-active="currentView === 'characters'" @click="currentView = 'characters'" />
+            <NavigationButton label="队伍" icon="ri-team-line" :is-active="currentView === 'teams'" @click="currentView = 'teams'" />
+            <NavigationButton label="音擎" icon="ri-sword-line" :is-active="currentView === 'wengines'" @click="currentView = 'wengines'" />
+            <NavigationButton label="驱动盘" icon="ri-disc-line" :is-active="currentView === 'drive-disks'" @click="currentView = 'drive-disks'" />
+            <NavigationButton label="存档" icon="ri-folder-3-line" :is-active="currentView === 'saves'" @click="currentView = 'saves'" />
+            <NavigationButton v-if="isDev" label="调试" icon="ri-code-s-slash-line" :is-active="currentView === 'debug'" @click="currentView = 'debug'" />
+            <NavigationButton v-if="isDev" label="画廊" icon="ri-gallery-line" :is-active="currentView === 'gallery'" @click="currentView = 'gallery'" />
           </ul>
         </div>
 
@@ -73,6 +73,7 @@ import TeamView from './views/TeamView.vue';
 import DriveDiskView from './views/DriveDiskView.vue';
 import WEngineView from './views/WEngineView.vue';
 import SaveManagementView from './views/SaveManagementView.vue';
+import NavigationButton from './components/common/NavigationButton.vue';
 
 const currentView = ref('optimizer'); // 默认进入优化器
 const isDark = ref(false);
@@ -100,8 +101,8 @@ function updateTheme() {
     html.setAttribute('data-theme', 'halloween');
     localStorage.setItem('theme', 'halloween');
   } else {
-    html.setAttribute('data-theme', 'cupcake');
-    localStorage.setItem('theme', 'cupcake');
+    html.setAttribute('data-theme', 'fantasy');
+    localStorage.setItem('theme', 'fantasy');
   }
 }
 

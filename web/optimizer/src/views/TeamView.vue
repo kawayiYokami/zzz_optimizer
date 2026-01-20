@@ -1,8 +1,8 @@
 <template>
-  <div class="h-full overflow-y-auto p-4 lg:p-8">
+  <div class="h-full overflow-y-auto p-4 lg:p-8  bg-base-200">
     <div class="max-w-6xl mx-auto">
       <!-- Team List -->
-      <TeamList @edit="openEditModal" @create="openCreateModal" />
+      <TeamList @select="openEditModal" @create="openCreateModal" />
 
       <!-- Edit Modal -->
       <TeamEditModal

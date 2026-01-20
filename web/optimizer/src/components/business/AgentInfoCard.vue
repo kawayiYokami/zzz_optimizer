@@ -1,7 +1,7 @@
 <template>
   <div class="card bg-base-100 shadow-xl border border-base-300 w-full max-w-4xl mx-auto overflow-hidden flex flex-col">
     <!-- Header: Character Basic Info -->
-    <div class="bg-base-200 p-4 flex items-center gap-6 relative overflow-hidden">
+    <div class="bg-base-200 p-6 flex items-center gap-6 relative overflow-hidden">
         <!-- Background Decoration (Optional) -->
         <div class="absolute inset-0 opacity-10 pointer-events-none" :style="{ background: `linear-gradient(to right, ${rarityColor}, transparent)` }"></div>
 
@@ -28,7 +28,7 @@
             </div>
 
             <!-- 第二行：等级控制 -->
-            <div class="flex items-center gap-2 mb-1.5">
+            <div class="flex items-center gap-2">
                 <span class="text-sm opacity-60 min-w-12">Lv.{{ agent.level }}</span>
                 <input
                     type="range"
@@ -40,19 +40,23 @@
                     step="1"
                 />
             </div>
+        </div>
 
-            <!-- 第三行：影画控制 -->
-            <div class="flex items-center gap-2">
-                <span class="text-sm opacity-60">影画</span>
-                <div class="rating rating-sm">
-                    <input type="radio" name="cinema-rating" class="rating-hidden" :checked="agent.cinema === 0" @change="setCinemaLevel(0)" />
-                    <input type="radio" name="cinema-rating" class="mask mask-heart bg-base-content" :checked="agent.cinema === 1" @change="setCinemaLevel(1)" />
-                    <input type="radio" name="cinema-rating" class="mask mask-heart bg-base-content" :checked="agent.cinema === 2" @change="setCinemaLevel(2)" />
-                    <input type="radio" name="cinema-rating" class="mask mask-heart bg-base-content" :checked="agent.cinema === 3" @change="setCinemaLevel(3)" />
-                    <input type="radio" name="cinema-rating" class="mask mask-heart bg-base-content" :checked="agent.cinema === 4" @change="setCinemaLevel(4)" />
-                    <input type="radio" name="cinema-rating" class="mask mask-heart bg-base-content" :checked="agent.cinema === 5" @change="setCinemaLevel(5)" />
-                    <input type="radio" name="cinema-rating" class="mask mask-heart bg-base-content" :checked="agent.cinema === 6" @change="setCinemaLevel(6)" />
-                </div>
+        <!-- 影画按钮 -->
+        <div class="flex flex-col gap-1 z-10 shrink-0">
+            <div class="text-center font-bold text-lg">
+                影画{{ agent.cinema }}
+            </div>
+            <div class="flex gap-1">
+                <button
+                    v-for="level in 6"
+                    :key="level"
+                    @click="setCinemaLevel(level)"
+                    class="btn btn-square btn-lg btn-ghost"
+                    :title="`影画 ${level}`"
+                >
+                    <i :class="agent.cinema >= level ? 'ri-movie-2-fill' : 'ri-movie-2-line'" class="text-2xl"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -451,9 +455,15 @@ function adjustCharacterLevel(event: Event): void {
 }
 
 function setCinemaLevel(level: number): void {
-    const delta = level - props.agent.cinema;
-    if (delta !== 0) {
-        props.agent.adjustCinemaLevel(delta);
+    if (props.agent.cinema === level) {
+        // 如果点击当前等级，则降级到0
+        props.agent.adjustCinemaLevel(-props.agent.cinema);
+    } else {
+        // 否则设置到点击的等级
+        const delta = level - props.agent.cinema;
+        if (delta !== 0) {
+            props.agent.adjustCinemaLevel(delta);
+        }
     }
 }
 </script>

@@ -1,54 +1,47 @@
 <template>
   <div
-    class="card bg-base-100 shadow-sm border border-base-300 transition-all"
-    :class="{
-      'cursor-pointer hover:shadow-md hover:scale-[1.02]': clickable
-    }"
+    class="card shadow-sm border border-base-300 transition-all relative"
+    :class="[
+      teamRarityClass,
+      {
+        'cursor-pointer hover:shadow-md hover:scale-[1.02]': clickable
+      }
+    ]"
     @click="clickable ? $emit('click', team.id) : null"
   >
-    <div class="card-body p-3">
-      <!-- Header -->
-      <div class="flex items-center justify-between">
-        <h4 class="font-bold truncate flex-1">{{ team.name }}</h4>
-      </div>
-
-      <!-- Agent Avatars -->
-      <div class="flex gap-2 justify-center mt-2">
+    <div class="card-body p-0">
+      <!-- Agent Avatars using carousel -->
+      <div class="carousel rounded-box w-full h-32">
         <div
           v-for="(agent, index) in agents"
           :key="agent?.id || index"
-          class="text-center relative"
-          draggable="true"
-          @dragstart="handleDragStart(index)"
-          @dragend="handleDragEnd"
+          class="carousel-item w-1/3 relative"
         >
-          <div class="relative">
-            <img
-              v-if="agent"
-              :src="iconService.getCharacterCircleById(agent.game_id)"
-              :alt="agent.name_cn"
-              class="w-12 h-12 rounded-full cursor-move"
-              :class="{ 'opacity-50': draggedIndex === index }"
-            />
-            <div
-              v-else
-              class="w-12 h-12 rounded-full bg-base-200 flex items-center justify-center text-xs opacity-50"
-            >
-              空
-            </div>
-            <!-- 前台标记 -->
-            <div
-              v-if="agent && index === 0"
-              class="absolute -top-1 -right-1 badge badge-xs badge-primary"
-            >
-              前
-            </div>
+          <img
+            v-if="agent"
+            :src="iconService.getCharacterCropById(agent.game_id)"
+            :alt="agent.name_cn"
+            class="w-full h-full object-cover"
+          />
+          <div
+            v-else
+            class="w-full h-full bg-base-200 flex items-center justify-center text-xs opacity-50"
+          >
+            空
           </div>
-          <div v-if="agent" class="text-xs mt-1 opacity-60 truncate max-w-12">
-            {{ agent.name_cn }}
+          <!-- Agent Name Overlay -->
+          <div
+            v-if="agent"
+            class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2"
+          >
+            <div class="text-xs text-white font-bold truncate text-center">{{ agent.name_cn }}</div>
           </div>
-          <div v-if="agent" class="text-xs opacity-50">
-            Lv.{{ agent.level }}
+          <!-- 前台标记 (左上角旗帜图标) -->
+          <div
+            v-if="agent && index === 0"
+            class="absolute top-2 left-2 bg-primary text-primary-content rounded-full w-6 h-6 flex items-center justify-center"
+          >
+            <i class="ri-flag-2-fill text-sm"></i>
           </div>
         </div>
       </div>
@@ -85,6 +78,21 @@ const agents = computed(() => [
 
 const agentCount = computed(() => {
   return agents.value.filter(a => a !== null).length;
+});
+
+// 计算队伍稀有度背景色
+const teamRarityClass = computed(() => {
+  const validAgents = agents.value.filter(a => a !== null);
+  if (validAgents.length === 0) return 'bg-base-100';
+  
+  // 检查是否有S级角色
+  const hasSSR = validAgents.some(agent => agent.rarity === 4);
+  
+  if (hasSSR) {
+    return 'bg-gradient-to-br from-[var(--rarity-s-gradient-start)] to-[var(--rarity-s-gradient-end)]';
+  } else {
+    return 'bg-gradient-to-br from-[var(--rarity-a-gradient-start)] to-[var(--rarity-a-gradient-end)]';
+  }
 });
 
 function handleDragStart(index: number) {

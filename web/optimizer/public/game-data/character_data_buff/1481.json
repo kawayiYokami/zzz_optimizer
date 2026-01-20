@@ -44,7 +44,7 @@
             "target_enemy": true
         },
         "in_combat_stats": {
-            "ENEMY_ALL_DMG_VULNERABILITY_": 0.15
+            "DMG_INC_": 0.15
         },
         "out_of_combat_stats": {},
         "conversion": null,
@@ -131,7 +131,7 @@
             "target_self": true
         },
         "in_combat_stats": {
-            "ENHANCED_SPECIAL_CRIT_DMG_": 0.50
+            "CRIT_DMG_": 0.50
         },
         "out_of_combat_stats": {},
         "conversion": null,
@@ -140,24 +140,7 @@
         ],
         "max_stacks": 1
     },
-    {
-        "id": "1481_extra_ability_2",
-        "name": "场外连线 - 好评如潮",
-        "description": "额外能力: 发动[强化特殊技]或[终结技]时全队角色获得[好评如潮]效果，[好评如潮]状态下的角色造成的伤害提升40%。",
-        "source": "EXTRA_ABILITY",
-        "target": {
-            "target_teammate": true
-        },
-        "in_combat_stats": {
-            "ALL_DMG_": 0.40
-        },
-        "out_of_combat_stats": {},
-        "conversion": null,
-        "trigger_conditions": [
-            "发动强化特殊技或终结技"
-        ],
-        "max_stacks": 1
-    },
+    {"id": "1481_extra_ability_2", "name": "场外连线 - 好评如潮", "description": "额外能力: 发动[强化特殊技]或[终结技]时全队角色获得[好评如潮]效果，[好评如潮]状态下的角色造成的伤害提升40%。", "source": "EXTRA_ABILITY", "target": {"target_teammate": true}, "in_combat_stats": {"DMG_": 0.40}, "out_of_combat_stats": {}, "conversion": null, "trigger_conditions": ["发动强化特殊技或终结技"], "max_stacks": 1},
     {
         "id": "1481_extra_ability_3",
         "name": "场外连线 - 额外伤害",

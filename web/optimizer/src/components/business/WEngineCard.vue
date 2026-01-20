@@ -1,13 +1,13 @@
 <template>
-  <div class="card bg-base-200 shadow-xl compact-card border border-base-300 w-52 overflow-hidden">
+  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52 overflow-hidden">
     <!-- Image Section with Rarity Gradient -->
     <figure :class="['relative h-32 w-full', rarityGradientClass]">
         <!-- Weapon Type Icon (Top Left) -->
-        <div class="absolute top-2 left-2 w-6 h-6 bg-black/40 p-0.5 backdrop-blur-sm rounded">
+        <div class="absolute top-2 left-2 w-8 h-8 rounded z-10">
             <img
                 :src="getWeaponTypeIconUrl()"
                 class="w-full h-full object-contain"
-                :alt="wengine.weapon_type"
+                :alt="getWeaponTypeName()"
             />
         </div>
 
@@ -21,34 +21,34 @@
             {{ wengine.name[0] }}
         </div>
         <div class="absolute bottom-0 left-0 w-full bg-linear-to-t from-black/80 to-transparent p-2">
-            <div class="flex items-center gap-2 text-white/80 text-xs">
-                <span class="font-bold text-sm text-white truncate flex-1">{{ wengine.name }}</span>
-                <span>Lv.{{ wengine.level }}</span>
-                <span>R{{ wengine.refinement }}</span>
+            <div class="flex items-center gap-2 text-white/80 text-sm">
+                <span class="font-bold text-white truncate flex-1">{{ wengine.name }}</span>
+                <span class="font-bold">Lv.{{ wengine.level }}</span>
+                <span class="font-bold">R{{ wengine.refinement }}</span>
             </div>
         </div>
     </figure>
 
     <div class="card-body p-3 gap-2">
       <!-- Base Stats -->
-      <div class="flex justify-between items-center bg-base-200 p-2 rounded">
+      <div class="flex justify-between items-center p-2 rounded">
         <div class="flex flex-col">
             <span class="text-xs text-base-content/60">基础攻击力</span>
             <span class="font-bold text-lg">{{ baseAtk.toFixed(0) }}</span>
         </div>
         <div class="flex flex-col items-end" v-if="randStatType">
             <span class="text-xs text-base-content/60">{{ getPropName(randStatType) }}</span>
-            <span class="font-bold text-lg text-secondary">{{ formatValue(randStat, isPercent(randStatType)) }}</span>
+            <span class="font-bold text-lg">{{ formatValue(randStat, isPercent(randStatType)) }}</span>
         </div>
       </div>
 
       <!-- Talent (Collapsible) -->
-      <div class="collapse collapse-arrow border border-base-200 bg-base-100 rounded-box">
-        <input type="checkbox" /> 
+      <div class="collapse collapse-arrow border border-base-200 bg-base-200 rounded-box">
+        <input type="checkbox" />
         <div class="collapse-title text-xs font-medium p-2 min-h-0 flex items-center">
           <span class="truncate">{{ activeTalentName }}</span>
         </div>
-        <div class="collapse-content text-xs p-2 pt-0"> 
+        <div class="collapse-content text-xs p-2 pt-0">
           <p class="opacity-80">{{ activeTalentDesc }}</p>
         </div>
       </div>
@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { WEngine } from '../../model/wengine';
-import { PropertyType, getPropertyCnName, isPercentageProperty } from '../../model/base';
+import { PropertyType, getPropertyCnName, isPercentageProperty, getWeaponCnName } from '../../model/base';
 import { iconService } from '../../services/icon.service';
 
 const props = defineProps<{
@@ -76,9 +76,9 @@ const props = defineProps<{
 
 const rarityGradientClass = computed(() => {
     // Determine rarity based on some logic (e.g. from ID or if we have rarity in model)
-    // Currently WEngine model doesn't explicitly store rarity on the instance directly 
+    // Currently WEngine model doesn't explicitly store rarity on the instance directly
     // unless we look up metadata, but usually S-rank engines have higher base stats.
-    // For now, let's assume a default or pass it in. 
+    // For now, let's assume a default or pass it in.
     // We can infer S-rank if base_atk > 600 at max level or something, but let's just use neutral for now
     // until we link it properly with metadata.
     return 'bg-gradient-to-br from-gray-700 to-gray-900';
@@ -91,6 +91,10 @@ const wengineIconUrl = computed(() => {
 
 function getWeaponTypeIconUrl() {
     return iconService.getWeaponTypeIconUrl(props.wengine.weapon_type);
+}
+
+function getWeaponTypeName() {
+    return getWeaponCnName(props.wengine.weapon_type);
 }
 
 const activeTalent = computed(() => {

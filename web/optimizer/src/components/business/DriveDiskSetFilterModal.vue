@@ -3,7 +3,7 @@
     <div class="modal-box max-w-6xl overflow-visible">
       <!-- Header -->
       <div class="flex items-center justify-between mb-4">
-        <h3 class="font-bold text-lg">驱动盘套装过滤</h3>
+        <h3 class="font-bold text-lg">驱动盘套装激活</h3>
         <button class="btn btn-sm btn-circle btn-ghost" @click="close">✕</button>
       </div>
 
@@ -28,9 +28,8 @@
           <div
             v-for="set in availableSets"
             :key="set.id"
-            class="card card-compact bg-base-200 cursor-pointer hover:bg-base-300 transition-colors"
+            class="card card-compact bg-base-200 transition-colors"
             :class="{ 'ring-2 ring-primary': activeSets.includes(set.id) }"
-            @click="toggleSet(set.id)"
           >
             <div class="card-body p-3 flex gap-3 items-start">
               <!-- 套装图标 -->
@@ -42,20 +41,20 @@
 
               <!-- 右侧：开关和名字（上下排布） -->
               <div class="flex-1 min-w-0 flex flex-col gap-2">
-                <!-- 勾选框 -->
-                <input
-                  type="checkbox"
-                  class="checkbox checkbox-primary self-start"
-                  :checked="activeSets.includes(set.id)"
-                  @click.stop="toggleSet(set.id)"
-                />
+                <!-- 开关 -->
+                <div class="flex items-center justify-between">
+                  <div class="font-bold text-sm">{{ set.name }}</div>
+                  <input
+                    type="checkbox"
+                    class="checkbox checkbox-primary"
+                    :checked="activeSets.includes(set.id)"
+                    @change="toggleSet(set.id)"
+                  />
+                </div>
 
-                <!-- 套装信息 -->
-                <div>
-                  <div class="font-bold text-sm mb-1">{{ set.name }}</div>
-                  <div class="text-xs text-base-content/70 line-clamp-3">
-                    4件套：{{ set.fourPieceDescription }}
-                  </div>
+                <!-- 套装描述 -->
+                <div class="text-xs text-base-content/70 line-clamp-3">
+                  4件套：{{ set.fourPieceDescription }}
                 </div>
               </div>
             </div>

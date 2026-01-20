@@ -5,7 +5,7 @@
         "description": "[巡梦童谣]状态额外附加造成伤害时无视敌人18%全属性伤害抗性。",
         "source": "TALENT",
         "target": { "target_teammate": true, "target_bund": true },
-        "in_combat_stats": { "ALL_DMG_PEN_": 0.18 },
+        "in_combat_stats": { "DEF_IGN_": 0.18 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "拥有[巡梦童谣]状态时",

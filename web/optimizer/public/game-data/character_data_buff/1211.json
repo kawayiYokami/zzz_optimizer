@@ -41,7 +41,7 @@
         "description": "指派杜苏拉或安娜塔莎进行攻击时，队伍中其他角色的穿透率提升12%。",
         "source": "CORE_PASSIVE",
         "target": { "target_teammate": true, "target_bund": true },
-        "in_combat_stats": { "DEF_PEN_": 0.12 },
+        "in_combat_stats": { "DEF_IGN_": 0.12 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "指派杜苏拉或安娜塔莎进行攻击时",
@@ -56,8 +56,8 @@
         "in_combat_stats": {},
         "out_of_combat_stats": {},
         "conversion": {
-            "from_property": "DEF_PEN_",
-            "to_property": "DEF_PEN_",
+            "from_property": "DEF_IGN_",
+            "to_property": "DEF_IGN_",
             "conversion_ratio": 0.25
         },
         "trigger_conditions": "指派杜苏拉或安娜塔莎进行攻击时",

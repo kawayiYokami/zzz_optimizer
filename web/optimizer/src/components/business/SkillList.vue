@@ -23,10 +23,10 @@
       <div v-if="group.skills.length === 0" class="text-center opacity-50 py-4 bg-base-200 rounded-lg">
         暂无技能数据
       </div>
-      <div v-else class="space-y-2">
+      <div v-else class="space-y-3">
         <div v-for="skill in group.skills" :key="skill.name">
-          <div class="text-sm font-semibold mb-1 ml-2">{{ skill.name }}</div>
-          <div v-for="(seg, idx) in skill.segments" :key="idx" class="card bg-base-200 shadow-sm">
+          <div class="text-sm font-semibold mb-2 ml-2">{{ skill.name }}</div>
+          <div v-for="(seg, idx) in skill.segments" :key="idx" class="card bg-base-200 shadow-sm mb-2">
             <div class="card-body p-4">
               <div class="flex justify-between items-start gap-4">
                 <span class="font-semibold min-w-[8em]">{{ seg.segmentName || `段${idx + 1}` }}</span>

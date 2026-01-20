@@ -4,32 +4,32 @@
       <!-- 顶部控制区 -->
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-base-200 pb-2">
         <h3 class="card-title text-base">
-          <span>⚔️ 战斗环境</span>
+          <span>战斗环境</span>
           <span v-if="!canCalculate" class="text-xs text-error font-normal">(需配置队伍与敌人)</span>
         </h3>
-        
+
         <div class="flex items-center gap-3">
           <!-- 失衡状态开关 -->
           <label class="label cursor-pointer gap-2 p-0">
             <span class="label-text text-xs font-medium">失衡状态</span>
-            <input 
-              type="checkbox" 
-              class="toggle toggle-xs toggle-warning" 
+            <input
+              type="checkbox"
+              class="toggle toggle-xs toggle-warning"
               :checked="isStunned"
               :disabled="!canCalculate"
               @change="toggleStun"
             />
           </label>
-          
+
           <!-- 侵蚀护盾开关 -->
           <label class="label cursor-pointer gap-2 p-0">
             <span class="label-text text-xs font-medium">侵蚀护盾</span>
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               class="toggle toggle-xs toggle-error"
               :checked="hasShield"
               :disabled="!canCalculate"
-              @change="toggleShield" 
+              @change="toggleShield"
             />
           </label>
         </div>
@@ -39,22 +39,22 @@
       <div v-if="canCalculate" class="flex flex-col flex-1">
         <!-- Tab 导航 -->
         <div class="tabs tabs-boxed tabs-xs bg-base-200/50 mb-3 p-1">
-          <a 
-            class="tab flex-1 transition-all duration-200" 
+          <a
+            class="tab flex-1 transition-all duration-200"
             :class="{ 'tab-active bg-primary text-primary-content shadow-sm': activeTab === 'damage' }"
             @click="activeTab = 'damage'"
           >
             伤害预估
           </a>
-          <a 
-            class="tab flex-1 transition-all duration-200" 
+          <a
+            class="tab flex-1 transition-all duration-200"
             :class="{ 'tab-active bg-primary text-primary-content shadow-sm': activeTab === 'stats' }"
             @click="activeTab = 'stats'"
           >
             战斗面板
           </a>
-          <a 
-            class="tab flex-1 transition-all duration-200" 
+          <a
+            class="tab flex-1 transition-all duration-200"
             :class="{ 'tab-active bg-primary text-primary-content shadow-sm': activeTab === 'zones' }"
             @click="activeTab = 'zones'"
           >
@@ -93,7 +93,7 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- 总伤合计 -->
             <div class="alert alert-info py-2 px-3 text-sm shadow-sm mt-4">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -263,7 +263,7 @@
         </div>
 
       </div>
-      
+
       <!-- 空状态 -->
       <div v-else class="flex flex-col items-center justify-center py-8 opacity-40 gap-2">
         <div class="text-3xl">🛡️</div>
@@ -325,16 +325,16 @@ const agentElement = computed(() => {
 const finalPropertyCollection = computed(() => {
   updateTick.value;
   if (!canCalculate.value) return new PropertyCollection();
-  
+
   // 构造一个新的 PropertyCollection，只包含局内属性
   // 因为 BattleService.getMergedInCombatProperties() 返回的就是 PropertyCollection
   const p = props.battleService.getMergedInCombatProperties();
-  
+
   // 我们需要一个新的对象来确保 PropertySetCard 正确渲染
   const displayCollection = new PropertyCollection();
   displayCollection.in_combat = p.in_combat; // 直接复用 Map
   displayCollection.conversion = p.conversion;
-  
+
   return displayCollection;
 });
 
@@ -381,7 +381,7 @@ const calculateData = () => {
   const combatProps = props.battleService.getMergedInCombatProperties();
   const enemyStats = enemy.getCombatStats(60, isStunned.value); // 假设60级
   enemyStats.has_corruption_shield = hasShield.value;
-  
+
   const elementStr = ElementType[agent.element].toLowerCase();
 
   // 1. 计算乘区
@@ -396,7 +396,7 @@ const calculateData = () => {
   const baseRatios = new RatioSet();
   baseRatios.atk_ratio = 1.0; // 100%
   baseRatios.element = agent.element;
-  
+
   let directResult: DirectDamageResult;
   if (agent.isPenetrationAgent()) {
     directResult = DamageCalculatorService.calculatePenetrationDamage(currentZones, baseRatios) as unknown as DirectDamageResult;
@@ -418,10 +418,10 @@ const calculateData = () => {
   const anomalyRatios = new RatioSet();
   anomalyRatios.atk_ratio = anomalyParams.ratio; // 单次/单跳倍率
   anomalyRatios.element = agent.element;
-  
+
   const anomalyCalcResult = DamageCalculatorService.calculateAnomalyDamageFromZones(currentZones, anomalyRatios);
   const triggerExpectation = props.battleService.calculateAnomalyTriggerExpectation(100, elementStr); // 假设100积蓄
-  
+
   const anomalyResult: AnomalyDamageResult = {
     anomaly_damage_no_crit: anomalyCalcResult.damage_no_crit,
     anomaly_damage_crit: anomalyCalcResult.damage_crit,
@@ -461,26 +461,26 @@ const calculateData = () => {
     const skills = props.selectedSkillKeys
       .map(key => availableSkills.find(s => s.key === key))
       .filter(s => s !== undefined);
-    
+
     let total = 0;
     const list = [];
 
     for (const skill of skills) {
       if (!skill) continue;
-      
+
       // 使用 OptimizerService 计算该技能的总倍率和总积蓄
       const skillStats = optimizerService.calculateSkillStats(skill.key, -1);
-      
+
       // 使用 BattleService 的完整逻辑计算总伤害（直伤+异常）
       const dmgResult = props.battleService.calculateTotalDamage(skillStats.ratio, skillStats.anomaly);
-      
+
       list.push({
         name: skill.name,
         ratio: skillStats.ratio,
         anomaly: skillStats.anomaly,
         damage: dmgResult
       });
-      
+
       total += dmgResult.totalDamage;
     }
     skillDamageList.value = list;
@@ -492,7 +492,7 @@ const calculateData = () => {
       const defaultSkill = availableSkills[0];
       const skillStats = optimizerService.calculateSkillStats(defaultSkill.key, -1);
       const dmgResult = props.battleService.calculateTotalDamage(skillStats.ratio, skillStats.anomaly);
-      
+
       skillDamageList.value = [{
         name: `${defaultSkill.name} (默认预览)`,
         ratio: skillStats.ratio,

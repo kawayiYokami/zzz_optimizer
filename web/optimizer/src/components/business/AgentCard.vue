@@ -52,7 +52,7 @@ const props = defineProps<{
 const rarityGradientClass = computed(() => {
     // Rarity enum: S=4, A=3, B=2 (from base.ts)
     const isS = props.agent.rarity === 4;
-    return isS ? 'bg-gradient-to-br from-orange-600 to-orange-900' : 'bg-gradient-to-br from-purple-600 to-purple-900';
+    return isS ? 'bg-gradient-to-br from-[var(--rarity-s-gradient-start)] to-[var(--rarity-s-gradient-end)]' : 'bg-gradient-to-br from-[var(--rarity-a-gradient-start)] to-[var(--rarity-a-gradient-end)]';
 });
 
 const agentIconUrl = computed(() => {

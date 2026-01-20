@@ -1,7 +1,5 @@
 <template>
-  <div class="card bg-base-200 shadow-xl compact-card border border-base-300 w-52">
-    <!-- Card Header: Rarity color top border -->
-    <div :class="['h-1 w-full', rarityColorClass]"></div>
+  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52">
 
     <div class="card-body p-3 gap-1">
       <!-- Icon & Set Name -->
@@ -65,7 +63,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { DriveDisk } from '../../model/drive-disk';
-import { getPropertyCnName } from '../../model/base';
+import { getPropertyCnName, Rarity } from '../../model/base';
 import { iconService } from '../../services/icon.service';
 
 const props = defineProps<{
@@ -74,9 +72,9 @@ const props = defineProps<{
 
 const rarityColorClass = computed(() => {
   switch (props.disk.rarity) {
-    case 3: return 'bg-orange-500'; // S
-    case 2: return 'bg-purple-500'; // A
-    case 1: return 'bg-blue-500';   // B
+    case Rarity.S: return 'bg-orange-500'; // S级
+    case Rarity.A: return 'bg-purple-500'; // A级
+    case Rarity.B: return 'bg-blue-500';   // B级
     default: return 'bg-base-300';
   }
 });
@@ -117,7 +115,7 @@ function getPropName(prop: number) {
 
 function getSubStatsWithRolls() {
   const subStats = props.disk.getSubStatsWithRolls();
-  
+
   // 检查是否有无法识别的词条
   subStats.forEach(subStat => {
     const propName = getPropertyCnName(subStat.prop);
@@ -132,7 +130,7 @@ function getSubStatsWithRolls() {
       });
     }
   });
-  
+
   return subStats;
 }
 

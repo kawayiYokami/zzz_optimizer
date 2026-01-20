@@ -13,16 +13,6 @@
       <div v-else class="mt-2 text-sm text-base-content/60 text-center py-4">
         暂无队伍，请先创建队伍
       </div>
-      <!-- 队伍选择按钮 -->
-      <button
-        class="btn btn-base-200 w-full mt-2"
-        @click="showTeamSelector = true"
-      >
-        选择队伍
-      </button>
-
-      <!-- 分割线 -->
-      <div class="divider my-3"></div>
 
       <!-- 技能配置 -->
       <div class="divider text-xs font-bold text-base-content/50 my-2">技能配置</div>
@@ -92,11 +82,8 @@
         </div>
       </div>
 
-      <!-- 分割线 -->
-      <div class="divider my-2"></div>
-
       <!-- 敌人配置 -->
-      <h3 class="font-bold text-sm">敌人配置</h3>
+      <div class="divider text-xs font-bold text-base-content/50 my-2">敌人配置</div>
       <!-- 当前敌人卡片（可点击选择） -->
       <div v-if="selectedEnemy" class="mt-2 flex justify-center">
         <EnemyCard
@@ -119,12 +106,21 @@
   </div>
 
   <!-- 队伍选择弹窗 -->
-  <TeamList
-    v-if="showTeamSelector"
-    @edit="(teamId) => { showTeamSelector = false; editingTeamId = teamId; showTeamEditModal = true; emit('editTeam', teamId); }"
-    @create="() => { showTeamSelector = false; editingTeamId = undefined; showTeamEditModal = true; emit('createTeam'); }"
-    @cancel="showTeamSelector = false"
-  />
+  <dialog v-if="showTeamSelector" class="modal modal-open">
+    <div class="modal-box w-150 max-w-full relative flex flex-col max-h-[85vh]">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10" @click="showTeamSelector = false">✕</button>
+      <h3 class="font-bold text-lg mb-4 shrink-0">选择队伍</h3>
+      <div class="flex-1 overflow-y-auto min-h-0 pr-2">
+        <TeamList 
+          @select="(teamId) => { showTeamSelector = false; emit('update:selectedTeamId', teamId); }"
+          @create="() => { showTeamSelector = false; editingTeamId = undefined; showTeamEditModal = true; emit('createTeam'); }"
+        />
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop" @click.prevent="showTeamSelector = false">
+      <button>close</button>
+    </form>
+  </dialog>
 
   <!-- 队伍编辑弹窗 -->
   <TeamEditModal
@@ -188,7 +184,6 @@ interface Emits {
   'update:selectedEnemyId': [enemyId: string];
   'toggleSkill': [skillKey: string];
   'toggleBuff': [buffId: string];
-  'editTeam': [teamId: string];
   'createTeam': [];
 }
 

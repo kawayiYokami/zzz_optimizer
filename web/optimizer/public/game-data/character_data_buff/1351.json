@@ -59,7 +59,7 @@
       "target_enemy": true
     },
     "in_combat_stats": {
-      "ALL_DMG_RED_": 0.30
+      "DMG_INC_": 0.30
     },
     "out_of_combat_stats": {},
     "conversion": null,
