@@ -46,6 +46,14 @@
         <!-- 结果展示 -->
         <div class="lg:col-span-2 space-y-6">
 
+          <!-- 武器状态警告 -->
+          <div v-if="targetAgent && !equippedWeapon" class="alert alert-warning">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>当前角色未装备武器，将使用基础攻击力计算伤害</span>
+          </div>
+
           <!-- 战斗信息卡 -->
           <BattleInfoCard
             ref="battleInfoCardRef"
@@ -196,6 +204,7 @@ const battleInfoCardRef = ref<InstanceType<typeof BattleInfoCard> | null>(null);
 const selectedEnemyId = ref('');  // 默认不选择敌人
 const disabledBuffIds = ref<string[]>([]); // 存储被禁用的 Buff ID (黑名单模式)
 const buffsVersion = ref(0);  // 用于触发 Buff UI 更新
+const isLoadingConfig = ref(false);  // 防止加载配置时触发自动保存
 
 // 敌人列表
 const enemies = computed(() => {
@@ -314,7 +323,6 @@ const progressPercentage = computed(() => {
 
 const canStart = computed(() => {
   return !!targetAgent.value &&
-         !!equippedWeapon.value &&
          selectedSkillKeys.value.length > 0 &&
          !isRunning.value;
 });
@@ -389,6 +397,7 @@ const unselectedBuffs = computed(() => {
 
 // 从队伍加载配置
 const loadTeamOptimizationConfig = (teamId: string) => {
+  isLoadingConfig.value = true;
   try {
     const team = teams.value.find(t => t.id === teamId);
     if (!team) {
@@ -412,9 +421,11 @@ const loadTeamOptimizationConfig = (teamId: string) => {
     disabledBuffIds.value = config.disabledBuffIds;
     selectedEnemyId.value = config.selectedEnemyId;
 
-    console.log(`[Optimizer] 已加载队伍 ${team.name} 的配置`);
+    console.log(`[Optimizer] 已加载队伍 ${team.name} 的配置 - selectedEnemyId: ${config.selectedEnemyId}`);
   } catch (e) {
     console.error('[Optimizer] Failed to load team config:', e);
+  } finally {
+    isLoadingConfig.value = false;
   }
 };
 
@@ -429,9 +440,10 @@ const saveTeamOptimizationConfig = (teamId: string) => {
       lastUpdated: new Date().toISOString(),
     };
 
+    console.log(`[Optimizer] 保存队伍配置 - teamId: ${teamId}, selectedEnemyId: ${selectedEnemyId.value}`);
     const success = saveStore.updateTeamOptimizationConfig(teamId, config);
     if (success) {
-      console.log(`[Optimizer] 已保存队伍配置`);
+      console.log(`[Optimizer] 已保存队伍配置 - selectedEnemyId: ${config.selectedEnemyId}`);
     } else {
       console.error(`[Optimizer] 保存队伍配置失败`);
     }
@@ -616,11 +628,10 @@ const startOptimization = async () => {
   const agent = targetAgent.value;
   if (!agent) return;
 
-  // 使用角色已装备的武器
+  // 获取角色已装备的武器（如果没有则使用 null）
   const weapon = equippedWeapon.value;
   if (!weapon) {
-    alert('角色未装备武器');
-    return;
+    console.warn('[Optimizer] 角色未装备武器，将使用基础攻击力计算');
   }
 
   progress.value = null;
@@ -715,7 +726,7 @@ onMounted(async () => {
 
 // 监听配置变化并自动保存到当前队伍
 watch([constraints, selectedSkillKeys, disabledBuffIds, selectedEnemyId], () => {
-  if (selectedTeamId.value) {
+  if (selectedTeamId.value && !isLoadingConfig.value) {
     saveTeamOptimizationConfig(selectedTeamId.value);
   }
 }, { deep: true });

@@ -606,7 +606,11 @@ export class OptimizerContext {
     /**
      * 将音擎属性填充到 Float64Array
      */
-    private static fillArrayFromWEngine(arr: Float64Array, wengine: WEngine): void {
+    private static fillArrayFromWEngine(arr: Float64Array, wengine: WEngine | null): void {
+        if (!wengine) {
+            return; // 没有武器时跳过
+        }
+
         // 基础属性
         const baseProps = wengine.getBaseStats();
 
@@ -808,7 +812,7 @@ export class OptimizerContext {
      */
     static buildFastRequest(options: {
         agent: Agent;
-        weapon: WEngine;  // 固定音擎
+        weapon: WEngine | null;  // 固定音擎（可选）
         skill: SkillParams;
         enemy: Enemy;
         enemyLevel?: number;
@@ -857,11 +861,13 @@ export class OptimizerContext {
         }
 
         // 音擎转换 Buff
-        const wengineBuffs = weapon.getActiveBuffs();
-        for (const buff of wengineBuffs) {
-            const convData = this.extractConversionBuff(buff, false);
-            if (convData) {
-                selfConversionBuffs.push(convData);
+        if (weapon) {
+            const wengineBuffs = weapon.getActiveBuffs();
+            for (const buff of wengineBuffs) {
+                const convData = this.extractConversionBuff(buff, false);
+                if (convData) {
+                    selfConversionBuffs.push(convData);
+                }
             }
         }
 

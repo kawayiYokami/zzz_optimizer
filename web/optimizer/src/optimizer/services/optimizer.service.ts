@@ -473,7 +473,7 @@ export class OptimizerService {
      */
     startFastOptimization(options: {
         agent: Agent;
-        weapon: WEngine;  // 固定音擎
+        weapon: WEngine | null;  // 固定音擎（可选）
         skill: SkillParams;
         enemy: Enemy;
         enemyLevel?: number;

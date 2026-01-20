@@ -24,6 +24,7 @@ export class Team {
   private _id: string;
   private _name: string;
   private _optimizationConfig: TeamOptimizationConfig | undefined;
+  private _zodTeamData?: ZodTeamData; // 引用对应的ZodTeamData对象，用于实时同步
 
   /**
    * 构造函数
@@ -32,13 +33,15 @@ export class Team {
    * @param name 队伍名称
    * @param bond 邦布实例（可选）
    * @param optimizationConfig 优化配置（可选）
+   * @param zodTeamData ZodTeamData对象引用（可选，用于实时同步）
    */
   constructor(
     agents: Agent[],
     id: string = '',
     name: string = '',
     bond: any | null = null,
-    optimizationConfig?: TeamOptimizationConfig
+    optimizationConfig?: TeamOptimizationConfig,
+    zodTeamData?: ZodTeamData
   ) {
     if (agents.length < 1 || agents.length > 3) {
       throw new Error('队伍成员数量必须在1-3个之间');
@@ -48,6 +51,7 @@ export class Team {
     this._name = name;
     this._bond = bond;
     this._optimizationConfig = optimizationConfig;
+    this._zodTeamData = zodTeamData;
   }
 
   /**
@@ -90,6 +94,10 @@ export class Team {
    */
   set optimizationConfig(config: TeamOptimizationConfig | undefined) {
     this._optimizationConfig = config;
+    // 实时同步到ZodTeamData
+    if (this._zodTeamData) {
+      this._zodTeamData.optimizationConfig = config;
+    }
   }
 
   /**
@@ -200,7 +208,7 @@ export class Team {
       throw new Error('队伍必须至少包含一个角色');
     }
 
-    return new Team(agents, zodTeam.id, zodTeam.name, null, zodTeam.optimizationConfig);
+    return new Team(agents, zodTeam.id, zodTeam.name, null, zodTeam.optimizationConfig, zodTeam);
   }
 
   /**
