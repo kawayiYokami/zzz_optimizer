@@ -924,6 +924,12 @@ export class OptimizerService {
             dominancePruned = config.discs.length - filteredDiscs.length;
         }
 
+        // 主词条限定剪枝（456位置）
+        const mainStatFilters = config.constraints.mainStatFilters ?? {};
+        if (Object.keys(mainStatFilters).length > 0) {
+            filteredDiscs = OptimizerContext.applyMainStatFilterPruning(filteredDiscs, mainStatFilters);
+        }
+
         // 按位置分组驱动盘（使用剪枝后的列表）
         const discsBySlot = this.groupDiscsBySlot(filteredDiscs);
 

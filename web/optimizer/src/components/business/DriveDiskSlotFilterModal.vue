@@ -28,11 +28,11 @@
         <!-- 可用驱动盘 -->
         <div>
           <div class="text-sm font-bold mb-2 text-success">
-            可用驱动盘 ({{ availableDiscs.length }})
+            可用驱动盘 ({{ filteredAvailableDiscs.length }})
           </div>
           <div class="flex flex-wrap gap-2">
             <DriveDiskCard
-              v-for="disc in availableDiscs"
+              v-for="disc in filteredAvailableDiscs"
               :key="disc.id"
               :disk="disc"
             />
@@ -42,11 +42,11 @@
         <!-- 被排除的驱动盘 -->
         <div>
           <div class="text-sm font-bold mb-2 text-error">
-            被排除驱动盘 ({{ excludedDiscs.length }})
+            被排除驱动盘 ({{ filteredExcludedDiscs.length }})
           </div>
           <div class="flex flex-wrap gap-2">
             <DriveDiskCard
-              v-for="disc in excludedDiscs"
+              v-for="disc in filteredExcludedDiscs"
               :key="disc.id"
               :disk="disc"
               class="opacity-60"
@@ -89,6 +89,23 @@ const mainStatTypes = computed(() => {
     stats.add(disc.main_stat);
   });
   return Array.from(stats);
+});
+
+// 计算过滤后的可用驱动盘
+const filteredAvailableDiscs = computed(() => {
+  if (props.mainStatFilters.length === 0) {
+    return props.availableDiscs;
+  }
+  return props.availableDiscs.filter(disc => props.mainStatFilters.includes(disc.main_stat));
+});
+
+// 计算过滤后的被排除驱动盘（包含原本被排除的 + 因主词条被排除的）
+const filteredExcludedDiscs = computed(() => {
+  const extraExcluded = props.mainStatFilters.length === 0
+    ? []
+    : props.availableDiscs.filter(disc => !props.mainStatFilters.includes(disc.main_stat));
+  
+  return [...extraExcluded, ...props.excludedDiscs];
 });
 
 // 检查主词条是否允许

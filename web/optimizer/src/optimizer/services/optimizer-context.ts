@@ -673,7 +673,7 @@ export class OptimizerContext {
      */
     private static computeFixedMultipliers(
         agent: Agent,
-        wengine: WEngine,
+        wengine: WEngine | null,
         enemy: Enemy,
         skill: SkillParams,
         isStunned: boolean,
@@ -700,13 +700,15 @@ export class OptimizerContext {
         anomalyDmgBonus += agentProps.getTotal(PropertyType.ANOMALY_DMG_, 0);
 
         // 从音擎收集
-        const wengineProps = wengine.getBaseStats();
-        baseDefRed += wengineProps.getTotal(PropertyType.DEF_RED_, 0);
-        baseDefIgn += wengineProps.getTotal(PropertyType.DEF_IGN_, 0);
-        resRed += wengineProps.getTotal(PropertyType.ENEMY_RES_RED_, 0);
-        anomalyCritRate += wengineProps.getTotal(PropertyType.ANOM_CRIT_, 0);
-        anomalyCritDmg += wengineProps.getTotal(PropertyType.ANOM_CRIT_DMG_, 0);
-        anomalyDmgBonus += wengineProps.getTotal(PropertyType.ANOMALY_DMG_, 0);
+        if (wengine) {
+            const wengineProps = wengine.getBaseStats();
+            baseDefRed += wengineProps.getTotal(PropertyType.DEF_RED_, 0);
+            baseDefIgn += wengineProps.getTotal(PropertyType.DEF_IGN_, 0);
+            resRed += wengineProps.getTotal(PropertyType.ENEMY_RES_RED_, 0);
+            anomalyCritRate += wengineProps.getTotal(PropertyType.ANOM_CRIT_, 0);
+            anomalyCritDmg += wengineProps.getTotal(PropertyType.ANOM_CRIT_DMG_, 0);
+            anomalyDmgBonus += wengineProps.getTotal(PropertyType.ANOMALY_DMG_, 0);
+        }
 
         // 从外部 Buff 收集
         for (const buff of externalBuffs) {
@@ -1090,7 +1092,7 @@ export class OptimizerContext {
             skillParams,
             agentLevel: agent.level,
             setIdToIdx,
-            activeDiskSets: constraints.activeDiskSets ?? [],
+            activeDiskSets: [...(constraints.activeDiskSets ?? [])],
         };
 
         return {
@@ -1328,7 +1330,7 @@ export class OptimizerContext {
      */
     static applyMainStatFilterPruning(
         discs: DriveDisk[],
-        mainStatFilters: Record<number, PropertyType[]>
+        mainStatFilters: Partial<Record<number, PropertyType[]>>
     ): DriveDisk[] {
         return discs.filter(disc => {
             const position = disc.position;
