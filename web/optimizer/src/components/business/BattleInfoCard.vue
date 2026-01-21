@@ -176,8 +176,9 @@
         <div v-else-if="activeTab === 'stats'" class="flex-1 pr-1 animate-fade-in">
           <PropertySetCard
             :property-collection="finalPropertyCollection"
+            :final-stats="finalStats"
             :no-card="true"
-            default-active-tab="in"
+            default-active-tab="final"
           />
         </div>
 
@@ -390,16 +391,27 @@ const finalPropertyCollection = computed(() => {
   updateTick.value;
   if (!canCalculate.value) return new PropertyCollection();
 
-  // 构造一个新的 PropertyCollection，只包含局内属性
-  // 因为 BattleService.getMergedInCombatProperties() 返回的就是 PropertyCollection
+  // 获取合并后的局内属性
   const p = props.battleService.getMergedInCombatProperties();
 
-  // 我们需要一个新的对象来确保 PropertySetCard 正确渲染
+  // 构造一个新的 PropertyCollection，清空局内属性，只保留转换类属性
   const displayCollection = new PropertyCollection();
-  displayCollection.in_combat = p.in_combat; // 直接复用 Map
+  displayCollection.in_combat = new Map(); // 清空局内属性
   displayCollection.conversion = p.conversion;
 
   return displayCollection;
+});
+
+// 计算最终属性 (Tab 2)
+const finalStats = computed(() => {
+  updateTick.value;
+  if (!canCalculate.value) return new Map();
+
+  // 获取合并后的局内属性
+  const p = props.battleService.getMergedInCombatProperties();
+
+  // 转换为最终属性
+  return p.toFinalStats();
 });
 
 // 计算乘区 (Tab 3) & 伤害结果 (Tab 1)

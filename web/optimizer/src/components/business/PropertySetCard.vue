@@ -60,29 +60,32 @@ const props = withDefaults(defineProps<{
   propertyCollection: PropertyCollection;
   conversionBuffs?: Buff[];
   noCard?: boolean;
-  defaultActiveTab?: 'out' | 'in' | 'conversion';
+  defaultActiveTab?: 'out' | 'in' | 'final' | 'conversion';
+  finalStats?: Map<PropertyType, number>;
 }>(), {
   conversionBuffs: () => [],
   noCard: true,
-  defaultActiveTab: 'out'
+  defaultActiveTab: 'out',
+  finalStats: undefined
 });
 
-const activeTab = ref<'out' | 'in' | 'conversion'>('out');
+const activeTab = ref<'out' | 'in' | 'final' | 'conversion'>('out');
 
 // 如果提供了 defaultActiveTab，则使用它
 if (props.defaultActiveTab) {
   activeTab.value = props.defaultActiveTab;
 }
 
-const tabNames: Record<'out' | 'in' | 'conversion', string> = {
+const tabNames: Record<'out' | 'in' | 'final' | 'conversion', string> = {
   'out': '局外属性',
   'in': '局内属性',
+  'final': '最终属性',
   'conversion': '转换类属性'
 };
 
 // 检测哪些标签页有数据
 const availableTabs = computed(() => {
-  const tabs: Array<'out' | 'in' | 'conversion'> = [];
+  const tabs: Array<'out' | 'in' | 'final' | 'conversion'> = [];
 
   // 检查局外属性
   if (Array.from(props.propertyCollection.out_of_combat.entries()).some(([_, value]) => value !== 0)) {
@@ -92,6 +95,11 @@ const availableTabs = computed(() => {
   // 检查局内属性
   if (Array.from(props.propertyCollection.in_combat.entries()).some(([_, value]) => value !== 0)) {
     tabs.push('in');
+  }
+
+  // 检查最终属性
+  if (props.finalStats && Array.from(props.finalStats.entries()).some(([_, value]) => value !== 0)) {
+    tabs.push('final');
   }
 
   // 检查转换类属性
@@ -134,6 +142,8 @@ const filteredProps = computed(() => {
     stats = props.propertyCollection.out_of_combat;
   } else if (activeTab.value === 'in') {
     stats = props.propertyCollection.in_combat;
+  } else if (activeTab.value === 'final') {
+    stats = props.finalStats || new Map();
   } else {
     stats = props.propertyCollection.conversion;
   }
