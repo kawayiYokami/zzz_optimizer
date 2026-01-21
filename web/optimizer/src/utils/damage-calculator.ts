@@ -256,9 +256,14 @@ export class DamageCalculator {
    * @returns 异常积蓄乘区
    */
   static calculateAnomalyBuildupZone(zones: ZoneCollection, element: string): number {
+    const elementLower = element.toLowerCase();
+    
+    // 1. 计算异常掌控区
+    const anomalyMastery = zones.getFinal(PropertyType.ANOM_MAS, 0);
+    const masteryZone = anomalyMastery > 0 ? anomalyMastery / 100 : 1.0;
+    
+    // 2. 计算异常积蓄效率区
     const buildupEfficiency = zones.getFinal(PropertyType.ANOM_BUILDUP_, 0);
-
-    // 元素特定积蓄效率
     const elementBuildupMap: Record<string, PropertyType> = {
       physical: PropertyType.PHYSICAL_ANOMALY_BUILDUP_,
       fire: PropertyType.FIRE_ANOMALY_BUILDUP_,
@@ -266,10 +271,12 @@ export class DamageCalculator {
       electric: PropertyType.ELECTRIC_ANOMALY_BUILDUP_,
       ether: PropertyType.ETHER_ANOMALY_BUILDUP_,
     };
-    const elBuildupEfficiency = zones.getFinal(elementBuildupMap[element.toLowerCase()] || PropertyType.PHYSICAL_ANOMALY_BUILDUP_, 0);
-
+    const elementBuildupProp = elementBuildupMap[elementLower] || PropertyType.PHYSICAL_ANOMALY_BUILDUP_;
+    const elBuildupEfficiency = zones.getFinal(elementBuildupProp, 0);
+    const efficiencyZone = 1.0 + buildupEfficiency + elBuildupEfficiency;
+    
+    // 3. 计算异常积蓄抗性区
     const buildupRes = zones.getFinal(PropertyType.ANOM_BUILDUP_RES_, 0);
-
     const elementBuildupResMap: Record<string, PropertyType> = {
       physical: PropertyType.PHYSICAL_ANOM_BUILDUP_RES_,
       fire: PropertyType.FIRE_ANOM_BUILDUP_RES_,
@@ -277,24 +284,15 @@ export class DamageCalculator {
       electric: PropertyType.ELECTRIC_ANOM_BUILDUP_RES_,
       ether: PropertyType.ETHER_ANOM_BUILDUP_RES_,
     };
-    const elBuildupRes = zones.getFinal(elementBuildupResMap[element.toLowerCase()] || PropertyType.PHYSICAL_ANOM_BUILDUP_RES_, 0);
-
-    // 异常掌控区 = 异常掌控 / 100
-    // 异常掌控(ANOM_MAS)是数值属性，每1点提高1%
-    const anomalyMastery = zones.getFinal(PropertyType.ANOM_MAS, 0);
-    const masteryZone = anomalyMastery / 100;
-
-    // 距离衰减区
-    const distanceZone = zones.distance_mult;
-
-    // 当异常掌控为0时，积蓄区 = (1 + 积蓄效率%) × (1 - 抗性) × 距离衰减
-    // 否则积蓄区 = (异常掌控 / 100) × (1 + 积蓄效率%) × (1 - 抗性) × 距离衰减
-    const efficiencyZone = 1.0 + buildupEfficiency + elBuildupEfficiency;
+    const elementBuildupResProp = elementBuildupResMap[elementLower] || PropertyType.PHYSICAL_ANOM_BUILDUP_RES_;
+    const elBuildupRes = zones.getFinal(elementBuildupResProp, 0);
     const resistanceZone = 1.0 - buildupRes - elBuildupRes;
-    const finalMasteryZone = masteryZone > 0 ? masteryZone : 1.0;
-
-    // 公式：积蓄区 = 异常掌控区 × 异常积蓄效率区 × 异常积蓄抗性区 × 距离衰减区
-    return Math.max(0, finalMasteryZone * efficiencyZone * resistanceZone * distanceZone);
+    
+    // 4. 获取距离衰减区
+    const distanceZone = zones.distance_mult;
+    
+    // 5. 计算最终积蓄区
+    return Math.max(0, masteryZone * efficiencyZone * resistanceZone * distanceZone);
   }
 
   /**
@@ -353,13 +351,17 @@ export class DamageCalculator {
   }
 
   /**
-   * 常规伤害计算
+   * 构建直接伤害结果的私有辅助方法
    */
-  static calculateDirectDamageFromRatios(zones: ZoneCollection, ratios: RatioSet): DirectDamageResult {
-    const base = this.calculateBaseDamageZone(zones, ratios);
-    const dmgBonus = this.calculateDmgBonusFromZones(zones, ratios);
-    const mult = dmgBonus * zones.def_mult * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult * zones.level_mult;
-
+  private static _buildDirectDamageResult(
+    zones: ZoneCollection,
+    ratios: RatioSet,
+    base: number,
+    dmgBonus: number,
+    mult: number,
+    isPenetration: boolean,
+    penetrationDmgBonus: number
+  ): DirectDamageResult {
     const critDmg = zones.getFinal(PropertyType.CRIT_DMG_, 0);
     const critRate = Math.min(1, Math.max(0, zones.getFinal(PropertyType.CRIT_, 0)));
 
@@ -375,16 +377,27 @@ export class DamageCalculator {
       crit_rate: critRate,
       crit_dmg: critDmg,
       crit_zone: 1 + critRate * critDmg,
-      def_mult: zones.def_mult,
+      def_mult: isPenetration ? 1.0 : zones.def_mult,
       res_mult: zones.res_mult,
       dmg_taken_mult: zones.dmg_taken_mult,
       stun_vuln_mult: zones.stun_vuln_mult,
       distance_mult: zones.distance_mult,
-      is_penetration: false,
-      penetration_dmg_bonus: 0,
+      is_penetration: isPenetration,
+      penetration_dmg_bonus: penetrationDmgBonus,
       skill_ratio_mult: ratios.atk_ratio,
       special_dmg_mult: 1.0,
     };
+  }
+
+  /**
+   * 常规伤害计算
+   */
+  static calculateDirectDamageFromRatios(zones: ZoneCollection, ratios: RatioSet): DirectDamageResult {
+    const base = this.calculateBaseDamageZone(zones, ratios);
+    const dmgBonus = this.calculateDmgBonusFromZones(zones, ratios);
+    const mult = dmgBonus * zones.def_mult * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult * zones.level_mult;
+
+    return this._buildDirectDamageResult(zones, ratios, base, dmgBonus, mult, false, 0);
   }
 
   /**
@@ -396,31 +409,7 @@ export class DamageCalculator {
     const penBonus = 1 + zones.getFinal(PropertyType.SHEER_DMG_, 0);
     const mult = dmgBonus * penBonus * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult * zones.level_mult;
 
-    const critDmg = zones.getFinal(PropertyType.CRIT_DMG_, 0);
-    const critRate = Math.min(1, Math.max(0, zones.getFinal(PropertyType.CRIT_, 0)));
-
-    return {
-      damage_no_crit: Math.ceil(base * mult),
-      damage_crit: Math.ceil(base * mult * (1 + critDmg)),
-      damage_expected: Math.ceil(base * mult * (1 + critRate * critDmg)),
-      base_damage: base,
-      skill_ratio: ratios.atk_ratio,
-      element: ElementType[ratios.element]?.toLowerCase() || 'physical',
-      atk_zone: zones.getFinal(PropertyType.ATK_BASE, 0) + zones.getFinal(PropertyType.ATK, 0),
-      dmg_bonus: dmgBonus,
-      crit_rate: critRate,
-      crit_dmg: critDmg,
-      crit_zone: 1 + critRate * critDmg,
-      def_mult: 1.0, // 贯穿无视防御
-      res_mult: zones.res_mult,
-      dmg_taken_mult: zones.dmg_taken_mult,
-      stun_vuln_mult: zones.stun_vuln_mult,
-      distance_mult: zones.distance_mult,
-      is_penetration: true,
-      penetration_dmg_bonus: penBonus,
-      skill_ratio_mult: ratios.atk_ratio,
-      special_dmg_mult: 1.0,
-    };
+    return this._buildDirectDamageResult(zones, ratios, base, dmgBonus, mult, true, penBonus);
   }
 
   /**
@@ -429,9 +418,9 @@ export class DamageCalculator {
   static calculateAnomalyDamageFromZones(zones: ZoneCollection, ratios: RatioSet, level: number = 60): DamageResult {
     const base = this.calculateBaseDamageZone(zones, ratios);
     const dmgBonus = this.calculateDmgBonusFromZones(zones, ratios);
-    const anomProf = zones.getFinal(PropertyType.ANOM_PROF, 0) / 100;
-    const anomDmgBonus = 1 + zones.getFinal(PropertyType.ANOMALY_DMG_, 0);
-    const levelMult = 1 + (1 / 59) * (level - 1);
+    const anomProf = this.calculateAnomalyProfMultiplier(zones);
+    const anomDmgBonus = this.calculateAnomalyDmgMultiplier(zones);
+    const levelMult = this.calculateLevelMultiplier(level);
     const mult = dmgBonus * anomProf * zones.def_mult * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * levelMult * anomDmgBonus;
 
     const anomCritDmg = zones.getFinal(PropertyType.ANOM_CRIT_DMG_, 0);
@@ -447,7 +436,7 @@ export class DamageCalculator {
   /**
    * 更新所有通用乘区
    */
-  static updateAllZones(props: PropertyCollection, enemyStats: EnemyStats, element: string): ZoneCollection {
+  static updateAllZones(props: PropertyCollection, enemyStats: EnemyStats, element: string, attackerLevel: number = 60): ZoneCollection {
     const zones = new ZoneCollection();
     zones.updateFromPropertyCollection(props);
 
@@ -466,9 +455,6 @@ export class DamageCalculator {
 
     // 计算暴击区
     zones.crit_zone = this.calculateCritZone(zones);
-
-    // 攻击方等级基数（需要传入攻击方等级，暂用60级）
-    const attackerLevel = 60;
 
     // 计算防御区
     zones.def_mult = this.calculateDefenseMultiplier(zones, enemyStats, attackerLevel);
@@ -612,12 +598,6 @@ export class DamageCalculator {
   }
 
   /**
-   * 格式化异常伤害结果
-   *
-   * @param result 异常伤害计算结果
-   * @returns 格式化字符串
-   */
-  /**
    * 紊乱伤害倍率公式
    * @param element 元素类型
    * @param remainingTime 剩余持续时间T
@@ -626,28 +606,25 @@ export class DamageCalculator {
     const T = remainingTime;
     const elementLower = element.toLowerCase();
     
-    // 检查是否是烈霜
+    // 烈霜特殊处理
     if (elementLower === 'lieshuang') {
       // 烈霜属性造成的[霜寒]紊乱伤害：伤害倍率 = 600% + floor(T)×75%
       return 6.0 + Math.floor(T) * 0.75;
     }
     
-    // 普通元素类型
-    switch (elementLower) {
-      case 'fire':
-        return 4.5 + Math.floor(T / 0.5) * 0.5;
-      case 'electric':
-        return 4.5 + Math.floor(T) * 1.25;
-      case 'ether':
-      case 'xuanmo':
-        return 4.5 + Math.floor(T / 0.5) * 0.625;
-      case 'ice':
-        return 4.5 + Math.floor(T) * 0.075;
-      case 'physical':
-        return 4.5 + Math.floor(T) * 0.075;
-      default:
-        return 4.5;
-    }
+    // 元素伤害倍率计算映射
+    const damageRatioMap: Record<string, (time: number) => number> = {
+      fire: (t) => 4.5 + Math.floor(t / 0.5) * 0.5,
+      electric: (t) => 4.5 + Math.floor(t) * 1.25,
+      ether: (t) => 4.5 + Math.floor(t / 0.5) * 0.625,
+      xuanmo: (t) => 4.5 + Math.floor(t / 0.5) * 0.625,
+      ice: (t) => 4.5 + Math.floor(t) * 0.075,
+      physical: (t) => 4.5 + Math.floor(t) * 0.075
+    };
+    
+    // 使用映射表计算，默认返回基础倍率
+    const calculateRatio = damageRatioMap[elementLower] || (() => 4.5);
+    return calculateRatio(T);
   }
 
   /**
