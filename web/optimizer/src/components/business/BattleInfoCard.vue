@@ -225,7 +225,7 @@
             <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
               <div class="flex flex-col items-center w-full">
                 <div class="opacity-60 mb-1">基础区-{{ anomalyCnName }}</div>
-                <div class="font-bold font-mono text-base">{{ zones?.base_damage_zone?.toFixed(0) || '-' }}</div>
+                <div class="font-bold font-mono text-base">{{ zones?.anomaly_base_damage_zone?.toFixed(0) || '-' }}</div>
               </div>
             </button>
             <!-- 异常精通 -->
@@ -316,8 +316,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { BattleService } from '../../services/battle.service';
-import { DamageCalculatorService } from '../../services/damage-calculator.service';
-import type { DirectDamageResult, AnomalyDamageResult } from '../../services/damage-calculator.service';
+import { DamageCalculator } from '../../utils/damage-calculator';
+import type { DirectDamageResult, AnomalyDamageResult } from '../../utils/damage-calculator';
 import { PropertyCollection } from '../../model/property-collection';
 import { ZoneCollection } from '../../model/zone-collection';
 import { RatioSet } from '../../model/ratio-set';
@@ -449,7 +449,7 @@ const calculateData = () => {
   const elementStr = ElementType[agent.element].toLowerCase();
 
   // 1. 计算乘区
-  const currentZones = DamageCalculatorService.updateAllZones(
+  const currentZones = DamageCalculator.updateAllZones(
     combatProps,
     enemyStats,
     elementStr
@@ -457,8 +457,9 @@ const calculateData = () => {
   zones.value = currentZones;
 
   // 计算默认技能的基础区
-  const baseZones = DamageCalculatorService.calculateDefaultSkillBaseZones(agent, currentZones);
+  const baseZones = DamageCalculator.calculateDefaultSkillBaseZones(agent, currentZones);
   zones.value.base_damage_zone = baseZones.directBase;
+  zones.value.anomaly_base_damage_zone = baseZones.anomalyBase;
 
   // 2. 计算基准直伤 (100% 倍率)
   const baseRatios = new RatioSet();
@@ -467,12 +468,12 @@ const calculateData = () => {
 
   let directResult: DirectDamageResult;
   if (agent.isPenetrationAgent()) {
-    directResult = DamageCalculatorService.calculatePenetrationDamage(currentZones, baseRatios) as unknown as DirectDamageResult;
+    directResult = DamageCalculator.calculatePenetrationDamage(currentZones, baseRatios) as unknown as DirectDamageResult;
   } else {
-    directResult = DamageCalculatorService.calculateDirectDamageFromRatios(currentZones, baseRatios) as unknown as DirectDamageResult;
+    directResult = DamageCalculator.calculateDirectDamageFromRatios(currentZones, baseRatios) as unknown as DirectDamageResult;
   }
   // 补全 DirectDamageResult 缺失的字段以便显示
-  directResult.base_damage = DamageCalculatorService.calculateBaseDamageZone(currentZones, baseRatios, agent.isPenetrationAgent());
+  directResult.base_damage = DamageCalculator.calculateBaseDamageZone(currentZones, baseRatios, agent.isPenetrationAgent());
   directResult.dmg_bonus = currentZones.dmg_bonus;
   directResult.crit_zone = currentZones.crit_zone;
   directResult.def_mult = currentZones.def_mult;
@@ -482,12 +483,12 @@ const calculateData = () => {
   directResult.distance_mult = currentZones.distance_mult;
 
   // 3. 计算异常伤害 (单次)
-  const anomalyParams = DamageCalculatorService.getAnomalyDotParams(elementStr);
+  const anomalyParams = DamageCalculator.getAnomalyDotParams(elementStr);
   const anomalyRatios = new RatioSet();
   anomalyRatios.atk_ratio = anomalyParams.ratio; // 单次/单跳倍率
   anomalyRatios.element = agent.element;
 
-  const anomalyCalcResult = DamageCalculatorService.calculateAnomalyDamageFromZones(currentZones, anomalyRatios);
+  const anomalyCalcResult = DamageCalculator.calculateAnomalyDamageFromZones(currentZones, anomalyRatios);
   const triggerExpectation = props.battleService.calculateAnomalyTriggerExpectation(100, elementStr); // 假设100积蓄
 
   const anomalyResult: AnomalyDamageResult = {
@@ -498,7 +499,7 @@ const calculateData = () => {
     anomaly_buildup: 100,
     anomaly_threshold: enemyStats.getAnomalyThreshold(elementStr),
     trigger_expectation: triggerExpectation / 100, // 归一化
-    atk_zone: DamageCalculatorService.calculateBaseDamageZone(currentZones, new RatioSet(), agent.isPenetrationAgent()), // 近似
+    atk_zone: DamageCalculator.calculateBaseDamageZone(currentZones, new RatioSet(), agent.isPenetrationAgent()), // 近似
     dmg_bonus: currentZones.dmg_bonus,
     anomaly_prof_mult: currentZones.anomaly_prof_mult,
     anomaly_dmg_mult: currentZones.anomaly_dmg_mult,

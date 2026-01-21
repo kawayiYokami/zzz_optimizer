@@ -129,9 +129,12 @@
                             音擎
                         </h3>
 
-                        <div v-if="equippedWEngine" class="cursor-pointer hover:ring-2 hover:ring-primary transition-all" @click="openEquipmentSelector('wengine')">
-                            <WEngineCard :wengine="equippedWEngine" />
-                        </div>
+                        <WEngineCard
+                            v-if="equippedWEngine"
+                            :wengine="equippedWEngine"
+                            class="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                            @click="openEquipmentSelector('wengine')"
+                        />
                         <div v-else class="alert alert-warning shadow-sm cursor-pointer hover:alert-info transition-colors" @click="openEquipmentSelector('wengine')">
                             <span>点击装备音擎</span>
                         </div>
@@ -152,11 +155,14 @@
                             驱动盘
                         </h3>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <div v-for="(disk, idx) in equippedDriveDisks" :key="idx"
-                                 class="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
-                                 @click="openEquipmentSelector('drive-disk', idx as DriveDiskPosition)">
-                                <DriveDiskCard v-if="disk" :disk="disk" />
-                                <div v-else class="aspect-4/3 bg-base-200 rounded-lg border border-base-300 flex flex-col items-center justify-center relative p-2 hover:border-primary transition-colors cursor-pointer group">
+                            <div v-for="(disk, idx) in equippedDriveDisks" :key="idx">
+                                <DriveDiskCard
+                                    v-if="disk"
+                                    :disk="disk"
+                                    class="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                                    @click="openEquipmentSelector('drive-disk', idx as DriveDiskPosition)"
+                                />
+                                <div v-else class="aspect-4/3 bg-base-200 rounded-lg border border-base-300 flex flex-col items-center justify-center relative p-2 hover:border-primary transition-colors cursor-pointer group" @click="openEquipmentSelector('drive-disk', idx as DriveDiskPosition)">
                                     <span class="absolute top-2 left-2 text-xs font-mono opacity-40">{{ idx + 1 }}</span>
                                     <span class="text-2xl opacity-20 font-bold">+</span>
                                     <span class="text-xs opacity-40">点击装备</span>

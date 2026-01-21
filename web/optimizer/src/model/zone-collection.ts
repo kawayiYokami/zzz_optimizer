@@ -13,6 +13,7 @@ export class ZoneCollection {
 
   // 基础伤害区（技能相关）
   base_damage_zone: number = 0;
+  anomaly_base_damage_zone: number = 0;
 
   // 直伤乘区
   dmg_bonus: number = 1.0;      // 增伤区

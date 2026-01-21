@@ -6,9 +6,9 @@
 
 import type { Agent } from '../model/agent';
 import type { Enemy } from '../model/enemy';
-import { Buff } from '../model/buff';
+import { Buff, BuffSource } from '../model/buff';
 import { Team } from '../model/team';
-import { DamageCalculatorService } from './damage-calculator.service';
+import { DamageCalculator } from '../utils/damage-calculator';
 import { PropertyCollection } from '../model/property-collection';
 import { PropertyType, ElementType, getPropertyCnName } from '../model/base';
 import { RatioSet } from '../model/ratio-set';
@@ -223,11 +223,8 @@ export class BattleService {
     // 获取角色所有Buff
     const allBuffs = agent.getAllBuffsSync();
 
-    // 根据角色位置筛选Buff
+    // 不筛选，直接添加所有buff
     for (const buff of allBuffs) {
-      // 前台：只选择对自己生效的
-      // 后台：只选择对队友或全体生效的
-      // 这里修改逻辑，先尝试将所有buff添加到characterBuffs中，不管target属性
       this.addCharacterBuff(buff, isOnField);
     }
   }
@@ -483,6 +480,38 @@ export class BattleService {
    */
   getAllBuffs(): Buff[] {
     return [...this.characterBuffs, ...this.manualBuffs];
+  }
+
+  /**
+   * 获取前台角色的Buff列表（用于优化器）
+   * @param includeFourPiece 是否包含四件套buff
+   */
+  getFrontAgentBuffs(includeFourPiece: boolean = false): Buff[] {
+    if (!this.team || !this.team.frontAgent) {
+      return [...this.manualBuffs];
+    }
+
+    // 直接从前台角色加载所有 buff（包含角色、音擎、驱动盘）
+    const allBuffs = this.team.frontAgent.getAllBuffsSync();
+
+    // 合并手动添加的 buff
+    const combinedBuffs = [...allBuffs, ...this.manualBuffs];
+
+    // 过滤：只保留对自己生效的 buff
+    const filteredBuffs = combinedBuffs.filter(buff => {
+      // 手动添加的 buff 全部保留
+      if (this.manualBuffs.includes(buff)) return true;
+
+      // 角色 buff 只保留对自己生效的
+      return buff.target.target_self;
+    });
+
+    // 如果不包含四件套 buff，则过滤掉
+    if (!includeFourPiece) {
+      return filteredBuffs.filter(buff => buff.source !== BuffSource.DRIVE_DISK_4PC);
+    }
+
+    return filteredBuffs;
   }
 
   /**
@@ -1117,19 +1146,19 @@ export class BattleService {
     // 获取乘区集合
     const props = this.mergeCombatProperties();
     const enemyStats = this.enemy.getCombatStats();
-    const zones = DamageCalculatorService.updateAllZones(props, enemyStats, element);
+    const zones = DamageCalculator.updateAllZones(props, enemyStats, element);
 
     // 1. 计算直伤/贯穿伤害
     let directDamage = 0;
     if (isPenetration) {
       const ratios = new RatioSet();
       ratios.atk_ratio = totalSkillRatio;
-      const result = DamageCalculatorService.calculatePenetrationDamage(zones, ratios);
+      const result = DamageCalculator.calculatePenetrationDamage(zones, ratios);
       directDamage = result.damage_expected;
     } else {
       const ratios = new RatioSet();
       ratios.atk_ratio = totalSkillRatio;
-      const result = DamageCalculatorService.calculateDirectDamageFromRatios(zones, ratios);
+      const result = DamageCalculator.calculateDirectDamageFromRatios(zones, ratios);
       directDamage = result.damage_expected;
     }
 
@@ -1137,10 +1166,10 @@ export class BattleService {
     const triggerExpectation = this.calculateAnomalyTriggerExpectation(anomalyBuildup, element);
 
     // 3. 计算异常持续伤害
-    const anomalyParams = DamageCalculatorService.getAnomalyDotParams(element);
+    const anomalyParams = DamageCalculator.getAnomalyDotParams(element);
     const anomalyRatios = new RatioSet();
     anomalyRatios.atk_ratio = anomalyParams.totalRatio;
-    const anomalyResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, anomalyRatios);
+    const anomalyResult = DamageCalculator.calculateAnomalyDamageFromZones(zones, anomalyRatios);
     const anomalyDamage = anomalyResult.damage_expected * triggerExpectation;
 
     // 4. 计算紊乱伤害
@@ -1179,7 +1208,7 @@ export class BattleService {
 
     disorderRatios.atk_ratio = disorderRatio;
 
-    const disorderResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, disorderRatios);
+    const disorderResult = DamageCalculator.calculateAnomalyDamageFromZones(zones, disorderRatios);
     const disorderDamage = disorderResult.damage_expected * triggerExpectation;
 
     // 5. 特殊异常伤害（星见雅烈霜 1500%）
@@ -1187,7 +1216,7 @@ export class BattleService {
     if (specialConfig) {
       if (specialConfig.element === 'lieshuang') {
         // 烈霜使用专门的计算方法
-        const lieshuangDamage = DamageCalculatorService.calculateLieshuangDamage(
+        const lieshuangDamage = DamageCalculator.calculateLieshuangDamage(
           zones,
           enemyStats,
           triggerExpectation,
@@ -1198,7 +1227,7 @@ export class BattleService {
         // 其他特殊异常使用通用方法
         const specialRatios = new RatioSet();
         specialRatios.atk_ratio = specialConfig.ratio;
-        const specialResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, specialRatios);
+        const specialResult = DamageCalculator.calculateAnomalyDamageFromZones(zones, specialRatios);
         specialAnomalyDamage = specialResult.damage_expected * triggerExpectation;
       }
     }
@@ -1237,7 +1266,7 @@ export class BattleService {
 
     const props = this.mergeCombatProperties();
     // 使用伤害计算服务获取完整的乘区（包含属性积蓄效率和抗性）
-    const zones = DamageCalculatorService.updateAllZones(props, this.enemy.getCombatStats(), actualElement);
+    const zones = DamageCalculator.updateAllZones(props, this.enemy.getCombatStats(), actualElement);
     const enemyThreshold = this.enemy.getCombatStats().getAnomalyThreshold(actualElement);
 
     // zones.accumulate_zone 已经计算了 (1 + 效率) * (1 - 抗性)

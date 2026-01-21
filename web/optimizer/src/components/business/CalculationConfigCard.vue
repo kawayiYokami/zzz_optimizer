@@ -255,8 +255,8 @@ interface Props {
   estimatedCombinations: CombinationEstimate;
   canStart: boolean;
   activeDiskSets: string[]; // 激活的驱动盘套装ID列表
-  prunedDiscs: any[]; // 剪枝后的驱动盘
-  filteredDiscs: any[]; // 等级过滤后的驱动盘
+  optimizedDiscs: any[]; // 优化后的驱动盘（已完成所有过滤）
+  allDiscs: any[]; // 所有驱动盘
   constraints: any; // 约束配置（包含主词条限定器）
   currentTeamId?: string; // 当前队伍ID
   currentTeamPriority?: number; // 当前队伍优先级
@@ -274,8 +274,8 @@ const props = withDefaults(defineProps<Props>(), {
   estimatedCombinations: () => ({ total: 0, breakdown: {} }),
   canStart: false,
   activeDiskSets: () => [],
-  prunedDiscs: () => [],
-  filteredDiscs: () => [],
+  optimizedDiscs: () => [],
+  allDiscs: () => [],
   constraints: () => ({}),
 });
 
@@ -362,13 +362,17 @@ function openSlotFilter(slot: number): void {
 
 // 获取指定位置的可用驱动盘
 function getSlotAvailableDiscs(slot: number) {
-  return props.prunedDiscs.filter(d => d.position === slot);
+  return props.optimizedDiscs.filter(d => d.position === slot);
 }
 
 // 获取指定位置被排除的驱动盘
 function getSlotExcludedDiscs(slot: number) {
-  const prunedIds = new Set(props.prunedDiscs.map(d => d.id));
-  return props.filteredDiscs.filter(d => d.position === slot && !prunedIds.has(d.id));
+  // 从所有驱动盘中获取该位置的盘
+  const allSlotDiscs = props.allDiscs.filter(d => d.position === slot);
+  const availableIds = new Set(props.optimizedDiscs.filter(d => d.position === slot).map(d => d.id));
+  
+  // 被排除的盘 = 该位置的所有盘 - 可用的盘
+  return allSlotDiscs.filter(d => !availableIds.has(d.id));
 }
 
 // 获取指定位置的主词条限定器

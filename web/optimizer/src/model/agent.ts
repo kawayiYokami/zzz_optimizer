@@ -822,6 +822,9 @@ export class Agent {
     const position = disk.position;
     const index = position - 1;
 
+    console.log(`[Agent] 装备驱动盘: diskId=${diskId}, position=${position}, index=${index}`);
+    console.log(`[Agent] 装备前 equipped_drive_disks:`, this.equipped_drive_disks);
+
     // 先卸下当前驱动盘（如果有）
     const currentDiskId = this.equipped_drive_disks[index];
     if (currentDiskId && this._driveDisks) {
@@ -836,6 +839,8 @@ export class Agent {
 
     // 设置驱动盘的装备者
     disk.equipped_agent = this.id;
+
+    console.log(`[Agent] 装备后 equipped_drive_disks:`, this.equipped_drive_disks);
 
     this.clearPropertyCache();
   }

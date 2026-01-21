@@ -610,28 +610,52 @@ export const useSaveStore = defineStore('save', () => {
     }
 
     // 调用 Agent 类的 equipDriveDisk 方法（自动根据驱动盘位置装备）
-    agent.equipDriveDisk(diskId);
-
-    // 更新 rawSave 中的驱动盘 location
-    if (rawSave.discs) {
-      // 清除该角色所有驱动盘的 location
-      rawSave.discs.forEach(disk => {
-        if (disk.location === agentId) {
-          disk.location = '';
+    if (diskId) {
+      agent.equipDriveDisk(diskId);
+      
+      // 更新 rawSave 中的驱动盘 location
+      if (rawSave.discs) {
+        // 只清除该角色当前装备位置的驱动盘（不是所有位置）
+        const diskToEquip = rawSave.discs.find(d => d.id === diskId);
+        if (diskToEquip) {
+          // 从 slotKey 转换为 position
+          const position = parseInt(diskToEquip.slotKey.replace('slot', ''));
+          console.log(`[saveStore] 装备驱动盘: diskId=${diskId}, slotKey=${diskToEquip.slotKey}, position=${position}`);
+          
+          rawSave.discs.forEach(disk => {
+            const diskPosition = parseInt(disk.slotKey.replace('slot', ''));
+            if (disk.location === agentId && diskPosition === position) {
+              console.log(`[saveStore] 清除位置 ${position} 的驱动盘: ${disk.id}`);
+              disk.location = '';
+            }
+          });
+          diskToEquip.location = agentId;
+          console.log(`[saveStore] 设置驱动盘 location: ${diskToEquip.id} -> ${agentId}`);
+        } else {
+          console.warn(`[saveStore] 找不到驱动盘: ${diskId}`);
         }
-      });
-
-      // 设置新驱动盘的 location
-      if (diskId) {
-        const newDisk = rawSave.discs.find(d => d.id === diskId);
-        if (newDisk) {
-          newDisk.location = agentId;
-        }
+      }
+    } else {
+      // 卸下驱动盘
+      if (rawSave.discs) {
+        rawSave.discs.forEach(disk => {
+          if (disk.location === agentId) {
+            disk.location = '';
+          }
+        });
       }
     }
 
+    console.log(`[saveStore] 保存前 rawSave.discs 数量: ${rawSave.discs?.length}`);
+    console.log(`[saveStore] 装备的驱动盘:`, rawSave.discs?.filter(d => d.location === agentId).map(d => ({ id: d.id, slotKey: d.slotKey, location: d.location })));
+
     // 保存到localStorage
     saveToStorage();
+    
+    // 同步实例数据到rawSaves，确保equippedDiscs字段正确更新
+    syncInstanceToRawSave();
+    
+    console.log(`[saveStore] 保存完成`);
     return true;
   }
 
@@ -730,6 +754,7 @@ export const useSaveStore = defineStore('save', () => {
     const newTeam: import('../model/save-data-zod').ZodTeamData = {
       id: teamId,
       name,
+      priority: 0,
       frontCharacterId: frontAgentId,
       backCharacter1Id: backAgent1Id || '',
       backCharacter2Id: backAgent2Id || '',

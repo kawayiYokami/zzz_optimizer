@@ -35,6 +35,7 @@ import type {
     ConversionBuffData,
     FixedMultipliers,
     FastOptimizationRequest,
+    PrecomputedSkillParams,
 } from '../types/precomputed';
 
 /**
@@ -372,6 +373,18 @@ export class OptimizerContext {
         };
     }
 
+    /**
+     * 创建 PrecomputedSkillParams
+     */
+    private static createSkillParams(params: SkillParams): PrecomputedSkillParams {
+        return {
+            ratio: params.ratio,
+            element: params.element,
+            anomalyBuildup: params.anomalyBuildup ?? 0,
+            tags: params.tags.map(tag => this.tagToNumber(tag)),
+        };
+    }
+
     // ============================================================================
     // 完整请求构建
     // ============================================================================
@@ -538,7 +551,7 @@ export class OptimizerContext {
 
         const request = {
             agent: this.serializeAgent(agent),
-            skill: this.createSkill(skill),
+            skills: [this.createSkill(skill)],
             enemy: this.serializeEnemy(enemy, enemyLevel, isStunned),
             weapons: selectedWeapons.map(w => this.serializeWEngine(w)),
             discs: discsByPosition,
@@ -565,8 +578,20 @@ export class OptimizerContext {
     /**
      * 将 Buff 属性填充到 Float64Array
      */
-    private static fillArrayFromBuff(arr: Float64Array, buff: Buff): void {
-        if (!buff.is_active) return;
+    private static fillArrayFromBuff(
+        arr: Float64Array,
+        buff: Buff,
+        buffStatusMap?: Map<string, { isActive: boolean }>
+    ): void {
+        // 检查 buff 的激活状态
+        let isActive = buff.is_active;
+        if (buffStatusMap) {
+            const status = buffStatusMap.get(buff.id);
+            if (status) {
+                isActive = status.isActive;
+            }
+        }
+        if (!isActive) return;
 
         // 局外属性
         if (buff.out_of_combat_stats) {
@@ -603,7 +628,11 @@ export class OptimizerContext {
     /**
      * 将角色属性填充到 Float64Array
      */
-    private static fillArrayFromAgent(arr: Float64Array, agent: Agent): void {
+    private static fillArrayFromAgent(
+        arr: Float64Array,
+        agent: Agent,
+        buffStatusMap?: Map<string, { isActive: boolean }>
+    ): void {
         // 基础属性
         const baseProps = agent.getCharacterBaseStats();
 
@@ -623,14 +652,18 @@ export class OptimizerContext {
         // 被动 Buff
         const allBuffs = agent.getAllBuffsSync();
         for (const buff of allBuffs) {
-            this.fillArrayFromBuff(arr, buff);
+            this.fillArrayFromBuff(arr, buff, buffStatusMap);
         }
     }
 
     /**
      * 将音擎属性填充到 Float64Array
      */
-    private static fillArrayFromWEngine(arr: Float64Array, wengine: WEngine | null): void {
+    private static fillArrayFromWEngine(
+        arr: Float64Array,
+        wengine: WEngine | null,
+        buffStatusMap?: Map<string, { isActive: boolean }>
+    ): void {
         if (!wengine) {
             return; // 没有武器时跳过
         }
@@ -645,7 +678,7 @@ export class OptimizerContext {
         // 音擎 Buff
         const activeBuffs = wengine.getActiveBuffs();
         for (const buff of activeBuffs) {
-            this.fillArrayFromBuff(arr, buff);
+            this.fillArrayFromBuff(arr, buff, buffStatusMap);
         }
     }
 
@@ -839,7 +872,7 @@ export class OptimizerContext {
     static buildFastRequest(options: {
         agent: Agent;
         weapon: WEngine | null;  // 固定音擎（可选）
-        skill: SkillParams;
+        skills: SkillParams[];
         enemy: Enemy;
         enemyLevel?: number;
         isStunned?: boolean;
@@ -847,6 +880,7 @@ export class OptimizerContext {
         constraints: OptimizationConstraints;
         externalBuffs?: Buff[];
         teammateConversionBuffs?: { buff: Buff; teammateStats: Float64Array }[];
+        buffStatusMap?: Map<string, { isActive: boolean }>;
         config?: {
             topN?: number;
             workerId?: number;
@@ -858,7 +892,7 @@ export class OptimizerContext {
         const {
             agent,
             weapon,
-            skill,
+            skills,
             enemy,
             enemyLevel = 60,
             isStunned = false,
@@ -866,13 +900,14 @@ export class OptimizerContext {
             constraints,
             externalBuffs = [],
             teammateConversionBuffs = [],
+            buffStatusMap,
             config = {},
         } = options;
 
         // 1. 预计算角色 + 音擎属性
         const agentStats = createPropArray();
-        this.fillArrayFromAgent(agentStats, agent);
-        this.fillArrayFromWEngine(agentStats, weapon);
+        this.fillArrayFromAgent(agentStats, agent, buffStatusMap);
+        this.fillArrayFromWEngine(agentStats, weapon, buffStatusMap);
 
         // 2. 收集自身转换 Buff
         const selfConversionBuffs: ConversionBuffData[] = [];
@@ -922,7 +957,7 @@ export class OptimizerContext {
         // 4. 预计算外部 Buff
         const externalBuffStats = createPropArray();
         for (const buff of externalBuffs) {
-            this.fillArrayFromBuff(externalBuffStats, buff);
+            this.fillArrayFromBuff(externalBuffStats, buff, buffStatusMap);
         }
 
         // 5. 预计算驱动盘
@@ -963,37 +998,10 @@ export class OptimizerContext {
             return false;
         };
 
-        // 5.1 支配关系剪枝（在遍历前进行）
-        const effectiveStats = pruningConfig?.effectiveStats ?? [];
-        let filteredDiscs = discs;
-        if (effectiveStats.length > 0) {
-            const beforeCount = discs.length;
-            filteredDiscs = this.applyDominancePruning(discs, effectiveStats);
-            const afterCount = filteredDiscs.length;
-            if (beforeCount !== afterCount) {
-                console.log(`[Optimizer] 支配关系剪枝: ${beforeCount} -> ${afterCount} (移除 ${beforeCount - afterCount} 个被支配的盘)`);
-            }
-        }
-
-        // 5.2 主词条限定剪枝（456位置）
-        const mainStatFilters = constraints.mainStatFilters ?? {};
-        if (Object.keys(mainStatFilters).length > 0) {
-            const beforeCount = filteredDiscs.length;
-            filteredDiscs = this.applyMainStatFilterPruning(filteredDiscs, mainStatFilters);
-            const afterCount = filteredDiscs.length;
-            if (beforeCount !== afterCount) {
-                console.log(`[Optimizer] 主词条限定剪枝: ${beforeCount} -> ${afterCount} (移除 ${beforeCount - afterCount} 个不符合限定的盘)`);
-            }
-        }
-
-        for (const disc of filteredDiscs) {
+        // 驱动盘已在 OptimizerView 中完成所有过滤，直接使用
+        for (const disc of discs) {
             const slotIdx = disc.position - 1;
             if (slotIdx < 0 || slotIdx > 5) continue;
-
-            // 4/5/6 号位主词条过滤
-            if (slotIdx >= 3 && pruningConfig?.enabled) {
-                if (!isEffectiveMainStat(disc.main_stat)) continue;
-            }
 
             // 分配套装索引
             if (setIdToIdx[disc.game_id] === undefined) {
@@ -1062,7 +1070,7 @@ export class OptimizerContext {
             if (disc.set_buffs && disc.set_buffs.length > 0) {
                 fourPieceBuff = createPropArray();
                 for (const buff of disc.set_buffs) {
-                    this.fillArrayFromBuff(fourPieceBuff, buff);
+                    this.fillArrayFromBuff(fourPieceBuff, buff, buffStatusMap);
                 }
             }
 
@@ -1075,39 +1083,32 @@ export class OptimizerContext {
             });
         }
 
-        // 7. 计算固定乘区
+        // 7. 计算固定乘区（使用第一个技能作为基准）
         const fixedMultipliers = this.computeFixedMultipliers(
             agent,
             weapon,
             enemy,
-            skill,
+            skills[0],
             isStunned,
             externalBuffs
         );
 
-        // 8. 技能参数
-        const skillParams = {
-            ratio: skill.ratio,
-            element: this.elementToEnum(skill.element),
-            anomalyBuildup: skill.anomalyBuildup ?? 0,
-            tags: skill.tags.map(t => this.tagToNumber(t)),
-        };
-
         // 构建预计算数据
-        const precomputed: PrecomputedData = {
-            agentStats,
-            discsBySlot,
-            setBonuses,
-            externalBuffStats,
-            teammateConversionStats,
-            selfConversionBuffs,
-            fixedMultipliers,
-            skillParams,
-            agentLevel: agent.level,
-            setIdToIdx,
-            activeDiskSets: [...(constraints.activeDiskSets ?? [])],
-        };
-
+            const precomputed: PrecomputedData = {
+              agentStats,
+              discsBySlot,
+              setBonuses,
+              externalBuffStats,
+              teammateConversionStats,
+              selfConversionBuffs,
+              fixedMultipliers,
+              skillsParams: skills.map(s => this.createSkillParams(s)),
+              agentLevel: agent.level,
+              setIdToIdx,
+              activeDiskSets: [...(constraints.activeDiskSets ?? [])],
+              enemyStats: enemy.getCombatStats(enemyLevel, isStunned),
+              specialAnomalyConfig: agent.getSpecialAnomalyConfig(),
+            };
         return {
             precomputed,
             workerId: config.workerId ?? 0,

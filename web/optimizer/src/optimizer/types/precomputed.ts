@@ -6,6 +6,7 @@
  */
 
 import { PROP_IDX } from './property-index';
+import { EnemyStats } from '../../model/enemy';
 
 /**
  * 转换类 Buff 的预处理数据
@@ -148,9 +149,9 @@ export interface PrecomputedData {
   fixedMultipliers: FixedMultipliers;
 
   /**
-   * 技能参数
+   * 技能参数列表
    */
-  skillParams: PrecomputedSkillParams;
+  skillsParams: PrecomputedSkillParams[];
 
   /**
    * 角色等级
@@ -167,6 +168,16 @@ export interface PrecomputedData {
    * 只有在此列表中的套装才会提供 4 件套效果
    */
   activeDiskSets: string[];
+
+  /**
+   * 敌人战斗属性
+   */
+  enemyStats: EnemyStats;
+
+  /**
+   * 特殊异常配置（如烈霜）
+   */
+  specialAnomalyConfig: { element: string; ratio: number } | null;
 }
 
 /**
@@ -236,14 +247,22 @@ export function createEmptyPrecomputedData(): PrecomputedData {
         baseDefIgn: 0,
       },
     },
-    skillParams: {
-      ratio: 1,
-      element: 200,
-      anomalyBuildup: 0,
-      tags: [],
-    },
+    skillsParams: [],
     agentLevel: 60,
     setIdToIdx: {},
     activeDiskSets: [],
+    enemyStats: new EnemyStats(
+      100000, // hp
+      800,    // defense
+      60,     // level
+      1000,   // stunMax
+      true,   // canStun
+      1,      // stunVulnerability
+      false,  // isStunned
+      {},     // elementResistances
+      {},     // anomalyThresholds
+      false   // hasCorruptionShield
+    ),
+    specialAnomalyConfig: null,
   };
 }

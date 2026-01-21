@@ -34,8 +34,8 @@
             :estimated-combinations="estimatedCombinations"
             :can-start="canStart"
             :active-disk-sets="constraints.activeDiskSets"
-            :pruned-discs="prunedDiscs"
-            :filtered-discs="filteredDiscs"
+            :optimized-discs="optimizedDiscs"
+            :all-discs="saveStore.driveDisks"
             :constraints="constraints"
             :current-team-id="selectedTeamId"
             :current-team-priority="currentTeam?.priority ?? 0"
@@ -96,7 +96,7 @@ import {
 } from '../optimizer/services';
 import { OptimizerContext } from '../optimizer/services/optimizer-context';
 import type { OptimizationConstraints, OptimizationPreset } from '../optimizer/types';
-import { PropertyType } from '../model/base';
+import { PropertyType, ElementType } from '../model/base';
 import { Enemy } from '../model/enemy';
 import type { Team } from '../model/team';
 import { BattleService } from '../services/battle.service';
@@ -207,28 +207,41 @@ const availableSkills = computed(() => {
   return optimizerService.getAvailableSkills();
 });
 
-// 按等级过滤的驱动盘
-const filteredDiscs = computed(() => {
-  return saveStore.driveDisks.filter(d => d.level >= minDiscLevel.value);
-});
+// 统一的优化驱动盘（整合所有过滤逻辑）
+const optimizedDiscs = computed(() => {
+  // 步骤1：按等级过滤
+  let discs = saveStore.driveDisks.filter(d => d.level >= minDiscLevel.value);
 
-// 支配关系剪枝后的驱动盘（在有效词条变化时自动计算）
-const prunedDiscs = computed(() => {
-  const effectiveStats = constraints.value.effectiveStatPruning?.effectiveStats ?? [];
-  if (effectiveStats.length === 0) {
-    return filteredDiscs.value;
+  // 步骤2：排除高优先级队伍的驱动盘
+  const excludedIds = excludedDiscIds.value;
+  if (excludedIds.length > 0) {
+    const excludedSet = new Set(excludedIds);
+    discs = discs.filter(d => !excludedSet.has(d.id));
   }
-  return OptimizerContext.applyDominancePruning(filteredDiscs.value, effectiveStats);
+
+  // 步骤3：支配关系剪枝
+  const effectiveStats = constraints.value.effectiveStatPruning?.effectiveStats ?? [];
+  if (effectiveStats.length > 0) {
+    discs = OptimizerContext.applyDominancePruning(discs, effectiveStats);
+  }
+
+  // 步骤4：主词条限定剪枝
+  const mainStatFilters = constraints.value.mainStatFilters ?? {};
+  if (Object.keys(mainStatFilters).length > 0) {
+    discs = OptimizerContext.applyMainStatFilterPruning(discs, mainStatFilters);
+  }
+
+  return discs;
 });
 
 // 剪枝统计信息
 const pruningStats = computed(() => {
-  const before = filteredDiscs.value.length;
-  const after = prunedDiscs.value.length;
+  const levelFiltered = saveStore.driveDisks.filter(d => d.level >= minDiscLevel.value).length;
+  const final = optimizedDiscs.value.length;
   return {
-    before,
-    after,
-    removed: before - after,
+    before: levelFiltered,
+    after: final,
+    removed: levelFiltered - final,
   };
 });
 
@@ -236,11 +249,11 @@ const estimatedCombinations = computed(() => {
   if (!targetAgent.value) {
     return { total: 0, breakdown: {} };
   }
-  // 使用剪枝后的驱动盘计算组合数
+  // 使用优化后的驱动盘计算组合数
   return optimizerService.estimateCombinations({
     weapons: [],
     selectedWeaponIds: [],
-    discs: prunedDiscs.value,
+    discs: optimizedDiscs.value,
     constraints: constraints.value,
   });
 });
@@ -310,7 +323,25 @@ const unselectedSkills = computed(() => {
 const availableBuffs = computed(() => {
   buffsVersion.value; // 触发响应式依赖
   if (!currentTeam.value) return [];
-  return battleService.getAllBuffs();
+  
+  // 合并前台角色buff和队友buff
+  const frontAgentBuffs = battleService.getFrontAgentBuffs(false); // 不包含四件套 buff
+  const teammateBuffs = optimizerService.getTeammateBuffs(); // 队友提供的buff
+  
+  // 去重合并（基于buff.id）
+  const buffMap = new Map<string, Buff>();
+  
+  // 先添加前台角色buff
+  for (const buff of frontAgentBuffs) {
+    buffMap.set(buff.id, buff);
+  }
+  
+  // 再添加队友buff（如果id不同则添加，相同则覆盖）
+  for (const buff of teammateBuffs) {
+    buffMap.set(buff.id, buff);
+  }
+  
+  return Array.from(buffMap.values());
 });
 
 const selectedBuffs = computed(() => {
@@ -537,17 +568,29 @@ const currentDamage = computed(() => {
 });
 
 // 一键换装
-const handleEquipBuild = (build: OptimizationBuild) => {
+const handleEquipBuild = async (build: OptimizationBuild) => {
   if (!targetAgentId.value) return;
+
+  console.log('[handleEquipBuild] build.discIds:', build.discIds);
 
   try {
     let successCount = 0;
     // 遍历6个位置装备驱动盘
-    build.discIds.forEach((discId) => {
+    build.discIds.forEach((discId, index) => {
+      console.log(`[handleEquipBuild] 位置 ${index + 1}: discId = ${discId}`);
       if (discId && saveStore.equipDriveDisk(targetAgentId.value, discId)) {
         successCount++;
+        console.log(`[handleEquipBuild] 位置 ${index + 1} 装备成功`);
+      } else {
+        console.log(`[handleEquipBuild] 位置 ${index + 1} 装备失败`);
       }
     });
+
+    // 重新加载队伍以更新 BattleService 的缓存
+    if (currentTeam.value) {
+      console.log('[handleEquipBuild] 重新加载队伍以更新属性缓存');
+      await battleService.setTeam(currentTeam.value);
+    }
 
     // 刷新战斗信息卡以显示新的属性
     battleInfoCardRef.value?.refresh();
@@ -614,51 +657,73 @@ const handleEquipBuild = (build: OptimizationBuild) => {
   // 获取所有选中的技能
   const skills = selectedSkillKeys.value.map(key => availableSkills.value.find(s => s.key === key)).filter(s => s !== undefined);
 
+  if (skills.length === 0) {
+    console.error('[Optimizer] 没有选择任何技能');
+    isRunning.value = false;
+    alert('请至少选择一个技能');
+    return;
+  }
+
   try {
     // 使用快速优化模式
     optimizerService.initializeFastWorkers(workerCount.value);
 
-    // 对每个技能进行优化
-    for (const skill of skills) {
-      optimizerService.startFastOptimization({
-        agent,
-        weapon,  // 角色已装备的武器
-        skill: {
-          id: skill.key || 'default',
-          name: skill.name || '默认技能',
-          element: agent.element,
-          ratio: skill.defaultRatio || 1,
-          tags: [skill.type || 'normal'],
-          isPenetration: false,
-          anomalyBuildup: skill.defaultAnomaly || 0,
-        },
-        enemy,
-        discs: prunedDiscs.value,  // 使用剪枝后的驱动盘
-        constraints: constraints.value,
-        externalBuffs: optimizerService.getTeammateBuffs(),
-        topN: 10,
-        callbacks: {
-          onProgress: (p) => {
-            progress.value = p;
-          },
-          onComplete: (res: AggregatedResult) => {
-            results.value = res.builds;
-            totalTime.value = res.totalTimeMs;
-            isRunning.value = false;
+    // 一次性传入所有技能
+    const skillParams = skills.map(skill => ({
+      id: skill.key || 'default',
+      name: skill.name || '默认技能',
+      element: ElementType[agent.element].toLowerCase(),  // 转换为字符串
+      ratio: skill.defaultRatio || 1,
+      tags: [skill.type || 'normal'],
+      isPenetration: false,
+      anomalyBuildup: skill.defaultAnomaly || 0,
+    }));
 
-            // 保存优化结果到队伍
-            if (currentTeam.value) {
-              saveStore.updateTeamOptimizationResults(currentTeam.value.id, res.builds);
-            }
-          },
-          onError: (err) => {
-            console.error('[Optimizer] Error:', err);
-            isRunning.value = false;
-            alert(`优化出错: ${err.message}`);
+    optimizerService.startFastOptimization({
+      agent,
+      weapon,  // 角色已装备的武器
+      skills: skillParams,
+      enemy,
+      discs: optimizedDiscs.value,  // 使用优化后的驱动盘
+      constraints: constraints.value,
+      externalBuffs: optimizerService.getTeammateBuffs(),
+      buffStatusMap: battleService.getBuffStatusMap(),
+      topN: 10,
+      callbacks: {
+        onProgress: (p) => {
+          progress.value = p;
+        },
+        onComplete: (res: AggregatedResult) => {
+          results.value = res.builds;
+          totalTime.value = res.totalTimeMs;
+          isRunning.value = false;
+
+          // 保存优化结果到队伍
+          if (currentTeam.value) {
+            saveStore.updateTeamOptimizationResults(currentTeam.value.id, res.builds);
           }
+        },
+        onError: (err) => {
+          console.error('[Optimizer] Error:', err);
+          isRunning.value = false;
+          // 使用 toast 显示错误
+          const toast = document.createElement('div');
+          toast.className = 'toast toast-error z-50';
+          toast.innerHTML = `
+            <div class="alert alert-error">
+              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>优化出错: ${err.message}</span>
+            </div>
+          `;
+          document.body.appendChild(toast);
+          setTimeout(() => {
+            toast.remove();
+          }, 5000);
         }
-      });
-    }
+      }
+    });
   } catch (e: any) {
     alert(e.message);
     isRunning.value = false;

@@ -2,14 +2,14 @@
  * 优化器评估器
  *
  * 在 Worker 内部运行，负责计算装备组合的伤害值。
- * 复用主线程的 DamageCalculatorService 和 PropertyCollection 确保计算一致性。
+ * 复用主线程的 DamageCalculator 和 PropertyCollection 确保计算一致性。
  */
 
 import { PropertyCollection } from '../../model/property-collection';
 import { PropertyType, ElementType } from '../../model/base';
 import { ZoneCollection } from '../../model/zone-collection';
 import { RatioSet } from '../../model/ratio-set';
-import { DamageCalculatorService } from '../../services/damage-calculator.service';
+import { DamageCalculator } from '../../utils/damage-calculator';
 import type {
     OptimizationRequest,
     OptimizationBuild,
@@ -308,24 +308,24 @@ export class Evaluator {
 
         // 10.5 补充计算其他乘区 (异常积蓄、异常增伤等)
         const elementKey = this.getElementKey(skill.element);
-        zones.accumulate_zone = DamageCalculatorService.calculateAnomalyBuildupZone(zones, elementKey);
-        zones.anomaly_prof_mult = DamageCalculatorService.calculateAnomalyProfMultiplier(zones);
-        zones.anomaly_dmg_mult = DamageCalculatorService.calculateAnomalyDmgMultiplier(zones);
-        zones.anomaly_crit_mult = DamageCalculatorService.calculateAnomalyCritMultiplier(zones);
-        zones.level_mult = DamageCalculatorService.calculateLevelMultiplier(attackerLevel);
+        zones.accumulate_zone = DamageCalculator.calculateAnomalyBuildupZone(zones, elementKey);
+        zones.anomaly_prof_mult = DamageCalculator.calculateAnomalyProfMultiplier(zones);
+        zones.anomaly_dmg_mult = DamageCalculator.calculateAnomalyDmgMultiplier(zones);
+        zones.anomaly_crit_mult = DamageCalculator.calculateAnomalyCritMultiplier(zones);
+        zones.level_mult = DamageCalculator.calculateLevelMultiplier(attackerLevel);
 
         // 11. 直伤计算
         // 必须显式设置 dmg_bonus 等乘区，因为 calculateDirectDamageFromRatios 会重新计算部分
         // 但 updateAllZones 其实已经算好了，可以直接用 calculateDirectDamageFromZones
         // 不过为了保险，还是用 FromRatios，它会重新 fetch DMG_ bonus
-        const directResult = DamageCalculatorService.calculateDirectDamageFromRatios(zones, ratios);
+        const directResult = DamageCalculator.calculateDirectDamageFromRatios(zones, ratios);
 
         // 12. 异常伤害计算
-        const dotParams = DamageCalculatorService.getAnomalyDotParams(elementKey);
+        const dotParams = DamageCalculator.getAnomalyDotParams(elementKey);
         const anomalyRatios = new RatioSet();
         anomalyRatios.atk_ratio = dotParams.ratio;
 
-        const anomalyResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, anomalyRatios, attackerLevel);
+        const anomalyResult = DamageCalculator.calculateAnomalyDamageFromZones(zones, anomalyRatios, attackerLevel);
 
         // 13. 计算异常带来的收益
         // 假设 skill.anomalyBuildup 是该次技能造成的积蓄值
@@ -345,10 +345,10 @@ export class Evaluator {
             let disorderEarning = 0;
             if (procsPerSkill > 0) {
                 // 异常T1=3 + 紊乱T2=7 = 10，所以紊乱剩余时间为7
-                let disorderRatio = DamageCalculatorService.getDisorderDamageRatio(elementKey, 7);
-                
+                let disorderRatio = DamageCalculator.getDisorderDamageRatio(elementKey, 7);
+
                 // 检查是否是星见雅（烈霜）
-                if (agent.id === '1091') {
+                if (this.request.agent.id === '1091') {
                     // 星见雅专属：烈霜紊乱伤害公式
                     const T = 7;
                     disorderRatio = 6.0 + Math.floor(T) * 0.75;
@@ -357,7 +357,7 @@ export class Evaluator {
                 const disorderRatios = new RatioSet();
                 disorderRatios.atk_ratio = disorderRatio;
                 // 紊乱也是一种异常伤害，复用 calculateAnomalyDamageFromZones
-                const disorderResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, disorderRatios, attackerLevel);
+                const disorderResult = DamageCalculator.calculateAnomalyDamageFromZones(zones, disorderRatios, attackerLevel);
                 disorderEarning = disorderResult.damage_expected * procsPerSkill;
             }
 

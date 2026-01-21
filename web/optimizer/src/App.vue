@@ -19,8 +19,7 @@
               <NavigationButton label="音擎" icon="ri-sword-line" :is-active="currentView === 'wengines'" @click="currentView = 'wengines'" />
               <NavigationButton label="驱动盘" icon="ri-disc-line" :is-active="currentView === 'drive-disks'" @click="currentView = 'drive-disks'" />
               <NavigationButton label="存档" icon="ri-folder-3-line" :is-active="currentView === 'saves'" @click="currentView = 'saves'" />
-              <NavigationButton v-if="isDev" label="调试" icon="ri-code-s-slash-line" :is-active="currentView === 'debug'" @click="currentView = 'debug'" />
-              <NavigationButton v-if="isDev" label="画廊" icon="ri-gallery-line" :is-active="currentView === 'gallery'" @click="currentView = 'gallery'" />
+              <NavigationButton label="画廊" icon="ri-gallery-line" :is-active="currentView === 'gallery'" @click="currentView = 'gallery'" />
             </ul>
           </div>
           <a class="btn btn-ghost normal-case text-xl font-bold">绝区零优化器</a>
@@ -35,8 +34,7 @@
             <NavigationButton label="音擎" icon="ri-sword-line" :is-active="currentView === 'wengines'" @click="currentView = 'wengines'" />
             <NavigationButton label="驱动盘" icon="ri-disc-line" :is-active="currentView === 'drive-disks'" @click="currentView = 'drive-disks'" />
             <NavigationButton label="存档" icon="ri-folder-3-line" :is-active="currentView === 'saves'" @click="currentView = 'saves'" />
-            <NavigationButton v-if="isDev" label="调试" icon="ri-code-s-slash-line" :is-active="currentView === 'debug'" @click="currentView = 'debug'" />
-            <NavigationButton v-if="isDev" label="画廊" icon="ri-gallery-line" :is-active="currentView === 'gallery'" @click="currentView = 'gallery'" />
+            <NavigationButton label="画廊" icon="ri-gallery-line" :is-active="currentView === 'gallery'" @click="currentView = 'gallery'" />
           </ul>
         </div>
 
@@ -65,7 +63,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import DebugView from './views/DebugView.vue';
 import OptimizerView from './views/OptimizerView.vue';
 import ComponentGallery from './views/ComponentGallery.vue';
 import CharacterView from './views/CharacterView.vue';
@@ -77,7 +74,6 @@ import NavigationButton from './components/common/NavigationButton.vue';
 
 const currentView = ref('optimizer'); // 默认进入优化器
 const isDark = ref(false);
-const isDev = import.meta.env.DEV; // 开发模式标志
 
 const activeComponent = computed(() => {
   if (currentView.value === 'gallery') return ComponentGallery;
@@ -86,7 +82,7 @@ const activeComponent = computed(() => {
   if (currentView.value === 'wengines') return WEngineView;
   if (currentView.value === 'drive-disks') return DriveDiskView;
   if (currentView.value === 'saves') return SaveManagementView;
-  return currentView.value === 'optimizer' ? OptimizerView : DebugView;
+  return OptimizerView;
 });
 
 // 主题切换

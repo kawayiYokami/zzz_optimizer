@@ -16,6 +16,12 @@ import type {
   ConversionBuffData,
   OptimizationBuildResult,
 } from '../types/precomputed';
+import {
+  getAnomalyDotParams,
+  getAnomalyDurationMult,
+  getDisorderRatio,
+  STANDARD_BUILDUP_THRESHOLD,
+} from '../../utils/anomaly-constants';
 
 /**
  * 快速评估结果（简化版，避免对象创建）
@@ -51,9 +57,6 @@ export class FastEvaluator {
   /** 最大套装数量 */
   private static readonly MAX_SETS = 32;
 
-  /** 标准异常积蓄阈值 */
-  private static readonly STANDARD_BUILDUP_THRESHOLD = 100;
-
   constructor(precomputed: PrecomputedData) {
     this.precomputed = precomputed;
     this.accumulator = new Float64Array(PROP_IDX.TOTAL_PROPS);
@@ -74,7 +77,7 @@ export class FastEvaluator {
       teammateConversionStats,
       selfConversionBuffs,
       fixedMultipliers,
-      skillParams,
+      skillsParams,
     } = this.precomputed;
 
     // 1. 重置累加器为角色基础属性（已包含音擎）
@@ -174,21 +177,6 @@ export class FastEvaluator {
     const critRate = Math.min(1, Math.max(0, this.accumulator[PROP_IDX.CRIT_]));
     const critDmg = this.accumulator[PROP_IDX.CRIT_DMG_];
 
-    // 10. 计算增伤区
-    let dmgBonus = 1 + this.accumulator[PROP_IDX.DMG_];
-    // 元素增伤
-    const elementDmgIdx = ELEMENT_TO_DMG_IDX[skillParams.element];
-    if (elementDmgIdx !== undefined) {
-      dmgBonus += this.accumulator[elementDmgIdx];
-    }
-    // 技能类型增伤（根据 tags）
-    for (const tag of skillParams.tags) {
-      const tagDmgIdx = this.getSkillTagDmgIdx(tag);
-      if (tagDmgIdx !== undefined) {
-        dmgBonus += this.accumulator[tagDmgIdx];
-      }
-    }
-
     // 11. 计算防御区（含驱动盘穿透）
     const { defenseParams, resMult, dmgTakenMult, stunVulnMult, distanceMult } =
       fixedMultipliers;
@@ -199,28 +187,53 @@ export class FastEvaluator {
     const effectiveDef = defenseParams.enemyDef * Math.max(0, 1 - totalDefRed);
     const defMult = defenseParams.levelBase / (effectiveDef + defenseParams.levelBase);
 
-    // 12. 计算直伤
-    const baseDamage = finalAtkAfterConv * skillParams.ratio;
-    const critZone = 1 + critRate * critDmg;
-    const directDamage =
-      baseDamage * dmgBonus * critZone * defMult * resMult * dmgTakenMult * stunVulnMult * distanceMult;
+    // 12. 对每个技能计算伤害并累加
+    let totalDamage = 0;
 
-    // 13. 计算异常伤害（如果有异常积蓄）
-    let anomalyDamage = 0;
-    let disorderDamage = 0;
+    for (const skillParams of skillsParams) {
+      // 10. 计算增伤区
+      let dmgBonus = 1 + this.accumulator[PROP_IDX.DMG_];
+      // 元素增伤
+      const elementDmgIdx = ELEMENT_TO_DMG_IDX[skillParams.element];
+      if (elementDmgIdx !== undefined) {
+        dmgBonus += this.accumulator[elementDmgIdx];
+      }
+      // 技能类型增伤（根据 tags）
+      for (const tag of skillParams.tags) {
+        const tagDmgIdx = this.getSkillTagDmgIdx(tag);
+        if (tagDmgIdx !== undefined) {
+          dmgBonus += this.accumulator[tagDmgIdx];
+        }
+      }
 
-    if (skillParams.anomalyBuildup > 0) {
-      const anomalyResult = this.calculateAnomalyDamage(
-        finalAtkAfterConv,
-        dmgBonus,
-        defMult
-      );
-      anomalyDamage = anomalyResult.anomaly;
-      disorderDamage = anomalyResult.disorder;
+      // 计算直伤
+      const baseDamage = finalAtkAfterConv * skillParams.ratio;
+      const critZone = 1 + critRate * critDmg;
+      const directDamage =
+        baseDamage * dmgBonus * critZone * defMult * resMult * dmgTakenMult * stunVulnMult * distanceMult;
+
+      // 计算异常伤害（如果有异常积蓄）
+      let anomalyDamage = 0;
+      let disorderDamage = 0;
+
+      if (skillParams.anomalyBuildup > 0) {
+        const anomalyResult = this.calculateAnomalyDamage(
+          finalAtkAfterConv,
+          dmgBonus,
+          defMult,
+          skillParams.element,
+          skillParams.anomalyBuildup
+        );
+        anomalyDamage = anomalyResult.anomaly;
+        disorderDamage = anomalyResult.disorder;
+      }
+
+      // 累加伤害
+      totalDamage += directDamage + anomalyDamage + disorderDamage;
     }
 
-    // 14. 总期望伤害
-    return directDamage + anomalyDamage + disorderDamage;
+    // 13. 返回总期望伤害
+    return totalDamage;
   }
 
   /**
@@ -229,9 +242,11 @@ export class FastEvaluator {
   private calculateAnomalyDamage(
     finalAtk: number,
     dmgBonus: number,
-    defMult: number
+    defMult: number,
+    element: number,
+    anomalyBuildup: number
   ): { anomaly: number; disorder: number } {
-    const { fixedMultipliers, skillParams, agentLevel } = this.precomputed;
+    const { fixedMultipliers, agentLevel } = this.precomputed;
     const {
       levelMult,
       anomalyCritMult,
@@ -247,23 +262,25 @@ export class FastEvaluator {
 
     // 异常积蓄区
     let buildupMult = 1 + this.accumulator[PROP_IDX.ANOM_BUILDUP_];
-    const elementBuildupIdx = ELEMENT_TO_BUILDUP_IDX[skillParams.element];
+    const elementBuildupIdx = ELEMENT_TO_BUILDUP_IDX[element];
     if (elementBuildupIdx !== undefined) {
       buildupMult += this.accumulator[elementBuildupIdx];
     }
 
     // 计算每次技能触发的异常次数
-    const buildupPerSkill = skillParams.anomalyBuildup * buildupMult;
-    const procsPerSkill = buildupPerSkill / FastEvaluator.STANDARD_BUILDUP_THRESHOLD;
+    const buildupPerSkill = anomalyBuildup * buildupMult;
+    const procsPerSkill = buildupPerSkill / STANDARD_BUILDUP_THRESHOLD;
 
     if (procsPerSkill <= 0) {
       return { anomaly: 0, disorder: 0 };
     }
 
-    // 异常基础伤害（简化：使用 ATK * 倍率）
-    // 实际的异常倍率应该从 DamageCalculatorService.getAnomalyDotParams 获取
-    const anomalyRatio = this.getAnomalyRatio(skillParams.element);
-    const anomalyBaseDamage = finalAtk * anomalyRatio;
+    // 使用导入的函数获取异常参数
+    const elementStr = this.elementNumberToString(element);
+    const anomParams = getAnomalyDotParams(elementStr);
+
+    // 异常基础伤害
+    const anomalyBaseDamage = finalAtk * anomParams.ratio;
 
     // 异常伤害公式
     const anomalyDamage =
@@ -279,11 +296,11 @@ export class FastEvaluator {
       stunVulnMult;
 
     // 单次异常总伤害（乘以持续时间系数）
-    const totalAnomalyDamagePerProc = anomalyDamage * this.getAnomalyDurationMult(skillParams.element);
+    const totalAnomalyDamagePerProc = anomalyDamage * getAnomalyDurationMult(elementStr);
     const anomalyEarning = totalAnomalyDamagePerProc * procsPerSkill;
 
     // 紊乱伤害
-    const disorderRatio = this.getDisorderRatio(skillParams.element);
+    const disorderRatio = getDisorderRatio(elementStr);
     const disorderDamage =
       finalAtk *
       disorderRatio *
@@ -296,12 +313,25 @@ export class FastEvaluator {
       resMult *
       dmgTakenMult *
       stunVulnMult;
-    const disorderEarning = disorderDamage * procsPerSkill;
 
     return {
       anomaly: anomalyEarning,
-      disorder: disorderEarning,
+      disorder: disorderDamage * Math.min(procsPerSkill, 5), // 最多5次紊乱
     };
+  }
+
+  /**
+   * 将元素数字转换为字符串
+   */
+  private elementNumberToString(element: number): string {
+    const elementMap: Record<number, string> = {
+      200: 'physical',
+      201: 'fire',
+      202: 'ice',
+      203: 'electric',
+      205: 'ether',
+    };
+    return elementMap[element] ?? 'physical';
   }
 
   /**
@@ -344,44 +374,6 @@ export class FastEvaluator {
   }
 
   /**
-   * 获取异常伤害倍率（简化版）
-   */
-  private getAnomalyRatio(element: number): number {
-    // 不同元素的异常伤害倍率（简化值）
-    const ratios: Record<number, number> = {
-      200: 0.5,  // 物理 - 强击
-      201: 0.5,  // 火 - 灼烧
-      202: 1.0,  // 冰 - 碎冰
-      203: 1.25, // 电 - 感电
-      205: 0.625, // 以太 - 侵蚀
-    };
-    return ratios[element] ?? 0.5;
-  }
-
-  /**
-   * 获取异常持续时间乘数
-   */
-  private getAnomalyDurationMult(element: number): number {
-    // 异常总伤害 = 单次 tick × 次数
-    const mults: Record<number, number> = {
-      200: 1,    // 物理 - 单次
-      201: 10,   // 火 - 10 次 tick
-      202: 1,    // 冰 - 单次
-      203: 10,   // 电 - 10 次 tick
-      205: 10,   // 以太 - 10 次 tick
-    };
-    return mults[element] ?? 1;
-  }
-
-  /**
-   * 获取紊乱伤害倍率
-   */
-  private getDisorderRatio(element: number): number {
-    // 紊乱倍率（简化值）
-    return 1.5;
-  }
-
-  /**
    * 获取当前累加器的快照（用于调试）
    */
   getAccumulatorSnapshot(): Float64Array {
@@ -395,8 +387,15 @@ export class FastEvaluator {
     discs: DiscData[],
     damage: number
   ): OptimizationBuildResult {
-    // 计算详细伤害构成
-    const { skillParams, fixedMultipliers } = this.precomputed;
+    // 计算详细伤害构成（使用第一个技能作为参考）
+    const { skillsParams, fixedMultipliers } = this.precomputed;
+    
+    // 安全检查
+    if (!skillsParams || skillsParams.length === 0) {
+      throw new Error('skillsParams is empty');
+    }
+    
+    const skillParams = skillsParams[0];
 
     // 重新计算以获取详细数据
     const finalAtk =
@@ -427,7 +426,7 @@ export class FastEvaluator {
       baseDamage * dmgBonus * critZone * defMult * resMult * dmgTakenMult * stunVulnMult * distanceMult;
 
     const anomalyResult = skillParams.anomalyBuildup > 0
-      ? this.calculateAnomalyDamage(finalAtk, dmgBonus, defMult)
+      ? this.calculateAnomalyDamage(finalAtk, dmgBonus, defMult, skillParams.element, skillParams.anomalyBuildup)
       : { anomaly: 0, disorder: 0 };
 
     // 统计套装

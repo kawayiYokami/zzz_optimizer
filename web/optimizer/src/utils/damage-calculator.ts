@@ -1,39 +1,26 @@
 /**
- * 伤害计算服务
+ * 伤害计算工具类
  *
  * 基于绝区零伤害机制导论实现的伤害计算系统
  * 参考文档：assets/inventory_data/docs/DAMAGE_GUIDE.MD
+ *
+ * 注意：这是一个纯工具类，所有方法都是静态的，无状态，无副作用
+ * 确保在 Worker 和主线程中的计算结果一致
  */
 
 import type { EnemyStats } from '../model/enemy';
-import type { SkillDamageParams } from './battle.service';
+import type { SkillDamageParams } from '../services/battle.service';
 import { RatioSet, SkillType } from '../model/ratio-set';
 import { ZoneCollection } from '../model/zone-collection';
 import { PropertyCollection } from '../model/property-collection';
 import { PropertyType, ElementType } from '../model/base';
 import type { Agent } from '../model/agent';
-
-/**
- * 异常持续伤害倍率（每tick）
- */
-const ANOMALY_DOT_RATIOS: Record<string, { ratio: number; interval: number }> = {
-  fire: { ratio: 0.5, interval: 0.5 },      // 灼烧：50%/0.5秒
-  electric: { ratio: 1.25, interval: 1 },   // 感电：125%/秒
-  ether: { ratio: 0.625, interval: 0.5 },   // 侵蚀：62.5%/0.5秒
-  ice: { ratio: 5.0, interval: 0 },         // 碎冰：500%（一次性）
-  physical: { ratio: 7.13, interval: 0 },   // 强击：713%（一次性）
-};
-
-/**
- * 异常默认持续时间（秒）
- */
-const ANOMALY_DEFAULT_DURATION: Record<string, number> = {
-  fire: 10,      // 灼烧
-  electric: 10,  // 感电
-  ether: 10,     // 侵蚀
-  ice: 10,       // 霜寒
-  physical: 10,  // 畏缩
-};
+import {
+  getAnomalyDotParams,
+  getAnomalyDurationMult,
+  getDisorderRatio,
+  STANDARD_BUILDUP_THRESHOLD,
+} from './anomaly-constants';
 
 /**
  * 简化伤害结果
@@ -102,7 +89,13 @@ export interface AnomalyDamageResult {
 /**
  * 伤害计算服务
  */
-export class DamageCalculatorService {
+/**
+ * 伤害计算工具类
+ *
+ * 纯静态方法，无状态，无副作用
+ * 确保在 Worker 和主线程中的计算结果一致
+ */
+export class DamageCalculator {
   /**
    * 从技能参数创建倍率集合
    */
@@ -224,7 +217,8 @@ export class DamageCalculatorService {
    * @returns 抗性乘区
    */
   static calculateResistanceMultiplier(zones: ZoneCollection, enemyStats: EnemyStats, element: string): number {
-    const enemyRes = enemyStats.getResistance(element);
+    // 直接访问属性，因为 Worker 中类实例会被序列化为普通对象
+    const enemyRes = enemyStats.element_resistances[element.toLowerCase()] || 0;
     const resRed = zones.getFinal(PropertyType.ENEMY_RES_RED_, 0);
     const resIgn = zones.getFinal(PropertyType.RES_IGN_, 0);
 
@@ -255,6 +249,7 @@ export class DamageCalculatorService {
    *
    * 公式：积蓄区 = (异常掌控 / 100) × (1 + 积蓄效率%) × (1 - 敌人积蓄抗性 - 敌人元素积蓄抗性) × 距离衰减
    * 有效范围：[0, +∞)
+   * 当异常掌控为0时，积蓄区 = (1 + 积蓄效率%) × (1 - 敌人积蓄抗性 - 敌人元素积蓄抗性) × 距离衰减
    *
    * @param zones 乘区集合
    * @param element 元素类型
@@ -278,7 +273,7 @@ export class DamageCalculatorService {
     const elementBuildupResMap: Record<string, PropertyType> = {
       physical: PropertyType.PHYSICAL_ANOM_BUILDUP_RES_,
       fire: PropertyType.FIRE_ANOM_BUILDUP_RES_,
-      ice: PropertyType.ICE_ANOM_BUILDUP_RES_,
+      ice: PropertyType.ICE_ANOMALY_BUILDUP_RES_,
       electric: PropertyType.ELECTRIC_ANOM_BUILDUP_RES_,
       ether: PropertyType.ETHER_ANOM_BUILDUP_RES_,
     };
@@ -292,8 +287,14 @@ export class DamageCalculatorService {
     // 距离衰减区
     const distanceZone = zones.distance_mult;
 
+    // 当异常掌控为0时，积蓄区 = (1 + 积蓄效率%) × (1 - 抗性) × 距离衰减
+    // 否则积蓄区 = (异常掌控 / 100) × (1 + 积蓄效率%) × (1 - 抗性) × 距离衰减
+    const efficiencyZone = 1.0 + buildupEfficiency + elBuildupEfficiency;
+    const resistanceZone = 1.0 - buildupRes - elBuildupRes;
+    const finalMasteryZone = masteryZone > 0 ? masteryZone : 1.0;
+
     // 公式：积蓄区 = 异常掌控区 × 异常积蓄效率区 × 异常积蓄抗性区 × 距离衰减区
-    return Math.max(0, masteryZone * (1.0 + buildupEfficiency + elBuildupEfficiency) * (1.0 - buildupRes - elBuildupRes) * distanceZone);
+    return Math.max(0, finalMasteryZone * efficiencyZone * resistanceZone * distanceZone);
   }
 
   /**
@@ -357,7 +358,7 @@ export class DamageCalculatorService {
   static calculateDirectDamageFromRatios(zones: ZoneCollection, ratios: RatioSet): DirectDamageResult {
     const base = this.calculateBaseDamageZone(zones, ratios);
     const dmgBonus = this.calculateDmgBonusFromZones(zones, ratios);
-    const mult = dmgBonus * zones.def_mult * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult;
+    const mult = dmgBonus * zones.def_mult * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult * zones.level_mult;
 
     const critDmg = zones.getFinal(PropertyType.CRIT_DMG_, 0);
     const critRate = Math.min(1, Math.max(0, zones.getFinal(PropertyType.CRIT_, 0)));
@@ -393,7 +394,7 @@ export class DamageCalculatorService {
     const base = this.calculateBaseDamageZone(zones, ratios);
     const dmgBonus = this.calculateDmgBonusFromZones(zones, ratios);
     const penBonus = 1 + zones.getFinal(PropertyType.SHEER_DMG_, 0);
-    const mult = dmgBonus * penBonus * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult;
+    const mult = dmgBonus * penBonus * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult * zones.level_mult;
 
     const critDmg = zones.getFinal(PropertyType.CRIT_DMG_, 0);
     const critRate = Math.min(1, Math.max(0, zones.getFinal(PropertyType.CRIT_, 0)));
@@ -501,7 +502,7 @@ export class DamageCalculatorService {
   static calculateDirectDamageFromZones(zones: ZoneCollection): ZoneCollection {
     const base = zones.base_damage_zone;
     const mult = zones.dmg_bonus * zones.def_mult * zones.res_mult
-               * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult;
+               * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult * zones.level_mult;
 
     const critDmg = zones.getFinal(PropertyType.CRIT_DMG_, 0);
 
@@ -660,45 +661,7 @@ export class DamageCalculatorService {
     duration: number;
     totalRatio: number;
   } {
-    const dot = ANOMALY_DOT_RATIOS[element.toLowerCase()] || { ratio: 0, interval: 0 };
-    const duration = ANOMALY_DEFAULT_DURATION[element.toLowerCase()] || 10;
-    const T1 = 3; // 异常时间T1=3秒（异常T1 + 紊乱T2 = 10）
-    
-    // 根据元素类型计算总伤害倍率
-    let totalRatio = 0;
-    const elementLower = element.toLowerCase();
-    
-    switch (elementLower) {
-      case 'fire': // 灼烧
-        totalRatio = Math.floor(T1 / 0.5) * 0.5;
-        break;
-      case 'electric': // 感电
-        totalRatio = Math.floor(T1) * 1.25;
-        break;
-      case 'ether': // 侵蚀
-      case 'ink': // 玄墨
-        totalRatio = Math.floor(T1 / 0.5) * 0.625;
-        break;
-      case 'ice': // 碎冰
-      case 'lieshuang': // 烈霜
-        totalRatio = 5.0; // 500%
-        break;
-      case 'physical': // 强击
-        totalRatio = 7.13; // 713%
-        break;
-      default:
-        // 其他元素使用原有逻辑
-        if (dot.interval > 0) {
-          // 持续伤害：总倍率 = 单次倍率 × 触发次数
-          const ticks = Math.floor(duration / dot.interval);
-          totalRatio = dot.ratio * ticks;
-        } else {
-          // 一次性伤害
-          totalRatio = dot.ratio;
-        }
-    }
-
-    return { ratio: dot.ratio, interval: dot.interval, duration, totalRatio };
+    return getAnomalyDotParams(element);
   }
 
   /**

@@ -481,13 +481,14 @@ export class OptimizerService {
     startFastOptimization(options: {
         agent: Agent;
         weapon: WEngine | null;  // 固定音擎（可选）
-        skill: SkillParams;
+        skills: SkillParams[];  // 支持多个技能
         enemy: Enemy;
         enemyLevel?: number;
         isStunned?: boolean;
         discs: DriveDisk[];
         constraints: OptimizationConstraints;
         externalBuffs?: Buff[];
+        buffStatusMap?: Map<string, { isActive: boolean }>;
         topN?: number;
         callbacks?: OptimizationCallbacks;
     }): void {
@@ -516,13 +517,14 @@ export class OptimizerService {
         const baseRequest = OptimizerContext.buildFastRequest({
             agent: options.agent,
             weapon: options.weapon,
-            skill: options.skill,
+            skills: options.skills,
             enemy: options.enemy,
             enemyLevel: options.enemyLevel,
             isStunned: options.isStunned,
             discs: options.discs,
             constraints: options.constraints,
             externalBuffs: options.externalBuffs,
+            buffStatusMap: options.buffStatusMap,
             config: {
                 topN: this.topN,
                 progressInterval: 10000,
@@ -912,49 +914,14 @@ export class OptimizerService {
     }): {
         total: number;
         breakdown: Record<string, number>;
-        dominancePruned?: number;  // 被支配关系剪枝移除的数量
     } {
         // 手动选择的武器
         const selectedWeapons = config.selectedWeaponIds.length > 0
             ? config.weapons.filter(w => config.selectedWeaponIds.includes(w.id))
             : config.weapons;
 
-        // 有效词条配置
-        const pruning = config.constraints.effectiveStatPruning;
-        const effectiveStats = pruning?.effectiveStats || [];
-
-        // 支配关系剪枝（在分组前进行）
-        let filteredDiscs = config.discs;
-        let dominancePruned = 0;
-        if (effectiveStats.length > 0) {
-            filteredDiscs = OptimizerContext.applyDominancePruning(config.discs, effectiveStats);
-            dominancePruned = config.discs.length - filteredDiscs.length;
-        }
-
-        // 主词条限定剪枝（456位置）
-        const mainStatFilters = config.constraints.mainStatFilters ?? {};
-        if (Object.keys(mainStatFilters).length > 0) {
-            filteredDiscs = OptimizerContext.applyMainStatFilterPruning(filteredDiscs, mainStatFilters);
-        }
-
-        // 按位置分组驱动盘（使用剪枝后的列表）
-        const discsBySlot = this.groupDiscsBySlot(filteredDiscs);
-
-        // 固定值 -> 百分比的映射
-        const flatToPercentMap: Partial<Record<PropertyType, PropertyType>> = {
-            [PropertyType.ATK]: PropertyType.ATK_,
-            [PropertyType.HP]: PropertyType.HP_,
-            [PropertyType.DEF]: PropertyType.DEF_,
-            [PropertyType.PEN]: PropertyType.PEN_,
-        };
-
-        // 检查主词条是否有效
-        const isEffectiveMainStat = (mainStat: PropertyType): boolean => {
-            if (effectiveStats.includes(mainStat)) return true;
-            const percentType = flatToPercentMap[mainStat];
-            if (percentType && effectiveStats.includes(percentType)) return true;
-            return false;
-        };
+        // 驱动盘已在 OptimizerView 中完成所有过滤，直接按位置分组
+        const discsBySlot = this.groupDiscsBySlot(config.discs);
 
         // 计算各位置数量
         const breakdown: Record<string, number> = {
@@ -969,28 +936,12 @@ export class OptimizerService {
                 continue;
             }
 
-            let slotDiscs = discsBySlot[slot] || [];
-
-            // 4/5/6号位：有效主词条过滤
-            if (slot >= 4 && effectiveStats.length > 0) {
-                // 检查是否有任何盘的主词条是有效词条
-                const hasEffectiveMainStat = slotDiscs.some(d => isEffectiveMainStat(d.main_stat));
-                if (hasEffectiveMainStat) {
-                    // 过滤掉无效主词条的盘
-                    slotDiscs = slotDiscs.filter(d => isEffectiveMainStat(d.main_stat));
-                }
-            }
-
+            const slotDiscs = discsBySlot[slot] || [];
             breakdown[slotKey] = slotDiscs.length;
             total *= slotDiscs.length;
         }
 
-        // 添加支配关系剪枝信息
-        if (dominancePruned > 0) {
-            breakdown['dominancePruned'] = dominancePruned;
-        }
-
-        return { total, breakdown, dominancePruned };
+        return { total, breakdown };
     }
 
     /**
