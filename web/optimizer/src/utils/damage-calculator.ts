@@ -273,7 +273,7 @@ export class DamageCalculator {
     const elementBuildupResMap: Record<string, PropertyType> = {
       physical: PropertyType.PHYSICAL_ANOM_BUILDUP_RES_,
       fire: PropertyType.FIRE_ANOM_BUILDUP_RES_,
-      ice: PropertyType.ICE_ANOMALY_BUILDUP_RES_,
+      ice: PropertyType.ICE_ANOM_BUILDUP_RES_,
       electric: PropertyType.ELECTRIC_ANOM_BUILDUP_RES_,
       ether: PropertyType.ETHER_ANOM_BUILDUP_RES_,
     };

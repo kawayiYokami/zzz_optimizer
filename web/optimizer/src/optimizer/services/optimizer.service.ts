@@ -11,12 +11,8 @@ import type { Enemy } from '../../model/enemy';
 import type { Buff } from '../../model/buff';
 import { OptimizerContext, type SkillParams } from './optimizer-context';
 import type {
-    OptimizationRequest,
     OptimizationConstraints,
-    OptimizationProgress,
-    OptimizationResult,
     OptimizationBuild,
-    WorkerMessage,
     EffectiveStatPruningConfig,
     OptimizationPreset,
 } from '../types';
@@ -99,15 +95,12 @@ export interface AggregatedResult {
  * 优化器服务类
  */
 export class OptimizerService {
-    private workers: Worker[] = [];
     private fastWorkers: Worker[] = [];
     private status: OptimizerStatus = 'idle';
     private callbacks: OptimizationCallbacks = {};
     private useFastMode = false;
 
     // 进度跟踪
-    private workerProgress: Map<number, OptimizationProgress> = new Map();
-    private workerResults: Map<number, OptimizationResult> = new Map();
     private fastWorkerResults: Map<number, OptimizationBuildResult[]> = new Map();
     private fastWorkerStats: Map<number, { processed: number; pruned: number; timeMs: number }> = new Map();
     private fastWorkerProgress: Map<number, number> = new Map();  // workerId -> processedCount
@@ -131,47 +124,9 @@ export class OptimizerService {
     }
 
     /**
-     * 初始化 Worker
-     *
-     * @param count Worker 数量，默认使用 CPU 核心数
-     */
-    initializeWorkers(count?: number): void {
-        // 清理现有 Worker
-        this.terminateWorkers();
-
-        const workerCount = count ?? Math.max(1, navigator.hardwareConcurrency - 1);
-
-        for (let i = 0; i < workerCount; i++) {
-            // 使用 Vite 的 Worker 导入语法
-            const worker = new Worker(
-                new URL('../workers/optimization.worker.ts', import.meta.url),
-                { type: 'module' }
-            );
-
-            const workerId = i;
-
-            worker.onmessage = (event: MessageEvent<WorkerMessage>) => {
-                this.handleWorkerMessage(workerId, event.data);
-            };
-
-            worker.onerror = (error) => {
-                console.error(`Worker ${workerId} error:`, error);
-                this.handleWorkerError(workerId, new Error(error.message));
-            };
-
-            this.workers.push(worker);
-        }
-    }
-
-    /**
      * 终止所有 Worker
      */
     terminateWorkers(): void {
-        for (const worker of this.workers) {
-            worker.terminate();
-        }
-        this.workers = [];
-
         for (const worker of this.fastWorkers) {
             worker.terminate();
         }
@@ -384,74 +339,6 @@ export class OptimizerService {
     }
 
     /**
-     * 开始优化
-     */
-    startOptimization(options: {
-        agent: Agent;
-        skill: SkillParams;
-        enemy: Enemy;
-        enemyLevel?: number;
-        isStunned?: boolean;
-        weapons: WEngine[];
-        discs: DriveDisk[];
-        constraints: OptimizationConstraints;
-        externalBuffs?: Buff[];
-        topN?: number;
-        callbacks?: OptimizationCallbacks;
-    }): void {
-        if (this.status === 'running') {
-            throw new Error('优化器正在运行中');
-        }
-
-        if (this.workers.length === 0) {
-            this.initializeWorkers();
-        }
-
-        // 重置状态
-        this.status = 'running';
-        this.workerProgress.clear();
-        this.workerResults.clear();
-        this.completedWorkers = 0;
-        this.startTime = performance.now();
-        this.topN = options.topN ?? 10;
-        this.callbacks = options.callbacks ?? {};
-
-        // 构建请求
-        const baseRequest = OptimizerContext.buildRequest({
-            agent: options.agent,
-            skill: options.skill,
-            enemy: options.enemy,
-            enemyLevel: options.enemyLevel,
-            isStunned: options.isStunned,
-            weapons: options.weapons,
-            discs: options.discs,
-            constraints: options.constraints,
-            externalBuffs: options.externalBuffs,
-            config: {
-                topN: this.topN,
-                progressInterval: 1000,
-            },
-        });
-
-        // 计算总组合数
-        this.totalCombinations = this.calculateTotalCombinations(baseRequest);
-
-        // 向每个 Worker 发送请求（包含 workerId 和 totalWorkers）
-        for (let i = 0; i < this.workers.length; i++) {
-            const workerRequest: OptimizationRequest = {
-                ...baseRequest,
-                config: {
-                    ...baseRequest.config,
-                    workerId: i,
-                    totalWorkers: this.workers.length,
-                },
-            };
-
-            this.workers[i].postMessage(workerRequest);
-        }
-    }
-
-    /**
      * 取消优化
      */
     cancelOptimization(): void {
@@ -459,9 +346,6 @@ export class OptimizerService {
 
         this.status = 'cancelled';
 
-        for (const worker of this.workers) {
-            worker.postMessage({ type: 'cancel' });
-        }
         for (const worker of this.fastWorkers) {
             worker.postMessage({ type: 'cancel' });
         }
@@ -503,8 +387,6 @@ export class OptimizerService {
         // 重置状态
         this.status = 'running';
         this.useFastMode = true;
-        this.workerProgress.clear();
-        this.workerResults.clear();
         this.fastWorkerResults.clear();
         this.fastWorkerStats.clear();
         this.fastWorkerProgress.clear();
@@ -691,140 +573,6 @@ export class OptimizerService {
         }
 
         return result;
-    }
-
-    /**
-     * 计算总组合数
-     */
-    private calculateTotalCombinations(request: OptimizationRequest): number {
-        const { weapons, discs, constraints } = request;
-
-        let total = weapons.length;
-
-        for (let slot = 1; slot <= 6; slot++) {
-            if (constraints.pinnedSlots[slot]) {
-                continue;
-            }
-
-            const slotDiscs = discs[slot] || [];
-            if (slotDiscs.length === 0) {
-                return 0;
-            }
-
-            total *= slotDiscs.length;
-        }
-
-        return total;
-    }
-
-    /**
-     * 处理 Worker 消息
-     */
-    private handleWorkerMessage(workerId: number, message: WorkerMessage): void {
-        switch (message.type) {
-            case 'progress':
-                this.handleProgress(workerId, message);
-                break;
-            case 'result':
-                this.handleResult(workerId, message);
-                break;
-            case 'error':
-                this.handleWorkerError(workerId, new Error(message.message));
-                break;
-        }
-    }
-
-    /**
-     * 处理进度更新
-     */
-    private handleProgress(workerId: number, progress: OptimizationProgress): void {
-        this.workerProgress.set(workerId, progress);
-
-        // 聚合所有 Worker 的进度
-        const aggregated = this.aggregateProgress();
-
-        if (this.callbacks.onProgress) {
-            this.callbacks.onProgress(aggregated);
-        }
-    }
-
-    /**
-     * 聚合进度
-     */
-    private aggregateProgress(): AggregatedProgress {
-        let totalProcessed = 0;
-        let currentBest: OptimizationBuild | null = null;
-
-        for (const progress of this.workerProgress.values()) {
-            totalProcessed += progress.processedCount;
-
-            if (progress.currentBest) {
-                if (!currentBest || progress.currentBest.damage > currentBest.damage) {
-                    currentBest = progress.currentBest;
-                }
-            }
-        }
-
-        const elapsedMs = performance.now() - this.startTime;
-        const speed = totalProcessed / (elapsedMs / 1000);
-        const remaining = this.totalCombinations - totalProcessed;
-        const estimatedTimeRemaining = remaining / speed;
-
-        return {
-            totalProcessed,
-            totalCombinations: this.totalCombinations,
-            percentage: (totalProcessed / this.totalCombinations) * 100,
-            speed,
-            estimatedTimeRemaining,
-            currentBest,
-        };
-    }
-
-    /**
-     * 处理 Worker 结果
-     */
-    private handleResult(workerId: number, result: OptimizationResult): void {
-        this.workerResults.set(workerId, result);
-        this.completedWorkers++;
-
-        // 检查是否所有 Worker 都完成了
-        if (this.completedWorkers >= this.workers.length) {
-            this.finalizeOptimization();
-        }
-    }
-
-    /**
-     * 完成优化
-     */
-    private finalizeOptimization(): void {
-        this.status = 'completed';
-
-        // 聚合所有 Worker 的结果
-        const allBuilds: OptimizationBuild[] = [];
-        let totalProcessed = 0;
-
-        for (const result of this.workerResults.values()) {
-            allBuilds.push(...result.builds);
-            totalProcessed += result.stats.totalProcessed;
-        }
-
-        // 排序并取前 N 个
-        allBuilds.sort((a, b) => b.damage - a.damage);
-        const topBuilds = allBuilds.slice(0, this.topN);
-
-        const endTime = performance.now();
-        const totalTimeMs = endTime - this.startTime;
-
-        const aggregatedResult: AggregatedResult = {
-            builds: topBuilds,
-            totalProcessed,
-            totalTimeMs,
-            averageSpeed: totalProcessed / (totalTimeMs / 1000),
-        };
-
-        if (this.callbacks.onComplete) {
-            this.callbacks.onComplete(aggregatedResult);
-        }
     }
 
     /**
