@@ -396,6 +396,10 @@ const calculateData = () => {
   );
   zones.value = currentZones;
 
+  // 计算默认技能的基础区
+  const baseZones = DamageCalculatorService.calculateDefaultSkillBaseZones(agent, currentZones);
+  zones.value.base_damage_zone = baseZones.directBase;
+
   // 2. 计算基准直伤 (100% 倍率)
   const baseRatios = new RatioSet();
   baseRatios.atk_ratio = 1.0; // 100%

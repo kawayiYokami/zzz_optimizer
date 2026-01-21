@@ -11,6 +11,7 @@ import { RatioSet, SkillType } from '../model/ratio-set';
 import { ZoneCollection } from '../model/zone-collection';
 import { PropertyCollection } from '../model/property-collection';
 import { PropertyType, ElementType } from '../model/base';
+import type { Agent } from '../model/agent';
 
 /**
  * 异常持续伤害倍率（每tick）
@@ -733,35 +734,57 @@ export class DamageCalculatorService {
     directBase: number;    // 直伤基础区
     anomalyBase: number;   // 异常基础区（总伤）
   } {
-    // TODO: 实现具体逻辑
-
     // 1. 获取技能数据
-    //    - 从 agent.agentSkills.skills.get(skillKey) 获取技能对象
-    //    - 如果技能不存在，返回 { directBase: 0, anomalyBase: 0 }
+    if (!agent.agentSkills) {
+      return { directBase: 0, anomalyBase: 0 };
+    }
+
+    const skill = agent.agentSkills.skills.get(skillKey);
+    if (!skill || !skill.segments || skill.segments.length === 0) {
+      return { directBase: 0, anomalyBase: 0 };
+    }
 
     // 2. 推断技能类型
-    //    - 通过 SKILL_TYPE_TO_KEY 映射表推断技能类型
-    //    - 需要从 optimizer.service.ts 导入 SKILL_TYPE_TO_KEY
+    const SKILL_TYPE_TO_KEY: Record<string, string> = {
+      '普通攻击': 'normal',
+      '闪避': 'dodge',
+      '特殊技': 'special',
+      '强化特殊技': 'special',
+      '连携技': 'chain',
+      '终结技': 'chain',
+      '核心被动': 'core',
+      '额外的能力': 'core'
+    };
+
+    let skillType = 'normal';
+    for (const [namePart, typeKey] of Object.entries(SKILL_TYPE_TO_KEY)) {
+      if (skillKey.includes(namePart)) {
+        skillType = typeKey;
+        break;
+      }
+    }
 
     // 3. 获取技能等级
-    //    - 调用 agent.getSkillLevel(skillType) 获取等级
+    const level = agent.getSkillLevel(skillType);
 
     // 4. 计算总直伤倍率
-    //    - 遍历 skill.segments，累加每段的 damageRatio + (level - 1) * damageRatioGrowth
+    let totalDirectRatio = 0;
+    for (const segment of skill.segments) {
+      totalDirectRatio += segment.damageRatio + (level - 1) * segment.damageRatioGrowth;
+    }
 
     // 5. 计算直伤基础区
-    //    - 获取攻击力：zones.getFinal(PropertyType.ATK_BASE, 0) + zones.getFinal(PropertyType.ATK, 0)
-    //    - 直伤基础区 = 攻击力 × 总直伤倍率
+    const atk = zones.getFinal(PropertyType.ATK_BASE, 0) + zones.getFinal(PropertyType.ATK, 0);
+    const directBase = atk * totalDirectRatio;
 
     // 6. 获取异常倍率（总伤）
-    //    - 获取角色元素：ElementType[agent.element].toLowerCase()
-    //    - 调用 getAnomalyDotParams(element) 获取异常参数
-    //    - 使用 totalRatio 而不是 ratio
+    const elementStr = ElementType[agent.element].toLowerCase();
+    const anomParams = this.getAnomalyDotParams(elementStr);
 
     // 7. 计算异常基础区
-    //    - 异常基础区 = 攻击力 × 异常总倍率
+    const anomalyBase = atk * anomParams.totalRatio;
 
-    return { directBase: 0, anomalyBase: 0 };
+    return { directBase, anomalyBase };
   }
 
   /**
@@ -784,13 +807,17 @@ export class DamageCalculatorService {
     directBase: number;    // 直伤基础区
     anomalyBase: number;   // 异常基础区（总伤）
   } {
-    // TODO: 实现具体逻辑
-
     // 1. 获取角色的第一个技能
-    //    - 从 agent.agentSkills.skills 获取第一个技能的 key
+    if (!agent.agentSkills || agent.agentSkills.skills.size === 0) {
+      return { directBase: 0, anomalyBase: 0 };
+    }
+
+    const firstSkillKey = agent.agentSkills.skills.keys().next().value;
+    if (!firstSkillKey) {
+      return { directBase: 0, anomalyBase: 0 };
+    }
 
     // 2. 调用 calculateSkillBaseZones 计算基础区
-
-    return { directBase: 0, anomalyBase: 0 };
+    return this.calculateSkillBaseZones(agent, firstSkillKey, zones);
   }
 }

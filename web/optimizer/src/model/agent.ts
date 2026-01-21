@@ -17,7 +17,7 @@ const SPECIAL_ANOMALY_AGENTS: Record<string, { element: string; ratio: number }>
 import { CombatStats } from './combat-stats';
 import { Buff, ConversionBuff, BuffSource, BuffTarget, Conversion } from './buff';
 import type { ZodCharacterData } from './save-data-zod';
-import type { AgentSkillSet } from './skill';
+import type { AgentSkillSet, SkillSet } from './skill';
 import type { dataLoaderService } from '../services/data-loader.service';
 import type { WEngine } from './wengine';
 import type { DriveDisk } from './drive-disk';
@@ -140,6 +140,9 @@ export class Agent {
 
   // 技能数据（从游戏数据加载）
   agentSkills: AgentSkillSet | null = null;
+
+  // 新的技能集合（已根据等级计算）
+  skillSet: SkillSet | null = null;
 
   constructor(
     id: string,
@@ -682,6 +685,16 @@ export class Agent {
       }
     }
 
+    // 加载新的技能集合（从原始游戏数据）
+    const skillLevels = {
+      normal: agent.skills.normal,
+      dodge: agent.skills.dodge,
+      assist: agent.skills.assist,
+      special: agent.skills.special,
+      chain: agent.skills.chain,
+    };
+    agent.skillSet = await dataLoader.loadAgentSkillsFromJson(agent.game_id, skillLevels);
+
     return agent;
   }
 
@@ -1020,6 +1033,13 @@ export class Agent {
     const level = this.getSkillLevel(skillType);
 
     return segment.damageRatio + (level - 1) * segment.damageRatioGrowth;
+  }
+
+  /**
+   * 获取新的技能集合
+   */
+  getSkillSet(): SkillSet | null {
+    return this.skillSet;
   }
 
   /**

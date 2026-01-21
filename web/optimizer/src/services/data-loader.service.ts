@@ -10,7 +10,9 @@ import type {
   AgentSkillSet,
   AgentSkill,
   AgentSkillSegment,
+  SkillSet,
 } from "../model/skill";
+import { generateSkillSet } from "../utils/skill-converter";
 
 /**
  * 角色基础信息
@@ -643,6 +645,37 @@ export class DataLoaderService {
       return this._agentSkills.get(agentName) || null;
     }
     return null;
+  }
+
+  /**
+   * 从原始游戏数据加载技能（新方法）
+   *
+   * @param gameId 角色游戏ID
+   * @param skillLevels 各技能类型的等级
+   * @returns 技能集合（已计算）
+   */
+  async loadAgentSkillsFromJson(
+    gameId: string,
+    skillLevels: Record<string, number>
+  ): Promise<SkillSet | null> {
+    try {
+      // 加载角色详细数据
+      const characterDetail = await this.getCharacterDetail(gameId);
+
+      if (!characterDetail || !characterDetail.Skill) {
+        console.warn(`角色 ${gameId} 的技能数据不存在`);
+        return null;
+      }
+
+      // 使用转换工具生成技能集合
+      const skillSet = generateSkillSet(characterDetail.Skill, skillLevels);
+
+      console.log(`成功加载角色 ${gameId} 的技能数据`);
+      return skillSet;
+    } catch (error) {
+      console.error(`加载角色 ${gameId} 的技能数据失败:`, error);
+      return null;
+    }
   }
 
   /**
