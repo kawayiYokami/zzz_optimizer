@@ -593,7 +593,7 @@ export const useSaveStore = defineStore('save', () => {
   /**
    * 装备驱动盘
    */
-  function equipDriveDisk(agentId: string, diskId: string | null, slot: number): boolean {
+  function equipDriveDisk(agentId: string, diskId: string | null): boolean {
     if (!currentSaveName.value) {
       return false;
     }
@@ -609,31 +609,21 @@ export const useSaveStore = defineStore('save', () => {
       return false;
     }
 
-    // 检查slot是否有效
-    if (slot < 0 || slot >= 6) {
-      return false;
-    }
+    // 调用 Agent 类的 equipDriveDisk 方法（自动根据驱动盘位置装备）
+    agent.equipDriveDisk(diskId);
 
-    // 修改实例对象
-    agent.equipped_drive_disks[slot] = diskId;
-
-    // 更新rawSaves中的数据
-    const character = rawSave.characters?.find(c => c.id === agentId);
-    if (character) {
-      // ZOD格式使用字符串键："1"到"6"
-      const slotKey = (slot + 1).toString();
-      character.equippedDiscs[slotKey] = diskId || '';
-      
-      // 更新驱动盘的装备状态
-      if (agent.equipped_drive_disks[slot]) {
-        // 查找并更新之前装备的驱动盘
-        const oldDisk = rawSave.discs?.find(d => d.location === agentId && d.slotKey === slotKey);
-        if (oldDisk) {
-          oldDisk.location = '';
+    // 更新 rawSave 中的驱动盘 location
+    if (rawSave.discs) {
+      // 清除该角色所有驱动盘的 location
+      rawSave.discs.forEach(disk => {
+        if (disk.location === agentId) {
+          disk.location = '';
         }
-        
-        // 更新新装备的驱动盘
-        const newDisk = rawSave.discs?.find(d => d.id === diskId);
+      });
+
+      // 设置新驱动盘的 location
+      if (diskId) {
+        const newDisk = rawSave.discs.find(d => d.id === diskId);
         if (newDisk) {
           newDisk.location = agentId;
         }
@@ -832,6 +822,41 @@ export const useSaveStore = defineStore('save', () => {
   }
 
   /**
+   * 更新队伍的优化结果缓存
+   */
+  function updateTeamOptimizationResults(
+    teamId: string,
+    results: import('../optimizer/types').OptimizationBuild[]
+  ): boolean {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    if (!save) {
+      return false;
+    }
+
+    try {
+      const team = save.getAllTeamInstances().find(t => t.id === teamId);
+      if (!team) {
+        console.error(`队伍 ${teamId} 不存在`);
+        return false;
+      }
+
+      // 只保留前10组结果
+      team.optimizationResults = results.slice(0, 10);
+
+      // 同步到rawSaves
+      syncInstanceToRawSave();
+      return true;
+    } catch (error) {
+      console.error('更新队伍优化结果失败:', error);
+      return false;
+    }
+  }
+
+  /**
    * 获取队伍的优化配置
    */
   function getTeamOptimizationConfig(
@@ -890,6 +915,7 @@ export const useSaveStore = defineStore('save', () => {
     updateTeam,               // 更新队伍
     deleteTeam,               // 删除队伍
     updateTeamOptimizationConfig, // 更新队伍优化配置
+    updateTeamOptimizationResults, // 更新队伍优化结果
     getTeamOptimizationConfig,    // 获取队伍优化配置
   };
 });

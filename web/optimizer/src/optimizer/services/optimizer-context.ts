@@ -389,6 +389,7 @@ export class OptimizerContext {
         discs: DriveDisk[];
         constraints: OptimizationConstraints;
         externalBuffs?: Buff[];
+        excludedDiscIds?: string[]; // 排除的驱动盘ID列表
         config?: {
             topN?: number;
             workerId?: number;
@@ -406,6 +407,7 @@ export class OptimizerContext {
             discs,
             constraints,
             externalBuffs = [],
+            excludedDiscIds,
             config = {},
         } = options;
 
@@ -437,6 +439,17 @@ export class OptimizerContext {
             const afterCount = filteredDiscs.length;
             if (beforeCount !== afterCount) {
                 console.log(`[Optimizer] 主词条限定剪枝: ${beforeCount} -> ${afterCount} (移除 ${beforeCount - afterCount} 个不符合限定的盘)`);
+            }
+        }
+
+        // 装备优先级排除剪枝
+        const excludedTeamIds = constraints.excludedTeamIds ?? [];
+        if (excludedTeamIds.length > 0 && excludedDiscIds) {
+            const beforeCount = filteredDiscs.length;
+            filteredDiscs = this.applyTeamPriorityPruning(filteredDiscs, excludedDiscIds);
+            const afterCount = filteredDiscs.length;
+            if (beforeCount !== afterCount) {
+                console.log(`[Optimizer] 装备优先级排除剪枝: ${beforeCount} -> ${afterCount} (移除 ${beforeCount - afterCount} 个高优先级队伍的盘)`);
             }
         }
 
@@ -1344,5 +1357,26 @@ export class OptimizerContext {
             // 只保留主词条在限定列表中的盘
             return filters.includes(disc.main_stat);
         });
+    }
+
+    /**
+     * 装备优先级排除剪枝
+     *
+     * 排除高优先级队伍身上的驱动盘
+     *
+     * @param discs 驱动盘列表
+     * @param excludedDiscIds 排除的驱动盘ID列表
+     * @returns 剪枝后的驱动盘列表
+     */
+    static applyTeamPriorityPruning(
+        discs: DriveDisk[],
+        excludedDiscIds: string[]
+    ): DriveDisk[] {
+        if (excludedDiscIds.length === 0) {
+            return discs;
+        }
+
+        const excludedSet = new Set(excludedDiscIds);
+        return discs.filter(disc => !excludedSet.has(disc.id));
     }
 }

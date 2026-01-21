@@ -339,14 +339,12 @@ function selectEquipment(item: any) {
         if (item === null) {
             // 卸载驱动盘
             if (selectedDriveDiskPosition.value !== undefined) {
-                saveStore.equipDriveDisk(props.agent.id, null, selectedDriveDiskPosition.value);
-            }
-        } else {
+                saveStore.equipDriveDisk(props.agent.id, null);
+              }        } else {
             // 装备驱动盘
             if (selectedDriveDiskPosition.value !== undefined) {
-                saveStore.equipDriveDisk(props.agent.id, item.id, selectedDriveDiskPosition.value);
-            }
-        }
+                saveStore.equipDriveDisk(props.agent.id, item.id);
+              }        }
         // 清除属性缓存
         props.agent.clearPropertyCache();
     }

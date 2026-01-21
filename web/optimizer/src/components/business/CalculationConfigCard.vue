@@ -136,6 +136,31 @@
         </div>
       </div>
 
+      <!-- 装备优先级 -->
+      <div class="divider text-xs font-bold text-base-content/50 my-2">装备优先级</div>
+      <div class="card bg-base-200 p-3 mt-2">
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <div class="text-xs text-base-content/60">当前优先级</div>
+            <div class="font-mono font-bold text-lg text-primary">{{ currentTeamPriority }}</div>
+          </div>
+          <div class="flex flex-col gap-1 items-end">
+            <div class="text-xs text-base-content/60">排除驱动盘</div>
+            <div class="font-mono font-bold text-lg text-error">{{ excludedDiscsCount }}</div>
+          </div>
+          <button class="btn btn-sm btn-primary" @click="openPriorityModal">
+            设置优先级
+          </button>
+        </div>
+      </div>
+
+      <!-- 队伍优先级弹窗 -->
+      <TeamPriorityModal
+        v-model="showPriorityModal"
+        :current-team-id="currentTeamId"
+        @update:excludedTeamIds="emit('update:excludedTeamIds', $event)"
+      />
+
 
       <!-- 驱动盘位置限定弹窗 -->
       <DriveDiskSlotFilterModal
@@ -200,6 +225,7 @@ import DriveDiskSlotFilterModal from './DriveDiskSlotFilterModal.vue';
 import { iconService } from '../../services/icon.service';
 import DriveDiskSetFilterModal from './DriveDiskSetFilterModal.vue';
 import { getPropertyCnName } from '../../model/base';
+import TeamPriorityModal from './TeamPriorityModal.vue';
 
 // Props
 interface StatOption {
@@ -232,6 +258,9 @@ interface Props {
   prunedDiscs: any[]; // 剪枝后的驱动盘
   filteredDiscs: any[]; // 等级过滤后的驱动盘
   constraints: any; // 约束配置（包含主词条限定器）
+  currentTeamId?: string; // 当前队伍ID
+  currentTeamPriority?: number; // 当前队伍优先级
+  excludedDiscsCount?: number; // 排除的驱动盘数量
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -259,6 +288,7 @@ interface Emits {
   'cancelOptimization': [];
   'update:activeDiskSets': [sets: string[]];
   'update:mainStatFilters': [filters: any]; // 更新主词条限定器
+  'update:excludedTeamIds': [teamIds: string[]]; // 更新排除的队伍ID列表
 }
 
 const emit = defineEmits<Emits>();
@@ -267,6 +297,7 @@ const emit = defineEmits<Emits>();
 const gameDataStore = useGameDataStore();
 const showSetFilterModal = ref(false);
 const showSlotFilterModal = ref(false);
+const showPriorityModal = ref(false);
 const selectedSlot = ref<number>(1);
 
 // 计算属性
@@ -351,5 +382,10 @@ function updateSlotMainStatFilters(filters: PropertyType[]): void {
     slot: selectedSlot.value,
     filters: filters
   });
+}
+
+// 打开优先级设置弹窗
+function openPriorityModal(): void {
+  showPriorityModal.value = true;
 }
 </script>

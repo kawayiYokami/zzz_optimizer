@@ -4,7 +4,7 @@
  * 直接存储ZOD格式，不做任何转换
  */
 
-import type { OptimizationConstraints } from '../optimizer/types';
+import type { OptimizationConstraints, OptimizationBuild } from '../optimizer/types';
 
 export interface ZodCharacterData {
   key: string;          // CodeName: "Anby"
@@ -56,6 +56,7 @@ export interface ZodDiscData {
 export interface ZodTeamData {
   id: string;
   name: string;
+  priority: number;            // 队伍优先级（数字越大优先级越高）
   frontCharacterId: string;    // 前台角色ID
   backCharacter1Id: string;    // 后台角色1ID
   backCharacter2Id: string;    // 后台角色2ID
@@ -76,6 +77,12 @@ export interface ZodTeamData {
     /** 最后更新时间 */
     lastUpdated: string;
   };
+
+  /**
+   * 优化结果缓存（可选）
+   * 存储前10组优化结果
+   */
+  optimizationResults?: OptimizationBuild[];
 }
 
 /**

@@ -105,6 +105,19 @@
         <BuffCard :buff="mockBuff" />
       </div>
     </section>
+
+    <!-- Section 7: Optimization Result Card -->
+    <section>
+      <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">优化结果卡片 (OptimizationResultCard)</h2>
+      <div class="w-full">
+        <OptimizationResultCard
+          :results="mockOptimizationResults"
+          :is-running="false"
+          :total-time="5000"
+          :current-damage="850000"
+        />
+      </div>
+    </section>
     </div>
   </div>
 </template>
@@ -121,16 +134,102 @@ import BangbooCard from '../components/business/BangbooCard.vue';
 import EnemyCard from '../components/business/EnemyCard.vue';
 import BuffCard from '../components/business/BuffCard.vue';
 import TeamList from '../components/business/TeamList.vue';
+import OptimizationResultCard from '../components/business/OptimizationResultCard.vue';
 import { MockData } from '../utils/mock-data';
 import { useSaveStore } from '../stores/save.store';
 import { dataLoaderService } from '../services/data-loader.service';
 import { Enemy } from '../model/enemy';
 import { Bangboo } from '../model/bangboo';
+import type { OptimizationBuild } from '../optimizer/types';
+import { PropertyType } from '../model/base';
 
 const saveStore = useSaveStore();
 
 // Instantiate mock data for BuffCard as it's not tied to save data directly in this context
 const mockBuff = ref(MockData.buff());
+
+// Mock optimization results for OptimizationResultCard
+const mockOptimizationResults = computed<OptimizationBuild[]>(() => {
+  // 使用真实的驱动盘数据
+  const discs = saveStore.driveDisks;
+  if (discs.length < 18) {
+    // 如果驱动盘不够，返回空数组
+    return [];
+  }
+
+  // 创建3个模拟方案，每个方案使用6个不同的驱动盘
+  return [
+    {
+      weaponId: '',
+      discIds: [
+        discs[0]?.id || '',
+        discs[1]?.id || '',
+        discs[2]?.id || '',
+        discs[3]?.id || '',
+        discs[4]?.id || '',
+        discs[5]?.id || '',
+      ],
+      damage: 950000,
+      finalStats: {
+        [PropertyType.ATK]: 2500,
+        [PropertyType.ATK_]: 0.75,
+        [PropertyType.CRIT_]: 0.65,
+        [PropertyType.CRIT_DMG_]: 1.5,
+        [PropertyType.ANOM_PROF]: 120,
+      },
+      setBonusInfo: {
+        twoPieceSets: ['101', '102'],
+        fourPieceSet: '103',
+      },
+    },
+    {
+      weaponId: '',
+      discIds: [
+        discs[6]?.id || '',
+        discs[7]?.id || '',
+        discs[8]?.id || '',
+        discs[9]?.id || '',
+        discs[10]?.id || '',
+        discs[11]?.id || '',
+      ],
+      damage: 880000,
+      finalStats: {
+        [PropertyType.ATK]: 2400,
+        [PropertyType.ATK_]: 0.72,
+        [PropertyType.CRIT_]: 0.60,
+        [PropertyType.CRIT_DMG_]: 1.45,
+        [PropertyType.ANOM_PROF]: 115,
+      },
+      setBonusInfo: {
+        twoPieceSets: ['104'],
+        fourPieceSet: '105',
+      },
+    },
+    {
+      weaponId: '',
+      discIds: [
+        discs[12]?.id || '',
+        discs[13]?.id || '',
+        discs[14]?.id || '',
+        discs[15]?.id || '',
+        discs[16]?.id || '',
+        discs[17]?.id || '',
+      ],
+      damage: 820000,
+      finalStats: {
+        [PropertyType.ATK]: 2350,
+        [PropertyType.ATK_]: 0.70,
+        [PropertyType.CRIT_]: 0.58,
+        [PropertyType.CRIT_DMG_]: 1.40,
+        [PropertyType.ANOM_PROF]: 110,
+      },
+      setBonusInfo: {
+        twoPieceSets: ['106', '107'],
+        fourPieceSet: null,
+      },
+    },
+  ];
+});
 
 const realAgent = computed(() => {
     const agent = saveStore.agents.length > 0 ? saveStore.agents[0] : null;

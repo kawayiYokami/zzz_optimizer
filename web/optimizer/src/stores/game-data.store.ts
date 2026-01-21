@@ -7,7 +7,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { dataLoaderService } from '../services/data-loader.service';
-import type { CharacterInfo, WeaponInfo, EquipmentInfo, BangbooInfo, EnemyInfo } from '../services/data-loader.service';
+import type { CharacterInfo, WeaponInfo, EquipmentInfo, BangbooInfo, EnemyInfo, AnomalyBarInfo } from '../services/data-loader.service';
 
 export const useGameDataStore = defineStore('gameData', () => {
   // 状态
@@ -44,6 +44,12 @@ export const useGameDataStore = defineStore('gameData', () => {
   const allEnemies = computed(() => {
     if (!isInitialized.value) return [];
     const data = dataLoaderService.enemyData;
+    return data ? Array.from(data.values()) : [];
+  });
+
+  const allAnomalyBars = computed(() => {
+    if (!isInitialized.value) return [];
+    const data = dataLoaderService.anomalyBarsData;
     return data ? Array.from(data.values()) : [];
   });
 
@@ -165,6 +171,14 @@ export const useGameDataStore = defineStore('gameData', () => {
   function getEquipmentInfo(gameId: string): EquipmentInfo | undefined {
     const data = dataLoaderService.equipmentData;
     return data?.get(gameId);
+  }
+
+  /**
+   * 获取异常条信息
+   */
+  function getAnomalyBarInfo(anomalyBarId: string): AnomalyBarInfo | undefined {
+    const data = dataLoaderService.anomalyBarsData;
+    return data?.get(anomalyBarId);
   }
 
   /**
@@ -345,6 +359,7 @@ export const useGameDataStore = defineStore('gameData', () => {
     allEquipments,
     allBangboos,
     allEnemies,
+    allAnomalyBars,
 
     // 方法
     initialize,
@@ -359,6 +374,7 @@ export const useGameDataStore = defineStore('gameData', () => {
     getCharacterInfo,
     getWeaponInfo,
     getEquipmentInfo,
+    getAnomalyBarInfo,
     getCharacterDetail,
     getCharacterBuff,
     getWeaponDetail,

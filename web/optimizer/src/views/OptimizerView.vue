@@ -37,6 +37,9 @@
             :pruned-discs="prunedDiscs"
             :filtered-discs="filteredDiscs"
             :constraints="constraints"
+            :current-team-id="selectedTeamId"
+            :current-team-priority="currentTeam?.priority ?? 0"
+            :excluded-discs-count="excludedDiscsCount"
             @update:worker-count="workerCount = $event"
             @update:min-disc-level="minDiscLevel = $event"
             @toggle-effective-stat="toggleEffectiveStat"
@@ -44,6 +47,7 @@
             @cancel-optimization="cancelOptimization"
             @update:active-disk-sets="constraints.activeDiskSets = $event"
             @update:main-stat-filters="handleMainStatFiltersUpdate"
+            @update:excluded-team-ids="handleExcludedTeamIdsUpdate"
           />
         </div>
 
@@ -65,96 +69,14 @@
             :selected-skill-keys="selectedSkillKeys"
           />
 
-          <div class="card bg-base-100 shadow-sm min-h-150">
-            <div class="card-body">
-              <h2 class="card-title flex justify-between items-center">
-                <span>优化结果</span>
-                <span class="text-sm font-normal text-base-content/70" v-if="results.length">
-                  Top {{ results.length }} / 耗时 {{ (totalTime / 1000).toFixed(2) }}s
-                </span>
-              </h2>
-
-              <div v-if="results.length === 0 && !isRunning" class="flex flex-col items-center justify-center h-96 text-base-content/50">
-                <p>请在左侧配置并开始优化</p>
-              </div>
-
-              <div v-else-if="results.length === 0 && isRunning" class="flex flex-col items-center justify-center h-96 text-base-content/50">
-                <span class="loading loading-dots loading-lg"></span>
-                <p class="mt-4">Worker 正在计算中...</p>
-              </div>
-
-              <!-- 结果列表 -->
-              <div v-else class="overflow-x-auto">
-                <table class="table table-zebra table-sm w-full">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>套装</th>
-                      <th>属性</th>
-                      <th class="text-right">伤害</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <template v-for="(build, index) in results" :key="index">
-                      <tr class="hover cursor-pointer" @click="toggleBuildDetails(index)">
-                        <th class="text-center">{{ index + 1 }}</th>
-                        <td>
-                          <div class="flex flex-wrap gap-1">
-                            <span v-if="build.setBonusInfo.fourPieceSet" class="badge badge-primary badge-xs">
-                              4{{ getSetName(build.setBonusInfo.fourPieceSet) }}
-                            </span>
-                            <span v-for="setId in build.setBonusInfo.twoPieceSets" :key="setId" class="badge badge-outline badge-xs">
-                              2{{ getSetName(setId) }}
-                            </span>
-                          </div>
-                        </td>
-                        <td>
-                          <div class="text-xs space-x-2">
-                            <span>CR: {{ ((build.finalStats[20103] || 0) * 100).toFixed(1) }}%</span>
-                            <span>CD: {{ ((build.finalStats[21103] || 0) * 100).toFixed(1) }}%</span>
-                          </div>
-                        </td>
-                        <td class="text-right">
-                          <div class="font-mono font-bold text-primary">{{ Math.round(build.damage).toLocaleString() }}</div>
-                        </td>
-                        <td>
-                          <button class="btn btn-xs btn-ghost">
-                            {{ expandedBuildIndex === index ? '收起' : '详情' }}
-                          </button>
-                        </td>
-                      </tr>
-                      <!-- 展开的驱动盘详情 -->
-                      <tr v-if="expandedBuildIndex === index">
-                        <td colspan="5" class="bg-base-200 p-4">
-                          <div class="grid grid-cols-6 gap-2">
-                            <div v-for="(discId, slot) in build.discIds" :key="slot" class="card bg-base-100 shadow-sm p-2">
-                              <div class="text-xs font-bold text-center mb-1">位置 {{ slot + 1 }}</div>
-                              <template v-if="getDiscInfo(discId)">
-                                <div class="text-xs text-center text-primary">{{ getDiscInfo(discId)?.set_name }}</div>
-                                <div class="divider my-1"></div>
-                                <div class="text-xs">
-                                  <span class="font-bold">{{ formatStatName(getDiscInfo(discId)?.main_stat) }}</span>
-                                </div>
-                                <div class="text-xs text-base-content/60 mt-1">
-                                  <div v-for="[stat, value] in getDiscInfo(discId)?.sub_stats || []" :key="stat" class="truncate">
-                                    {{ formatStatName(stat) }}
-                                  </div>
-                                </div>
-                              </template>
-                              <template v-else>
-                                <div class="text-xs text-error">未找到</div>
-                              </template>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    </template>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+          <!-- 优化结果卡片 -->
+          <OptimizationResultCard
+            :results="results"
+            :is-running="isRunning"
+            :total-time="totalTime"
+            :current-damage="currentDamage"
+            @equip-build="handleEquipBuild"
+          />
         </div>
 
       </div>
@@ -163,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, unref } from 'vue';
 import { useSaveStore } from '../stores/save.store';
 import { useGameDataStore } from '../stores/game-data.store';
 import {
@@ -182,6 +104,7 @@ import { PresetGenerator } from '../services/preset-generator.service';
 import BattleConfigCard from '../components/business/BattleConfigCard.vue';
 import CalculationConfigCard from '../components/business/CalculationConfigCard.vue';
 import BattleInfoCard from '../components/business/BattleInfoCard.vue';
+import OptimizationResultCard from '../components/business/OptimizationResultCard.vue';
 
 const saveStore = useSaveStore();
 const gameDataStore = useGameDataStore();
@@ -200,7 +123,6 @@ const totalTime = ref(0);
 const presets = ref<OptimizationPreset[]>([]);
 const workerCount = ref(16);
 const minDiscLevel = ref(15); // 默认只用15级盘
-const expandedBuildIndex = ref<number | null>(null);  // 展开的结果行索引
 
 const battleInfoCardRef = ref<InstanceType<typeof BattleInfoCard> | null>(null);
 
@@ -241,6 +163,29 @@ const teams = computed(() => saveStore.teamInstances);
 
 const currentTeam = computed<Team | null>(() => {
   return teams.value.find(t => t.id === selectedTeamId.value) || null;
+});
+
+// 排除的驱动盘数量
+const excludedDiscsCount = computed(() => {
+  if (!constraints.value.excludedTeamIds || constraints.value.excludedTeamIds.length === 0) {
+    return 0;
+  }
+
+  const excludedIds = new Set<string>();
+  constraints.value.excludedTeamIds.forEach(teamId => {
+    const team = teams.value.find(t => t.id === teamId);
+    if (team) {
+      team.allAgents.forEach(agent => {
+        agent.equipped_drive_disks.forEach(diskId => {
+          if (diskId) {
+            excludedIds.add(diskId);
+          }
+        });
+      });
+    }
+  });
+
+  return excludedIds.size;
 });
 
 const targetAgent = computed(() => {
@@ -454,6 +399,12 @@ const onTeamChange = async () => {
     battleInfoCardRef.value?.refresh();
     // 加载队伍的优化配置
     loadTeamOptimizationConfig(team.id);
+    // 加载队伍的优化结果缓存
+    if (team.optimizationResults && team.optimizationResults.length > 0) {
+      results.value = team.optimizationResults;
+    } else {
+      results.value = [];
+    }
   }
 };
 
@@ -479,6 +430,11 @@ const handleMainStatFiltersUpdate = (data: { slot: number; filters: PropertyType
     constraints.value.mainStatFilters = {};
   }
   constraints.value.mainStatFilters[data.slot] = data.filters;
+};
+
+// 处理排除的队伍ID更新
+const handleExcludedTeamIdsUpdate = (teamIds: string[]) => {
+  constraints.value.excludedTeamIds = teamIds;
 };
 
 const toggleSkill = (skillKey: string) => {
@@ -580,47 +536,60 @@ const getWEngineName = (id: string) => {
   return wengine?.name || id;
 };
 
-const getSetName = (id: string) => {
-  const gameData = gameDataStore.getEquipmentInfo(id);
-  return gameData?.CHS?.name || id;
+// 当前伤害（从 BattleInfoCard 获取）
+const currentDamage = computed(() => {
+  const dmg = battleInfoCardRef.value?.totalSkillDamage;
+  return unref(dmg) || 0;
+});
+
+// 一键换装
+const handleEquipBuild = (build: OptimizationBuild) => {
+  if (!targetAgentId.value) return;
+
+  try {
+    let successCount = 0;
+    // 遍历6个位置装备驱动盘
+    build.discIds.forEach((discId) => {
+      if (discId && saveStore.equipDriveDisk(targetAgentId.value, discId)) {
+        successCount++;
+      }
+    });
+
+    // 刷新战斗信息卡以显示新的属性
+    battleInfoCardRef.value?.refresh();
+    
+    // 显示成功提示 (这里简单用 alert 或者 console，实际项目可能有 Toast 组件)
+    console.log(`装备已更新，成功装备 ${successCount} 个驱动盘`);
+  } catch (e) {
+    console.error('装备失败:', e);
+    alert('装备失败，请重试');
+  }
 };
 
-// 结果详情展开
-const toggleBuildDetails = (index: number) => {
-  expandedBuildIndex.value = expandedBuildIndex.value === index ? null : index;
-};
+// 获取排除的驱动盘ID列表
+  const excludedDiscIds = computed(() => {
+    if (!constraints.value.excludedTeamIds || constraints.value.excludedTeamIds.length === 0) {
+      return [];
+    }
 
-const getDiscInfo = (discId: string) => {
-  return saveStore.driveDisks.find(d => d.id === discId);
-};
+    const excludedIds: string[] = [];
+    constraints.value.excludedTeamIds.forEach(teamId => {
+      const team = teams.value.find(t => t.id === teamId);
+      if (team) {
+        team.allAgents.forEach(agent => {
+          agent.equipped_drive_disks.forEach(diskId => {
+            if (diskId) {
+              excludedIds.push(diskId);
+            }
+          });
+        });
+      }
+    });
 
-const formatStatName = (stat: PropertyType | undefined) => {
-  if (stat === undefined) return '未知';
-  const statNames: Partial<Record<PropertyType, string>> = {
-    [PropertyType.HP]: '生命',
-    [PropertyType.HP_]: '生命%',
-    [PropertyType.ATK]: '攻击',
-    [PropertyType.ATK_]: '攻击%',
-    [PropertyType.DEF]: '防御',
-    [PropertyType.DEF_]: '防御%',
-    [PropertyType.CRIT_]: '暴击率',
-    [PropertyType.CRIT_DMG_]: '暴击伤害',
-    [PropertyType.PEN]: '穿透',
-    [PropertyType.PEN_]: '穿透%',
-    [PropertyType.ANOM_PROF]: '异常精通',
-    [PropertyType.ANOM_MAS]: '异常掌控',
-    [PropertyType.IMPACT_]: '冲击力',
-    [PropertyType.ENER_REGEN_]: '能量回复',
-    [PropertyType.PHYSICAL_DMG_]: '物理伤害',
-    [PropertyType.FIRE_DMG_]: '火伤害',
-    [PropertyType.ICE_DMG_]: '冰伤害',
-    [PropertyType.ELECTRIC_DMG_]: '电伤害',
-    [PropertyType.ETHER_DMG_]: '以太伤害',
-  };
-  return statNames[stat] || `属性${stat}`;
-};
+    return excludedIds;
+  });
 
-const startOptimization = async () => {
+  const startOptimization = async () => {
   const agent = targetAgent.value;
   if (!agent) return;
 
@@ -673,6 +642,7 @@ const startOptimization = async () => {
         discs: prunedDiscs.value,  // 使用剪枝后的驱动盘
         constraints: constraints.value,
         externalBuffs: optimizerService.getTeammateBuffs(),
+        excludedDiscIds: excludedDiscIds.value,  // 排除的驱动盘ID列表
         topN: 10,
         callbacks: {
           onProgress: (p) => {
@@ -682,6 +652,11 @@ const startOptimization = async () => {
             results.value = res.builds;
             totalTime.value = res.totalTimeMs;
             isRunning.value = false;
+
+            // 保存优化结果到队伍
+            if (currentTeam.value) {
+              saveStore.updateTeamOptimizationResults(currentTeam.value.id, res.builds);
+            }
           },
           onError: (err) => {
             console.error('[Optimizer] Error:', err);

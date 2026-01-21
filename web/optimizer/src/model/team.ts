@@ -5,7 +5,7 @@
 
 import type { Agent } from './agent';
 import type { ZodTeamData } from './save-data-zod';
-import type { OptimizationConstraints } from '../optimizer/types';
+import type { OptimizationConstraints, OptimizationBuild } from '../optimizer/types';
 
 /**
  * 优化配置接口
@@ -23,7 +23,9 @@ export class Team {
   private _bond: any | null = null; // 邦布实例暂时留空，使用any类型
   private _id: string;
   private _name: string;
+  private _priority: number;
   private _optimizationConfig: TeamOptimizationConfig | undefined;
+  private _optimizationResults: OptimizationBuild[] = [];
   private _zodTeamData?: ZodTeamData; // 引用对应的ZodTeamData对象，用于实时同步
 
   /**
@@ -49,6 +51,7 @@ export class Team {
     this._agents = [...agents];
     this._id = id;
     this._name = name;
+    this._priority = zodTeamData?.priority ?? 0;
     this._bond = bond;
     this._optimizationConfig = optimizationConfig;
     this._zodTeamData = zodTeamData;
@@ -83,6 +86,24 @@ export class Team {
   }
 
   /**
+   * 获取队伍优先级
+   */
+  get priority(): number {
+    return this._priority;
+  }
+
+  /**
+   * 设置队伍优先级
+   */
+  set priority(value: number) {
+    this._priority = value;
+    // 实时同步到ZodTeamData
+    if (this._zodTeamData) {
+      this._zodTeamData.priority = value;
+    }
+  }
+
+  /**
    * 获取优化配置
    */
   get optimizationConfig(): TeamOptimizationConfig | undefined {
@@ -97,6 +118,24 @@ export class Team {
     // 实时同步到ZodTeamData
     if (this._zodTeamData) {
       this._zodTeamData.optimizationConfig = config;
+    }
+  }
+
+  /**
+   * 获取优化结果缓存
+   */
+  get optimizationResults(): OptimizationBuild[] {
+    return this._optimizationResults;
+  }
+
+  /**
+   * 设置优化结果缓存
+   */
+  set optimizationResults(results: OptimizationBuild[]) {
+    this._optimizationResults = results;
+    // 实时同步到ZodTeamData
+    if (this._zodTeamData) {
+      this._zodTeamData.optimizationResults = results;
     }
   }
 
@@ -208,7 +247,17 @@ export class Team {
       throw new Error('队伍必须至少包含一个角色');
     }
 
-    return new Team(agents, zodTeam.id, zodTeam.name, null, zodTeam.optimizationConfig, zodTeam);
+    const team = new Team(agents, zodTeam.id, zodTeam.name, null, zodTeam.optimizationConfig, zodTeam);
+
+    // 加载优先级
+    team.priority = zodTeam.priority ?? 0;
+
+    // 加载优化结果缓存
+    if (zodTeam.optimizationResults) {
+      team.optimizationResults = zodTeam.optimizationResults;
+    }
+
+    return team;
   }
 
   /**
@@ -219,10 +268,12 @@ export class Team {
     return {
       id: this._id,
       name: this._name,
+      priority: this._priority,
       frontCharacterId: this._agents[0].id,
       backCharacter1Id: this._agents[1]?.id || '',
       backCharacter2Id: this._agents[2]?.id || '',
-      optimizationConfig: this._optimizationConfig
+      optimizationConfig: this._optimizationConfig,
+      optimizationResults: this._optimizationResults
     };
   }
 

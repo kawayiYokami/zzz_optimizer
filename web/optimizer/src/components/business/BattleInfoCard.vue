@@ -439,7 +439,9 @@ const calculateData = () => {
     def_mult: currentZones.def_mult,
     res_mult: currentZones.res_mult,
     dmg_taken_mult: currentZones.dmg_taken_mult,
-    stun_vuln_mult: currentZones.stun_vuln_mult
+    stun_vuln_mult: currentZones.stun_vuln_mult,
+    anomaly_buildup_zone: currentZones.accumulate_zone,
+    anomaly_mastery_zone: currentZones.getFinal(PropertyType.ANOM_MAS, 0) / 100,
   };
 
   damageResult.value = {
@@ -516,9 +518,10 @@ watch(() => props.selectedSkillKeys, () => {
   refreshData();
 }, { deep: true });
 
-// 暴露刷新方法给父组件
+// 暴露刷新方法和数据给父组件
 defineExpose({
-  refresh: refreshData
+  refresh: refreshData,
+  totalSkillDamage
 });
 
 onMounted(() => {

@@ -201,6 +201,11 @@ export interface OptimizationConstraints {
      * 空数组表示不激活任何 4 件套效果
      */
     activeDiskSets: string[];
+    /**
+     * 排除的队伍 ID 列表（优先级比当前队伍高的队伍）
+     * 这些队伍身上的驱动盘将被排除
+     */
+    excludedTeamIds?: string[];
 }
 
 /**

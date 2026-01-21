@@ -797,9 +797,20 @@ export class Agent {
   /**
    * 装备驱动盘
    */
-  equipDriveDisk(position: DriveDiskPosition, diskId: string): void {
+  equipDriveDisk(diskId: string): void {
+    // 获取驱动盘
+    const disk = this._driveDisks?.get(diskId);
+    if (!disk) {
+      console.warn(`[Agent] 无法装备驱动盘 ${diskId}：驱动盘不存在`);
+      return;
+    }
+
+    // 根据驱动盘的 position 确定装备位置（1-6）
+    const position = disk.position;
+    const index = position - 1;
+
     // 先卸下当前驱动盘（如果有）
-    const currentDiskId = this.equipped_drive_disks[position];
+    const currentDiskId = this.equipped_drive_disks[index];
     if (currentDiskId && this._driveDisks) {
       const currentDisk = this._driveDisks.get(currentDiskId);
       if (currentDisk) {
@@ -808,15 +819,10 @@ export class Agent {
     }
 
     // 装备新驱动盘
-    this.equipped_drive_disks[position] = diskId;
+    this.equipped_drive_disks[index] = diskId;
 
     // 设置驱动盘的装备者
-    if (this._driveDisks) {
-      const newDisk = this._driveDisks.get(diskId);
-      if (newDisk) {
-        newDisk.equipped_agent = this.id;
-      }
-    }
+    disk.equipped_agent = this.id;
 
     this.clearPropertyCache();
   }

@@ -110,6 +110,25 @@ export interface EnemyInfo {
   level_70_max_atk: number;
   level_70_max_stun: number;
   level_60_plus_defense: number;
+  // 异常条ID
+  ice_anomaly_bar?: string;
+  fire_anomaly_bar?: string;
+  electric_anomaly_bar?: string;
+  physical_anomaly_bar?: string;
+  ether_anomaly_bar?: string;
+  [key: string]: any;
+}
+
+/**
+ * 异常条信息
+ */
+export interface AnomalyBarInfo {
+  id: string;
+  element: string;
+  anomaly_id: string;
+  note: string;
+  anomaly_cd: number;
+  buildup_requirements: number[];
   [key: string]: any;
 }
 
@@ -128,6 +147,7 @@ export class DataLoaderService {
   private _enemyData: Map<string, EnemyInfo> | null = null;
   private _enemyIndexData: Map<string, any> | null = null; // 新增
   private _agentSkills: Map<string, AgentSkillSet> | null = null;
+  private _anomalyBarsData: Map<string, AnomalyBarInfo> | null = null; // 异常条数据
 
   // 详细数据缓存（按需加载）
   private _characterDetailCache: Map<string, Promise<any>> = new Map();
@@ -224,6 +244,13 @@ export class DataLoaderService {
   }
 
   /**
+   * 获取异常条数据
+   */
+  get anomalyBarsData(): Map<string, AnomalyBarInfo> | null {
+    return this._anomalyBarsData;
+  }
+
+  /**
    * 初始化（加载索引文件）
    */
   async initialize(): Promise<void> {
@@ -244,6 +271,7 @@ export class DataLoaderService {
         bangbooIndexData,
         enemyData,
         enemyIndexData,
+        anomalyBarsData,
       ] = await Promise.all([
         this.loadJsonFile<CharacterInfo>("/game-data/character.json"),
         this.loadJsonFile<WeaponInfo>("/game-data/weapon.json"),
@@ -252,6 +280,7 @@ export class DataLoaderService {
         this.loadJsonFile<any>("/game-data/bangboo_index.json"),
         this.loadJsonFile<EnemyInfo>("/game-data/enemy.json"),
         this.loadJsonFile<any>("/game-data/enemy_index.json"),
+        this.loadJsonFile<AnomalyBarInfo>("/game-data/anomaly_bars.json"),
       ]);
       // 转换为Map
       this._characterData = new Map(Object.entries(characterData));
@@ -261,6 +290,7 @@ export class DataLoaderService {
       this._bangbooIndexData = new Map(Object.entries(bangbooIndexData));
       this._enemyData = new Map(Object.entries(enemyData));
       this._enemyIndexData = new Map(Object.entries(enemyIndexData));
+      this._anomalyBarsData = new Map(Object.entries(anomalyBarsData));
 
       // 加载技能CSV数据
       await this.loadAgentSkills();

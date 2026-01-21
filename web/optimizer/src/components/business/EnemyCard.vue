@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52 overflow-hidden transition-all"
+    class="card bg-base-100 shadow-xl compact-card border border-base-300 overflow-hidden transition-all"
     :class="{
       'cursor-pointer hover:shadow-2xl hover:scale-[1.02]': clickable
     }"
@@ -41,7 +41,7 @@
       </div>
 
       <!-- Base Stats Grid -->
-      <div class="grid grid-cols-2 gap-2 bg-base-200 p-2 rounded text-xs">
+      <div class="grid grid-cols-2 gap-2 p-2 rounded text-xs">
         <div>
             <span class="block opacity-60">生命值</span>
             <span class="font-semibold">{{ formatNumber(enemy.hp) }}</span>
@@ -60,11 +60,11 @@
         </div>
       </div>
 
-      <!-- Resistances -->
+<!-- Resistances -->
       <div class="divider my-0 text-xs">抗性与弱点</div>
       <div class="grid grid-cols-5 gap-1 text-center text-xs">
         <div v-for="ele in elements" :key="ele.key" class="flex flex-col items-center p-1 rounded bg-base-200">
-            <!-- Icon placeholder -->
+            <!-- Icon -->
             <span :class="['w-2 h-2 rounded-full mb-1', ele.color]"></span>
             <span class="scale-90">{{ ele.label }}</span>
             <span :class="getResClass(enemy.getDmgResistance(ele.key))">
@@ -72,9 +72,35 @@
             </span>
         </div>
       </div>
+
+      <!-- Anomaly Bars -->
+      <div v-if="hasAnomalyBars" class="divider my-0 text-xs">异常条</div>
+      <div v-if="hasAnomalyBars" class="space-y-1 text-xs bg-base-200 p-2 rounded">
+        <div v-for="ele in elements" :key="ele.key" class="flex items-center gap-2">
+            <!-- Icon -->
+            <span :class="['w-2 h-2 rounded-full flex-shrink-0', ele.color]"></span>
+            
+            <!-- Element Name -->
+            <span class="w-8 flex-shrink-0">{{ ele.label }}</span>
+            
+            <!-- Anomaly Bar Progress -->
+            <div class="flex-1 h-2 bg-base-300 rounded-full overflow-hidden">
+                <div 
+                    class="h-full rounded-full transition-all duration-300"
+                    :style="{ 
+                        width: (getAnomalyBarValue(ele.key) / maxAnomalyBarValue * 100) + '%',
+                        backgroundColor: getProgressColor(ele.key)
+                    }"
+                ></div>
+            </div>
+            
+            <!-- Anomaly Bar Value -->
+            <span class="w-12 text-right font-semibold">{{ getAnomalyBarValue(ele.key) }}</span>
+        </div>
+      </div>
       
       <!-- Stun Vulnerability -->
-      <div v-if="enemy.can_stun" class="text-xs flex justify-between bg-base-200 p-1 px-2 rounded">
+      <div v-if="enemy.can_stun" class="text-xs flex justify-between bg-base-200 p-1 px-2 rounded mt-2">
         <span>失衡易伤倍率</span>
         <span class="font-bold">{{ (enemy.stun_vulnerability_multiplier * 100).toFixed(0) }}%</span>
       </div>
@@ -87,6 +113,7 @@
 import { computed } from 'vue';
 import { Enemy } from '../../model/enemy';
 import { iconService } from '../../services/icon.service';
+import { useGameDataStore } from '../../stores/game-data.store';
 
 const props = defineProps<{
   enemy: Enemy;
@@ -97,10 +124,65 @@ const emit = defineEmits<{
   click: [enemyId: string];
 }>();
 
+const gameDataStore = useGameDataStore();
+
 const enemyIconUrl = computed(() => {
     // 使用 id 获取敌人图标
     return iconService.getEnemyIconById(props.enemy.id);
 });
+
+// 检查是否有异常条
+const hasAnomalyBars = computed(() => {
+    const elements = ['physical', 'fire', 'ice', 'electric', 'ether'];
+    return elements.some(ele => getAnomalyBarValue(ele) > 0);
+});
+
+// 获取最大异常条值（用于进度条上限）
+const maxAnomalyBarValue = computed(() => {
+    const elements = ['physical', 'fire', 'ice', 'electric', 'ether'];
+    let maxValue = 0;
+    for (const ele of elements) {
+        const value = getAnomalyBarValue(ele);
+        if (value > maxValue) {
+            maxValue = value;
+        }
+    }
+    return maxValue || 5000; // 如果没有异常条，默认5000
+});
+
+// 获取异常条数值
+const getAnomalyBarValue = (element: string): number => {
+  const anomalyBarId = props.enemy[`${element}_anomaly_bar` as keyof Enemy] as string;
+  if (!anomalyBarId) return 0;
+  
+  const anomalyBar = gameDataStore.getAnomalyBarInfo(anomalyBarId);
+  // 返回基础异常积蓄需求（第一个值）
+  return anomalyBar?.buildup_requirements?.[0] || 0;
+};
+
+// 获取进度条颜色（返回十六进制颜色值）
+const getProgressColor = (element: string): string => {
+  const colorMap: Record<string, string> = {
+    physical: '#eab308', // yellow-500
+    fire: '#ef4444',    // red-500
+    ice: '#22d3ee',     // cyan-400
+    electric: '#2563eb', // blue-600
+    ether: '#ec4899',   // pink-500
+  };
+  return colorMap[element] || '#3b82f6'; // primary blue
+};
+
+// 获取异常条颜色类
+const getAnomalyBarColor = (element: string): string => {
+  const colorMap: Record<string, string> = {
+    physical: 'progress-warning',
+    fire: 'progress-error',
+    ice: 'progress-info',
+    electric: 'progress-primary',
+    ether: 'progress-secondary',
+  };
+  return colorMap[element] || 'progress-primary';
+};
 
 const elements = [
     { key: 'physical', label: '物理', color: 'bg-yellow-500' },
