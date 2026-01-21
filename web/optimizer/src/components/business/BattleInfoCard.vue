@@ -82,6 +82,11 @@
                     <span>异常:</span>
                     <span>{{ Math.round(skill.damage.anomalyDamage).toLocaleString() }}</span>
                   </div>
+                  <!-- 烈霜期望（星见雅的每个技能都会显示） -->
+                  <div v-if="skill.damage.lieshuangExpectedDamage > 0" class="flex justify-between text-secondary font-medium">
+                    <span>烈霜:</span>
+                    <span>{{ Math.round(skill.damage.lieshuangExpectedDamage).toLocaleString() }}</span>
+                  </div>
                   <div class="flex justify-between">
                     <span>倍率:</span>
                     <span>{{ (skill.ratio * 100).toFixed(0) }}%</span>
@@ -192,6 +197,13 @@
             <!-- 分割线 -->
             <div class="col-span-4 divider text-xs font-bold text-base-content/50 my-2">异常乘区</div>
 
+            <!-- 异常基础区 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">基础区-{{ anomalyCnName }}</div>
+                <div class="font-bold font-mono text-base">{{ zones?.base_damage_zone?.toFixed(0) || '-' }}</div>
+              </div>
+            </button>
             <!-- 异常精通 -->
             <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
               <div class="flex flex-col items-center w-full">
@@ -325,6 +337,30 @@ const agentElement = computed(() => {
   return getElementCnName(agent.element);
 });
 
+// 异常类型名称映射
+const anomalyNameMap: Record<string, string> = {
+  '物理': '强击',
+  '火': '灼烧',
+  '冰': '碎冰',
+  '雷': '感电',
+  '以太': '侵蚀',
+};
+
+const anomalyName = computed(() => {
+  if (!props.battleService) return '未知';
+  const agent = props.battleService.getFrontAgent();
+  if (!agent) return '未知';
+  const elementName = getElementCnName(agent.element);
+  return anomalyNameMap[elementName] || elementName;
+});
+
+const anomalyCnName = computed(() => {
+  if (!props.battleService) return '未知';
+  const agent = props.battleService.getFrontAgent();
+  if (!agent) return '未知';
+  return getElementCnName(agent.element);
+});
+
 // 计算属性集合 (Tab 2)
 const finalPropertyCollection = computed(() => {
   updateTick.value;
@@ -412,7 +448,7 @@ const calculateData = () => {
     directResult = DamageCalculatorService.calculateDirectDamageFromRatios(currentZones, baseRatios) as unknown as DirectDamageResult;
   }
   // 补全 DirectDamageResult 缺失的字段以便显示
-  directResult.base_damage = DamageCalculatorService.calculateBaseDamageZone(currentZones, baseRatios);
+  directResult.base_damage = DamageCalculatorService.calculateBaseDamageZone(currentZones, baseRatios, agent.isPenetrationAgent());
   directResult.dmg_bonus = currentZones.dmg_bonus;
   directResult.crit_zone = currentZones.crit_zone;
   directResult.def_mult = currentZones.def_mult;
@@ -438,7 +474,7 @@ const calculateData = () => {
     anomaly_buildup: 100,
     anomaly_threshold: enemyStats.getAnomalyThreshold(elementStr),
     trigger_expectation: triggerExpectation / 100, // 归一化
-    atk_zone: DamageCalculatorService.calculateBaseDamageZone(currentZones, new RatioSet()), // 近似
+    atk_zone: DamageCalculatorService.calculateBaseDamageZone(currentZones, new RatioSet(), agent.isPenetrationAgent()), // 近似
     dmg_bonus: currentZones.dmg_bonus,
     anomaly_prof_mult: currentZones.anomaly_prof_mult,
     anomaly_dmg_mult: currentZones.anomaly_dmg_mult,
@@ -472,6 +508,18 @@ const calculateData = () => {
       .map(key => availableSkills.find(s => s.key === key))
       .filter(s => s !== undefined);
 
+    // 计算烈霜伤害（星见雅专属）
+    let lieshuangExpectedDamage = 0;
+    const specialAnomalyConfig = agent.getSpecialAnomalyConfig();
+    if (specialAnomalyConfig && specialAnomalyConfig.element === 'lieshuang') {
+      // 保存积蓄区和阈值，供后续使用
+      (window as any).__lieshuangData = {
+        accumulateZone: currentZones.accumulate_zone || 0,
+        iceThreshold: enemyStats.getAnomalyThreshold('ice'),
+        ratio: specialAnomalyConfig.ratio
+      };
+    }
+
     let total = 0;
     const list = [];
 
@@ -484,15 +532,45 @@ const calculateData = () => {
       // 使用 BattleService 的完整逻辑计算总伤害（直伤+异常）
       const dmgResult = props.battleService.calculateTotalDamage(skillStats.ratio, skillStats.anomaly);
 
+      // 计算烈霜期望（星见雅专属）
+      let lieshuangExpectedDamage = 0;
+      const specialAnomalyConfig = agent.getSpecialAnomalyConfig();
+      if (specialAnomalyConfig && specialAnomalyConfig.element === 'lieshuang') {
+        const lieshuangData = (window as any).__lieshuangData;
+        if (lieshuangData) {
+          // 计算实际积蓄 = 技能积蓄 × 积蓄区
+          const actualAnomalyBuildup = skillStats.anomaly * lieshuangData.accumulateZone;
+
+          // 触发期望 = 实际积蓄 / 冰异常阈值
+          const anomalyTriggerExpectation = actualAnomalyBuildup / lieshuangData.iceThreshold;
+
+          // 计算烈霜期望
+          const lieshuangDamage = DamageCalculatorService.calculateLieshuangDamage(
+            currentZones,
+            enemyStats,
+            anomalyTriggerExpectation,
+            lieshuangData.ratio
+          );
+          lieshuangExpectedDamage = lieshuangDamage.damage_expected;
+        }
+      }
+
+      // 添加烈霜期望到伤害结果
+      const dmgResultWithLieshuang = {
+        ...dmgResult,
+        lieshuangExpectedDamage: lieshuangExpectedDamage
+      };
+
       list.push({
         name: skill.name,
         ratio: skillStats.ratio,
         anomaly: skillStats.anomaly,
-        damage: dmgResult
+        damage: dmgResultWithLieshuang
       });
 
-      total += dmgResult.totalDamage;
+      total += dmgResult.totalDamage + lieshuangExpectedDamage;
     }
+
     skillDamageList.value = list;
     totalSkillDamage.value = total;
   } else {
@@ -503,11 +581,40 @@ const calculateData = () => {
       const skillStats = optimizerService.calculateSkillStats(defaultSkill.key, -1);
       const dmgResult = props.battleService.calculateTotalDamage(skillStats.ratio, skillStats.anomaly);
 
+      // 计算烈霜期望（星见雅专属）
+      let lieshuangExpectedDamage = 0;
+      const specialAnomalyConfig = agent.getSpecialAnomalyConfig();
+      if (specialAnomalyConfig && specialAnomalyConfig.element === 'lieshuang') {
+        const lieshuangData = (window as any).__lieshuangData;
+        if (lieshuangData) {
+          // 计算实际积蓄 = 技能积蓄 × 积蓄区
+          const actualAnomalyBuildup = skillStats.anomaly * lieshuangData.accumulateZone;
+
+          // 触发期望 = 实际积蓄 / 冰异常阈值
+          const anomalyTriggerExpectation = actualAnomalyBuildup / lieshuangData.iceThreshold;
+
+          // 计算烈霜期望
+          const lieshuangDamage = DamageCalculatorService.calculateLieshuangDamage(
+            currentZones,
+            enemyStats,
+            anomalyTriggerExpectation,
+            lieshuangData.ratio
+          );
+          lieshuangExpectedDamage = lieshuangDamage.damage_expected;
+        }
+      }
+
+      // 添加烈霜期望到伤害结果
+      const dmgResultWithLieshuang = {
+        ...dmgResult,
+        lieshuangExpectedDamage: lieshuangExpectedDamage
+      };
+
       skillDamageList.value = [{
         name: `${defaultSkill.name} (默认预览)`,
         ratio: skillStats.ratio,
         anomaly: skillStats.anomaly,
-        damage: dmgResult
+        damage: dmgResultWithLieshuang
       }];
     }
   }

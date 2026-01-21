@@ -86,9 +86,22 @@ export function generateSkill(
   // 生成所有段
   const segments: SkillSegment[] = [];
 
+  // 处理 Param 可能是数组或对象的情况
+  let paramArray: any[];
+  if (Array.isArray(descriptionItem.Param)) {
+    paramArray = descriptionItem.Param;
+  } else {
+    // 如果 Param 是对象，将其转换为数组
+    paramArray = [descriptionItem.Param];
+  }
+
   // 遍历 Param 数组，提取伤害倍率和失衡倍率
-  for (const paramItem of descriptionItem.Param) {
+  for (const paramItem of paramArray) {
+    if (!paramItem.Desc) continue;
+    
     const descMatch = paramItem.Desc.match(/\{Skill:(\d+), Prop:(\d+)\}/);
+    if (!descMatch) continue;
+    
     const propId = parseInt(descMatch?.[2] || '0');
 
     // 根据属性类型生成对应的段
@@ -107,7 +120,7 @@ export function generateSkill(
 
   // 检查是否有能量消耗（如强化特殊技）
   let spConsume: number | undefined;
-  const consumeParam = descriptionItem.Param.find((p: any) => p.Name === '能量消耗');
+  const consumeParam = paramArray.find((p: any) => p.Name === '能量消耗');
   if (consumeParam && consumeParam.Desc) {
     const consumeMatch = consumeParam.Desc.match(/(\d+)点/);
     spConsume = consumeMatch ? parseInt(consumeMatch[1]) : undefined;
@@ -144,7 +157,7 @@ export function generateSkillSet(
   // 处理普通攻击
   if (skillData.Basic?.Description) {
     for (const descItem of skillData.Basic.Description) {
-      if (descItem.Param) {
+      if (descItem.Param && descItem.Param.length > 0) {
         const skill = generateSkill(descItem, SkillCategory.BASIC, skillLevels.normal || 1);
         skillSet.basic.push(skill);
       }
@@ -154,7 +167,7 @@ export function generateSkillSet(
   // 处理闪避
   if (skillData.Dodge?.Description) {
     for (const descItem of skillData.Dodge.Description) {
-      if (descItem.Param) {
+      if (descItem.Param && descItem.Param.length > 0) {
         const skill = generateSkill(descItem, SkillCategory.DODGE, skillLevels.dodge || 1);
         skillSet.dodge.push(skill);
       }
@@ -164,7 +177,7 @@ export function generateSkillSet(
   // 处理特殊技
   if (skillData.Special?.Description) {
     for (const descItem of skillData.Special.Description) {
-      if (descItem.Param) {
+      if (descItem.Param && descItem.Param.length > 0) {
         const skill = generateSkill(descItem, SkillCategory.SPECIAL, skillLevels.special || 1);
         skillSet.special.push(skill);
       }
@@ -174,7 +187,7 @@ export function generateSkillSet(
   // 处理连携技
   if (skillData.Chain?.Description) {
     for (const descItem of skillData.Chain.Description) {
-      if (descItem.Param) {
+      if (descItem.Param && descItem.Param.length > 0) {
         const skill = generateSkill(descItem, SkillCategory.CHAIN, skillLevels.chain || 1);
         skillSet.chain.push(skill);
       }
@@ -184,7 +197,7 @@ export function generateSkillSet(
   // 处理支援
   if (skillData.Assist?.Description) {
     for (const descItem of skillData.Assist.Description) {
-      if (descItem.Param) {
+      if (descItem.Param && descItem.Param.length > 0) {
         const skill = generateSkill(descItem, SkillCategory.ASSIST, skillLevels.assist || 1);
         skillSet.assist.push(skill);
       }

@@ -113,7 +113,7 @@ const gameDataStore = useGameDataStore();
 const battleService = new BattleService();
 
 // 状态
-const selectedTeamId = ref('');
+const selectedTeamId = ref(localStorage.getItem('optimizer_selected_team_id') || '');
 const targetAgentId = ref('');
 const selectedSkillKeys = ref<string[]>([]);
 const isRunning = ref(false);
@@ -343,18 +343,12 @@ const loadTeamOptimizationConfig = (teamId: string) => {
       saveStore.updateTeamOptimizationConfig(teamId, config);
     }
 
-    console.log(`[Optimizer] 加载配置前 - activeDiskSets:`, constraints.value.activeDiskSets);
-    console.log(`[Optimizer] 加载配置前 - effectiveStats:`, constraints.value.effectiveStatPruning?.effectiveStats);
-
     // 应用配置到界面
     constraints.value = config.constraints;
     selectedSkillKeys.value = config.selectedSkillKeys;
     disabledBuffIds.value = config.disabledBuffIds;
     selectedEnemyId.value = config.selectedEnemyId;
 
-    console.log(`[Optimizer] 加载配置后 - activeDiskSets:`, constraints.value.activeDiskSets);
-    console.log(`[Optimizer] 加载配置后 - effectiveStats:`, constraints.value.effectiveStatPruning?.effectiveStats);
-    console.log(`[Optimizer] 已加载队伍 ${team.name} 的配置 - selectedEnemyId: ${config.selectedEnemyId}`);
   } catch (e) {
     console.error('[Optimizer] Failed to load team config:', e);
   } finally {
@@ -557,7 +551,7 @@ const handleEquipBuild = (build: OptimizationBuild) => {
 
     // 刷新战斗信息卡以显示新的属性
     battleInfoCardRef.value?.refresh();
-    
+
     // 显示成功提示 (这里简单用 alert 或者 console，实际项目可能有 Toast 组件)
     console.log(`装备已更新，成功装备 ${successCount} 个驱动盘`);
   } catch (e) {
@@ -642,7 +636,6 @@ const handleEquipBuild = (build: OptimizationBuild) => {
         discs: prunedDiscs.value,  // 使用剪枝后的驱动盘
         constraints: constraints.value,
         externalBuffs: optimizerService.getTeammateBuffs(),
-        excludedDiscIds: excludedDiscIds.value,  // 排除的驱动盘ID列表
         topN: 10,
         callbacks: {
           onProgress: (p) => {
@@ -688,9 +681,11 @@ onMounted(async () => {
   optimizerService.initializeFastWorkers(workerCount.value);
   // 4. 加载预设
   presets.value = optimizerService.loadPresets();
-  // 5. 自动选择第一个队伍
-  if (teams.value.length > 0 && !selectedTeamId.value) {
-    selectedTeamId.value = teams.value[0].id;
+  // 5. 自动选择第一个队伍或恢复已保存的队伍
+  if (teams.value.length > 0) {
+    if (!selectedTeamId.value) {
+      selectedTeamId.value = teams.value[0].id;
+    }
     await onTeamChange();
   }
 });
@@ -704,6 +699,7 @@ watch([constraints, selectedSkillKeys, disabledBuffIds, selectedEnemyId], () => 
 
 // 监听队伍切换
 watch(selectedTeamId, () => {
+  localStorage.setItem('optimizer_selected_team_id', selectedTeamId.value);
   onTeamChange();
 });
 

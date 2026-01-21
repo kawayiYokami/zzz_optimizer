@@ -49,7 +49,7 @@
 import { computed } from 'vue';
 import { Agent } from '../../model/agent';
 import { iconService } from '../../services/icon.service';
-import type { AgentSkillSegment } from '../../model/skill';
+import type { SkillSegment } from '../../model/skill';
 
 const props = defineProps<{
   agent: Agent;
@@ -94,19 +94,24 @@ const groupedSkills = computed(() => {
   }
 
   // 如果有技能数据，填充到对应分类
-  if (props.agent.agentSkills && props.agent.agentSkills.skills.size > 0) {
-    for (const [skillName, skill] of props.agent.agentSkills.skills.entries()) {
-      let skillType = '';
-      for (const [keyword, type] of Object.entries(skillTypeMap)) {
-        if (skillName.includes(keyword)) {
-          skillType = type;
-          break;
-        }
-      }
+  if (props.agent.skillSet) {
+    const skillTypeMapping: Record<string, string> = {
+      'basic': 'normal',
+      'dodge': 'dodge',
+      'special': 'special',
+      'chain': 'chain',
+      'assist': 'assist',
+    };
 
-      // 只处理已定义的分类
-      if (skillType && groups.has(skillType)) {
-        groups.get(skillType)!.skills.push({ name: skillName, segments: skill.segments });
+    // 遍历 skillTypeMapping 的键（category），从 skillSet 中获取对应的技能数组
+    for (const [category, type] of Object.entries(skillTypeMapping)) {
+      if (groups.has(type)) {
+        const skills = props.agent.skillSet[category as keyof typeof props.agent.skillSet];
+        if (skills && Array.isArray(skills)) {
+          for (const skill of skills) {
+            groups.get(type)!.skills.push({ name: skill.name, segments: skill.segments });
+          }
+        }
       }
     }
   }
@@ -114,17 +119,17 @@ const groupedSkills = computed(() => {
   return Array.from(groups.values());
 });
 
-function calculateDamage(seg: AgentSkillSegment, level: number): string {
-  const damage = seg.damageRatio + seg.damageRatioGrowth * (level - 1);
-  return (damage * 100).toFixed(1);
+function calculateDamage(seg: SkillSegment): string {
+  // 新数据格式中，damageRatio 已经是计算好的值
+  return (seg.damageRatio * 100).toFixed(1);
 }
 
-function calculateStun(seg: AgentSkillSegment, level: number): string {
-  const stun = seg.stunRatio + seg.stunRatioGrowth * (level - 1);
-  return (stun * 100).toFixed(1);
+function calculateStun(seg: SkillSegment): string {
+  // 新数据格式中，stunRatio 已经是计算好的值
+  return (seg.stunRatio * 100).toFixed(1);
 }
 
-function updateLevel(skillType: string, event: Event): void {
+async function updateLevel(skillType: string, event: Event): Promise<void> {
   const target = event.target as HTMLInputElement;
   const newLevel = parseInt(target.value);
 
@@ -139,7 +144,7 @@ function updateLevel(skillType: string, event: Event): void {
     const currentLevel = props.agent.getSkillLevel(skillType);
     const delta = newLevel - currentLevel;
     if (delta !== 0) {
-      props.agent.adjustSkillLevel(skillType as 'normal' | 'dodge' | 'assist' | 'special' | 'chain', delta);
+      await props.agent.adjustSkillLevel(skillType as 'normal' | 'dodge' | 'assist' | 'special' | 'chain', delta);
     }
   }
 }

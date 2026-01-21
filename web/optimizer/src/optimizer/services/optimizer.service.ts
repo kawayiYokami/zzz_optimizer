@@ -299,38 +299,38 @@ export class OptimizerService {
      */
     getAvailableSkills(): AgentSkillOption[] {
         const agent = this.getTargetAgent();
-        if (!agent || !agent.agentSkills) return [];
+        if (!agent || !agent.skillSet) return [];
 
         const options: AgentSkillOption[] = [];
 
-        // 遍历所有技能
-        for (const [key, skill] of agent.agentSkills.skills) {
-            // 推断类型
-            let type = 'normal';
-            for (const [namePart, typeKey] of Object.entries(SKILL_TYPE_TO_KEY)) {
-                if (key.includes(namePart)) {
-                    type = typeKey;
-                    break;
+        // 遍历所有技能分类
+        const skillCategories = [
+            { skills: agent.skillSet.basic, type: 'normal' },
+            { skills: agent.skillSet.dodge, type: 'dodge' },
+            { skills: agent.skillSet.special, type: 'special' },
+            { skills: agent.skillSet.chain, type: 'chain' },
+            { skills: agent.skillSet.assist, type: 'assist' },
+        ];
+
+        for (const { skills, type } of skillCategories) {
+            for (const skill of skills) {
+                // 计算默认倍率（已计算，直接累加）
+                let ratio = 0;
+                let anomaly = 0;
+
+                for (const segment of skill.segments) {
+                    ratio += segment.damageRatio;
+                    anomaly += segment.anomalyBuildup || 0;
                 }
+
+                options.push({
+                    key: skill.name,
+                    name: skill.name,
+                    type: type,
+                    defaultRatio: ratio,
+                    defaultAnomaly: anomaly
+                });
             }
-
-            // 计算默认倍率（0级，全段）
-            let ratio = 0;
-            let anomaly = 0;
-            const level = agent.getSkillLevel(type);
-
-            for (const segment of skill.segments) {
-                ratio += segment.damageRatio + (level - 1) * segment.damageRatioGrowth;
-                anomaly += segment.anomalyBuildup || 0;
-            }
-
-            options.push({
-                key,
-                name: key,
-                type: type,
-                defaultRatio: ratio,
-                defaultAnomaly: anomaly
-            });
         }
 
         return options;
@@ -341,27 +341,34 @@ export class OptimizerService {
      */
     calculateSkillStats(skillKey: string, segmentIndex: number): { ratio: number; anomaly: number } {
         const agent = this.getTargetAgent();
-        if (!agent || !agent.agentSkills) return { ratio: 0, anomaly: 0 };
+        if (!agent || !agent.skillSet) return { ratio: 0, anomaly: 0 };
 
-        const skill = agent.agentSkills.skills.get(skillKey);
-        if (!skill) return { ratio: 0, anomaly: 0 };
+        // 查找技能
+        let skill: any = null;
+        const skillCategories = [
+            agent.skillSet.basic,
+            agent.skillSet.dodge,
+            agent.skillSet.special,
+            agent.skillSet.chain,
+            agent.skillSet.assist,
+        ];
 
-        // 推断类型
-        let type = 'normal';
-        for (const [namePart, typeKey] of Object.entries(SKILL_TYPE_TO_KEY)) {
-            if (skillKey.includes(namePart)) {
-                type = typeKey;
+        for (const skills of skillCategories) {
+            const found = skills.find(s => s.name === skillKey);
+            if (found) {
+                skill = found;
                 break;
             }
         }
-        const level = agent.getSkillLevel(type);
+
+        if (!skill) return { ratio: 0, anomaly: 0 };
 
         // 如果是 -1，计算全套
         if (segmentIndex === -1) {
             let totalRatio = 0;
             let totalAnomaly = 0;
             for (const segment of skill.segments) {
-                totalRatio += segment.damageRatio + (level - 1) * segment.damageRatioGrowth;
+                totalRatio += segment.damageRatio;
                 totalAnomaly += segment.anomalyBuildup || 0;
             }
             return { ratio: totalRatio, anomaly: totalAnomaly };
@@ -370,7 +377,7 @@ export class OptimizerService {
             const segment = skill.segments[segmentIndex];
             if (!segment) return { ratio: 0, anomaly: 0 };
 
-            const ratio = segment.damageRatio + (level - 1) * segment.damageRatioGrowth;
+            const ratio = segment.damageRatio;
             const anomaly = segment.anomalyBuildup || 0;
             return { ratio, anomaly };
         }

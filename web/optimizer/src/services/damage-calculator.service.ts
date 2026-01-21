@@ -66,7 +66,7 @@ export interface DirectDamageResult {
   distance_mult: number; // 距离衰减区
   is_penetration: boolean; // 是否贯穿伤害
   penetration_dmg_bonus: number; // 贯穿增伤
-  
+
   // 新增直伤专用乘区
   skill_ratio_mult: number; // 技能倍率区
   special_dmg_mult: number; // 特殊技能增伤区
@@ -93,7 +93,7 @@ export interface AnomalyDamageResult {
   res_mult: number; // 抗性区
   dmg_taken_mult: number; // 承伤区
   stun_vuln_mult: number; // 失衡易伤区
-  
+
   // 新增异常专用乘区
   anomaly_buildup_zone: number; // 积蓄区
   anomaly_mastery_zone: number; // 掌控区
@@ -114,21 +114,18 @@ export class DamageCalculatorService {
 
   /**
    * 计算基础伤害区
-   * 公式：基础伤害区 = Σ(属性 × 倍率)
+   * 公式：基础伤害区 = 基础属性 × 倍率
+   * @param zones 乘区集合
+   * @param ratios 倍率集合
+   * @param isPenetration 是否为命破角色（使用贯穿伤害）
    */
-  static calculateBaseDamageZone(zones: ZoneCollection, ratios: RatioSet): number {
-    const atk = zones.getFinal(PropertyType.ATK_BASE, 0);
-    const def = zones.getFinal(PropertyType.DEF_BASE, 0);
-    const hp = zones.getFinal(PropertyType.HP_BASE, 0);
-    const pen = zones.getFinal(PropertyType.SHEER_FORCE, 0);
-    const anomProf = zones.getFinal(PropertyType.ANOM_PROF, 0);
-    
-    return atk * ratios.atk_ratio
-         + def * ratios.def_ratio
-         + hp * ratios.hp_ratio
-         + pen * ratios.pen_ratio
-         + anomProf * ratios.anom_prof_ratio
-         + atk * ratios.anom_atk_ratio;
+  static calculateBaseDamageZone(zones: ZoneCollection, ratios: RatioSet, isPenetration: boolean = false): number {
+    // 命破角色使用贯穿力，否则使用攻击力
+    const baseStat = isPenetration
+      ? zones.getFinal(PropertyType.SHEER_FORCE, 0)
+      : zones.getFinal(PropertyType.ATK_BASE, 0) + zones.getFinal(PropertyType.ATK, 0);
+
+    return baseStat * ratios.atk_ratio;
   }
 
   /**
@@ -136,11 +133,11 @@ export class DamageCalculatorService {
    */
   static calculateDmgBonusFromZones(zones: ZoneCollection, ratios: RatioSet): number {
     let bonus = 1.0;
-    
+
     // 通用增伤
     bonus += zones.getFinal(PropertyType.DMG_, 0);
     bonus += zones.getFinal(PropertyType.COMMON_DMG_, 0);
-    
+
     // 元素增伤
     const elementDmgMap: Record<ElementType, PropertyType> = {
       [ElementType.PHYSICAL]: PropertyType.PHYSICAL_DMG_,
@@ -150,7 +147,7 @@ export class DamageCalculatorService {
       [ElementType.ETHER]: PropertyType.ETHER_DMG_,
     };
     bonus += zones.getFinal(elementDmgMap[ratios.element], 0);
-    
+
     // 技能类型增伤
     const skillDmgMap: Record<SkillType, PropertyType> = {
       [SkillType.NORMAL_ATK]: PropertyType.NORMAL_ATK_DMG_,
@@ -166,7 +163,7 @@ export class DamageCalculatorService {
     for (const skillType of ratios.skill_types) {
       bonus += zones.getFinal(skillDmgMap[skillType], 0);
     }
-    
+
     return Math.max(0, Math.min(6, bonus));
   }
 
@@ -265,7 +262,7 @@ export class DamageCalculatorService {
    */
   static calculateAnomalyBuildupZone(zones: ZoneCollection, element: string): number {
     const buildupEfficiency = zones.getFinal(PropertyType.ANOM_BUILDUP_, 0);
-    
+
     // 元素特定积蓄效率
     const elementBuildupMap: Record<string, PropertyType> = {
       physical: PropertyType.PHYSICAL_ANOMALY_BUILDUP_,
@@ -277,7 +274,7 @@ export class DamageCalculatorService {
     const elBuildupEfficiency = zones.getFinal(elementBuildupMap[element.toLowerCase()] || PropertyType.PHYSICAL_ANOMALY_BUILDUP_, 0);
 
     const buildupRes = zones.getFinal(PropertyType.ANOM_BUILDUP_RES_, 0);
-    
+
     const elementBuildupResMap: Record<string, PropertyType> = {
       physical: PropertyType.PHYSICAL_ANOM_BUILDUP_RES_,
       fire: PropertyType.FIRE_ANOM_BUILDUP_RES_,
@@ -361,10 +358,10 @@ export class DamageCalculatorService {
     const base = this.calculateBaseDamageZone(zones, ratios);
     const dmgBonus = this.calculateDmgBonusFromZones(zones, ratios);
     const mult = dmgBonus * zones.def_mult * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult;
-    
+
     const critDmg = zones.getFinal(PropertyType.CRIT_DMG_, 0);
     const critRate = Math.min(1, Math.max(0, zones.getFinal(PropertyType.CRIT_, 0)));
-    
+
     return {
       damage_no_crit: Math.ceil(base * mult),
       damage_crit: Math.ceil(base * mult * (1 + critDmg)),
@@ -397,10 +394,10 @@ export class DamageCalculatorService {
     const dmgBonus = this.calculateDmgBonusFromZones(zones, ratios);
     const penBonus = 1 + zones.getFinal(PropertyType.SHEER_DMG_, 0);
     const mult = dmgBonus * penBonus * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult;
-    
+
     const critDmg = zones.getFinal(PropertyType.CRIT_DMG_, 0);
     const critRate = Math.min(1, Math.max(0, zones.getFinal(PropertyType.CRIT_, 0)));
-    
+
     return {
       damage_no_crit: Math.ceil(base * mult),
       damage_crit: Math.ceil(base * mult * (1 + critDmg)),
@@ -435,10 +432,10 @@ export class DamageCalculatorService {
     const anomDmgBonus = 1 + zones.getFinal(PropertyType.ANOMALY_DMG_, 0);
     const levelMult = 1 + (1 / 59) * (level - 1);
     const mult = dmgBonus * anomProf * zones.def_mult * zones.res_mult * zones.dmg_taken_mult * zones.stun_vuln_mult * levelMult * anomDmgBonus;
-    
+
     const anomCritDmg = zones.getFinal(PropertyType.ANOM_CRIT_DMG_, 0);
     const anomCritRate = Math.min(1, Math.max(0, zones.getFinal(PropertyType.ANOM_CRIT_, 0)));
-    
+
     return {
       damage_no_crit: Math.ceil(base * mult),
       damage_crit: Math.ceil(base * mult * (1 + anomCritDmg)),
@@ -452,7 +449,7 @@ export class DamageCalculatorService {
   static updateAllZones(props: PropertyCollection, enemyStats: EnemyStats, element: string): ZoneCollection {
     const zones = new ZoneCollection();
     zones.updateFromPropertyCollection(props);
-    
+
     const dmgBonus = zones.getFinal(PropertyType.DMG_, 0);
     const elementDmgMap: Record<string, PropertyType> = {
       physical: PropertyType.PHYSICAL_DMG_,
@@ -465,10 +462,10 @@ export class DamageCalculatorService {
     const elementDmgBonus = zones.getFinal(elementProp, 0);
     zones.dmg_bonus = 1.0 + dmgBonus + elementDmgBonus;
     zones.dmg_bonus = Math.max(0.0, Math.min(6.0, zones.dmg_bonus));
-    
+
     // 计算暴击区
     zones.crit_zone = this.calculateCritZone(zones);
-    
+
     // 攻击方等级基数（需要传入攻击方等级，暂用60级）
     const attackerLevel = 60;
 
@@ -494,7 +491,7 @@ export class DamageCalculatorService {
 
     // 计算等级区
     zones.level_mult = this.calculateLevelMultiplier(attackerLevel);
-    
+
     return zones;
   }
 
@@ -505,13 +502,13 @@ export class DamageCalculatorService {
     const base = zones.base_damage_zone;
     const mult = zones.dmg_bonus * zones.def_mult * zones.res_mult
                * zones.dmg_taken_mult * zones.stun_vuln_mult * zones.distance_mult;
-    
+
     const critDmg = zones.getFinal(PropertyType.CRIT_DMG_, 0);
-    
+
     zones.direct_damage_no_crit = Math.ceil(base * mult);
     zones.direct_damage_crit = Math.ceil(base * mult * (1 + critDmg));
     zones.direct_damage_expected = Math.ceil(base * mult * zones.crit_zone);
-    
+
     return zones;
   }
 
@@ -545,10 +542,10 @@ export class DamageCalculatorService {
   static calculateStunVulnerabilityMultiplier(enemy: EnemyStats, zones: ZoneCollection): number {
     const buffDazeRed = zones.getFinal(PropertyType.DAZE_RED_, 0);
     const buffEnemyDazeVuln = zones.getFinal(PropertyType.ENEMY_DAZE_VULNERABILITY_, 0);
-    
+
     // 合并两种失衡易伤属性
     const totalDazeVuln = buffDazeRed + buffEnemyDazeVuln;
-    
+
     if (enemy.is_stunned) {
       const multiplier = 1.0 + enemy.stun_vulnerability + totalDazeVuln;
       return Math.max(0.2, Math.min(5.0, multiplier));
@@ -658,7 +655,7 @@ export class DamageCalculatorService {
   } {
     const dot = ANOMALY_DOT_RATIOS[element.toLowerCase()] || { ratio: 0, interval: 0 };
     const duration = ANOMALY_DEFAULT_DURATION[element.toLowerCase()] || 10;
-    
+
     // 计算总伤害倍率
     let totalRatio = 0;
     if (dot.interval > 0) {
@@ -669,10 +666,49 @@ export class DamageCalculatorService {
       // 一次性伤害
       totalRatio = dot.ratio;
     }
-    
+
     return { ratio: dot.ratio, interval: dot.interval, duration, totalRatio };
   }
 
+  /**
+   * 烈霜伤害计算（星见雅专属）
+   *
+   * 烈霜是 1500% 冰属性直伤，每次触发异常时额外触发
+   * 期望计算 = 烈霜直伤 × 异常触发期望
+   *
+   * @param zones 乘区集合
+   * @param enemyStats 敌人属性
+   * @param anomalyTriggerExpectation 异常触发期望（0-1）
+   * @param ratio 烈霜倍率（默认 15.0 = 1500%）
+   * @returns 直伤结果（包含期望伤害）
+   */
+  static calculateLieshuangDamage(
+    zones: ZoneCollection,
+    enemyStats: EnemyStats,
+    anomalyTriggerExpectation: number,
+    ratio: number = 15.0
+  ): DirectDamageResult {
+
+    // 创建冰属性倍率集合
+    const ratios = new RatioSet();
+    ratios.atk_ratio = ratio;
+    ratios.element = ElementType.ICE;
+
+    // 计算烈霜直伤（使用普通直伤计算）
+    const directDamage = this.calculateDirectDamageFromRatios(zones, ratios);
+
+    // 期望计算 = 烈霜直伤 × 异常触发期望
+    directDamage.damage_expected = Math.ceil(directDamage.damage_expected * anomalyTriggerExpectation);
+
+    return directDamage;
+  }
+
+  /**
+   * 格式化异常伤害结果
+   *
+   * @param result 异常伤害计算结果
+   * @returns 格式化字符串
+   */
   static formatAnomalyDamageResult(result: AnomalyDamageResult): string {
     const lines: string[] = [];
 
@@ -735,54 +771,52 @@ export class DamageCalculatorService {
     anomalyBase: number;   // 异常基础区（总伤）
   } {
     // 1. 获取技能数据
-    if (!agent.agentSkills) {
+    if (!agent.skillSet) {
       return { directBase: 0, anomalyBase: 0 };
     }
 
-    const skill = agent.agentSkills.skills.get(skillKey);
-    if (!skill || !skill.segments || skill.segments.length === 0) {
-      return { directBase: 0, anomalyBase: 0 };
-    }
+    // 查找技能
+    let skill: any = null;
+    const skillCategories = [
+      agent.skillSet.basic,
+      agent.skillSet.dodge,
+      agent.skillSet.special,
+      agent.skillSet.chain,
+      agent.skillSet.assist,
+    ];
 
-    // 2. 推断技能类型
-    const SKILL_TYPE_TO_KEY: Record<string, string> = {
-      '普通攻击': 'normal',
-      '闪避': 'dodge',
-      '特殊技': 'special',
-      '强化特殊技': 'special',
-      '连携技': 'chain',
-      '终结技': 'chain',
-      '核心被动': 'core',
-      '额外的能力': 'core'
-    };
-
-    let skillType = 'normal';
-    for (const [namePart, typeKey] of Object.entries(SKILL_TYPE_TO_KEY)) {
-      if (skillKey.includes(namePart)) {
-        skillType = typeKey;
+    for (const skills of skillCategories) {
+      const found = skills.find((s: any) => s.name === skillKey);
+      if (found) {
+        skill = found;
         break;
       }
     }
 
-    // 3. 获取技能等级
-    const level = agent.getSkillLevel(skillType);
-
-    // 4. 计算总直伤倍率
-    let totalDirectRatio = 0;
-    for (const segment of skill.segments) {
-      totalDirectRatio += segment.damageRatio + (level - 1) * segment.damageRatioGrowth;
+    if (!skill || !skill.segments || skill.segments.length === 0) {
+      return { directBase: 0, anomalyBase: 0 };
     }
 
-    // 5. 计算直伤基础区
-    const atk = zones.getFinal(PropertyType.ATK_BASE, 0) + zones.getFinal(PropertyType.ATK, 0);
-    const directBase = atk * totalDirectRatio;
+    // 2. 计算该技能的总直伤倍率
+    let totalDirectRatio = 0;
+    for (const segment of skill.segments) {
+      totalDirectRatio += segment.damageRatio;
+    }
 
-    // 6. 获取异常倍率（总伤）
+    // 3. 计算直伤基础区（命破角色使用贯穿力，否则使用攻击力）
+    const atk = zones.getFinal(PropertyType.ATK_BASE, 0) + zones.getFinal(PropertyType.ATK, 0);
+    const pen = zones.getFinal(PropertyType.SHEER_FORCE, 0);
+    const isPenetration = agent.isPenetrationAgent ? agent.isPenetrationAgent() : false;
+    const baseStat = isPenetration ? pen : atk;
+
+    const directBase = baseStat * totalDirectRatio;
+
+    // 4. 获取异常倍率（总伤）
     const elementStr = ElementType[agent.element].toLowerCase();
     const anomParams = this.getAnomalyDotParams(elementStr);
 
-    // 7. 计算异常基础区
-    const anomalyBase = atk * anomParams.totalRatio;
+    // 5. 计算异常基础区
+    const anomalyBase = baseStat * anomParams.totalRatio;
 
     return { directBase, anomalyBase };
   }
@@ -807,17 +841,33 @@ export class DamageCalculatorService {
     directBase: number;    // 直伤基础区
     anomalyBase: number;   // 异常基础区（总伤）
   } {
-    // 1. 获取角色的第一个技能
-    if (!agent.agentSkills || agent.agentSkills.skills.size === 0) {
+    // 1. 获取技能数据
+    if (!agent.skillSet) {
       return { directBase: 0, anomalyBase: 0 };
     }
 
-    const firstSkillKey = agent.agentSkills.skills.keys().next().value;
-    if (!firstSkillKey) {
+    // 获取第一个技能
+    let skill: any = null;
+    const skillCategories = [
+      agent.skillSet.basic,
+      agent.skillSet.dodge,
+      agent.skillSet.special,
+      agent.skillSet.chain,
+      agent.skillSet.assist,
+    ];
+
+    for (const skills of skillCategories) {
+      if (skills.length > 0) {
+        skill = skills[0];
+        break;
+      }
+    }
+
+    if (!skill) {
       return { directBase: 0, anomalyBase: 0 };
     }
 
     // 2. 调用 calculateSkillBaseZones 计算基础区
-    return this.calculateSkillBaseZones(agent, firstSkillKey, zones);
+    return this.calculateSkillBaseZones(agent, skill.name, zones);
   }
 }

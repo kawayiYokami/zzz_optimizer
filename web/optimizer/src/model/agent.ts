@@ -12,13 +12,14 @@ const PENETRATION_AGENT_IDS = [
 
 // 特殊异常配置（如烈霜）
 const SPECIAL_ANOMALY_AGENTS: Record<string, { element: string; ratio: number }> = {
-  '1371': { element: 'lieshuang', ratio: 15.0 }, // 星见雅 烈霜 1500%
+  '1091': { element: 'lieshuang', ratio: 15.0 }, // 星见雅 烈霜 1500%
 };
 import { CombatStats } from './combat-stats';
 import { Buff, ConversionBuff, BuffSource, BuffTarget, Conversion } from './buff';
 import type { ZodCharacterData } from './save-data-zod';
-import type { AgentSkillSet, SkillSet } from './skill';
+import type { SkillSet } from './skill';
 import type { dataLoaderService } from '../services/data-loader.service';
+import { dataLoaderService as dataLoader } from '../services/data-loader.service';
 import type { WEngine } from './wengine';
 import type { DriveDisk } from './drive-disk';
 import { DriveDiskSetBonus, DriveDiskPosition } from './drive-disk';
@@ -137,9 +138,6 @@ export class Agent {
   talent_buffs: Buff[] = [];
   conversion_buffs: ConversionBuff[] = [];
   potential_buffs: Buff[] = [];
-
-  // 技能数据（从游戏数据加载）
-  agentSkills: AgentSkillSet | null = null;
 
   // 新的技能集合（已根据等级计算）
   skillSet: SkillSet | null = null;
@@ -673,18 +671,6 @@ export class Agent {
       console.warn(`[fromZodData] 核心技能等级超出范围: ${zodData.core} (有效范围: 1-7)`);
     }
 
-    // 加载技能数据
-    const agentName = agent.name_cn || agent.name_en;
-    agent.agentSkills = dataLoader.getAgentSkills(agentName);
-
-    // 尝试使用游戏ID作为备用名称加载技能
-    if (!agent.agentSkills || agent.agentSkills.skills.size === 0) {
-      const skillsByGameId = dataLoader.getAgentSkills(agent.game_id);
-      if (skillsByGameId) {
-        agent.agentSkills = skillsByGameId;
-      }
-    }
-
     // 加载新的技能集合（从原始游戏数据）
     const skillLevels = {
       normal: agent.skills.normal,
@@ -696,6 +682,20 @@ export class Agent {
     agent.skillSet = await dataLoader.loadAgentSkillsFromJson(agent.game_id, skillLevels);
 
     return agent;
+  }
+
+  /**
+   * 重新加载技能集合（用于技能等级变化时更新倍率）
+   */
+  async loadSkillSet(): Promise<void> {
+    const skillLevels = {
+      normal: this.skills.normal,
+      dodge: this.skills.dodge,
+      assist: this.skills.assist,
+      special: this.skills.special,
+      chain: this.skills.chain,
+    };
+    this.skillSet = await dataLoader.loadAgentSkillsFromJson(this.game_id, skillLevels);
   }
 
   /**
@@ -1018,24 +1018,6 @@ export class Agent {
   }
 
   /**
-   * 获取指定技能段的最终倍率
-   * 公式：最终倍率 = 基础倍率 + (技能等级 - 1) * 成长倍率
-   * @param skillType 技能类型 (normal/dodge/assist/special/chain)
-   * @param segmentIndex 技能段索引
-   */
-  getSkillMultiplier(skillType: string, segmentIndex: number = 0): number {
-    if (!this.agentSkills) return 0;
-
-    const skill = this.agentSkills.skills.get(skillType);
-    if (!skill || !skill.segments[segmentIndex]) return 0;
-
-    const segment = skill.segments[segmentIndex];
-    const level = this.getSkillLevel(skillType);
-
-    return segment.damageRatio + (level - 1) * segment.damageRatioGrowth;
-  }
-
-  /**
    * 获取新的技能集合
    */
   getSkillSet(): SkillSet | null {
@@ -1095,7 +1077,7 @@ export class Agent {
   /**
    * 调整技能等级 (1-12)
    */
-  adjustSkillLevel(skillType: 'normal' | 'dodge' | 'assist' | 'special' | 'chain', delta: number): void {
+  async adjustSkillLevel(skillType: 'normal' | 'dodge' | 'assist' | 'special' | 'chain', delta: number): Promise<void> {
     const current = this.skills[skillType];
     const newValue = Math.max(1, Math.min(12, current + delta));
     
@@ -1109,6 +1091,9 @@ export class Agent {
         const zodKey = skillType === 'normal' ? 'basic' : skillType;
         (this._zodData as any)[zodKey] = this.skills[skillType];
       }
+
+      // 重新加载技能数据以更新倍率
+      await this.loadSkillSet();
     }
   }
 
@@ -1156,12 +1141,22 @@ export class Agent {
    * 获取所有技能的总倍率
    */
   getTotalSkillRatio(): number {
-    if (!this.agentSkills) return 0;
+    if (!this.skillSet) return 0;
 
     let total = 0;
-    for (const [skillType, skill] of this.agentSkills.skills) {
-      for (let i = 0; i < skill.segments.length; i++) {
-        total += this.getSkillMultiplier(skillType, i);
+    const skillCategories = [
+      this.skillSet.basic,
+      this.skillSet.dodge,
+      this.skillSet.special,
+      this.skillSet.chain,
+      this.skillSet.assist,
+    ];
+
+    for (const skills of skillCategories) {
+      for (const skill of skills) {
+        for (const segment of skill.segments) {
+          total += segment.damageRatio;
+        }
       }
     }
     return total;
@@ -1171,14 +1166,26 @@ export class Agent {
    * 获取所有技能的总异常积蓄
    */
   getTotalAnomalyBuildup(): number {
-    if (!this.agentSkills) return 0;
+    if (!this.skillSet) return 0;
 
     let total = 0;
-    for (const [, skill] of this.agentSkills.skills) {
-      for (const segment of skill.segments) {
-        total += segment.anomalyBuildup || 0;
+    const skillCategories = [
+      this.skillSet.basic,
+      this.skillSet.dodge,
+      this.skillSet.special,
+      this.skillSet.chain,
+      this.skillSet.assist,
+    ];
+
+    for (const skills of skillCategories) {
+      for (const skill of skills) {
+        for (const segment of skill.segments) {
+          total += segment.anomalyBuildup || 0;
+        }
       }
     }
     return total;
   }
+
+
 }
