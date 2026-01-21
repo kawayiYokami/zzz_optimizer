@@ -1019,7 +1019,6 @@ export class BattleService {
    * 从ZOD数据加载状态
    */
   async loadFromZod(data: ZodBattleData, team: Team, enemy: Enemy): Promise<void> {
-    console.log(`[BattleService] Loading from Zod data`, data);
     // 1. 设置基本实体
     await this.setTeam(team);
     this.setEnemy(enemy);
@@ -1107,7 +1106,13 @@ export class BattleService {
 
     const agent = this.team.frontAgent;
     const isPenetration = agent.isPenetrationAgent();
-    const element = ElementType[agent.element].toLowerCase();
+
+    // 获取元素类型，星见雅使用特殊元素类型'lieshuang'
+    const specialConfig = agent.getSpecialAnomalyConfig();
+    let element = ElementType[agent.element].toLowerCase();
+    if (specialConfig && specialConfig.element === 'lieshuang') {
+      element = 'lieshuang';
+    }
 
     // 获取乘区集合
     const props = this.mergeCombatProperties();
@@ -1138,20 +1143,64 @@ export class BattleService {
     const anomalyResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, anomalyRatios);
     const anomalyDamage = anomalyResult.damage_expected * triggerExpectation;
 
-    // 4. 计算紊乱伤害 (450%)
+    // 4. 计算紊乱伤害
     const disorderRatios = new RatioSet();
-    disorderRatios.atk_ratio = 4.5;
+    // 根据元素类型计算紊乱伤害倍率，异常T1=3 + 紊乱T2=7 = 10
+    const T = 7; // 紊乱时间T2=7秒
+    let disorderRatio = 4.5; // 默认450%
+
+    // 根据元素类型计算紊乱伤害倍率
+    switch (element) {
+      case 'fire': // 灼烧
+        disorderRatio = 4.5 + Math.floor(T / 0.5) * 0.5;
+        break;
+      case 'electric': // 感电
+        disorderRatio = 4.5 + Math.floor(T) * 1.25;
+        break;
+      case 'ether': // 侵蚀
+      case 'ink': // 玄墨
+        disorderRatio = 4.5 + Math.floor(T / 0.5) * 0.625;
+        break;
+      case 'ice': // 霜寒
+        disorderRatio = 4.5 + Math.floor(T) * 0.075;
+        break;
+      case 'physical': // 畏缩
+        disorderRatio = 4.5 + Math.floor(T) * 0.075;
+        break;
+      case 'lieshuang': // 烈霜
+        // 烈霜专属紊乱伤害公式：600% + floor(T)×75%
+        disorderRatio = 6.0 + Math.floor(T) * 0.75;
+        break;
+      default:
+        // 默认450%
+        disorderRatio = 4.5;
+        break;
+    }
+
+    disorderRatios.atk_ratio = disorderRatio;
+
     const disorderResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, disorderRatios);
     const disorderDamage = disorderResult.damage_expected * triggerExpectation;
 
     // 5. 特殊异常伤害（星见雅烈霜 1500%）
     let specialAnomalyDamage = 0;
-    const specialConfig = agent.getSpecialAnomalyConfig();
     if (specialConfig) {
-      const specialRatios = new RatioSet();
-      specialRatios.atk_ratio = specialConfig.ratio;
-      const specialResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, specialRatios);
-      specialAnomalyDamage = specialResult.damage_expected * triggerExpectation;
+      if (specialConfig.element === 'lieshuang') {
+        // 烈霜使用专门的计算方法
+        const lieshuangDamage = DamageCalculatorService.calculateLieshuangDamage(
+          zones,
+          enemyStats,
+          triggerExpectation,
+          specialConfig.ratio
+        );
+        specialAnomalyDamage = lieshuangDamage.damage_expected;
+      } else {
+        // 其他特殊异常使用通用方法
+        const specialRatios = new RatioSet();
+        specialRatios.atk_ratio = specialConfig.ratio;
+        const specialResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, specialRatios);
+        specialAnomalyDamage = specialResult.damage_expected * triggerExpectation;
+      }
     }
 
     return {
@@ -1171,7 +1220,9 @@ export class BattleService {
    */
   getAnomalyThreshold(element: string): number {
     if (!this.enemy) return 0;
-    return this.enemy.getCombatStats().getAnomalyThreshold(element);
+    // 烈霜(lieshuang)使用冰元素的异常阈值
+    const actualElement = element === 'lieshuang' ? 'ice' : element;
+    return this.enemy.getCombatStats().getAnomalyThreshold(actualElement);
   }
 
   /**
@@ -1181,15 +1232,18 @@ export class BattleService {
   calculateAnomalyTriggerExpectation(anomalyBuildup: number, element: string): number {
     if (!this.enemy) return 0;
 
+    // 烈霜(lieshuang)使用冰元素的异常阈值
+    const actualElement = element === 'lieshuang' ? 'ice' : element;
+
     const props = this.mergeCombatProperties();
     // 使用伤害计算服务获取完整的乘区（包含属性积蓄效率和抗性）
-    const zones = DamageCalculatorService.updateAllZones(props, this.enemy.getCombatStats(), element);
-    const enemyThreshold = this.enemy.getCombatStats().getAnomalyThreshold(element);
+    const zones = DamageCalculatorService.updateAllZones(props, this.enemy.getCombatStats(), actualElement);
+    const enemyThreshold = this.enemy.getCombatStats().getAnomalyThreshold(actualElement);
 
     // zones.accumulate_zone 已经计算了 (1 + 效率) * (1 - 抗性)
     // 这里的返回值其实是触发进度 (0.5 = 50%)
     // 但调用方可能把它作为期望次数，如果积蓄值远超阈值
-    // 这里我们返回归一化后的进度值
-    return (anomalyBuildup * zones.accumulate_zone) / enemyThreshold;
+    // 这里我们返回归一化后的进度值，限制在0到1之间
+    return Math.min(1, Math.max(0, (anomalyBuildup * zones.accumulate_zone) / enemyThreshold));
   }
 }

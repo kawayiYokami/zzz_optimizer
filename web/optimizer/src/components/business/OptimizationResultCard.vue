@@ -1,5 +1,5 @@
 <template>
-  <div class="card bg-base-100 shadow-sm min-h-[600px]">
+  <div class="card bg-base-100 shadow-sm min-h-150">
     <div class="card-body">
       <h2 class="card-title flex justify-between items-center">
         <span>优化结果</span>

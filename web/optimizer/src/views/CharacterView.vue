@@ -70,7 +70,7 @@
               @click-avatar="openFullImageModal"
             />
           </div>
-          <div v-else class="card bg-base-100 shadow-xl min-h-[600px]">
+          <div v-else class="card bg-base-100 shadow-xl min-h-150">
             <div class="card-body flex flex-col items-center justify-center h-full text-base-content/50 text-xl">
               <div class="text-6xl mb-4">👈</div>
               <p>请选择角色查看详情</p>

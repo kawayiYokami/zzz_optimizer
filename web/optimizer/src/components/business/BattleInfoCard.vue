@@ -66,34 +66,58 @@
         <div v-if="activeTab === 'damage'" class="flex-1 space-y-3 animate-fade-in">
           <!-- 技能伤害列表 -->
           <div v-if="skillDamageList.length > 0" class="space-y-2">
-            <div v-for="skill in skillDamageList" :key="skill.name" class="collapse collapse-arrow bg-base-200/50 rounded-box border border-base-200">
-              <input type="checkbox" />
-              <div class="collapse-title text-sm font-medium flex justify-between items-center pr-12">
-                <span>{{ skill.name }}</span>
-                <span class="font-mono text-primary">{{ Math.round(skill.damage.totalDamage).toLocaleString() }}</span>
-              </div>
-              <div class="collapse-content text-xs">
-                <div class="grid grid-cols-2 gap-x-4 gap-y-1 mt-2 opacity-80">
-                  <div class="flex justify-between">
-                    <span>直伤:</span>
-                    <span>{{ Math.round(skill.damage.directDamage).toLocaleString() }}</span>
+            <div v-for="skill in skillDamageList" :key="skill.name" class="card bg-base-200/50 rounded-box border border-base-200 hover:shadow-sm transition-shadow">
+              <div class="card-body p-3 space-y-2">
+                <!-- 技能名称和总伤害 -->
+                <div class="flex justify-between items-center">
+                  <h4 class="text-sm font-medium">{{ skill.name }}</h4>
+                  <span class="font-mono text-primary text-lg">{{ Math.round(skill.damage.totalDamage).toLocaleString() }}</span>
+                </div>
+                
+                <!-- 伤害明细网格 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-2">
+                  <!-- 直伤 -->
+                  <div class="flex flex-col">
+                    <span class="text-base-content/60 mb-1 text-xs">直伤</span>
+                    <span class="font-mono text-primary text-sm">{{ Math.round(skill.damage.directDamage).toLocaleString() }}</span>
                   </div>
-                  <div class="flex justify-between">
-                    <span>异常:</span>
-                    <span>{{ Math.round(skill.damage.anomalyDamage).toLocaleString() }}</span>
+                  
+                  <!-- 异常 -->
+                  <div class="flex flex-col">
+                    <span class="text-base-content/60 mb-1 text-xs">异常</span>
+                    <span class="font-mono text-secondary text-sm">{{ Math.round(skill.damage.anomalyDamage).toLocaleString() }}</span>
                   </div>
-                  <!-- 烈霜期望（星见雅的每个技能都会显示） -->
-                  <div v-if="skill.damage.lieshuangExpectedDamage > 0" class="flex justify-between text-secondary font-medium">
-                    <span>烈霜:</span>
-                    <span>{{ Math.round(skill.damage.lieshuangExpectedDamage).toLocaleString() }}</span>
+                  
+                  <!-- 紊乱 -->
+                  <div class="flex flex-col">
+                    <span class="text-base-content/60 mb-1 text-xs">紊乱</span>
+                    <span class="font-mono text-purple-500 text-sm">{{ Math.round(skill.damage.disorderDamage).toLocaleString() }}</span>
                   </div>
-                  <div class="flex justify-between">
-                    <span>倍率:</span>
-                    <span>{{ (skill.ratio * 100).toFixed(0) }}%</span>
+                  
+                  <!-- 烈霜期望 -->
+                  <div v-if="skill.damage.lieshuangExpectedDamage > 0" class="flex flex-col">
+                    <span class="text-base-content/60 mb-1 text-xs">烈霜</span>
+                    <span class="font-mono text-accent text-sm">{{ Math.round(skill.damage.lieshuangExpectedDamage).toLocaleString() }}</span>
                   </div>
+                  <div v-else-if="skill.damage.specialAnomalyDamage > 0" class="flex flex-col">
+                    <span class="text-base-content/60 mb-1 text-xs">特效</span>
+                    <span class="font-mono text-accent text-sm">{{ Math.round(skill.damage.specialAnomalyDamage).toLocaleString() }}</span>
+                  </div>
+                </div>
+                
+                <!-- 积蓄值 -->
+                <div class="flex flex-col space-y-1">
                   <div class="flex justify-between">
-                    <span>积蓄:</span>
-                    <span>{{ (skill.anomaly * (1 + (zones?.accumulate_zone || 0) - 1)).toFixed(1) }} / {{ skill.damage.anomalyThreshold.toFixed(0) }}</span>
+                    <span class="text-base-content/60 text-xs">积蓄</span>
+                    <span class="font-mono text-sm">{{ Math.min(Math.max(0, skill.anomaly * (1 + (zones?.accumulate_zone || 0) - 1)), skill.damage.anomalyThreshold).toFixed(1) }} / {{ skill.damage.anomalyThreshold.toFixed(0) }}</span>
+                  </div>
+                  <div class="w-full bg-base-300 rounded-full h-1.5">
+                    <div 
+                      class="bg-primary h-1.5 rounded-full transition-all duration-300"
+                      :style="{ 
+                        width: `${Math.min(100, (skill.anomaly * (1 + (zones?.accumulate_zone || 0) - 1)) / skill.damage.anomalyThreshold * 100)}%` 
+                      }"
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -532,33 +556,11 @@ const calculateData = () => {
       // 使用 BattleService 的完整逻辑计算总伤害（直伤+异常）
       const dmgResult = props.battleService.calculateTotalDamage(skillStats.ratio, skillStats.anomaly);
 
-      // 计算烈霜期望（星见雅专属）
-      let lieshuangExpectedDamage = 0;
-      const specialAnomalyConfig = agent.getSpecialAnomalyConfig();
-      if (specialAnomalyConfig && specialAnomalyConfig.element === 'lieshuang') {
-        const lieshuangData = (window as any).__lieshuangData;
-        if (lieshuangData) {
-          // 计算实际积蓄 = 技能积蓄 × 积蓄区
-          const actualAnomalyBuildup = skillStats.anomaly * lieshuangData.accumulateZone;
-
-          // 触发期望 = 实际积蓄 / 冰异常阈值
-          const anomalyTriggerExpectation = actualAnomalyBuildup / lieshuangData.iceThreshold;
-
-          // 计算烈霜期望
-          const lieshuangDamage = DamageCalculatorService.calculateLieshuangDamage(
-            currentZones,
-            enemyStats,
-            anomalyTriggerExpectation,
-            lieshuangData.ratio
-          );
-          lieshuangExpectedDamage = lieshuangDamage.damage_expected;
-        }
-      }
-
-      // 添加烈霜期望到伤害结果
+      // 直接使用BattleService计算的specialAnomalyDamage作为烈霜伤害
       const dmgResultWithLieshuang = {
         ...dmgResult,
-        lieshuangExpectedDamage: lieshuangExpectedDamage
+        // 将specialAnomalyDamage作为烈霜伤害显示
+        lieshuangExpectedDamage: dmgResult.specialAnomalyDamage
       };
 
       list.push({
@@ -568,7 +570,8 @@ const calculateData = () => {
         damage: dmgResultWithLieshuang
       });
 
-      total += dmgResult.totalDamage + lieshuangExpectedDamage;
+      // 直接使用BattleService计算的totalDamage，已经包含了烈霜伤害
+      total += dmgResult.totalDamage;
     }
 
     skillDamageList.value = list;
@@ -581,33 +584,11 @@ const calculateData = () => {
       const skillStats = optimizerService.calculateSkillStats(defaultSkill.key, -1);
       const dmgResult = props.battleService.calculateTotalDamage(skillStats.ratio, skillStats.anomaly);
 
-      // 计算烈霜期望（星见雅专属）
-      let lieshuangExpectedDamage = 0;
-      const specialAnomalyConfig = agent.getSpecialAnomalyConfig();
-      if (specialAnomalyConfig && specialAnomalyConfig.element === 'lieshuang') {
-        const lieshuangData = (window as any).__lieshuangData;
-        if (lieshuangData) {
-          // 计算实际积蓄 = 技能积蓄 × 积蓄区
-          const actualAnomalyBuildup = skillStats.anomaly * lieshuangData.accumulateZone;
-
-          // 触发期望 = 实际积蓄 / 冰异常阈值
-          const anomalyTriggerExpectation = actualAnomalyBuildup / lieshuangData.iceThreshold;
-
-          // 计算烈霜期望
-          const lieshuangDamage = DamageCalculatorService.calculateLieshuangDamage(
-            currentZones,
-            enemyStats,
-            anomalyTriggerExpectation,
-            lieshuangData.ratio
-          );
-          lieshuangExpectedDamage = lieshuangDamage.damage_expected;
-        }
-      }
-
-      // 添加烈霜期望到伤害结果
+      // 直接使用BattleService计算的specialAnomalyDamage作为烈霜伤害
       const dmgResultWithLieshuang = {
         ...dmgResult,
-        lieshuangExpectedDamage: lieshuangExpectedDamage
+        // 将specialAnomalyDamage作为烈霜伤害显示
+        lieshuangExpectedDamage: dmgResult.specialAnomalyDamage
       };
 
       skillDamageList.value = [{

@@ -78,10 +78,10 @@
       <div v-if="hasAnomalyBars" class="space-y-1 text-xs bg-base-200 p-2 rounded">
         <div v-for="ele in elements" :key="ele.key" class="flex items-center gap-2">
             <!-- Icon -->
-            <span :class="['w-2 h-2 rounded-full flex-shrink-0', ele.color]"></span>
-            
+            <span :class="['w-2 h-2 rounded-full shrink-0', ele.color]"></span>
+
             <!-- Element Name -->
-            <span class="w-8 flex-shrink-0">{{ ele.label }}</span>
+            <span class="w-8 shrink-0">{{ ele.label }}</span>
             
             <!-- Anomaly Bar Progress -->
             <div class="flex-1 h-2 bg-base-300 rounded-full overflow-hidden">

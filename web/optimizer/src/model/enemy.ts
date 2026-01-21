@@ -5,11 +5,16 @@
  */
 
 import type { EnemyInfo } from '../services/data-loader.service';
+import { dataLoaderService } from '../services/data-loader.service';
 
 /**
  * 敌人模型
  */
 export class Enemy {
+  // 异常条阈值默认值（单位：异常状态点数）
+  private static readonly DEFAULT_PHYSICAL_ANOMALY_THRESHOLD = 720;
+  private static readonly DEFAULT_ELEMENTAL_ANOMALY_THRESHOLD = 600;
+
   // 基础信息
   id: string;
   full_name: string;
@@ -62,6 +67,11 @@ export class Enemy {
   freeze_time_resistance: number = 0;
   base_buildup_coefficient: number = 0;
 
+  // 异常条阈值缓存 (key: element, value: 阈值)
+  private anomalyThresholds: Map<string, number> = new Map();
+  // 标记是否已初始化
+  private isThresholdsInitialized: boolean = false;
+
   constructor(
     id: string,
     fullName: string,
@@ -88,6 +98,51 @@ export class Enemy {
     this.electric_dmg_resistance = 0;
     this.physical_dmg_resistance = 0;
     this.ether_dmg_resistance = 0;
+  }
+
+  /**
+   * 初始化异常条阈值缓存
+   *
+   * @param anomalyBarsData 异常条数据映射
+   */
+  private initializeAnomalyThresholds(anomalyBarsData: Map<string, any> | null): void {
+    if (this.isThresholdsInitialized) {
+      return;
+    }
+
+    const elements = ['ice', 'fire', 'electric', 'physical', 'ether'] as const;
+
+    for (const element of elements) {
+      const anomalyBarId = this[`${element}_anomaly_bar` as keyof Enemy] as string;
+
+      if (!anomalyBarId) {
+        // 使用默认值
+        const threshold = element === 'physical'
+          ? Enemy.DEFAULT_PHYSICAL_ANOMALY_THRESHOLD
+          : Enemy.DEFAULT_ELEMENTAL_ANOMALY_THRESHOLD;
+        this.anomalyThresholds.set(element, threshold);
+        continue;
+      }
+
+      if (!anomalyBarsData) {
+        // 数据未加载，使用默认值
+        const threshold = element === 'physical'
+          ? Enemy.DEFAULT_PHYSICAL_ANOMALY_THRESHOLD
+          : Enemy.DEFAULT_ELEMENTAL_ANOMALY_THRESHOLD;
+        this.anomalyThresholds.set(element, threshold);
+        continue;
+      }
+
+      const anomalyBar = anomalyBarsData.get(anomalyBarId);
+      const threshold = anomalyBar?.buildup_requirements?.[0]
+        ?? (element === 'physical'
+          ? Enemy.DEFAULT_PHYSICAL_ANOMALY_THRESHOLD
+          : Enemy.DEFAULT_ELEMENTAL_ANOMALY_THRESHOLD);
+
+      this.anomalyThresholds.set(element, threshold);
+    }
+
+    this.isThresholdsInitialized = true;
   }
 
   /**
@@ -221,6 +276,9 @@ export class Enemy {
    * @returns EnemyStats对象
    */
   getCombatStats(level: number = 60, isStunned: boolean = false): EnemyStats {
+    // 初始化异常条阈值缓存
+    this.initializeAnomalyThresholds(dataLoaderService.anomalyBarsData);
+
     return new EnemyStats(
       this.hp,
       this.defense,
@@ -237,11 +295,11 @@ export class Enemy {
         ether: this.ether_dmg_resistance,
       },
       {
-        ice: 600.0,
-        fire: 600.0,
-        electric: 600.0,
-        physical: 720.0,
-        ether: 600.0,
+        ice: this.anomalyThresholds.get('ice') ?? Enemy.DEFAULT_ELEMENTAL_ANOMALY_THRESHOLD,
+        fire: this.anomalyThresholds.get('fire') ?? Enemy.DEFAULT_ELEMENTAL_ANOMALY_THRESHOLD,
+        electric: this.anomalyThresholds.get('electric') ?? Enemy.DEFAULT_ELEMENTAL_ANOMALY_THRESHOLD,
+        physical: this.anomalyThresholds.get('physical') ?? Enemy.DEFAULT_PHYSICAL_ANOMALY_THRESHOLD,
+        ether: this.anomalyThresholds.get('ether') ?? Enemy.DEFAULT_ELEMENTAL_ANOMALY_THRESHOLD,
       }
     );
   }

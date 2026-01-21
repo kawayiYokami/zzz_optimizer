@@ -342,15 +342,24 @@ export class Evaluator {
         }
 
         // 14. 计算紊乱收益
-        let disorderEarning = 0;
-        if (procsPerSkill > 0) {
-            const disorderRatio = DamageCalculatorService.getDisorderDamageRatio(elementKey, dotParams.duration);
-            const disorderRatios = new RatioSet();
-            disorderRatios.atk_ratio = disorderRatio;
-            // 紊乱也是一种异常伤害，复用 calculateAnomalyDamageFromZones
-            const disorderResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, disorderRatios, attackerLevel);
-            disorderEarning = disorderResult.damage_expected * procsPerSkill;
-        }
+            let disorderEarning = 0;
+            if (procsPerSkill > 0) {
+                // 异常T1=3 + 紊乱T2=7 = 10，所以紊乱剩余时间为7
+                let disorderRatio = DamageCalculatorService.getDisorderDamageRatio(elementKey, 7);
+                
+                // 检查是否是星见雅（烈霜）
+                if (agent.id === '1091') {
+                    // 星见雅专属：烈霜紊乱伤害公式
+                    const T = 7;
+                    disorderRatio = 6.0 + Math.floor(T) * 0.75;
+                }
+                
+                const disorderRatios = new RatioSet();
+                disorderRatios.atk_ratio = disorderRatio;
+                // 紊乱也是一种异常伤害，复用 calculateAnomalyDamageFromZones
+                const disorderResult = DamageCalculatorService.calculateAnomalyDamageFromZones(zones, disorderRatios, attackerLevel);
+                disorderEarning = disorderResult.damage_expected * procsPerSkill;
+            }
 
         // 总期望 = 直伤 + 异常 + 紊乱
         const totalExpected = directResult.damage_expected + anomalyEarning + disorderEarning;

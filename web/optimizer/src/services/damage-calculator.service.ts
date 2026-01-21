@@ -623,7 +623,16 @@ export class DamageCalculatorService {
    */
   static getDisorderDamageRatio(element: string, remainingTime: number): number {
     const T = remainingTime;
-    switch (element.toLowerCase()) {
+    const elementLower = element.toLowerCase();
+    
+    // 检查是否是烈霜
+    if (elementLower === 'lieshuang') {
+      // 烈霜属性造成的[霜寒]紊乱伤害：伤害倍率 = 600% + floor(T)×75%
+      return 6.0 + Math.floor(T) * 0.75;
+    }
+    
+    // 普通元素类型
+    switch (elementLower) {
       case 'fire':
         return 4.5 + Math.floor(T / 0.5) * 0.5;
       case 'electric':
@@ -635,8 +644,6 @@ export class DamageCalculatorService {
         return 4.5 + Math.floor(T) * 0.075;
       case 'physical':
         return 4.5 + Math.floor(T) * 0.075;
-      case 'lieshuang':
-        return 6.0 + Math.floor(T) * 0.75;
       default:
         return 4.5;
     }
@@ -655,16 +662,40 @@ export class DamageCalculatorService {
   } {
     const dot = ANOMALY_DOT_RATIOS[element.toLowerCase()] || { ratio: 0, interval: 0 };
     const duration = ANOMALY_DEFAULT_DURATION[element.toLowerCase()] || 10;
-
-    // 计算总伤害倍率
+    const T1 = 3; // 异常时间T1=3秒（异常T1 + 紊乱T2 = 10）
+    
+    // 根据元素类型计算总伤害倍率
     let totalRatio = 0;
-    if (dot.interval > 0) {
-      // 持续伤害：总倍率 = 单次倍率 × 触发次数
-      const ticks = Math.floor(duration / dot.interval);
-      totalRatio = dot.ratio * ticks;
-    } else {
-      // 一次性伤害
-      totalRatio = dot.ratio;
+    const elementLower = element.toLowerCase();
+    
+    switch (elementLower) {
+      case 'fire': // 灼烧
+        totalRatio = Math.floor(T1 / 0.5) * 0.5;
+        break;
+      case 'electric': // 感电
+        totalRatio = Math.floor(T1) * 1.25;
+        break;
+      case 'ether': // 侵蚀
+      case 'ink': // 玄墨
+        totalRatio = Math.floor(T1 / 0.5) * 0.625;
+        break;
+      case 'ice': // 碎冰
+      case 'lieshuang': // 烈霜
+        totalRatio = 5.0; // 500%
+        break;
+      case 'physical': // 强击
+        totalRatio = 7.13; // 713%
+        break;
+      default:
+        // 其他元素使用原有逻辑
+        if (dot.interval > 0) {
+          // 持续伤害：总倍率 = 单次倍率 × 触发次数
+          const ticks = Math.floor(duration / dot.interval);
+          totalRatio = dot.ratio * ticks;
+        } else {
+          // 一次性伤害
+          totalRatio = dot.ratio;
+        }
     }
 
     return { ratio: dot.ratio, interval: dot.interval, duration, totalRatio };
