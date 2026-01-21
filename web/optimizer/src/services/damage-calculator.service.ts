@@ -696,4 +696,101 @@ export class DamageCalculatorService {
 
     return lines.join('\n');
   }
+
+  /**
+   * 计算角色技能的基础区（直伤和异常）
+   *
+   * 用于乘区分析中显示技能的基础伤害贡献，不包括任何乘区修饰。
+   *
+   * @param agent 角色
+   * @param skillKey 技能键名（如 "安比_普通攻击：伏特速攻"）
+   * @param zones 乘区集合（包含角色的最终属性）
+   * @returns 直伤基础区、异常基础区（总伤）
+   *
+   * 计算逻辑：
+   * 1. 直伤基础区 = 攻击力 × 技能总倍率
+   *    - 技能总倍率 = Σ(段倍率 + (等级-1) × 段倍率成长)
+   *    - 需要从角色的 agentSkills 中获取技能数据
+   *    - 需要推断技能类型（normal/special/ultimate/chain 等）以获取对应等级
+   *
+   * 2. 异常基础区 = 攻击力 × 异常总倍率
+   *    - 异常总倍率通过 getAnomalyDotParams(element).totalRatio 获取
+   *    - 持续伤害：总倍率 = 单次倍率 × 触发次数
+   *    - 一次性伤害：总倍率 = 单次倍率
+   *
+   * 示例：
+   * - 灼烧：0.5 × 20次 = 10倍
+   * - 感电：1.25 × 10次 = 12.5倍
+   * - 侵蚀：0.625 × 20次 = 12.5倍
+   * - 碎冰：5.0 × 1次 = 5倍
+   * - 强击：7.13 × 1次 = 7.13倍
+   */
+  static calculateSkillBaseZones(
+    agent: any,
+    skillKey: string,
+    zones: ZoneCollection
+  ): {
+    directBase: number;    // 直伤基础区
+    anomalyBase: number;   // 异常基础区（总伤）
+  } {
+    // TODO: 实现具体逻辑
+
+    // 1. 获取技能数据
+    //    - 从 agent.agentSkills.skills.get(skillKey) 获取技能对象
+    //    - 如果技能不存在，返回 { directBase: 0, anomalyBase: 0 }
+
+    // 2. 推断技能类型
+    //    - 通过 SKILL_TYPE_TO_KEY 映射表推断技能类型
+    //    - 需要从 optimizer.service.ts 导入 SKILL_TYPE_TO_KEY
+
+    // 3. 获取技能等级
+    //    - 调用 agent.getSkillLevel(skillType) 获取等级
+
+    // 4. 计算总直伤倍率
+    //    - 遍历 skill.segments，累加每段的 damageRatio + (level - 1) * damageRatioGrowth
+
+    // 5. 计算直伤基础区
+    //    - 获取攻击力：zones.getFinal(PropertyType.ATK_BASE, 0) + zones.getFinal(PropertyType.ATK, 0)
+    //    - 直伤基础区 = 攻击力 × 总直伤倍率
+
+    // 6. 获取异常倍率（总伤）
+    //    - 获取角色元素：ElementType[agent.element].toLowerCase()
+    //    - 调用 getAnomalyDotParams(element) 获取异常参数
+    //    - 使用 totalRatio 而不是 ratio
+
+    // 7. 计算异常基础区
+    //    - 异常基础区 = 攻击力 × 异常总倍率
+
+    return { directBase: 0, anomalyBase: 0 };
+  }
+
+  /**
+   * 计算默认技能的基础区（用于乘区分析中显示参考值）
+   *
+   * 当用户未选择具体技能时，使用角色的第一个技能作为默认参考。
+   *
+   * @param agent 角色
+   * @param zones 乘区集合（包含角色的最终属性）
+   * @returns 直伤基础区、异常基础区（总伤）
+   *
+   * 计算逻辑：
+   * 1. 获取角色的第一个技能
+   * 2. 调用 calculateSkillBaseZones 计算基础区
+   */
+  static calculateDefaultSkillBaseZones(
+    agent: any,
+    zones: ZoneCollection
+  ): {
+    directBase: number;    // 直伤基础区
+    anomalyBase: number;   // 异常基础区（总伤）
+  } {
+    // TODO: 实现具体逻辑
+
+    // 1. 获取角色的第一个技能
+    //    - 从 agent.agentSkills.skills 获取第一个技能的 key
+
+    // 2. 调用 calculateSkillBaseZones 计算基础区
+
+    return { directBase: 0, anomalyBase: 0 };
+  }
 }

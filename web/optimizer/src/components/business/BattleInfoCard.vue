@@ -154,111 +154,115 @@
 
         <!-- Tab 3: 乘区分析 -->
         <div v-else-if="activeTab === 'zones'" class="flex-1 space-y-3 animate-fade-in">
-          <!-- 直伤乘区 -->
-          <div class="collapse collapse-arrow bg-base-200/50 rounded-box border border-base-200">
-            <input type="checkbox" checked />
-            <div class="collapse-title text-sm font-medium flex items-center gap-2">
-              <span class="w-1 h-4 bg-primary rounded"></span>
-              直伤乘区
-            </div>
-            <div class="collapse-content">
-              <div class="grid grid-cols-2 gap-2 text-xs">
-                <!-- 基础区 -->
-                <div class="p-2 bg-base-100 rounded flex flex-col items-center">
-                  <div class="opacity-60 mb-1">基础区</div>
-                  <div class="font-bold font-mono text-base">{{ zones?.base_damage_zone?.toFixed(0) || '-' }}</div>
-                </div>
-                <!-- 暴击区 -->
-                <div class="p-2 bg-base-100 rounded flex flex-col items-center">
-                  <div class="opacity-60 mb-1">暴击区</div>
-                  <div class="font-bold font-mono text-base text-error">{{ zones?.crit_zone?.toFixed(2) || '-' }}</div>
-                </div>
-                <!-- 抗性区 -->
-                <div class="p-2 bg-base-100 rounded flex flex-col items-center">
-                  <div class="opacity-60 mb-1">抗性区</div>
-                  <div class="font-bold font-mono text-base">{{ zones?.res_mult?.toFixed(3) || '-' }}</div>
-                </div>
-                <!-- 失衡区 -->
-                <div class="p-2 bg-base-100 rounded flex flex-col items-center" :class="{'ring-1 ring-warning bg-warning/10': isStunned}">
-                  <div class="opacity-60 mb-1">失衡易伤</div>
-                  <div class="font-bold font-mono text-base">{{ zones?.stun_vuln_mult?.toFixed(2) || '-' }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="grid grid-cols-4 gap-2 text-xs">
+            <!-- 直伤乘区 -->
+            <!-- 分割线 -->
+            <div class="col-span-4 divider text-xs font-bold text-base-content/50 my-2">直伤乘区</div>
 
-          <!-- 异常乘区 -->
-          <div class="collapse collapse-arrow bg-base-200/50 rounded-box border border-base-200">
-            <input type="checkbox" checked />
-            <div class="collapse-title text-sm font-medium flex items-center gap-2">
-              <span class="w-1 h-4 bg-secondary rounded"></span>
-              异常乘区
-            </div>
-            <div class="collapse-content">
-              <div class="grid grid-cols-2 gap-2 text-xs">
-                <!-- 异常精通 -->
-                <div class="p-2 bg-base-100 rounded flex flex-col items-center">
-                  <div class="opacity-60 mb-1">精通区</div>
-                  <div class="font-bold font-mono text-base">{{ zones?.anomaly_prof_mult?.toFixed(2) || '-' }}</div>
-                </div>
-                <!-- 异常增伤 -->
-                <div class="p-2 bg-base-100 rounded flex flex-col items-center">
-                  <div class="opacity-60 mb-1">异常增伤区</div>
-                  <div class="font-bold font-mono text-base text-secondary">{{ zones?.anomaly_dmg_mult?.toFixed(2) || '-' }}</div>
-                </div>
-                <!-- 异常暴击 -->
-                <div class="p-2 bg-base-100 rounded flex flex-col items-center">
-                  <div class="opacity-60 mb-1">异常暴击区</div>
-                  <div class="font-bold font-mono text-base">{{ zones?.anomaly_crit_mult?.toFixed(2) || '-' }}</div>
-                </div>
-                <!-- 异常积蓄 -->
-                <div class="p-2 bg-base-100 rounded flex flex-col items-center">
-                  <div class="opacity-60 mb-1">积蓄区</div>
-                  <div class="font-bold font-mono text-base">{{ zones?.accumulate_zone?.toFixed(2) || '-' }}</div>
-                </div>
+            <!-- 基础区 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">基础区</div>
+                <div class="font-bold font-mono text-base">{{ zones?.base_damage_zone?.toFixed(0) || '-' }}</div>
               </div>
-            </div>
-          </div>
+            </button>
+            <!-- 暴击区 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">暴击区</div>
+                <div class="font-bold font-mono text-base text-error">{{ zones?.crit_zone?.toFixed(2) || '-' }}</div>
+              </div>
+            </button>
+            <!-- 抗性区 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">抗性区</div>
+                <div class="font-bold font-mono text-base">{{ zones?.res_mult?.toFixed(3) || '-' }}</div>
+              </div>
+            </button>
+            <!-- 失衡区 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200" :class="{'ring-1 ring-warning bg-warning/10': isStunned}">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">失衡易伤</div>
+                <div class="font-bold font-mono text-base">{{ zones?.stun_vuln_mult?.toFixed(2) || '-' }}</div>
+              </div>
+            </button>
 
-          <!-- 通用乘区 -->
-          <div class="collapse collapse-arrow bg-base-200/50 rounded-box border border-base-200">
-            <input type="checkbox" />
-            <div class="collapse-title text-sm font-medium flex items-center gap-2">
-              <span class="w-1 h-4 bg-accent rounded"></span>
-              通用乘区
-            </div>
-            <div class="collapse-content">
-              <div class="grid grid-cols-2 gap-2 text-xs">
-                <!-- 防御区 (直伤/异常通用) -->
-                <div class="p-2 bg-base-100 rounded flex flex-col items-center relative overflow-hidden">
-                  <div class="opacity-60 mb-1">防御区</div>
-                  <div class="font-bold font-mono text-base">{{ zones?.def_mult?.toFixed(3) || '-' }}</div>
-                  <div v-if="(zones?.getFinal(PropertyType.DEF_RED_, 0) || 0) > 0" class="absolute bottom-0 right-0 text-[10px] bg-success/20 px-1 rounded-tl">
-                    减防生效
-                  </div>
-                </div>
-                <!-- 增伤区 (直伤/异常通用) -->
-                <div class="p-2 bg-base-100 rounded flex flex-col items-center">
-                  <div class="opacity-60 mb-1">增伤区</div>
-                  <div class="font-bold font-mono text-base text-warning">{{ zones?.dmg_bonus?.toFixed(2) || '-' }}</div>
-                </div>
-                <!-- 承伤区 -->
-                <div class="p-2 bg-base-100 rounded flex justify-between items-center">
-                  <span class="opacity-60">承伤区</span>
-                  <span class="font-mono font-bold">{{ zones?.dmg_taken_mult?.toFixed(2) || '-' }}</span>
-                </div>
-                <!-- 距离衰减 -->
-                <div class="p-2 bg-base-100 rounded flex justify-between items-center">
-                  <span class="opacity-60">距离衰减</span>
-                  <span class="font-mono font-bold">{{ zones?.distance_mult?.toFixed(2) || '-' }}</span>
-                </div>
-                <!-- 等级压制 -->
-                <div class="p-2 bg-base-100 rounded flex justify-between items-center">
-                  <span class="opacity-60">等级压制</span>
-                  <span class="font-mono font-bold">{{ zones?.level_mult?.toFixed(4) || '-' }}</span>
+            <!-- 异常乘区 -->
+            <!-- 分割线 -->
+            <div class="col-span-4 divider text-xs font-bold text-base-content/50 my-2">异常乘区</div>
+
+            <!-- 异常精通 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">精通区</div>
+                <div class="font-bold font-mono text-base">{{ zones?.anomaly_prof_mult?.toFixed(2) || '-' }}</div>
+              </div>
+            </button>
+            <!-- 异常增伤 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">异常增伤区</div>
+                <div class="font-bold font-mono text-base text-secondary">{{ zones?.anomaly_dmg_mult?.toFixed(2) || '-' }}</div>
+              </div>
+            </button>
+            <!-- 异常暴击 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">异常暴击区</div>
+                <div class="font-bold font-mono text-base">{{ zones?.anomaly_crit_mult?.toFixed(2) || '-' }}</div>
+              </div>
+            </button>
+            <!-- 异常积蓄 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">积蓄区</div>
+                <div class="font-bold font-mono text-base">{{ zones?.accumulate_zone?.toFixed(2) || '-' }}</div>
+              </div>
+            </button>
+
+            <!-- 通用乘区 -->
+            <!-- 分割线 -->
+            <div class="col-span-4 divider text-xs font-bold text-base-content/50 my-2">通用乘区</div>
+
+            <!-- 防御区 (直伤/异常通用) -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200 relative overflow-hidden">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">防御区</div>
+                <div class="font-bold font-mono text-base">{{ zones?.def_mult?.toFixed(3) || '-' }}</div>
+                <div v-if="(zones?.getFinal(PropertyType.DEF_RED_, 0) || 0) > 0" class="absolute bottom-0 right-0 text-[10px] bg-success/20 px-1 rounded-tl">
+                  减防生效
                 </div>
               </div>
-            </div>
+            </button>
+            <!-- 增伤区 (直伤/异常通用) -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">增伤区</div>
+                <div class="font-bold font-mono text-base text-warning">{{ zones?.dmg_bonus?.toFixed(2) || '-' }}</div>
+              </div>
+            </button>
+            <!-- 承伤区 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">承伤区</div>
+                <div class="font-bold font-mono text-base">{{ zones?.dmg_taken_mult?.toFixed(2) || '-' }}</div>
+              </div>
+            </button>
+            <!-- 距离衰减 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">距离衰减</div>
+                <div class="font-bold font-mono text-base">{{ zones?.distance_mult?.toFixed(2) || '-' }}</div>
+              </div>
+            </button>
+            <!-- 等级压制 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">等级压制</div>
+                <div class="font-bold font-mono text-base">{{ zones?.level_mult?.toFixed(4) || '-' }}</div>
+              </div>
+            </button>
           </div>
         </div>
 
