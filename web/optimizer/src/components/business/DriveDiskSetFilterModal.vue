@@ -3,7 +3,7 @@
     <div class="modal-box max-w-6xl overflow-visible">
       <!-- Header -->
       <div class="flex items-center justify-between mb-4">
-        <h3 class="font-bold text-lg">驱动盘套装激活</h3>
+        <h3 class="font-bold text-lg">选择目标四件套</h3>
         <button class="btn btn-sm btn-circle btn-ghost" @click="close">✕</button>
       </div>
 
@@ -12,7 +12,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <span>选择需要激活的四件套效果。未选择的套装将不会提供4件套加成。</span>
+        <span>选择一个目标四件套，优化器只会搜索包含4个以上该套装驱动盘的组合。</span>
       </div>
 
       <!-- 套装列表 - 使用网格布局 -->
@@ -28,8 +28,9 @@
           <div
             v-for="set in availableSets"
             :key="set.id"
-            class="card card-compact bg-base-200 transition-colors"
-            :class="{ 'ring-2 ring-primary': activeSets.includes(set.id) }"
+            class="card card-compact bg-base-200 transition-colors cursor-pointer hover:bg-base-300"
+            :class="{ 'ring-2 ring-primary bg-primary/10': localTargetSetId === set.id }"
+            @click="selectSet(set.id)"
           >
             <div class="card-body p-3 flex gap-3 items-start">
               <!-- 套装图标 -->
@@ -45,10 +46,11 @@
                 <div class="flex items-center justify-between">
                   <div class="font-bold text-sm">{{ set.name }}</div>
                   <input
-                    type="checkbox"
-                    class="checkbox checkbox-primary"
-                    :checked="activeSets.includes(set.id)"
-                    @change="toggleSet(set.id)"
+                    type="radio"
+                    name="target-set"
+                    class="radio radio-primary"
+                    :checked="localTargetSetId === set.id"
+                    @change="selectSet(set.id)"
                   />
                 </div>
 
@@ -69,6 +71,7 @@
 
       <!-- 底部按钮 -->
       <div class="modal-action">
+        <button class="btn btn-ghost" @click="clearSelection">清除选择</button>
         <button class="btn" @click="close">取消</button>
         <button class="btn btn-primary" @click="confirm">确定</button>
       </div>
@@ -85,18 +88,18 @@ import { iconService } from '../../services/icon.service';
 // Props
 interface Props {
   modelValue: boolean;  // 弹窗显示状态
-  activeSets: string[]; // 已激活的套装ID列表
+  targetSetId: string;  // 目标套装ID（单选）
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
-  activeSets: () => [],
+  targetSetId: '',
 });
 
 // Emits
 interface Emits {
   'update:modelValue': (value: boolean) => void;
-  'update:activeSets': (sets: string[]) => void;
+  'update:targetSetId': (setId: string) => void;
 }
 
 const emit = defineEmits<Emits>();
@@ -105,19 +108,19 @@ const emit = defineEmits<Emits>();
 const gameDataStore = useGameDataStore();
 const availableSets = ref<Array<{ id: string; name: string; icon: string; fourPieceDescription: string }>>([]);
 const isLoading = ref(false);
-const localActiveSets = ref<string[]>([...props.activeSets]);
+const localTargetSetId = ref(props.targetSetId);
 
-// 监听 props.activeSets 变化
-watch(() => props.activeSets, (newSets) => {
-  localActiveSets.value = [...newSets];
-}, { deep: true });
+// 监听 props.targetSetId 变化
+watch(() => props.targetSetId, (newSetId) => {
+  localTargetSetId.value = newSetId;
+});
 
 // 监听弹窗打开，加载套装数据
 watch(() => props.modelValue, async (isOpen) => {
   if (isOpen) {
     await loadAvailableSets();
     // 重置本地状态
-    localActiveSets.value = [...props.activeSets];
+    localTargetSetId.value = props.targetSetId;
   }
 });
 
@@ -138,19 +141,19 @@ async function loadAvailableSets(): Promise<void> {
   }
 }
 
-// 切换套装选择状态
-function toggleSet(setId: string): void {
-  const index = localActiveSets.value.indexOf(setId);
-  if (index > -1) {
-    localActiveSets.value.splice(index, 1);
-  } else {
-    localActiveSets.value.push(setId);
-  }
+// 选择套装（单选）
+function selectSet(setId: string): void {
+  localTargetSetId.value = setId;
+}
+
+// 清除选择
+function clearSelection(): void {
+  localTargetSetId.value = '';
 }
 
 // 确认选择
 function confirm(): void {
-  emit('update:activeSets', [...localActiveSets.value]);
+  emit('update:targetSetId', localTargetSetId.value);
   emit('update:modelValue', false);
 }
 

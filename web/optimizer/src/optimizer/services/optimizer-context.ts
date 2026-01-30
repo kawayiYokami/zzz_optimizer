@@ -30,7 +30,6 @@ import {
 import type {
     PrecomputedData,
     DiscData,
-    SetBonusData,
     ConversionBuffData,
     FixedMultipliers,
     FastOptimizationRequest,
@@ -375,12 +374,13 @@ export class OptimizerContext {
     /**
      * 创建 PrecomputedSkillParams
      */
-    private static createSkillParams(params: SkillParams): PrecomputedSkillParams {
+    private static createSkillParams(params: SkillParams, isPenetration: boolean = false): PrecomputedSkillParams {
         return {
             ratio: params.ratio,
             element: params.element,
             anomalyBuildup: params.anomalyBuildup ?? 0,
             tags: params.tags.map(tag => this.tagToNumber(tag)),
+            isPenetration,
         };
     }
 
@@ -440,13 +440,16 @@ export class OptimizerContext {
 
     /**
      * 将角色属性填充到 Float64Array
+     *
+     * 注意：只填充角色自身属性和角色被动Buff，
+     * 不包含武器Buff（由fillArrayFromWEngine处理）和驱动盘Buff（动态计算）
      */
     private static fillArrayFromAgent(
         arr: Float64Array,
         agent: Agent,
         buffStatusMap?: Map<string, { isActive: boolean }>
     ): void {
-        // 基础属性
+        // 基础属性（已包含核心技属性，见 _calculateSelfProperties）
         const baseProps = agent.getCharacterBaseStats();
 
         for (const [prop, value] of baseProps.out_of_combat.entries()) {
@@ -456,15 +459,17 @@ export class OptimizerContext {
             addToPropArray(arr, prop, value);
         }
 
-        // 核心技属性
-        const coreSkillStats = agent.getCoreSkillStats();
-        for (const [prop, value] of coreSkillStats.entries()) {
-            addToPropArray(arr, prop, value);
-        }
+        // 注意：不再单独添加核心技属性，因为 getCharacterBaseStats() 已包含
+        // 注意：不使用 getAllBuffsSync()，因为它包含武器Buff和驱动盘Buff
 
-        // 被动 Buff
-        const allBuffs = agent.getAllBuffsSync();
-        for (const buff of allBuffs) {
+        // 只添加角色自身的被动 Buff（不含武器和驱动盘）
+        const agentOnlyBuffs = [
+            ...(agent.core_passive_buffs || []),
+            ...(agent.talent_buffs || []),
+            ...(agent.potential_buffs || []),
+            ...(agent.conversion_buffs || []),
+        ];
+        for (const buff of agentOnlyBuffs) {
             this.fillArrayFromBuff(arr, buff, buffStatusMap);
         }
     }
@@ -681,10 +686,16 @@ export class OptimizerContext {
 
     /**
      * 构建快速优化请求（使用 Float64Array 预计算）
+     *
+     * 新架构：
+     * - mergedStats: 合并角色+武器+所有非转换buff+目标4件套2+4效果
+     * - conversionBuffs: 仅转换类buff（需要最终属性才能计算）
+     * - targetSetId: 目标四件套ID（单选）
+     * - otherSetTwoPiece: 非目标套装的2件套效果缓存
      */
     static buildFastRequest(options: {
         agent: Agent;
-        weapon: WEngine | null;  // 固定音擎（可选）
+        weapon: WEngine | null;
         skills: SkillParams[];
         enemy: Enemy;
         enemyLevel?: number;
@@ -717,36 +728,114 @@ export class OptimizerContext {
             config = {},
         } = options;
 
-        // 1. 预计算角色 + 音擎属性
-        const agentStats = createPropArray();
-        this.fillArrayFromAgent(agentStats, agent, buffStatusMap);
-        this.fillArrayFromWEngine(agentStats, weapon, buffStatusMap);
+        const targetSetId = constraints.targetSetId || '';
 
-        // 2. 收集自身转换 Buff
-        const selfConversionBuffs: ConversionBuffData[] = [];
+        // ============================================================================
+        // 1. 创建 mergedStats 并合并所有静态属性
+        // ============================================================================
+        const mergedStats = createPropArray();
 
-        // 角色转换 Buff
-        const agentBuffs = agent.getAllBuffsSync();
-        for (const buff of agentBuffs) {
-            const convData = this.extractConversionBuff(buff, false);
-            if (convData) {
-                selfConversionBuffs.push(convData);
+        // 1a. 添加角色裸属性（基础属性）
+        const baseProps = agent.getCharacterBaseStats();
+        for (const [prop, value] of baseProps.out_of_combat.entries()) {
+            addToPropArray(mergedStats, prop, value);
+        }
+        for (const [prop, value] of baseProps.in_combat.entries()) {
+            addToPropArray(mergedStats, prop, value);
+        }
+
+        // 1b. 添加武器属性
+        if (weapon) {
+            const weaponProps = weapon.getBaseStats();
+            for (const [prop, value] of weaponProps.out_of_combat.entries()) {
+                addToPropArray(mergedStats, prop, value);
             }
         }
 
-        // 音擎转换 Buff
+        // ============================================================================
+        // 2. 收集所有Buff（明确来源，避免重复）
+        // ============================================================================
+        const conversionBuffs: ConversionBuffData[] = [];
+        const allBuffs: Buff[] = [];
+
+        // 2a. 角色自身Buff（不含武器和驱动盘）
+        if (agent.core_passive_buffs) allBuffs.push(...agent.core_passive_buffs);
+        if (agent.talent_buffs) allBuffs.push(...agent.talent_buffs);
+        if (agent.potential_buffs) allBuffs.push(...agent.potential_buffs);
+        // 注意：角色的 conversion_buffs 会在下面统一处理
+
+        // 2b. 武器Buff
         if (weapon) {
-            const wengineBuffs = weapon.getActiveBuffs();
-            for (const buff of wengineBuffs) {
+            allBuffs.push(...weapon.getActiveBuffs());
+        }
+
+        // 2c. 外部Buff（队友等）
+        if (externalBuffs) {
+            allBuffs.push(...externalBuffs);
+        }
+
+        // ============================================================================
+        // 3. 目标4件套效果预合并
+        // ============================================================================
+        const targetSetDisc = discs.find(d => d.game_id === targetSetId);
+        if (targetSetDisc && targetSetId) {
+            // 3a. 2件套静态属性
+            const twoPieceProps = targetSetDisc.getSetBuff(DriveDiskSetBonus.TWO_PIECE);
+            for (const [prop, value] of twoPieceProps.out_of_combat.entries()) {
+                addToPropArray(mergedStats, prop, value);
+            }
+            for (const [prop, value] of twoPieceProps.in_combat.entries()) {
+                addToPropArray(mergedStats, prop, value);
+            }
+
+            // 3b. 4件套静态属性
+            const fourPieceProps = targetSetDisc.getSetBuff(DriveDiskSetBonus.FOUR_PIECE);
+            for (const [prop, value] of fourPieceProps.out_of_combat.entries()) {
+                addToPropArray(mergedStats, prop, value);
+            }
+            for (const [prop, value] of fourPieceProps.in_combat.entries()) {
+                addToPropArray(mergedStats, prop, value);
+            }
+
+            // 3c. 4件套Buff（某些套装有条件触发的效果）
+            if (targetSetDisc.set_buffs) {
+                allBuffs.push(...targetSetDisc.set_buffs);
+            }
+        }
+
+        // ============================================================================
+        // 4. 处理每个Buff（转换类单独收集，非转换类合并到mergedStats）
+        // ============================================================================
+        for (const buff of allBuffs) {
+            // 检查激活状态
+            let isActive = buff.is_active;
+            if (buffStatusMap) {
+                const status = buffStatusMap.get(buff.id);
+                if (status) isActive = status.isActive;
+            }
+            if (!isActive) continue;
+
+            // 转换类Buff单独收集（需要最终属性才能计算）
+            if (buff.conversion) {
                 const convData = this.extractConversionBuff(buff, false);
-                if (convData) {
-                    selfConversionBuffs.push(convData);
+                if (convData) conversionBuffs.push(convData);
+                continue;
+            }
+
+            // 非转换类Buff合并到mergedStats
+            if (buff.out_of_combat_stats) {
+                for (const [prop, value] of buff.out_of_combat_stats.entries()) {
+                    addToPropArray(mergedStats, prop, value);
+                }
+            }
+            if (buff.in_combat_stats) {
+                for (const [prop, value] of buff.in_combat_stats.entries()) {
+                    addToPropArray(mergedStats, prop, value);
                 }
             }
         }
 
-        // 3. 预计算队友转换 Buff
-        const teammateConversionStats = createPropArray();
+        // 4b. 预计算队友转换Buff（队友属性是固定的，可以直接计算）
         for (const { buff, teammateStats } of teammateConversionBuffs) {
             if (!buff.conversion || !buff.is_active) continue;
 
@@ -754,7 +843,6 @@ export class OptimizerContext {
             const toPropIdx = PROP_TYPE_TO_IDX[buff.conversion.to_property];
             if (fromPropIdx === undefined || toPropIdx === undefined) continue;
 
-            // 队友属性是固定的，直接计算转换值
             const sourceValue = teammateStats[fromPropIdx];
             const threshold = buff.conversion.from_property_threshold ?? 0;
             const effectiveValue = Math.max(0, sourceValue - threshold);
@@ -764,19 +852,36 @@ export class OptimizerContext {
                 convertedValue = Math.min(convertedValue, buff.conversion.max_value);
             }
 
-            teammateConversionStats[toPropIdx] += convertedValue;
+            // 队友转换结果直接合并到mergedStats
+            mergedStats[toPropIdx] += convertedValue;
         }
 
-        // 4. 预计算外部 Buff
-        const externalBuffStats = createPropArray();
-        for (const buff of externalBuffs) {
-            this.fillArrayFromBuff(externalBuffStats, buff, buffStatusMap);
+        // ============================================================================
+        // 5. 收集非目标套装的2件套效果
+        // ============================================================================
+        const otherSetTwoPiece: Record<string, Float64Array> = {};
+        const seenSets = new Set<string>();
+
+        for (const disc of discs) {
+            const setId = disc.game_id;
+            if (setId === targetSetId) continue; // 跳过目标套装
+            if (seenSets.has(setId)) continue;
+            seenSets.add(setId);
+
+            const twoPiece = createPropArray();
+            const twoPieceProps = disc.getSetBuff(DriveDiskSetBonus.TWO_PIECE);
+            for (const [prop, value] of twoPieceProps.out_of_combat.entries()) {
+                addToPropArray(twoPiece, prop, value);
+            }
+            for (const [prop, value] of twoPieceProps.in_combat.entries()) {
+                addToPropArray(twoPiece, prop, value);
+            }
+            otherSetTwoPiece[setId] = twoPiece;
         }
 
-        // 5. 预计算驱动盘
-        const setIdToIdx: Record<string, number> = {};
-        let setIdxCounter = 0;
-
+        // ============================================================================
+        // 6. 构建驱动盘数据（使用新的 DiscData 结构）
+        // ============================================================================
         const discsBySlot: DiscData[][] = [[], [], [], [], [], []];
 
         // 有效词条配置
@@ -803,35 +908,18 @@ export class OptimizerContext {
             return 0;
         };
 
-        const isEffectiveMainStat = (mainStatType: PropertyType): boolean => {
-            if (!pruningConfig?.effectiveStats.length) return true;
-            if (pruningConfig.effectiveStats.includes(mainStatType)) return true;
-            const percentType = flatToPercentMap[mainStatType];
-            if (percentType && pruningConfig.effectiveStats.includes(percentType)) return true;
-            return false;
-        };
-
-        // 驱动盘已在 OptimizerView 中完成所有过滤，直接使用
         for (const disc of discs) {
             const slotIdx = disc.position - 1;
             if (slotIdx < 0 || slotIdx > 5) continue;
 
-            // 分配套装索引
-            if (setIdToIdx[disc.game_id] === undefined) {
-                setIdToIdx[disc.game_id] = setIdxCounter++;
-            }
-            const setIdx = setIdToIdx[disc.game_id];
-
-            // 填充属性数组
+            // 填充属性数组（主词条+副词条，不含套装效果）
             const stats = createPropArray();
             this.fillArrayFromDisc(stats, disc);
 
             // 计算有效词条得分
             let effectiveScore = 0;
             const props = disc.getStats();
-            // 主词条
             effectiveScore += getStatScore(disc.main_stat, true);
-            // 副词条
             for (const [prop] of props.out_of_combat.entries()) {
                 if (prop !== disc.main_stat) {
                     effectiveScore += getStatScore(prop, false);
@@ -840,63 +928,16 @@ export class OptimizerContext {
 
             discsBySlot[slotIdx].push({
                 id: disc.id,
-                setIdx,
                 stats,
                 effectiveScore,
+                setId: disc.game_id,
+                isTargetSet: disc.game_id === targetSetId,
             });
         }
 
-        // 6. 预计算套装加成
-        const setBonuses: SetBonusData[] = [];
-        const seenSets = new Set<string>();
-
-        for (const disc of discs) {
-            const setId = disc.game_id;
-            if (seenSets.has(setId)) continue;
-            seenSets.add(setId);
-
-            const setIdx = setIdToIdx[setId];
-            if (setIdx === undefined) continue;
-
-            // 2 件套属性
-            const twoPiece = createPropArray();
-            const twoPieceProps = disc.getSetBuff(DriveDiskSetBonus.TWO_PIECE);
-            for (const [prop, value] of twoPieceProps.out_of_combat.entries()) {
-                addToPropArray(twoPiece, prop, value);
-            }
-            for (const [prop, value] of twoPieceProps.in_combat.entries()) {
-                addToPropArray(twoPiece, prop, value);
-            }
-
-            // 4 件套属性
-            const fourPiece = createPropArray();
-            const fourPieceProps = disc.getSetBuff(DriveDiskSetBonus.FOUR_PIECE);
-            for (const [prop, value] of fourPieceProps.out_of_combat.entries()) {
-                addToPropArray(fourPiece, prop, value);
-            }
-            for (const [prop, value] of fourPieceProps.in_combat.entries()) {
-                addToPropArray(fourPiece, prop, value);
-            }
-
-            // 4 件套 Buff
-            let fourPieceBuff: Float64Array | null = null;
-            if (disc.set_buffs && disc.set_buffs.length > 0) {
-                fourPieceBuff = createPropArray();
-                for (const buff of disc.set_buffs) {
-                    this.fillArrayFromBuff(fourPieceBuff, buff, buffStatusMap);
-                }
-            }
-
-            setBonuses.push({
-                setId,
-                setIdx,
-                twoPiece,
-                fourPiece,
-                fourPieceBuff,
-            });
-        }
-
+        // ============================================================================
         // 7. 计算固定乘区（使用第一个技能作为基准）
+        // ============================================================================
         const fixedMultipliers = this.computeFixedMultipliers(
             agent,
             weapon,
@@ -906,22 +947,23 @@ export class OptimizerContext {
             externalBuffs
         );
 
-        // 构建预计算数据
-            const precomputed: PrecomputedData = {
-              agentStats,
-              discsBySlot,
-              setBonuses,
-              externalBuffStats,
-              teammateConversionStats,
-              selfConversionBuffs,
-              fixedMultipliers,
-              skillsParams: skills.map(s => this.createSkillParams(s)),
-              agentLevel: agent.level,
-              setIdToIdx,
-              activeDiskSets: [...(constraints.activeDiskSets ?? [])],
-              enemyStats: enemy.getCombatStats(enemyLevel, isStunned),
-              specialAnomalyConfig: agent.getSpecialAnomalyConfig(),
-            };
+        // ============================================================================
+        // 8. 构建预计算数据
+        // ============================================================================
+        const isPenetration = agent.isPenetrationAgent();
+        const precomputed: PrecomputedData = {
+            mergedStats,
+            conversionBuffs,
+            discsBySlot,
+            targetSetId,
+            otherSetTwoPiece,
+            fixedMultipliers,
+            skillsParams: skills.map(s => this.createSkillParams(s, isPenetration)),
+            agentLevel: agent.level,
+            enemyStats: enemy.getCombatStats(enemyLevel, isStunned),
+            specialAnomalyConfig: agent.getSpecialAnomalyConfig(),
+        };
+
         return {
             precomputed,
             workerId: config.workerId ?? 0,

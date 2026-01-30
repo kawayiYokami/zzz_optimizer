@@ -196,11 +196,11 @@ export interface OptimizationConstraints {
      */
     effectiveStatPruning?: EffectiveStatPruningConfig;
     /**
-     * 激活的驱动盘套装 ID 列表
-     * 只有在此列表中的套装才会提供 4 件套效果
-     * 空数组表示不激活任何 4 件套效果
+     * 目标四件套 ID
+     * 必须选择一个目标套装才能开始优化
+     * 空字符串表示未选择
      */
-    activeDiskSets: string[];
+    targetSetId: string;
     /**
      * 排除的队伍 ID 列表（优先级比当前队伍高的队伍）
      * 这些队伍身上的驱动盘将被排除
@@ -268,5 +268,14 @@ export interface OptimizationBuild {
         direct: number;
         anomaly: number;
         disorder: number;
+    };
+    /** 伤害乘区（可变区） */
+    damageMultipliers?: {
+        baseDirectDamage: number;
+        baseAnomalyDamage: number;
+        anomalyProfMult: number;
+        accumulationZone: number;
+        critZone: number;
+        dmgBonus: number;
     };
 }

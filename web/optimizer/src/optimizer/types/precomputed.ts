@@ -74,6 +74,8 @@ export interface PrecomputedSkillParams {
   anomalyBuildup: number;
   /** 技能类型标签（用于技能增伤匹配） */
   tags: number[];
+  /** 是否为贯穿伤害（仪玄等角色） */
+  isPenetration?: boolean;
 }
 
 /**
@@ -98,12 +100,14 @@ export interface SetBonusData {
 export interface DiscData {
   /** 驱动盘 ID */
   id: string;
-  /** 套装索引 */
-  setIdx: number;
-  /** 属性数组 */
+  /** 属性数组（主词条+副词条，不含套装效果） */
   stats: Float64Array;
   /** 有效词条得分（用于剪枝） */
   effectiveScore: number;
+  /** 套装 ID（用于2件套判断） */
+  setId: string;
+  /** 是否为目标套装 */
+  isTargetSet: boolean;
 }
 
 /**
@@ -111,10 +115,15 @@ export interface DiscData {
  */
 export interface PrecomputedData {
   /**
-   * 角色静态属性（已合并：基础属性 + 被动Buff + 音擎属性 + 音擎Buff）
-   * 音擎固定不参与搜索，直接合并到角色属性中
+   * 合并后的静态属性
+   * 包含：角色裸属性 + 武器属性 + 所有非转换buff + 目标4件套2+4效果
    */
-  agentStats: Float64Array;
+  mergedStats: Float64Array;
+
+  /**
+   * 转换类 Buff 列表（需要最终属性才能计算）
+   */
+  conversionBuffs: ConversionBuffData[];
 
   /**
    * 驱动盘数据（按位置分组）
@@ -123,25 +132,15 @@ export interface PrecomputedData {
   discsBySlot: DiscData[][];
 
   /**
-   * 套装加成数据
-   * key: setIdx (数字索引，用于快速查找)
+   * 目标四件套 ID
    */
-  setBonuses: SetBonusData[];
+  targetSetId: string;
 
   /**
-   * 外部 Buff 合并后的属性
+   * 非目标套装的2件套效果缓存
+   * key: 套装ID, value: 2件套属性数组
    */
-  externalBuffStats: Float64Array;
-
-  /**
-   * 队友转换 Buff 贡献的固定属性（可直接累加）
-   */
-  teammateConversionStats: Float64Array;
-
-  /**
-   * 自身转换 Buff 列表（需要循环计算）
-   */
-  selfConversionBuffs: ConversionBuffData[];
+  otherSetTwoPiece: Record<string, Float64Array>;
 
   /**
    * 固定乘区（不受驱动盘影响）
@@ -159,17 +158,6 @@ export interface PrecomputedData {
   agentLevel: number;
 
   /**
-   * 套装 ID 到索引的映射
-   */
-  setIdToIdx: Record<string, number>;
-
-  /**
-   * 激活的驱动盘套装 ID 列表
-   * 只有在此列表中的套装才会提供 4 件套效果
-   */
-  activeDiskSets: string[];
-
-  /**
    * 敌人战斗属性
    */
   enemyStats: EnemyStats;
@@ -178,6 +166,24 @@ export interface PrecomputedData {
    * 特殊异常配置（如烈霜）
    */
   specialAnomalyConfig: { element: string; ratio: number } | null;
+}
+
+/**
+ * 伤害乘区（可变区，不包括固定区）
+ */
+export interface DamageMultipliers {
+  /** 基础直伤 */
+  baseDirectDamage: number;
+  /** 基础异常伤 */
+  baseAnomalyDamage: number;
+  /** 精通区 */
+  anomalyProfMult: number;
+  /** 积蓄区 */
+  accumulationZone: number;
+  /** 暴击区 */
+  critZone: number;
+  /** 增伤区 */
+  dmgBonus: number;
 }
 
 /**
@@ -196,6 +202,8 @@ export interface OptimizationBuildResult {
     anomaly: number;
     disorder: number;
   };
+  /** 伤害乘区（可变区） */
+  multipliers: DamageMultipliers;
   /** 套装信息 */
   setInfo: {
     twoPieceSets: string[];
@@ -219,6 +227,8 @@ export interface FastOptimizationRequest {
   pruneThreshold: number;
   /** 进度上报间隔（毫秒） */
   progressInterval: number;
+  /** 预估的有效组合总数（用于进度计算，从UI传入） */
+  estimatedTotal?: number;
 }
 
 /**
@@ -226,12 +236,11 @@ export interface FastOptimizationRequest {
  */
 export function createEmptyPrecomputedData(): PrecomputedData {
   return {
-    agentStats: new Float64Array(PROP_IDX.TOTAL_PROPS),
+    mergedStats: new Float64Array(PROP_IDX.TOTAL_PROPS),
+    conversionBuffs: [],
     discsBySlot: [[], [], [], [], [], []],
-    setBonuses: [],
-    externalBuffStats: new Float64Array(PROP_IDX.TOTAL_PROPS),
-    teammateConversionStats: new Float64Array(PROP_IDX.TOTAL_PROPS),
-    selfConversionBuffs: [],
+    targetSetId: '',
+    otherSetTwoPiece: {},
     fixedMultipliers: {
       resMult: 1,
       dmgTakenMult: 1,
@@ -249,8 +258,6 @@ export function createEmptyPrecomputedData(): PrecomputedData {
     },
     skillsParams: [],
     agentLevel: 60,
-    setIdToIdx: {},
-    activeDiskSets: [],
     enemyStats: new EnemyStats(
       100000, // hp
       800,    // defense

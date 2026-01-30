@@ -63,6 +63,7 @@ type FastWorkerMessage = FastOptimizationProgress | FastOptimizationResult | Fas
 class FastMinHeap {
   private damages: Float64Array;
   private discIndices: Int32Array;  // 每个结果存储 6 个索引
+  private multipliers: Float64Array;  // 每个结果存储 6 个乘区（基础直伤、基础异常伤、精通区、积蓄区、暴击区、增伤区）
   private size: number = 0;
   private maxSize: number;
 
@@ -70,6 +71,7 @@ class FastMinHeap {
     this.maxSize = maxSize;
     this.damages = new Float64Array(maxSize);
     this.discIndices = new Int32Array(maxSize * 6);
+    this.multipliers = new Float64Array(maxSize * 6);  // 6 个乘区
   }
 
   get length(): number {
@@ -84,13 +86,14 @@ class FastMinHeap {
    * 尝试插入新结果
    * 返回是否成功插入
    */
-  tryPush(damage: number, indices: number[]): boolean {
+  tryPush(damage: number, indices: number[], multipliers: number[]): boolean {
     if (this.size < this.maxSize) {
       // 堆未满，直接插入
       this.damages[this.size] = damage;
       const base = this.size * 6;
       for (let i = 0; i < 6; i++) {
         this.discIndices[base + i] = indices[i];
+        this.multipliers[base + i] = multipliers[i];
       }
       this.size++;
       this.bubbleUp(this.size - 1);
@@ -100,6 +103,7 @@ class FastMinHeap {
       this.damages[0] = damage;
       for (let i = 0; i < 6; i++) {
         this.discIndices[i] = indices[i];
+        this.multipliers[i] = multipliers[i];
       }
       this.bubbleDown(0);
       return true;
@@ -115,12 +119,18 @@ class FastMinHeap {
     discsBySlot: DiscData[][]
   ): OptimizationBuildResult[] {
     // 创建排序索引
-    const indices = Array.from({ length: this.size }, (_, i) => i);
+    const indices = new Int32Array(this.size);
+    for (let i = 0; i < this.size; i++) {
+      indices[i] = i;
+    }
+
+    // 使用快速排序算法
     indices.sort((a, b) => this.damages[b] - this.damages[a]);
 
     const results: OptimizationBuildResult[] = [];
 
-    for (const heapIdx of indices) {
+    for (let i = 0; i < this.size; i++) {
+      const heapIdx = indices[i];
       const base = heapIdx * 6;
       const discs: DiscData[] = [];
 
@@ -131,7 +141,11 @@ class FastMinHeap {
 
       // 使用 FastEvaluator 创建完整结果
       const damage = this.damages[heapIdx];
-      const fullResult = evaluator.createFullResult(discs, damage);
+      const multipliersArray: number[] = [];
+      for (let j = 0; j < 6; j++) {
+        multipliersArray.push(this.multipliers[base + j]);
+      }
+      const fullResult = evaluator.createFullResult(discs, damage, multipliersArray);
       results.push(fullResult);
     }
 
@@ -167,15 +181,25 @@ class FastMinHeap {
   }
 
   private swap(i: number, j: number): void {
-    // 交换伤害值
-    [this.damages[i], this.damages[j]] = [this.damages[j], this.damages[i]];
+    // 使用临时变量代替解构交换，避免创建临时数组
+    const tmpDamage = this.damages[i];
+    this.damages[i] = this.damages[j];
+    this.damages[j] = tmpDamage;
 
     // 交换盘索引
     const baseI = i * 6;
     const baseJ = j * 6;
     for (let k = 0; k < 6; k++) {
-      [this.discIndices[baseI + k], this.discIndices[baseJ + k]] =
-        [this.discIndices[baseJ + k], this.discIndices[baseI + k]];
+      const tmpIdx = this.discIndices[baseI + k];
+      this.discIndices[baseI + k] = this.discIndices[baseJ + k];
+      this.discIndices[baseJ + k] = tmpIdx;
+    }
+
+    // 交换乘区
+    for (let k = 0; k < 6; k++) {
+      const tmpMult = this.multipliers[baseI + k];
+      this.multipliers[baseI + k] = this.multipliers[baseJ + k];
+      this.multipliers[baseJ + k] = tmpMult;
     }
   }
 }
@@ -196,6 +220,8 @@ function calculateTotalCombinations(discsBySlot: DiscData[][]): number {
 /**
  * 运行快速优化
  */
+let shouldCancel = false;
+
 function runFastOptimization(request: FastOptimizationRequest): void {
   const startTime = performance.now();
 
@@ -206,9 +232,13 @@ function runFastOptimization(request: FastOptimizationRequest): void {
     progressInterval,
     workerId,
     totalWorkers,
+    estimatedTotal,
   } = request;
 
   const { discsBySlot } = precomputed;
+
+  // 重置取消标志
+  shouldCancel = false;
 
   // 创建快速评估器
   const evaluator = new FastEvaluator(precomputed);
@@ -216,8 +246,9 @@ function runFastOptimization(request: FastOptimizationRequest): void {
   // 初始化 TopN 堆
   const topNHeap = new FastMinHeap(topN);
 
-  // 计算总组合数
-  const totalCombinations = calculateTotalCombinations(discsBySlot);
+  // 总组合数：进度计算使用全量组合数（Worker实际遍历的）
+  const rawTotalCombinations = calculateTotalCombinations(discsBySlot);
+  const totalCombinations = rawTotalCombinations;
 
   if (totalCombinations === 0) {
     const errorMsg: FastWorkerError = {
@@ -263,22 +294,22 @@ function runFastOptimization(request: FastOptimizationRequest): void {
   const endIdx = Math.floor(slot0Count * (workerId + 1) / totalWorkers);
 
   // 主循环：遍历所有组合（无音擎循环）
-  for (let i0 = startIdx; i0 < endIdx; i0++) {
+  for (let i0 = startIdx; i0 < endIdx && !shouldCancel; i0++) {
     const disc0 = discsBySlot[0][i0];
     const score0 = disc0.effectiveScore;
     discIndices[0] = i0;
 
-    for (let i1 = 0; i1 < slot1Count; i1++) {
+    for (let i1 = 0; i1 < slot1Count && !shouldCancel; i1++) {
       const disc1 = discsBySlot[1][i1];
       const score1 = score0 + disc1.effectiveScore;
       discIndices[1] = i1;
 
-      for (let i2 = 0; i2 < slot2Count; i2++) {
+      for (let i2 = 0; i2 < slot2Count && !shouldCancel; i2++) {
         const disc2 = discsBySlot[2][i2];
         const score2 = score1 + disc2.effectiveScore;
         discIndices[2] = i2;
 
-        for (let i3 = 0; i3 < slot3Count; i3++) {
+        for (let i3 = 0; i3 < slot3Count && !shouldCancel; i3++) {
           const disc3 = discsBySlot[3][i3];
           const score3 = score2 + disc3.effectiveScore;
           discIndices[3] = i3;
@@ -290,7 +321,7 @@ function runFastOptimization(request: FastOptimizationRequest): void {
             continue;
           }
 
-          for (let i4 = 0; i4 < slot4Count; i4++) {
+          for (let i4 = 0; i4 < slot4Count && !shouldCancel; i4++) {
             const disc4 = discsBySlot[4][i4];
             const score4 = score3 + disc4.effectiveScore;
             discIndices[4] = i4;
@@ -301,7 +332,7 @@ function runFastOptimization(request: FastOptimizationRequest): void {
               continue;
             }
 
-            for (let i5 = 0; i5 < slot5Count; i5++) {
+            for (let i5 = 0; i5 < slot5Count && !shouldCancel; i5++) {
               const disc5 = discsBySlot[5][i5];
               const totalScore = score4 + disc5.effectiveScore;
               discIndices[5] = i5;
@@ -320,17 +351,44 @@ function runFastOptimization(request: FastOptimizationRequest): void {
               discArray[4] = disc4;
               discArray[5] = disc5;
 
-              // 计算伤害
-              const damage = evaluator.calculateDamage(discArray);
+              // 计算伤害和乘区
+              const result = evaluator.calculateDamageWithMultipliers(discArray);
+
+              // 目标盘数不足4，跳过此组合
+              if (result === null) {
+                // 只计入 processedCount，不计入 prunedCount
+                // prunedCount 用于早期剪枝（分数剪枝），这里是完整遍历后的过滤
+                processedCount++;
+
+                // 定期上报进度
+                if (processedCount % progressInterval === 0) {
+                  const currentTime = performance.now();
+                  const elapsedSeconds = (currentTime - startTime) / 1000;
+                  const speed = processedCount / elapsedSeconds;
+                  const remaining = totalCombinations - processedCount - prunedCount;
+                  const estimatedTimeRemaining = remaining / speed;
+
+                  const progress: FastOptimizationProgress = {
+                    type: 'progress',
+                    processedCount: processedCount + prunedCount,
+                    totalCombinations,
+                    currentBest: null,
+                    speed,
+                    estimatedTimeRemaining,
+                    prunedCount,
+                  };
+                  ctx.postMessage(progress);
+                  lastProgressTime = currentTime;
+                }
+                continue;
+              }
 
               // 更新 TopN
-              const heapSizeBefore = topNHeap.length;
-              const inserted = topNHeap.tryPush(damage, discIndices);
+              const inserted = topNHeap.tryPush(result.damage, discIndices, result.multipliers);
 
-              // 更新剪枝阈值
-              if (topNHeap.length >= topN && heapSizeBefore < topN) {
-                minTopNEffectiveScore = totalScore;
-              } else if (inserted && topNHeap.length >= topN) {
+              // 更新剪枝阈值：当堆已满且有新结果插入时，
+              // 使用当前组合得分减去容差作为新的下限
+              if (inserted && topNHeap.length >= topN) {
                 minTopNEffectiveScore = Math.max(
                   minTopNEffectiveScore,
                   totalScore - pruneThreshold
@@ -373,11 +431,12 @@ function runFastOptimization(request: FastOptimizationRequest): void {
   const endTime = performance.now();
   const totalTimeMs = endTime - startTime;
 
-  // 强制发送 100% 进度（解决进度条未更新到 100% 的问题）
+  // 发送最终进度，使用真实的 totalCombinations
+  // 注意：processedCount + prunedCount 应该等于该 worker 负责的组合数
   const finalProgress: FastOptimizationProgress = {
     type: 'progress',
     processedCount: processedCount + prunedCount,
-    totalCombinations: processedCount + prunedCount,  // 使处理数 = 总数
+    totalCombinations,  // 使用真实的总组合数
     currentBest: null,
     speed: (processedCount + prunedCount) / (totalTimeMs / 1000),
     estimatedTimeRemaining: 0,
@@ -403,7 +462,7 @@ ctx.onmessage = (event: MessageEvent) => {
   const message = event.data;
 
   if (message.type === 'cancel') {
-    // TODO: 实现取消逻辑
+    shouldCancel = true;
     return;
   }
 

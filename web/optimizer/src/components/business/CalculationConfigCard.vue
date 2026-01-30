@@ -35,29 +35,28 @@
         </div>
       </div>
 
-      <!-- 套装激活 -->
-              <div class="divider text-xs font-bold text-base-content/50 my-2">套装激活</div>      <div class="flex flex-col gap-2 mt-2">
-        <!-- 激活的套装徽章 -->
+      <!-- 目标套装 -->
+              <div class="divider text-xs font-bold text-base-content/50 my-2">目标套装</div>      <div class="flex flex-col gap-2 mt-2">
+        <!-- 当前选中的套装徽章 -->
         <div class="flex flex-wrap gap-1">
           <!-- 无选择时 -->
-          <div v-if="activeDiskSets.length === 0" class="badge badge-ghost">
-            无（不激活任何四件套）
+          <div v-if="!targetSetId" class="badge badge-warning">
+            请选择目标四件套
           </div>
           <!-- 有选择时 -->
           <div
-            v-for="setId in activeDiskSets"
-            :key="setId"
+            v-else
             class="badge badge-primary badge-outline cursor-pointer hover:badge-error gap-1"
-            @click="removeSet(setId)"
-            :title="'点击移除: ' + getSetName(setId)"
+            @click="openSetFilter"
+            :title="'点击更换: ' + getSetName(targetSetId)"
           >
             <img
-              v-if="getSetIconUrl(setId)"
-              :src="getSetIconUrl(setId)"
+              v-if="getSetIconUrl(targetSetId)"
+              :src="getSetIconUrl(targetSetId)"
               class="w-5 h-5 rounded"
-              :alt="getSetName(setId)"
+              :alt="getSetName(targetSetId)"
             />
-            {{ getSetName(setId) }} ✕
+            {{ getSetName(targetSetId) }}
           </div>
         </div>
         <!-- 配置按钮 -->
@@ -65,15 +64,15 @@
           class="btn btn-base-200 w-full"
           @click="openSetFilter"
         >
-          配置套装激活
+          选择目标套装
         </button>
       </div>
 
-      <!-- 套装激活弹窗 -->
+      <!-- 套装选择弹窗 -->
       <DriveDiskSetFilterModal
         v-model="showSetFilterModal"
-        :active-sets="activeDiskSets"
-        @update:active-sets="emit('update:activeDiskSets', $event)"
+        :target-set-id="targetSetId"
+        @update:target-set-id="emit('update:targetSetId', $event)"
       />
 
       <!-- 有效词条 -->
@@ -217,13 +216,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import type { AggregatedProgress } from '../../optimizer/services';
 import type { PropertyType } from '../../model/base';
 import { useGameDataStore } from '../../stores/game-data.store';
 import DriveDiskSlotFilterModal from './DriveDiskSlotFilterModal.vue';
-import { iconService } from '../../services/icon.service';
 import DriveDiskSetFilterModal from './DriveDiskSetFilterModal.vue';
+import { iconService } from '../../services/icon.service';
 import { getPropertyCnName } from '../../model/base';
 import TeamPriorityModal from './TeamPriorityModal.vue';
 
@@ -254,7 +253,7 @@ interface Props {
   pruningStats: PruningStats;
   estimatedCombinations: CombinationEstimate;
   canStart: boolean;
-  activeDiskSets: string[]; // 激活的驱动盘套装ID列表
+  targetSetId: string; // 目标四件套ID（单选）
   optimizedDiscs: any[]; // 优化后的驱动盘（已完成所有过滤）
   allDiscs: any[]; // 所有驱动盘
   constraints: any; // 约束配置（包含主词条限定器）
@@ -273,7 +272,7 @@ const props = withDefaults(defineProps<Props>(), {
   pruningStats: () => ({ before: 0, after: 0, removed: 0 }),
   estimatedCombinations: () => ({ total: 0, breakdown: {} }),
   canStart: false,
-  activeDiskSets: () => [],
+  targetSetId: '',
   optimizedDiscs: () => [],
   allDiscs: () => [],
   constraints: () => ({}),
@@ -286,7 +285,7 @@ interface Emits {
   'toggleEffectiveStat': [stat: PropertyType];
   'startOptimization': [];
   'cancelOptimization': [];
-  'update:activeDiskSets': [sets: string[]];
+  'update:targetSetId': [setId: string];
   'update:mainStatFilters': [filters: any]; // 更新主词条限定器
   'update:excludedTeamIds': [teamIds: string[]]; // 更新排除的队伍ID列表
 }
@@ -295,10 +294,19 @@ const emit = defineEmits<Emits>();
 
 // 状态
 const gameDataStore = useGameDataStore();
-const showSetFilterModal = ref(false);
 const showSlotFilterModal = ref(false);
+const showSetFilterModal = ref(false);
 const showPriorityModal = ref(false);
 const selectedSlot = ref<number>(1);
+
+// 可用的套装列表（从游戏数据中获取）
+const availableSets = computed(() => {
+  const equipmentList = gameDataStore.allEquipments || [];
+  return equipmentList.map(info => ({
+    id: info.id,
+    name: info.CHS?.name ?? info.EN?.name ?? info.id,
+  }));
+});
 
 // 计算属性
 const progressPercentage = computed(() => {
@@ -324,17 +332,6 @@ const formatTime = (seconds: number) => {
   const s = Math.ceil(seconds % 60);
   return `${m}m${s}s`;
 };
-
-// 打开套装激活弹窗
-function openSetFilter(): void {
-  showSetFilterModal.value = true;
-}
-
-// 移除套装
-function removeSet(setId: string): void {
-  const newSets = props.activeDiskSets.filter(id => id !== setId);
-  emit('update:activeDiskSets', newSets);
-}
 
 // 获取套装名称
 function getSetName(setId: string): string {
@@ -391,5 +388,10 @@ function updateSlotMainStatFilters(filters: PropertyType[]): void {
 // 打开优先级设置弹窗
 function openPriorityModal(): void {
   showPriorityModal.value = true;
+}
+
+// 打开套装选择弹窗
+function openSetFilter(): void {
+  showSetFilterModal.value = true;
 }
 </script>

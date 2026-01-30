@@ -374,6 +374,7 @@ export class OptimizerService {
         externalBuffs?: Buff[];
         buffStatusMap?: Map<string, { isActive: boolean }>;
         topN?: number;
+        estimatedTotal?: number;  // UI计算的有效组合数
         callbacks?: OptimizationCallbacks;
     }): void {
         if (this.status === 'running') {
@@ -414,7 +415,7 @@ export class OptimizerService {
             },
         });
 
-        // 计算总组合数
+        // 进度分母始终使用全量组合数（目标套装过滤在 Worker 内部进行）
         this.totalCombinations = this.calculateFastTotalCombinations(baseRequest);
 
         // 向每个 Worker 发送请求
@@ -423,6 +424,7 @@ export class OptimizerService {
                 ...baseRequest,
                 workerId: i,
                 totalWorkers: this.fastWorkers.length,
+                estimatedTotal: options.estimatedTotal,  // 传递给Worker
             };
 
             this.fastWorkers[i].postMessage(workerRequest);
@@ -543,6 +545,7 @@ export class OptimizerService {
                 fourPieceSet: build.setInfo.fourPieceSet,
             },
             damageBreakdown: build.breakdown,
+            damageMultipliers: build.multipliers,
         }));
 
         const aggregatedResult: AggregatedResult = {
@@ -653,6 +656,8 @@ export class OptimizerService {
 
     /**
      * 预估剪枝后的组合数量（实时更新）
+     *
+     * 当选择了目标套装时，会考虑只有包含>=4个目标套装盘的组合才有效
      */
     estimateCombinations(config: {
         weapons: WEngine[];
@@ -676,6 +681,7 @@ export class OptimizerService {
             weapons: selectedWeapons.length
         };
 
+        // 统一计算全量组合数（目标套装过滤在 Worker 内部进行）
         let total = selectedWeapons.length || 1;
         for (let slot = 1; slot <= 6; slot++) {
             const slotKey = `slot${slot}`;
@@ -691,6 +697,7 @@ export class OptimizerService {
 
         return { total, breakdown };
     }
+
 
     /**
      * 创建默认约束配置
@@ -708,7 +715,7 @@ export class OptimizerService {
                 mainStatScore: 10,
                 pruneThreshold: 10,
             },
-            activeDiskSets: [],
+            targetSetId: '',
         };
     }
 

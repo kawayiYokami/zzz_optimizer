@@ -41,7 +41,7 @@ export class PresetGenerator {
         mainStatScore: 10,
         pruneThreshold: 10,
       },
-      activeDiskSets: [],
+      targetSetId: '',
     };
 
     return {
@@ -70,7 +70,7 @@ export class PresetGenerator {
         mainStatScore: 10,
         pruneThreshold: 10,
       },
-      activeDiskSets: [],
+      targetSetId: '',
     };
 
     return {

@@ -33,7 +33,7 @@
             :pruning-stats="pruningStats"
             :estimated-combinations="estimatedCombinations"
             :can-start="canStart"
-            :active-disk-sets="constraints.activeDiskSets"
+            :target-set-id="constraints.targetSetId"
             :optimized-discs="optimizedDiscs"
             :all-discs="saveStore.driveDisks"
             :constraints="constraints"
@@ -45,7 +45,7 @@
             @toggle-effective-stat="toggleEffectiveStat"
             @start-optimization="startOptimization"
             @cancel-optimization="cancelOptimization"
-            @update:active-disk-sets="constraints.activeDiskSets = $event"
+            @update:target-set-id="constraints.targetSetId = $event"
             @update:main-stat-filters="handleMainStatFiltersUpdate"
             @update:excluded-team-ids="handleExcludedTeamIdsUpdate"
           />
@@ -67,6 +67,23 @@
             ref="battleInfoCardRef"
             :battle-service="battleService"
             :selected-skill-keys="selectedSkillKeys"
+          />
+
+          <!-- FastEvaluator 调试卡片 -->
+          <FastEvaluatorDebugCard
+            v-if="isDebugMode && targetAgent && selectedEnemy"
+            ref="debugCardRef"
+            :agent="targetAgent"
+            :weapon="equippedWeapon"
+            :enemy="selectedEnemy"
+            :discs="saveStore.driveDisks"
+            :skill-ratio="selectedSkills[0]?.defaultRatio || 1"
+            :skill-anomaly="selectedSkills[0]?.defaultAnomaly || 0"
+            :skill-name="selectedSkills[0]?.name || '未选择'"
+            :skill-type="selectedSkills[0]?.type || 'normal'"
+            :ui-damage="currentDamage"
+            :external-buffs="optimizerService.getTeammateBuffs()"
+            :buff-status-map="battleService.getBuffStatusMap()"
           />
 
           <!-- 优化结果卡片 -->
@@ -105,6 +122,7 @@ import BattleConfigCard from '../components/business/BattleConfigCard.vue';
 import CalculationConfigCard from '../components/business/CalculationConfigCard.vue';
 import BattleInfoCard from '../components/business/BattleInfoCard.vue';
 import OptimizationResultCard from '../components/business/OptimizationResultCard.vue';
+import FastEvaluatorDebugCard from '../components/debug/FastEvaluatorDebugCard.vue';
 
 const saveStore = useSaveStore();
 const gameDataStore = useGameDataStore();
@@ -125,6 +143,10 @@ const workerCount = ref(16);
 const minDiscLevel = ref(15); // 默认只用15级盘
 
 const battleInfoCardRef = ref<InstanceType<typeof BattleInfoCard> | null>(null);
+
+// 调试模式
+const isDebugMode = ref(true);  // 设为 true 开启调试卡片
+const debugCardRef = ref<InstanceType<typeof FastEvaluatorDebugCard> | null>(null);
 
 // Buff 配置相关
 const selectedEnemyId = ref('');  // 默认不选择敌人
@@ -155,7 +177,7 @@ const constraints = ref<OptimizationConstraints>({
     mainStatScore: 10,
     pruneThreshold: 10,
   },
-  activeDiskSets: [], // 激活的驱动盘套装ID列表
+  targetSetId: '', // 目标四件套ID（单选）
 });
 
 // 计算属性
@@ -630,6 +652,12 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
   const agent = targetAgent.value;
   if (!agent) return;
 
+  // 检查是否选择了目标套装
+  if (!constraints.value.targetSetId) {
+    alert('请选择目标四件套');
+    return;
+  }
+
   // 获取角色已装备的武器（如果没有则使用 null）
   const weapon = equippedWeapon.value;
   if (!weapon) {
@@ -689,6 +717,7 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
       externalBuffs: optimizerService.getTeammateBuffs(),
       buffStatusMap: battleService.getBuffStatusMap(),
       topN: 10,
+      estimatedTotal: estimatedCombinations.value.total,  // 传入UI计算的有效组合数
       callbacks: {
         onProgress: (p) => {
           progress.value = p;
