@@ -170,6 +170,6 @@ function getAgentIcon(agentId: string) {
   if (!agent) return '';
   const targetAgent = agent.allAgents.find(a => a.id === agentId);
   if (!targetAgent) return '';
-  return iconService.getCharacterCircleById(targetAgent.game_id);
+  return iconService.getCharacterAvatarById(targetAgent.game_id);
 }
 </script>

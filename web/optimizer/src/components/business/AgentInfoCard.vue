@@ -244,7 +244,7 @@ const emit = defineEmits<{
 const activeTab = ref('stats');
 
 // Icons
-const avatarUrl = computed(() => iconService.getCharacterCircleById(props.agent.game_id));
+const avatarUrl = computed(() => iconService.getCharacterAvatarById(props.agent.game_id));
 const elementUrl = computed(() => iconService.getElementIconUrl(props.agent.element));
 
 // Rarity Color

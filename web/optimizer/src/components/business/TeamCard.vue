@@ -19,7 +19,7 @@
         >
           <img
             v-if="agent"
-            :src="iconService.getCharacterCropById(agent.game_id)"
+            :src="iconService.getCharacterPortraitById(agent.game_id)"
             :alt="agent.name_cn"
             class="w-full h-full object-cover"
           />

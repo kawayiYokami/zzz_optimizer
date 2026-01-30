@@ -15,7 +15,7 @@ build/
 .claude/
 .iflow/
 CLAUDE.md
-
+AGENT.md
 # 环境变量
 .env
 

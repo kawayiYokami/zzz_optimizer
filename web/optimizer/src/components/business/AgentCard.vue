@@ -1,7 +1,7 @@
 <template>
   <div class="card bg-base-100 shadow-sm border border-base-300 w-28 overflow-hidden relative hover:border-primary transition-colors">
     <!-- Main Image Container -->
-    <figure :class="['relative aspect-square w-full bg-base-200', rarityGradientClass]">
+    <figure :class="['relative aspect-square w-full bg-base-200', rarityGradientClass, grayscaleClass]">
         <!-- Avatar -->
         <img
             v-if="agentIconUrl"
@@ -47,6 +47,7 @@ import { iconService, CharacterIconType } from '../../services/icon.service';
 
 const props = defineProps<{
   agent: Agent;
+  grayscale?: boolean;
 }>();
 
 const rarityGradientClass = computed(() => {
@@ -55,9 +56,13 @@ const rarityGradientClass = computed(() => {
     return isS ? 'bg-gradient-to-br from-[var(--rarity-s-gradient-start)] to-[var(--rarity-s-gradient-end)]' : 'bg-gradient-to-br from-[var(--rarity-a-gradient-start)] to-[var(--rarity-a-gradient-end)]';
 });
 
+const grayscaleClass = computed(() => {
+    return props.grayscale ? 'grayscale' : '';
+});
+
 const agentIconUrl = computed(() => {
-    // 使用 game_id 获取半身像图标
-    const url = iconService.getCharacterCropById(props.agent.game_id);
+    // 使用 game_id 获取半身像
+    const url = iconService.getCharacterPortraitById(props.agent.game_id);
     return url;
 });
 

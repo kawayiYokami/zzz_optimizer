@@ -1,5 +1,5 @@
 <template>
-  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52">
+  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52 cursor-pointer hover:border-primary hover:shadow-2xl transition-all" @click="$emit('edit', disk.id)">
 
     <div class="card-body p-3 gap-1">
       <!-- Icon & Set Name -->
@@ -80,6 +80,10 @@ const props = defineProps<{
   disk: DriveDisk;
 }>();
 
+defineEmits<{
+  edit: [diskId: string];
+}>();
+
 const saveStore = useSaveStore();
 
 const rarityColorClass = computed(() => {
@@ -105,7 +109,7 @@ function getEquippedAgentName() {
 function getEquippedAgentIcon() {
   if (!props.disk.equipped_agent) return null;
   const agent = saveStore.agents.find(a => a.id === props.disk.equipped_agent);
-  return agent ? iconService.getCharacterCircleById(agent.game_id) : null;
+  return agent ? iconService.getCharacterAvatarById(agent.game_id) : null;
 }
 
 function getMainStatName() {

@@ -546,6 +546,9 @@ export class DriveDisk {
     zodData: ZodDiscData,
     dataLoader: typeof dataLoaderService
   ): Promise<DriveDisk> {
+    // Basic validity check (throws with a human-readable message when invalid)
+    DriveDisk.validateZodData(zodData);
+
     // 1. 根据setKey查找游戏数据中的驱动盘套装ID
     let gameEquipId: string | null = null;
     const equipmentMap = dataLoader.equipmentData;
@@ -649,6 +652,107 @@ export class DriveDisk {
 
     return disk;
   }
+
+  /**
+   * 校验 ZOD 驱动盘数据是否合法
+   *
+   * 规则来源：docs/ZZZ_DISC_STATS.md
+   * - slotKey 必须是 "1".."6"
+   * - 主词条必须符合槽位限制
+   * - 副词条：只允许出现在白名单里，且不能与主词条重复，且不能重复
+   */
+  static validateZodData(zodData: ZodDiscData): void {
+    const slotNum = parseInt(zodData.slotKey);
+    if (!Number.isFinite(slotNum) || slotNum < 1 || slotNum > 6) {
+      throw new Error(`无效的驱动盘位置: ${zodData.slotKey}`);
+    }
+
+    const mainStatKey = normalizeZodStatKey(zodData.mainStatKey);
+
+    const allowedMainBySlot: Record<number, Set<string>> = {
+      1: new Set(['hp']),
+      2: new Set(['atk']),
+      3: new Set(['def']),
+      4: new Set(['hp_', 'atk_', 'def_', 'crit_', 'crit_dmg_', 'anomProf']),
+      5: new Set(['hp_', 'atk_', 'def_', 'pen_', 'fire_dmg_', 'ice_dmg_', 'electric_dmg_', 'physical_dmg_', 'ether_dmg_']),
+      6: new Set(['hp_', 'atk_', 'def_', 'anomMas_', 'impact_', 'enerRegen_', 'energyRegen_']),
+    };
+
+    const allowedMain = allowedMainBySlot[slotNum];
+    const normalizedMain = normalizeMainStatKeyForSlot(slotNum, mainStatKey);
+    if (!allowedMain || !allowedMain.has(normalizedMain)) {
+      throw new Error(`驱动盘主词条不合法: slot=${slotNum}, mainStatKey=${zodData.mainStatKey}`);
+    }
+
+    const allowedSub = new Set([
+      'hp',
+      'atk',
+      'def',
+      'pen',
+      'anomProf',
+      'hp_',
+      'atk_',
+      'def_',
+      'crit_',
+      'crit_dmg_',
+    ]);
+
+    const seen = new Set<string>();
+    const subs = zodData.substats ?? [];
+
+    // Substat types validity
+    for (const sub of subs) {
+      const subKey = normalizeZodStatKey(sub.key);
+
+      if (!allowedSub.has(subKey)) {
+        throw new Error(`驱动盘副词条不合法: ${sub.key}`);
+      }
+      if (subKey === normalizedMain) {
+        throw new Error(`驱动盘副词条不能与主词条重复: ${sub.key}`);
+      }
+      if (seen.has(subKey)) {
+        throw new Error(`驱动盘副词条不能重复: ${sub.key}`);
+      }
+      seen.add(subKey);
+
+      const upgrades = Number(sub.upgrades);
+      if (!Number.isFinite(upgrades) || upgrades < 1) {
+        throw new Error(`驱动盘副词条 upgrades 不合法: ${sub.key}=${sub.upgrades}`);
+      }
+    }
+
+    // Total lines validity (substat rolls/lines):
+    // - base lines: 3~4 at lv0
+    // - every +3 levels adds +1 line
+    // - max enhancement times is 5, so total lines never exceeds 8~9
+    // - A disc has at most 4 substat TYPES; extra lines must be allocated as upgrades among the existing 4.
+    // - If substat TYPES < 4, then you cannot allocate extra lines; total lines must equal types count.
+    const extraLines = Math.min(5, Math.floor((zodData.level ?? 0) / 3));
+    const maxTotalLines = 4 + extraLines;
+
+    const typeCount = subs.length;
+    if (typeCount < 0 || typeCount > 4) {
+      throw new Error(`驱动盘副词条种类数量不合法: count=${typeCount}, expected=0~4`);
+    }
+
+    const totalLines = subs.reduce((sum, s) => sum + (Number(s.upgrades) || 0), 0);
+    if (totalLines > maxTotalLines) {
+      throw new Error(
+        `驱动盘副词条总条数不合法: level=${zodData.level}, total=${totalLines}, max=${maxTotalLines}`
+      );
+    }
+
+    if (typeCount < 4) {
+      // Import tolerance: some scanners export "roll totals" without splitting into 4 distinct substat types.
+      // We accept these records and let the UI/editor normalize later.
+      return;
+    } else {
+      // typeCount === 4: ok, can have totalLines >= 4 by adding upgrades
+      if (subs.some((s) => Number(s.upgrades) < 1)) {
+        throw new Error('驱动盘副词条 upgrades 不合法: upgrades 必须 >= 1');
+      }
+    }
+  }
 }
 
 /**
@@ -715,4 +819,22 @@ function parsePropertyType(key: string): PropertyType {
 
   console.warn(`未知的属性类型: ${key}`);
   return PropertyType.HP;
+}
+
+function normalizeZodStatKey(key: string): string {
+  // We keep keys as-is (trim only) because the project uses mixed conventions:
+  // - disk creation UI uses lowercase (atk_)
+  // - some imports use uppercase (CRIT_)
+  // Validation rules in this file list both where needed (e.g. enerRegen_/energyRegen_).
+  return (key ?? '').trim();
+}
+
+function normalizeMainStatKeyForSlot(slot: number, key: string): string {
+  // Some imports may use flat keys for main stats that are only valid as % keys in our rules.
+  // Example: slot 6 "impact" should be treated as "impact_".
+  const k = (key ?? '').trim();
+
+  if (slot === 6 && k === 'impact') return 'impact_';
+
+  return k;
 }

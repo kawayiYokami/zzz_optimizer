@@ -8,9 +8,9 @@ import { DataLoaderService } from './data-loader.service';
 const ASSETS_BASE_URL = '/game-data/icons';
 
 export enum CharacterIconType {
-  AVATAR = 'avatar', // 标准头像 (IconRoleXX)
-  CIRCLE = 'circle', // 圆形头像 (IconRoleCircleXX)
-  CROP = 'crop',     // 半身像 (IconRoleCropXX)
+  FULL_BODY = 'full_body', // 全身立绘
+  AVATAR = 'avatar',       // 圆形头像
+  PORTRAIT = 'portrait',   // 半身像
 }
 
 export class IconService {
@@ -28,9 +28,9 @@ export class IconService {
   /**
    * 获取角色图标
    * @param iconCode 角色图标代码 (如 "IconRole09")
-   * @param type 图标类型 (avatar, circle, crop)
+   * @param type 图标类型
    */
-  public getCharacterIconUrl(iconCode: string, type: CharacterIconType = CharacterIconType.AVATAR): string {
+  public getCharacterIconUrl(iconCode: string, type: CharacterIconType = CharacterIconType.FULL_BODY): string {
 
     if (!iconCode) {
       console.warn('[IconService.getCharacterIconUrl] Empty iconCode provided');
@@ -44,20 +44,22 @@ export class IconService {
     // 假设基础 filename 是 "IconRoleXX"
     if (filename.startsWith('IconRole')) {
       switch (type) {
-        case CharacterIconType.CIRCLE:
+        case CharacterIconType.AVATAR:
+          // 圆形头像 (IconRoleCircleXX)
           if (!filename.startsWith('IconRoleCircle')) {
             filename = filename.replace('IconRole', 'IconRoleCircle');
           }
           break;
-        case CharacterIconType.CROP:
+        case CharacterIconType.PORTRAIT:
+          // 半身像 (IconRoleCropXX)
           if (!filename.startsWith('IconRoleCrop')) {
             filename = filename.replace('IconRole', 'IconRoleCrop');
           }
           break;
-        case CharacterIconType.AVATAR:
+        case CharacterIconType.FULL_BODY:
         default:
-          // 确保不包含 Circle 或 Crop (如果传入的是 Circle/Crop 的名字但请求 Avatar)
-          // 这里简单的替换可能不够，如果传入的是 IconRoleCircle09，要转回 IconRole09
+          // 全身立绘 (IconRoleXX，保持原样)
+          // 确保不包含 Circle 或 Crop
           if (filename.startsWith('IconRoleCircle')) {
             filename = filename.replace('IconRoleCircle', 'IconRole');
           } else if (filename.startsWith('IconRoleCrop')) {
@@ -72,7 +74,15 @@ export class IconService {
   }
 
   /**
-   * 获取角色头像图标（标准方形）
+   * 获取角色全身立绘（大图展示）
+   * @param characterId 角色游戏ID
+   */
+  public getCharacterFullBodyById(characterId: string): string {
+    return this.getCharacterIconById(characterId, CharacterIconType.FULL_BODY);
+  }
+
+  /**
+   * 获取角色头像（圆形）
    * @param characterId 角色游戏ID
    */
   public getCharacterAvatarById(characterId: string): string {
@@ -80,19 +90,11 @@ export class IconService {
   }
 
   /**
-   * 获取角色圆形图标
+   * 获取角色半身像（用于卡片背景）
    * @param characterId 角色游戏ID
    */
-  public getCharacterCircleById(characterId: string): string {
-    return this.getCharacterIconById(characterId, CharacterIconType.CIRCLE);
-  }
-
-  /**
-   * 获取角色半身像图标（用于卡片背景）
-   * @param characterId 角色游戏ID
-   */
-  public getCharacterCropById(characterId: string): string {
-    return this.getCharacterIconById(characterId, CharacterIconType.CROP);
+  public getCharacterPortraitById(characterId: string): string {
+    return this.getCharacterIconById(characterId, CharacterIconType.PORTRAIT);
   }
 
   /**
@@ -133,6 +135,8 @@ export class IconService {
    * @param weaponId 音擎ID
    */
   public getWeaponIconById(weaponId: string): string {
+    if (!weaponId) return '';
+
     const dataLoader = DataLoaderService.getInstance();
     const weapon = dataLoader.weaponData?.get(weaponId);
 
@@ -166,6 +170,8 @@ export class IconService {
    * @param equipmentId 驱动盘ID
    */
   public getEquipmentIconById(equipmentId: string): string {
+    if (!equipmentId) return '';
+
     const dataLoader = DataLoaderService.getInstance();
     const equipment = dataLoader.equipmentData?.get(equipmentId);
     if (!equipment || !equipment.icon) {

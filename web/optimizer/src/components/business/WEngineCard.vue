@@ -1,5 +1,8 @@
 <template>
-  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52 overflow-hidden">
+  <div
+    class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52 overflow-hidden cursor-pointer hover:border-primary hover:shadow-2xl transition-all"
+    @click="$emit('edit', wengine.id)"
+  >
     <!-- Image Section with Rarity Gradient -->
     <figure :class="['relative h-32 w-full', rarityGradientClass]">
         <!-- Weapon Type Icon (Top Left) -->
@@ -72,6 +75,10 @@ import { iconService } from '../../services/icon.service';
 
 const props = defineProps<{
   wengine: WEngine;
+}>();
+
+defineEmits<{
+  edit: [wengineId: string];
 }>();
 
 const rarityGradientClass = computed(() => {

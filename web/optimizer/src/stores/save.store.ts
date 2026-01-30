@@ -23,7 +23,7 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { SaveData } from '../model/save-data-instance';
 import { dataLoaderService } from '../services/data-loader.service';
-import type { SaveDataZod } from '../model/save-data-zod';
+import type { SaveDataZod, ZodDiscData, ZodWengineData } from '../model/save-data-zod';
 
 const STORAGE_KEY = 'zzz_optimizer_saves';
 const CURRENT_SAVE_KEY = 'zzz_optimizer_current_save';
@@ -228,8 +228,14 @@ export const useSaveStore = defineStore('save', () => {
       // 从rawSaves重新生成当前存档实例
       const rawSave = rawSaves.value.get(name);
       if (rawSave) {
-        const saveData = await SaveData.fromZod(name, rawSave, dataLoaderService);
+        // 规范化数据，确保 key 格式正确
+        const normalizedRawSave = normalizeZodData(rawSave);
+        
+        const saveData = await SaveData.fromZod(name, normalizedRawSave, dataLoaderService);
         saves.value.set(name, saveData);
+        
+        // 同步规范化后的数据回 rawSaves
+        rawSaves.value.set(name, normalizedRawSave);
       }
 
       currentSaveName.value = name;
@@ -900,6 +906,203 @@ export const useSaveStore = defineStore('save', () => {
     return team?.optimizationConfig;
   }
 
+  /**
+   * 创建音擎
+   */
+  function buildZodWengineData(
+    key: string,
+    level: number = 60,
+    refinement: number = 1,
+    promotion: number = 5
+  ): ZodWengineData {
+    const normalizedKey = normalizeWengineKey(key);
+    const id = `wengine_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+
+    return {
+      id,
+      key: normalizedKey,
+      level,
+      modification: refinement,
+      promotion,
+      location: '',
+      lock: false,
+    };
+  }
+
+  async function createWEngine(
+    key: string,
+    level: number = 60,
+    refinement: number = 1,
+    promotion: number = 5
+  ): Promise<boolean> {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!rawSave) {
+      return false;
+    }
+
+    const newWengine = buildZodWengineData(key, level, refinement, promotion);
+
+    if (!rawSave.wengines) {
+      rawSave.wengines = [];
+    }
+
+    rawSave.wengines.push(newWengine);
+    saveToStorage();
+
+    // 重新生成实例对象
+    return await switchSave(currentSaveName.value);
+  }
+
+  /**
+   * 更新音擎精炼等级（编辑用）
+   */
+  async function updateWEngineRefinement(wengineId: string, refinement: number): Promise<boolean> {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!rawSave?.wengines) {
+      return false;
+    }
+
+    const rawWengine = rawSave.wengines.find((w) => w.id === wengineId);
+    if (!rawWengine) {
+      return false;
+    }
+
+    rawWengine.modification = refinement;
+    saveToStorage();
+
+    return await switchSave(currentSaveName.value);
+  }
+
+  /**
+   * 创建驱动盘
+   */
+  function buildZodDiscData(
+    setKey: string,
+    rarity: string,
+    level: number = 60,
+    slotKey: string,
+    mainStatKey: string,
+    substats: ZodDiscData['substats'] = []
+  ): ZodDiscData {
+    // 规范化 setKey
+    const normalizedSetKey = normalizeDiscSetKey(setKey);
+
+    // slotKey 兼容：
+    // - ZOD 导出规范： "1".."6"
+    // - UI 可能传: "slot1".."slot6"
+    const slotStr = slotKey.startsWith('slot') ? slotKey.replace('slot', '') : slotKey;
+
+    const id = `disk_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+
+    return {
+      id,
+      setKey: normalizedSetKey,
+      rarity,
+      level,
+      slotKey: slotStr,
+      mainStatKey,
+      substats,
+      location: '',
+      lock: false,
+      trash: false,
+    };
+  }
+
+  async function createDriveDisk(
+    setKey: string,
+    rarity: string,
+    level: number = 60,
+    slotKey: string,
+    mainStatKey: string,
+    substats: ZodDiscData['substats'] = []
+  ): Promise<boolean> {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!rawSave) {
+      return false;
+    }
+
+    const newDisk = buildZodDiscData(setKey, rarity, level, slotKey, mainStatKey, substats);
+
+    if (!rawSave.discs) {
+      rawSave.discs = [];
+    }
+
+    rawSave.discs.push(newDisk);
+    saveToStorage();
+
+    // 重新生成实例对象
+    const success = await switchSave(currentSaveName.value);
+    return success;
+  }
+
+  /**
+   * 更新驱动盘副词条（仅更新 substats/upgrades，不允许改套装/部位/稀有度/主词条）
+   */
+  async function updateDriveDiskSubstats(
+    diskId: string,
+    substats: ZodDiscData['substats']
+  ): Promise<boolean> {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!rawSave?.discs) {
+      return false;
+    }
+
+    const rawDisk = rawSave.discs.find((d) => d.id === diskId);
+    if (!rawDisk) {
+      return false;
+    }
+
+    rawDisk.substats = substats;
+    saveToStorage();
+
+    return await switchSave(currentSaveName.value);
+  }
+
+  /**
+   * 删除驱动盘
+   */
+  async function deleteDriveDisk(diskId: string): Promise<boolean> {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!rawSave?.discs) {
+      return false;
+    }
+
+    // 解除所有角色装备引用
+    rawSave.characters?.forEach((c) => {
+      if (!c.equippedDiscs) return;
+      for (const [slotKey, equippedId] of Object.entries(c.equippedDiscs)) {
+        if (equippedId === diskId) {
+          c.equippedDiscs[slotKey] = '';
+        }
+      }
+    });
+
+    rawSave.discs = rawSave.discs.filter((d) => d.id !== diskId);
+    saveToStorage();
+
+    return await switchSave(currentSaveName.value);
+  }
+
   return {
     // 状态
     saves,
@@ -942,5 +1145,10 @@ export const useSaveStore = defineStore('save', () => {
     updateTeamOptimizationConfig, // 更新队伍优化配置
     updateTeamOptimizationResults, // 更新队伍优化结果
     getTeamOptimizationConfig,    // 获取队伍优化配置
+    createWEngine,                // 创建音擎
+    createDriveDisk,              // 创建驱动盘
+    updateDriveDiskSubstats,      // 更新驱动盘副词条（编辑用）
+    deleteDriveDisk,              // 删除驱动盘（编辑用）
+    updateWEngineRefinement,      // 更新音擎精炼（编辑用）
   };
 });

@@ -48,13 +48,13 @@
                 
                 <div class="flex flex-wrap justify-center gap-4">
                   <div
-                    v-for="agent in filteredAndSortedAgents"
-                    :key="agent.id"
+                    v-for="item in filteredAndSortedAgents"
+                    :key="item.agent.game_id"
                     class="cursor-pointer transform-gpu transition-transform duration-200 hover:scale-105"
-                    :class="{ 'ring-4 ring-primary ring-offset-2 ring-offset-base-200 rounded-box': selectedAgentId === agent.id }"
-                    @click="selectAgent(agent.id)"
+                    :class="{ 'ring-4 ring-primary ring-offset-2 ring-offset-base-200 rounded-box': selectedAgentId === item.agent.game_id }"
+                    @click="selectAgent(item.agent.game_id, item.isOwned)"
                   >
-                    <AgentCard :agent="agent" />
+                    <AgentCard :agent="item.agent" :grayscale="!item.isOwned" />
                   </div>
                 </div>
               </div>
@@ -141,24 +141,90 @@
         <button @click="closeFullImageModal">close</button>
       </form>
     </dialog>
+
+    <!-- 创建角色弹窗 -->
+    <dialog class="modal" :class="{ 'modal-open': showCreateAgentModal }">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">创建角色</h3>
+        
+        <div v-if="selectedCharacterInfo" class="space-y-4">
+          <!-- 角色信息 -->
+          <div class="flex items-center gap-4 p-4 bg-base-200 rounded-lg">
+            <img :src="createModalAvatarUrl" :alt="selectedCharacterInfo.CHS" class="w-16 h-16 rounded" />
+            <div>
+              <h4 class="font-bold text-xl">{{ selectedCharacterInfo.CHS }}</h4>
+              <p class="text-sm text-base-content/70">{{ selectedCharacterInfo.EN }}</p>
+            </div>
+          </div>
+
+          <!-- 影画选择 -->
+          <div>
+            <label class="label">
+              <span class="label-text font-bold">影画等级</span>
+            </label>
+            <div class="grid grid-cols-7 gap-2">
+              <button
+                v-for="cinema in cinemaOptions"
+                :key="cinema"
+                @click="selectedCinema = cinema"
+                class="btn btn-sm"
+                :class="{
+                  'btn-primary': selectedCinema === cinema,
+                  'btn-outline': selectedCinema !== cinema
+                }"
+              >
+                {{ cinema }}
+              </button>
+            </div>
+          </div>
+
+          <!-- 默认信息提示 -->
+          <div class="alert alert-info">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <h4 class="font-bold">默认配置</h4>
+              <p class="text-xs">等级: 60 | 突破: 5 | 技能等级: 1</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-action">
+          <button class="btn" @click="closeCreateAgentModal">取消</button>
+          <button class="btn btn-primary" @click="createAgent">创建</button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button @click="closeCreateAgentModal">close</button>
+      </form>
+    </dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useSaveStore } from '../stores/save.store';
+import { useGameDataStore } from '../stores/game-data.store';
 import AgentCard from '../components/business/AgentCard.vue';
 import AgentInfoCard from '../components/business/AgentInfoCard.vue';
 import { ElementType, WeaponType } from '../model/base';
 import { iconService } from '../services/icon.service';
+import { dataLoaderService } from '../services/data-loader.service';
 import type { Agent } from '../model/agent';
+import type { CharacterInfo } from '../services/data-loader.service';
 
 const saveStore = useSaveStore();
+const gameDataStore = useGameDataStore();
 
 // 状态
 const selectedAgentId = ref<string | null>(null);
 const showFullImageModal = ref(false);
-const sortBy = ref<'rarity'>('rarity'); // 简化排序，默认按稀有度
+const showCreateAgentModal = ref(false);
+const selectedCharacterInfo = ref<CharacterInfo | null>(null);
+const selectedCharacterGameId = ref<string | null>(null);
+const selectedCinema = ref(0);
+const sortBy = ref<'rarity'>('rarity');
 const sortAscending = ref(false);
 
 // 全身立绘缩放和拖动状态
@@ -192,22 +258,108 @@ const weaponTypes = [
   { value: WeaponType.DEFENSE, label: '防护', icon: iconService.getWeaponTypeIconUrl(WeaponType.DEFENSE) },
 ];
 
+// 影画选项
+const cinemaOptions = [0, 1, 2, 3, 4, 5, 6];
+
 // 计算属性
-const allAgents = computed(() => saveStore.agents);
+const ownedAgents = computed(() => saveStore.agents);
+
+// 创建一个映射，快速判断角色是否拥有
+const ownedAgentIdsMap = computed(() => {
+  const map = new Map<string, string>();
+  ownedAgents.value.forEach(agent => {
+    map.set(agent.game_id, agent.id);
+  });
+  return map;
+});
+
+// 获取所有可显示的角色列表
+const displayAgentList = computed(() => {
+  const result: { agent: Agent; isOwned: boolean }[] = [];
+  const characterData = dataLoaderService.characterData;
+
+  if (!characterData) return result;
+
+  // 遍历所有游戏角色（使用 Map 的键和值）
+  characterData.forEach((charInfo, gameId) => {
+    const ownedAgentId = ownedAgentIdsMap.value.get(gameId);
+    
+    if (ownedAgentId) {
+      // 已拥有的角色
+      const ownedAgent = ownedAgents.value.find(a => a.id === ownedAgentId);
+      if (ownedAgent) {
+        result.push({ agent: ownedAgent, isOwned: true });
+      }
+    } else {
+      // 未拥有的角色，创建一个临时的 Agent 对象用于显示
+      const tempAgent: Agent = {
+        id: gameId,
+        game_id: gameId,
+        name_cn: charInfo.CHS,
+        name_en: charInfo.EN,
+        level: 0,
+        breakthrough: 0,
+        cinema: 0,
+        rarity: charInfo.rank === 4 ? 4 : 3,
+        element: ElementType.PHYSICAL, // 默认值，会从 charInfo 覆盖
+        weapon_type: WeaponType.ATTACK, // 默认值，会从 charInfo 覆盖
+        element_value: charInfo.element,
+        weapon_type_value: charInfo.type,
+        hp: 0,
+        atk: 0,
+        def: 0,
+        impact: 0,
+        anomaly_mastery: 0,
+        crit_rate: 0,
+        crit_dmg: 0,
+        hp_bonus: 0,
+        atk_bonus: 0,
+        def_bonus: 0,
+        impact_bonus: 0,
+        anomaly_mastery_bonus: 0,
+        energy_regeneration: 0,
+        skill: 0,
+        skill1: 0,
+        skill2: 0,
+        skill3: 0,
+        skills: { normal: 0, dodge: 0, assist: 0, special: 0, chain: 0 },
+        equipped_wengine: null,
+        equipped_drive_disks: [null, null, null, null, null, null],
+      } as any;
+      
+      // 根据角色信息设置属性
+      if (charInfo.element === 1) tempAgent.element = ElementType.PHYSICAL;
+      else if (charInfo.element === 2) tempAgent.element = ElementType.FIRE;
+      else if (charInfo.element === 3) tempAgent.element = ElementType.ICE;
+      else if (charInfo.element === 4) tempAgent.element = ElementType.ELECTRIC;
+      else if (charInfo.element === 5) tempAgent.element = ElementType.ETHER;
+      
+      if (charInfo.type === 1) tempAgent.weapon_type = WeaponType.ATTACK;
+      else if (charInfo.type === 2) tempAgent.weapon_type = WeaponType.STUN;
+      else if (charInfo.type === 3) tempAgent.weapon_type = WeaponType.ANOMALY;
+      else if (charInfo.type === 4) tempAgent.weapon_type = WeaponType.SUPPORT;
+      else if (charInfo.type === 5) tempAgent.weapon_type = WeaponType.DEFENSE;
+      
+      result.push({ agent: tempAgent, isOwned: false });
+    }
+  });
+
+  return result;
+});
 
 const filteredAndSortedAgents = computed(() => {
-  let result = [...allAgents.value];
+  let result = [...displayAgentList.value];
 
   // 应用筛选
   if (filters.value.elements.length > 0) {
-    result = result.filter(agent =>
-      filters.value.elements.includes(agent.element)
+    result = result.filter(item =>
+      filters.value.elements.includes(item.agent.element)
     );
   }
 
   if (filters.value.weaponTypes.length > 0) {
-    result = result.filter(agent =>
-      filters.value.weaponTypes.includes(agent.weapon_type)
+    result = result.filter(item =>
+      filters.value.weaponTypes.includes(item.agent.weapon_type)
     );
   }
 
@@ -215,11 +367,16 @@ const filteredAndSortedAgents = computed(() => {
   result.sort((a, b) => {
     let comparison = 0;
 
+    // 先按是否拥有排序（拥有的在前）
+    if (a.isOwned !== b.isOwned) {
+      return a.isOwned ? -1 : 1;
+    }
+
     // 稀有度排序（S级=4, A级=3）
-    comparison = b.rarity - a.rarity;
+    comparison = b.agent.rarity - a.agent.rarity;
     // 稀有度相同时按等级降序
     if (comparison === 0) {
-      comparison = b.level - a.level;
+      comparison = b.agent.level - a.agent.level;
     }
 
     return sortAscending.value ? -comparison : comparison;
@@ -230,7 +387,7 @@ const filteredAndSortedAgents = computed(() => {
 
 const selectedAgent = computed(() => {
   if (!selectedAgentId.value) return null;
-  return allAgents.value.find(agent => agent.id === selectedAgentId.value);
+  return ownedAgents.value.find(agent => agent.game_id === selectedAgentId.value);
 });
 
 const hasActiveFilters = computed(() => {
@@ -238,11 +395,103 @@ const hasActiveFilters = computed(() => {
          filters.value.weaponTypes.length > 0;
 });
 
+// 创建弹窗中的角色头像 URL
+const createModalAvatarUrl = computed(() => {
+  if (!selectedCharacterInfo.value) return '';
+  return iconService.getCharacterPortraitById(selectedCharacterGameId.value || '');
+});
+
 // 方法
-function selectAgent(agentId: string) {
-  selectedAgentId.value = agentId;
-  // 保存到 localStorage
-  localStorage.setItem('zzz_selected_agent_id', agentId);
+function selectAgent(agentId: string, isOwned: boolean) {
+  if (isOwned) {
+    // agentId 是 game_id
+    selectedAgentId.value = agentId;
+    // 保存到 localStorage
+    localStorage.setItem('zzz_selected_agent_id', agentId);
+  } else {
+    // 打开创建角色弹窗
+    selectedCharacterGameId.value = agentId;
+    selectedCharacterInfo.value = dataLoaderService.characterData?.get(agentId) || null;
+    selectedCinema.value = 0;
+    showCreateAgentModal.value = true;
+  }
+}
+
+async function createAgent() {
+  if (!selectedCharacterInfo.value || !selectedCharacterGameId.value) return;
+  
+  try {
+    // 创建新角色，默认满级（等级 60）
+    const newAgentId = `agent_${Date.now()}`;
+    const characterKey = selectedCharacterInfo.value.code || selectedCharacterGameId.value;
+    
+    // 构建 ZodCharacterData
+    const newCharacter = {
+      id: newAgentId,
+      key: characterKey,
+      level: 60,
+      promotion: 5, // 满突破
+      mindscape: selectedCinema.value, // 用户选择的影画
+      core: 1,
+      basic: 1,
+      dodge: 1,
+      assist: 1,
+      special: 1,
+      chain: 1,
+      equippedWengine: '',
+      equippedDiscs: {
+        '1': '',
+        '2': '',
+        '3': '',
+        '4': '',
+        '5': '',
+        '6': '',
+      },
+    };
+
+    // 获取当前存档并添加角色
+    if (!saveStore.currentSaveName) {
+      console.error('No current save');
+      return;
+    }
+
+    const rawSave = saveStore.rawSaves.get(saveStore.currentSaveName);
+    if (!rawSave) {
+      console.error('No raw save found');
+      return;
+    }
+
+    // 确保 characters 数组存在
+    if (!rawSave.characters) {
+      rawSave.characters = [];
+    }
+
+    rawSave.characters.push(newCharacter);
+    
+    // 保存并刷新
+    await saveStore.switchSave(saveStore.currentSaveName);
+    
+    // 关闭弹窗并选中新建的角色
+    showCreateAgentModal.value = false;
+    selectedCharacterInfo.value = null;
+    selectedCharacterGameId.value = null;
+    selectedCinema.value = 0;
+    
+    // 找到新建的角色并选中
+    const createdAgent = saveStore.agents.find(a => a.game_id === selectedCharacterGameId.value);
+    if (createdAgent) {
+      selectAgent(createdAgent.game_id, true);
+    }
+  } catch (error) {
+    console.error('Failed to create agent:', error);
+  }
+}
+
+function closeCreateAgentModal() {
+  showCreateAgentModal.value = false;
+  selectedCharacterInfo.value = null;
+  selectedCharacterGameId.value = null;
+  selectedCinema.value = 0;
 }
 
 function toggleSortOrder() {
@@ -281,8 +530,8 @@ function getWeaponTypeIcon(weaponType: WeaponType): string {
 }
 
 function getCharacterFullImage(agent: Agent): string {
-  // 使用 avatar 类型获取全身立绘
-  return iconService.getCharacterAvatarById(agent.game_id);
+  // 使用全身立绘类型获取全身立绘
+  return iconService.getCharacterFullBodyById(agent.game_id);
 }
 
 function openFullImageModal() {
@@ -361,14 +610,19 @@ function handleMouseUp() {
 }
 
 // 生命周期
-onMounted(() => {
+onMounted(async () => {
+  // 初始化游戏数据
+  if (!gameDataStore.isInitialized) {
+    await gameDataStore.initialize();
+  }
+  
   // 从 localStorage 恢复上次选中的角色
   const savedAgentId = localStorage.getItem('zzz_selected_agent_id');
-  if (savedAgentId && allAgents.value.some(agent => agent.id === savedAgentId)) {
+  if (savedAgentId && ownedAgents.value.some(agent => agent.game_id === savedAgentId)) {
     selectedAgentId.value = savedAgentId;
-  } else if (allAgents.value.length > 0) {
+  } else if (ownedAgents.value.length > 0) {
     // 如果没有保存的选择，默认选中第一个
-    selectedAgentId.value = allAgents.value[0].id;
+    selectedAgentId.value = ownedAgents.value[0].game_id;
   }
 });
 </script>

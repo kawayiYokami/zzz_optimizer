@@ -44,10 +44,25 @@
 
         <!-- 驱动盘列表 -->
         <div class="flex flex-wrap justify-center gap-4">
+          <!-- 添加驱动盘卡片（第一个位置） -->
+          <div
+            class="card border-2 border-dashed border-base-300 bg-base-100/50 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all w-52 min-h-[220px] flex items-center justify-center group"
+            @click="openCreateModal"
+          >
+            <div class="flex flex-col items-center gap-2 text-base-content/40 group-hover:text-primary transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              <span class="text-sm font-medium">添加驱动盘</span>
+            </div>
+          </div>
+
+          <!-- 现有驱动盘 -->
           <DriveDiskCard
             v-for="disk in filteredAndSortedDisks"
             :key="disk.id"
             :disk="disk"
+            @edit="openEditModal"
           />
         </div>
 
@@ -58,17 +73,42 @@
         </div>
       </div>
     </div>
+
+    <!-- 创建驱动盘弹窗 -->
+    <DriveDiskCreateModal
+      :show="showCreateModal"
+      @cancel="closeCreateModal"
+      @created="handleCreated"
+    />
+
+    <!-- 编辑驱动盘弹窗 -->
+    <DriveDiskEditModal
+      :show="showEditModal"
+      :disk-id="editingDiskId"
+      @cancel="closeEditModal"
+      @saved="handleEdited"
+      @deleted="handleDeleted"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useSaveStore } from '../stores/save.store';
+import { useGameDataStore } from '../stores/game-data.store';
 import DriveDiskCard from '../components/business/DriveDiskCard.vue';
+import DriveDiskCreateModal from '../components/business/DriveDiskCreateModal.vue';
+import DriveDiskEditModal from '../components/business/DriveDiskEditModal.vue';
 import { DriveDiskPosition } from '../model/drive-disk';
 import { iconService } from '../services/icon.service';
 
 const saveStore = useSaveStore();
+const gameDataStore = useGameDataStore();
+
+// 创建弹窗控制
+const showCreateModal = ref(false);
+const showEditModal = ref(false);
+const editingDiskId = ref<string | null>(null);
 
 // 筛选条件
 const filters = ref({
@@ -163,6 +203,47 @@ function getSetIcon(setName: string): string {
   }
   return '';
 }
+
+// 打开创建弹窗
+function openCreateModal() {
+  showCreateModal.value = true;
+}
+
+// 关闭创建弹窗
+function closeCreateModal() {
+  showCreateModal.value = false;
+}
+
+// 创建成功回调
+function handleCreated() {
+  closeCreateModal();
+}
+
+function openEditModal(diskId: string) {
+  editingDiskId.value = diskId;
+  showEditModal.value = true;
+}
+
+function closeEditModal() {
+  showEditModal.value = false;
+  editingDiskId.value = null;
+}
+
+function handleEdited() {
+  closeEditModal();
+}
+
+function handleDeleted() {
+  closeEditModal();
+}
+
+// 生命周期
+onMounted(async () => {
+  // 初始化游戏数据
+  if (!gameDataStore.isInitialized) {
+    await gameDataStore.initialize();
+  }
+});
 </script>
 
 <style scoped>

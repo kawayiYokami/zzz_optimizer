@@ -47,7 +47,7 @@
                 >
                   <img
                     v-if="agentId"
-                    :src="iconService.getCharacterCircleById(getAgent(agentId)?.game_id || '')"
+                    :src="iconService.getCharacterAvatarById(getAgent(agentId)?.game_id || '')"
                     :alt="getAgent(agentId)?.name_cn"
                     class="w-full h-full object-cover"
                   />
@@ -139,7 +139,7 @@
               @click="selectAgent(agent.id)"
             >
               <img
-                :src="iconService.getCharacterCircleById(agent.game_id)"
+                :src="iconService.getCharacterAvatarById(agent.game_id)"
                 :alt="agent.name_cn"
                 class="w-full h-full object-cover transition-transform group-hover:scale-110"
               />
