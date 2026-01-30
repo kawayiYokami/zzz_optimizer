@@ -33,12 +33,27 @@ export interface SkillDamageParams {
  */
 export interface TotalDamageResult {
   directDamage: number;         // 直伤/贯穿期望
-  anomalyDamage: number;        // 异常持续伤害期望
-  disorderDamage: number;       // 紊乱伤害期望 (450%)
+  anomalyDamage: number;        // 异常伤害期望（tick 型 / 一次型；统一按固定窗口折算总倍率）
+  disorderDamage: number;       // 紊乱伤害期望（一次性结算；倍率随元素变化）
   specialAnomalyDamage: number; // 特殊异常伤害（烈霜等）
   totalDamage: number;          // 总伤害期望
   triggerExpectation: number;   // 异常触发期望 (归一化进度)
   anomalyThreshold: number;     // 敌人异常阈值
+}
+
+export interface DisorderTimeParams {
+  /**
+   * 当前异常状态的“总持续时间”（秒）
+   *
+   * 注意：该值可能受角色/Buff 影响，不应写死为 10。
+   */
+  durationSec: number;
+  /**
+   * 发生紊乱的时间点（秒），相对于异常开始计时。
+   *
+   * 例如：默认异常持续 10 秒，选择“3 秒紊乱”，则 timepointSec=3，remaining=7。
+   */
+  timepointSec: number;
 }
 
 /**
@@ -1128,7 +1143,11 @@ export class BattleService {
    * @param totalSkillRatio 技能总倍率
    * @param anomalyBuildup 异常积蓄系数
    */
-  calculateTotalDamage(totalSkillRatio: number, anomalyBuildup: number): TotalDamageResult {
+  calculateTotalDamage(
+    totalSkillRatio: number,
+    anomalyBuildup: number,
+    disorderTime?: Partial<DisorderTimeParams>
+  ): TotalDamageResult {
     if (!this.team || !this.enemy) {
       throw new Error('请先设置队伍和敌人');
     }
@@ -1166,16 +1185,18 @@ export class BattleService {
     const triggerExpectation = this.calculateAnomalyTriggerExpectation(anomalyBuildup, element);
 
     // 3. 计算异常持续伤害
-    const anomalyParams = DamageCalculator.getAnomalyDotParams(element);
+    const anomalyParams = DamageCalculator.getAnomalyDamageParams(element);
     const anomalyRatios = new RatioSet();
     anomalyRatios.atk_ratio = anomalyParams.totalRatio;
     const anomalyResult = DamageCalculator.calculateAnomalyDamageFromZones(zones, anomalyRatios);
     const anomalyDamage = anomalyResult.damage_expected * triggerExpectation;
 
-    // 4. 计算紊乱伤害
+    // 4. 计算紊乱伤害（一次性结算；倍率与“当前异常状态”和“剩余时间/剩余 tick”相关）
     const disorderRatios = new RatioSet();
-    // 根据元素类型计算紊乱伤害倍率，异常T1=3 + 紊乱T2=7 = 10
-    const T = 7; // 紊乱时间T2=7秒
+
+    const anomalyDurationSec = disorderTime?.durationSec ?? 10;
+    const disorderTimepointSec = disorderTime?.timepointSec ?? 3;
+    const T = Math.max(0, anomalyDurationSec - disorderTimepointSec);
     let disorderRatio = 4.5; // 默认450%
 
     // 根据元素类型计算紊乱伤害倍率

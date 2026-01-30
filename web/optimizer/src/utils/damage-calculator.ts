@@ -16,7 +16,7 @@ import { PropertyCollection } from '../model/property-collection';
 import { PropertyType, ElementType } from '../model/base';
 import type { Agent } from '../model/agent';
 import {
-  getAnomalyDotParams,
+  getAnomalyDamageParams,
   getAnomalyDurationMult,
   getDisorderRatio,
   STANDARD_BUILDUP_THRESHOLD,
@@ -632,20 +632,16 @@ export class DamageCalculator {
    * @param element 元素类型
    * @returns 单次伤害倍率、间隔、持续时间、总伤害倍率
    */
-  static getAnomalyDotParams(element: string): {
-    ratio: number;
-    interval: number;
-    duration: number;
-    totalRatio: number;
-  } {
-    return getAnomalyDotParams(element);
+  static getAnomalyDamageParams(element: string) {
+    return getAnomalyDamageParams(element);
   }
 
   /**
    * 烈霜伤害计算（星见雅专属）
    *
-   * 烈霜是 1500% 冰属性直伤，每次触发异常时额外触发
-   * 期望计算 = 烈霜直伤 × 异常触发期望
+   * 烈霜是“由异常触发的直伤”：
+   * - 结算乘区走直伤（包含防御区等直伤乘区）
+   * - 期望需要再乘“异常触发期望”（积蓄比例，0-1）
    *
    * @param zones 乘区集合
    * @param enemyStats 敌人属性
@@ -722,7 +718,7 @@ export class DamageCalculator {
    *    - 需要推断技能类型（normal/special/ultimate/chain 等）以获取对应等级
    *
    * 2. 异常基础区 = 攻击力 × 异常总倍率
-   *    - 异常总倍率通过 getAnomalyDotParams(element).totalRatio 获取
+   *    - 异常总倍率通过 getAnomalyDamageParams(element).totalRatio 获取
    *    - 持续伤害：总倍率 = 单次倍率 × 触发次数
    *    - 一次性伤害：总倍率 = 单次倍率
    *
@@ -784,7 +780,7 @@ export class DamageCalculator {
 
     // 4. 获取异常倍率（总伤）
     const elementStr = ElementType[agent.element].toLowerCase();
-    const anomParams = this.getAnomalyDotParams(elementStr);
+    const anomParams = this.getAnomalyDamageParams(elementStr);
 
     // 5. 计算异常基础区
     const anomalyBase = baseStat * anomParams.totalRatio;
