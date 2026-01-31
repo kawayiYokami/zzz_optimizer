@@ -66,8 +66,8 @@
     "conversion": {
         "from_property": "ATK_BASE",
         "to_property": "ATK",
-        "conversion_ratio": 0.40,
-        "max_value": 1000
+        "conversion_ratio": 0.20,
+        "max_value": 500
     },
     "trigger_conditions": "发动[展旗]并消耗[涡流]时",
     "max_stacks": 1

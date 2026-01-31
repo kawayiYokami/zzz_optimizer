@@ -11,9 +11,9 @@
       "description": "暴击伤害提升50%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升20%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
       "buffs": [
         {
-          "id": "14109_talent_1_skill_dmg",
-          "name": "霰落星殿-技能伤害",
-          "description": "暴击伤害提升50%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升20%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+          "id": "14109_talent_1_crit_dmg",
+          "name": "霰落星殿-暴击伤害",
+          "description": "暴击伤害提升50%",
           "source": "WENGINE_TALENT",
           "context": "IN_COMBAT",
           "target": {
@@ -27,14 +27,13 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 0.5,
-            "ICE_DMG_": 0.2
+            "CRIT_DMG_": 0.5
           }
         },
         {
-          "id": "14109_talent_1_stats",
-          "name": "霰落星殿-属性提升",
-          "description": "暴击伤害提升50%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升20%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+          "id": "14109_talent_1_ice_dmg",
+          "name": "霰落星殿-冰属性伤害",
+          "description": "发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升20%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
           "source": "WENGINE_TALENT",
           "context": "IN_COMBAT",
           "target": {
@@ -43,12 +42,11 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 2,
           "stack_mode": "linear",
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 0.5,
             "ICE_DMG_": 0.2
           }
         }
@@ -60,9 +58,9 @@
       "description": "暴击伤害提升57%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升23%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
       "buffs": [
         {
-          "id": "14109_talent_2_skill_dmg",
-          "name": "霰落星殿-技能伤害",
-          "description": "暴击伤害提升57%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升23%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+          "id": "14109_talent_2_crit_dmg",
+          "name": "霰落星殿-暴击伤害",
+          "description": "暴击伤害提升57%",
           "source": "WENGINE_TALENT",
           "context": "IN_COMBAT",
           "target": {
@@ -76,14 +74,13 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 0.57,
-            "ICE_DMG_": 0.23
+            "CRIT_DMG_": 0.57
           }
         },
         {
-          "id": "14109_talent_2_stats",
-          "name": "霰落星殿-属性提升",
-          "description": "暴击伤害提升57%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升23%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+          "id": "14109_talent_2_ice_dmg",
+          "name": "霰落星殿-冰属性伤害",
+          "description": "发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升23%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
           "source": "WENGINE_TALENT",
           "context": "IN_COMBAT",
           "target": {
@@ -92,12 +89,11 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 2,
           "stack_mode": "linear",
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 0.57,
             "ICE_DMG_": 0.23
           }
         }
@@ -109,9 +105,9 @@
       "description": "暴击伤害提升65%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升26%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
       "buffs": [
         {
-          "id": "14109_talent_3_skill_dmg",
-          "name": "霰落星殿-技能伤害",
-          "description": "暴击伤害提升65%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升26%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+          "id": "14109_talent_3_crit_dmg",
+          "name": "霰落星殿-暴击伤害",
+          "description": "暴击伤害提升65%",
           "source": "WENGINE_TALENT",
           "context": "IN_COMBAT",
           "target": {
@@ -125,14 +121,13 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 0.65,
-            "ICE_DMG_": 0.26
+            "CRIT_DMG_": 0.65
           }
         },
         {
-          "id": "14109_talent_3_stats",
-          "name": "霰落星殿-属性提升",
-          "description": "暴击伤害提升65%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升26%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+          "id": "14109_talent_3_ice_dmg",
+          "name": "霰落星殿-冰属性伤害",
+          "description": "发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升26%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
           "source": "WENGINE_TALENT",
           "context": "IN_COMBAT",
           "target": {
@@ -141,12 +136,11 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 2,
           "stack_mode": "linear",
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 0.65,
             "ICE_DMG_": 0.26
           }
         }
@@ -158,9 +152,9 @@
       "description": "暴击伤害提升72%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升29%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
       "buffs": [
         {
-          "id": "14109_talent_4_skill_dmg",
-          "name": "霰落星殿-技能伤害",
-          "description": "暴击伤害提升72%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升29%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+          "id": "14109_talent_4_crit_dmg",
+          "name": "霰落星殿-暴击伤害",
+          "description": "暴击伤害提升72%",
           "source": "WENGINE_TALENT",
           "context": "IN_COMBAT",
           "target": {
@@ -174,14 +168,13 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 0.72,
-            "ICE_DMG_": 0.29
+            "CRIT_DMG_": 0.72
           }
         },
         {
-          "id": "14109_talent_4_stats",
-          "name": "霰落星殿-属性提升",
-          "description": "暴击伤害提升72%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升29%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+          "id": "14109_talent_4_ice_dmg",
+          "name": "霰落星殿-冰属性伤害",
+          "description": "发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升29%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
           "source": "WENGINE_TALENT",
           "context": "IN_COMBAT",
           "target": {
@@ -190,12 +183,11 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 2,
           "stack_mode": "linear",
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 0.72,
             "ICE_DMG_": 0.29
           }
         }
@@ -207,9 +199,9 @@
       "description": "暴击伤害提升80%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升32%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
       "buffs": [
         {
-          "id": "14109_talent_5_skill_dmg",
-          "name": "霰落星殿-技能伤害",
-          "description": "暴击伤害提升80%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升32%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+          "id": "14109_talent_5_crit_dmg",
+          "name": "霰落星殿-暴击伤害",
+          "description": "暴击伤害提升80%",
           "source": "WENGINE_TALENT",
           "context": "IN_COMBAT",
           "target": {
@@ -223,14 +215,13 @@
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 0.8,
-            "ICE_DMG_": 0.32
+            "CRIT_DMG_": 0.8
           }
         },
         {
-          "id": "14109_talent_5_stats",
-          "name": "霰落星殿-属性提升",
-          "description": "暴击伤害提升80%；发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升32%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
+          "id": "14109_talent_5_ice_dmg",
+          "name": "霰落星殿-冰属性伤害",
+          "description": "发动[强化特殊技]或队伍中任意角色对敌人施加属性异常效果时，装备者造成的冰属性伤害提升32%，最多叠加2层，持续15秒，每层效果单独结算持续时间。",
           "source": "WENGINE_TALENT",
           "context": "IN_COMBAT",
           "target": {
@@ -239,12 +230,11 @@
             "target_teammate": false,
             "target_bund": false
           },
-          "max_stacks": 1,
+          "max_stacks": 2,
           "stack_mode": "linear",
           "trigger_conditions": "",
           "out_of_combat_stats": {},
           "in_combat_stats": {
-            "CRIT_DMG_": 0.8,
             "ICE_DMG_": 0.32
           }
         }
