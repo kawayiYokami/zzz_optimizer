@@ -202,6 +202,11 @@ export class FastEvaluator {
   calculateDamageWithMultipliers(discs: DiscData[]): {
     damage: number;
     multipliers: number[];
+    snapshots?: {
+      snapshot1: { atk: number; hp: number; def: number; impact: number };
+      snapshot2: { atk: number; hp: number; def: number; impact: number };
+      snapshot3: { atk: number; hp: number; def: number; impact: number };
+    };
   } | null {
     const {
       conversionBuffs,
@@ -283,13 +288,11 @@ export class FastEvaluator {
       this.accumulator[PROP_IDX.IMPACT] *
         (1 + this.accumulator[PROP_IDX.IMPACT_]);
 
-    // 用快照1面板值覆盖基础属性（后续快照统一以面板为基数）
-    // 注意：保留 *_BASE 和 *_ 维度，供普通 buff/转换 buff 继续使用；
-    // 这里仅写回“最终值维度”（ATK/HP/DEF/IMPACT）。
-    this.accumulator[PROP_IDX.ATK] = snapshot1Atk;
-    this.accumulator[PROP_IDX.HP] = snapshot1Hp;
-    this.accumulator[PROP_IDX.DEF] = snapshot1Def;
-    this.accumulator[PROP_IDX.IMPACT] = snapshot1Impact;
+    // 注意：快照1/2/3 的面板值计算使用局外三元组（*_BASE/*_/*）作为输入，
+    // 但不要把 accumulator 的三元组维度“污染”成面板值，否则 finalStats 会同时出现
+    // ATK(面板) + ATK_(局外百分比) 的混合口径，导致展示和语义都混乱。
+    //
+    // 因此这里不再把 snapshot1 写回 accumulator，后续快照全部使用局部变量推进。
 
     // ========================================================================
     // 6. 生成快照2（应用普通 Buff：mergedBuff + 目标4件套 Buff）
@@ -324,15 +327,19 @@ export class FastEvaluator {
       snapshot1Impact * (1 + this.workerMergedBuff[PROP_IDX.IMPACT_]) +
       this.workerMergedBuff[PROP_IDX.IMPACT];
 
-    // 写回快照2面板值（进入转换阶段）
-    this.accumulator[PROP_IDX.ATK] = snapshot2Atk;
-    this.accumulator[PROP_IDX.HP] = snapshot2Hp;
-    this.accumulator[PROP_IDX.DEF] = snapshot2Def;
-    this.accumulator[PROP_IDX.IMPACT] = snapshot2Impact;
+    // 不写回 accumulator（保持局外三元组维度不变），后续用局部变量推进快照3。
 
     // ========================================================================
     // 7. 应用转换类 Buff（快照3；源取快照2，不链式）
     // ========================================================================
+
+    // ========================================================================
+    // 7. 应用转换类 Buff（快照3；源取快照2，不链式）
+    // ========================================================================
+    let snapshot3Atk = snapshot2Atk;
+    let snapshot3Hp = snapshot2Hp;
+    let snapshot3Def = snapshot2Def;
+    let snapshot3Impact = snapshot2Impact;
 
     for (const conv of conversionBuffs) {
       const sourceValue = this.getFinalProp(
@@ -349,15 +356,19 @@ export class FastEvaluator {
         convertedValue = Math.min(convertedValue, conv.maxValue);
       }
 
-      this.accumulator[conv.toPropIdx] += convertedValue;
+      // 转换产物写入快照3面板四维或其它属性槽位
+      if (conv.toPropIdx === PROP_IDX.ATK) snapshot3Atk += convertedValue;
+      else if (conv.toPropIdx === PROP_IDX.HP) snapshot3Hp += convertedValue;
+      else if (conv.toPropIdx === PROP_IDX.DEF) snapshot3Def += convertedValue;
+      else if (conv.toPropIdx === PROP_IDX.IMPACT) snapshot3Impact += convertedValue;
+      else this.accumulator[conv.toPropIdx] += convertedValue;
     }
 
     // ========================================================================
     // 8. 重新计算快照3（转换后最终战斗属性）中可能受影响的基础属性
     // ========================================================================
-    // 注意：此时 accumulator[ATK] 已是快照2面板值，并已叠加转换对 ATK 的影响（若有）
-    // 这里直接取“最终 ATK 面板值”作为直伤基数
-    const finalAtkAfterConv = this.accumulator[PROP_IDX.ATK];
+    // 直伤基数取快照3面板 ATK
+    const finalAtkAfterConv = snapshot3Atk;
 
     // ========================================================================
     // 8. 计算防御区
@@ -378,6 +389,14 @@ export class FastEvaluator {
     // ========================================================================
     // 9. 计算公共乘区
     // ========================================================================
+    // 将“最终战斗面板（参与乘区计算）”写回 accumulator 的最终值维度，方便调试展示：
+    // - ATK/HP/DEF/IMPACT：写入快照3面板值
+    // - *_BASE/*_：仍保留为局外三元组维度（用于解释来源，但不应被当成最终面板）
+    this.accumulator[PROP_IDX.ATK] = snapshot3Atk;
+    this.accumulator[PROP_IDX.HP] = snapshot3Hp;
+    this.accumulator[PROP_IDX.DEF] = snapshot3Def;
+    this.accumulator[PROP_IDX.IMPACT] = snapshot3Impact;
+
     const { critRate, critDmg } = this.calculateCommonMultipliers();
 
     // ========================================================================
@@ -468,7 +487,15 @@ export class FastEvaluator {
       1 + this.accumulator[PROP_IDX.DMG_] + (ELEMENT_TO_DMG_IDX[skillsParams[0].element] !== undefined ? this.accumulator[ELEMENT_TO_DMG_IDX[skillsParams[0].element]] : 0),
     ];
 
-    return { damage: totalVariableDamage, multipliers };
+    return {
+      damage: totalVariableDamage,
+      multipliers,
+      snapshots: {
+        snapshot1: { atk: snapshot1Atk, hp: snapshot1Hp, def: snapshot1Def, impact: snapshot1Impact },
+        snapshot2: { atk: snapshot2Atk, hp: snapshot2Hp, def: snapshot2Def, impact: snapshot2Impact },
+        snapshot3: { atk: snapshot3Atk, hp: snapshot3Hp, def: snapshot3Def, impact: snapshot3Impact },
+      },
+    };
   }
 
   /**
@@ -693,7 +720,7 @@ export class FastEvaluator {
       throw new Error('Failed to calculate damage for createFullResult');
     }
 
-    const { damage: variableDamage, multipliers } = result;
+    const { damage: variableDamage, multipliers, snapshots } = result;
     const { skillsParams, fixedMultipliers, targetSetId } = this.precomputed;
 
     if (!skillsParams || skillsParams.length === 0) {
@@ -769,6 +796,7 @@ export class FastEvaluator {
         discs[5].id,
       ],
       finalStats: this.getAccumulatorSnapshot(),
+      snapshots,
       breakdown: {
         direct: directDamage,
         anomaly: finalAnomaly,

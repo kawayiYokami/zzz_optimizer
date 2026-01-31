@@ -69,6 +69,7 @@
                 :final-stats="finalStatsPc.final"
                 :no-card="true"
                 default-active-tab="final"
+                :snapshots="snapshots"
               />
             </div>
           </div>
@@ -141,7 +142,6 @@
           乘区
         </label>
         <div class="tab-content">
-          <div class="divider text-xs font-bold text-base-content/50 my-2">乘区</div>
           <div class="grid grid-cols-1 gap-4">
             <div>
               <div class="divider text-xs font-bold text-base-content/50 my-2">直伤 / 贯穿</div>
@@ -294,6 +294,10 @@ const props = defineProps<{
   agent: Agent | null;
   weapon: WEngine | null;
   enemy: Enemy | null;
+  enemyLevel?: number;
+  isStunned?: boolean;
+  hasCorruptionShield?: boolean;
+  enemySerialized?: import('../../optimizer/types').SerializedEnemy;
   discs: DriveDisk[];
   skillRatio: number;
   skillAnomaly: number;
@@ -354,6 +358,11 @@ interface DebugData {
   pen3: number;
   anomalyProf3: number;
   _finalStats3?: Float64Array;
+  snapshots?: {
+    snapshot1: { atk: number; hp: number; def: number; impact: number };
+    snapshot2: { atk: number; hp: number; def: number; impact: number };
+    snapshot3: { atk: number; hp: number; def: number; impact: number };
+  };
 }
 
 interface DiscInfo {
@@ -394,7 +403,31 @@ const equippedDiscs = computed(() => {
 const finalStatsPc = computed(() => {
   const finalStats = (debugData.value as any)?._finalStats3 as Float64Array | undefined;
   if (!finalStats) return new PropertyCollection();
+
+  // 战斗面板要展示“worker 最终用于乘区计算的属性快照”，对应 createFullResult().finalStats（accumulator 快照）。
+  // 这里直接把该数组反解回 PropertyCollection（final）。
   return PropertyCollection.fromOptimizerFinalStatsArray(finalStats, IDX_TO_PROP_TYPE);
+});
+
+const snapshots = computed(() => {
+  return (debugData.value as any)?.snapshots as
+    | {
+        snapshot1: { atk: number; hp: number; def: number; impact: number };
+        snapshot2: { atk: number; hp: number; def: number; impact: number };
+        snapshot3: { atk: number; hp: number; def: number; impact: number };
+      }
+    | undefined;
+});
+
+const snapshotDelta = computed(() => {
+  const s = snapshots.value;
+  if (!s) return null;
+  return {
+    atk: s.snapshot3.atk - s.snapshot1.atk,
+    hp: s.snapshot3.hp - s.snapshot1.hp,
+    def: s.snapshot3.def - s.snapshot1.def,
+    impact: s.snapshot3.impact - s.snapshot1.impact,
+  };
 });
 
 const mergedBuffCard = computed(() => {
@@ -503,6 +536,10 @@ const runDebugCalc = () => {
     weapon: props.weapon,
     skills: skillParams,
     enemy: props.enemy,
+    enemyLevel: props.enemyLevel ?? 60,
+    isStunned: props.isStunned ?? false,
+    hasCorruptionShield: props.hasCorruptionShield ?? false,
+    enemySerialized: props.enemySerialized,
     discs: sortedDiscs,
     constraints: {
       mainStatFilters: {},
@@ -631,13 +668,16 @@ const runDebugCalc = () => {
     pen3: finalStats3[PROP_IDX.PEN_],
     anomalyProf3: finalStats3[PROP_IDX.ANOM_PROF],
     _finalStats3: finalStats3,
+    snapshots: fullResult.snapshots,
   };
 };
 
-watch([() => props.agent, () => props.enemy, () => props.skillRatio, () => props.uiDamage], () => {
+watch([() => props.agent, () => props.enemy, () => props.skillRatio, () => props.uiDamage, () => props.enemySerialized], () => {
   runDebugCalc();
 }, { immediate: true });
 
+// NOTE: battle env (stun/shield/enemySerialized) is driven by BattleService (non-reactive class).
+// We intentionally do not watch those props here; the parent triggers recalculation via the exposed runDebugCalc().
+
 defineExpose({ runDebugCalc });
 </script>
-

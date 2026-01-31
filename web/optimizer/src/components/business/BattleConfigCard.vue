@@ -82,26 +82,7 @@
         </div>
       </div>
 
-      <!-- 敌人配置 -->
-      <div class="divider text-xs font-bold text-base-content/50 my-2">敌人配置</div>
-      <!-- 当前敌人卡片（可点击选择） -->
-      <div v-if="selectedEnemy" class="mt-2 flex justify-center">
-        <EnemyCard
-          :enemy="selectedEnemy"
-          @click="showEnemySelector = true"
-          :clickable="true"
-        />
-      </div>
-      <div v-else class="mt-2 text-sm text-base-content/60 text-center py-4">
-        暂无敌人，请选择敌人
-      </div>
-      <!-- 敌人选择按钮 -->
-      <button
-        class="btn btn-base-200 w-full mt-2"
-        @click="showEnemySelector = true"
-      >
-        选择敌人
-      </button>
+      <!-- 敌人配置已迁移到「战斗环境」卡片 -->
     </div>
   </div>
 
@@ -132,19 +113,7 @@
     @cancel="showTeamEditModal = false"
   />
 
-  <!-- 敌人选择弹窗 -->
-  <dialog v-if="showEnemySelector" class="modal modal-open">
-    <div class="modal-box w-150 max-w-full relative flex flex-col max-h-[85vh]">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10" @click="showEnemySelector = false">✕</button>
-      <h3 class="font-bold text-lg mb-4 shrink-0">选择敌人</h3>
-      <div class="flex-1 overflow-y-auto min-h-0 pr-2">
-        <EnemyList @select="(enemyId) => { showEnemySelector = false; emit('update:selectedEnemyId', enemyId); }" />
-      </div>
-    </div>
-    <form method="dialog" class="modal-backdrop" @click.prevent="showEnemySelector = false">
-      <button>close</button>
-    </form>
-  </dialog>
+  <!-- 敌人选择弹窗已迁移到「战斗环境」卡片 -->
 </template>
 
 <script setup lang="ts">
@@ -152,8 +121,6 @@ import { ref, computed } from 'vue';
 import TeamCard from './TeamCard.vue';
 import TeamEditModal from './TeamEditModal.vue';
 import TeamList from './TeamList.vue';
-import EnemyCard from './EnemyCard.vue';
-import EnemyList from './EnemyList.vue';
 import type { Team } from '../../model/team';
 import type { Enemy } from '../../model/enemy';
 import type { AgentSkillOption } from '../../optimizer/services/optimizer.service';
@@ -193,7 +160,7 @@ const emit = defineEmits<Emits>();
 const showTeamSelector = ref(false);
 const showTeamEditModal = ref(false);
 const editingTeamId = ref<string | undefined>();
-const showEnemySelector = ref(false);
+// 敌人选择已迁移到「战斗环境」卡片
 
 // === 技能分组逻辑 ===
 

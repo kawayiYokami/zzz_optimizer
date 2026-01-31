@@ -403,45 +403,13 @@ export class Agent {
   }
 
   /**
-   * 获取战斗属性（角色+装备）
+   * 获取局内基础面板（快照1）
    *
-   * 基础战斗面板 = 角色自身 + 武器固定属性 + 驱动盘固定属性 + 驱动盘2件套属性
-   * 最终战斗属性 = 基础战斗面板 + Buff属性
-   *
-   * @param buffs Buff属性数组（可选）
-   * @returns 战斗属性
+   * 口径：仅“角色自身 + 装备（武器/驱动盘/2件套等静态项）”。
+   * Buff 属于战斗环境口径，应由 BattleService / OptimizerContext 统一注入，这里不处理。
    */
-  getCombatStats(buffs?: Buff[]): CombatStats {
-    const collections: PropertyCollection[] = [];
-
-    // 1. 角色自身属性 + 装备属性（裸 + 武器 + 驱动盘基础 + 所有驱动盘2件套属性）
-    collections.push(this.getCharacterEquipmentStats());
-
-    // 2. Buff属性
-    if (buffs) {
-      for (const buff of buffs) {
-        // 将buff的属性转换为PropertyCollection
-        const buffCollection = new PropertyCollection();
-
-        // 添加局外属性
-        if (buff.out_of_combat_stats) {
-          buff.out_of_combat_stats.forEach((value, key) => {
-            buffCollection.addProperty(key, value);
-          });
-        }
-
-        // 添加局内属性
-        if (buff.in_combat_stats) {
-          buff.in_combat_stats.forEach((value, key) => {
-            buffCollection.addProperty(key, value);
-          });
-        }
-
-        collections.push(buffCollection);
-      }
-    }
-
-    return CombatStats.fromPropertyCollections(collections, this.level);
+  getCombatStats(): CombatStats {
+    return CombatStats.fromPropertyCollections([this.getSelfProperties()], this.level);
   }
 
   /**

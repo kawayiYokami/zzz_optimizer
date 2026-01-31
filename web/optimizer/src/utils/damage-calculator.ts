@@ -740,10 +740,12 @@ export class DamageCalculator {
   ): {
     directBase: number;    // 直伤基础区
     anomalyBase: number;   // 异常基础区（总伤）
+    disorderBase: number;  // 紊乱基础区（总伤）
+    lieshuangBase: number; // 烈霜基础区（直伤，1500%）
   } {
     // 1. 获取技能数据
     if (!agent.skillSet) {
-      return { directBase: 0, anomalyBase: 0 };
+      return { directBase: 0, anomalyBase: 0, disorderBase: 0, lieshuangBase: 0 };
     }
 
     // 查找技能
@@ -765,7 +767,7 @@ export class DamageCalculator {
     }
 
     if (!skill || !skill.segments || skill.segments.length === 0) {
-      return { directBase: 0, anomalyBase: 0 };
+      return { directBase: 0, anomalyBase: 0, disorderBase: 0, lieshuangBase: 0 };
     }
 
     // 2. 计算该技能的总直伤倍率
@@ -789,7 +791,7 @@ export class DamageCalculator {
     // 5. 计算异常基础区
     const anomalyBase = baseStat * anomParams.totalRatio;
 
-    return { directBase, anomalyBase };
+    return { directBase, anomalyBase, disorderBase: 0, lieshuangBase: 0 };
   }
 
   /**
@@ -816,7 +818,7 @@ export class DamageCalculator {
   } {
     // 1. 获取技能数据
     if (!agent.skillSet) {
-      return { directBase: 0, anomalyBase: 0 };
+      return { directBase: 0, anomalyBase: 0, disorderBase: 0, lieshuangBase: 0 };
     }
 
     // 获取第一个技能
@@ -837,7 +839,7 @@ export class DamageCalculator {
     }
 
     if (!skill) {
-      return { directBase: 0, anomalyBase: 0 };
+      return { directBase: 0, anomalyBase: 0, disorderBase: 0, lieshuangBase: 0 };
     }
 
     // 2. 调用 calculateSkillBaseZones 计算基础区
