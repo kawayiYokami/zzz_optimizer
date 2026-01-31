@@ -66,7 +66,11 @@
           <BattleInfoCard
             ref="battleInfoCardRef"
             :battle-service="battleService"
-            :selected-skill-keys="selectedSkillKeys"
+            :selected-agent="targetAgent"
+            :enemy="selectedEnemy"
+            @update:selected-enemy-id="selectedEnemyId = $event"
+            @change="onBattleEnvChange"
+            @update:env-version="battleEnvVersion = $event"
           />
 
           <!-- 战斗环境（Worker 口径） -->
@@ -76,6 +80,7 @@
             :agent="targetAgent"
             :weapon="equippedWeapon"
             :enemy="selectedEnemy"
+            :key="`battle_eval_${battleEnvVersion}`"
             :discs="saveStore.driveDisks"
             :skill-ratio="selectedSkills[0]?.defaultRatio || 1"
             :skill-anomaly="selectedSkills[0]?.defaultAnomaly || 0"
@@ -84,6 +89,10 @@
             :ui-damage="currentDamage"
             :external-buffs="availableBuffs"
             :buff-status-map="battleService.getBuffStatusMap()"
+            :enemy-level="60"
+            :is-stunned="battleService.getIsEnemyStunned()"
+            :has-corruption-shield="battleService.getEnemyHasCorruptionShield()"
+            :enemy-serialized="battleService.getSerializedEnemy(60)"
           />
 
           <!-- 优化结果卡片 -->
@@ -150,6 +159,7 @@ const debugCardRef = ref<InstanceType<typeof BattleEvaluatorCard> | null>(null);
 
 // Buff 配置相关
 const selectedEnemyId = ref('');  // 默认不选择敌人
+const battleEnvVersion = ref(0);
 const disabledBuffIds = ref<string[]>([]); // 存储被禁用的 Buff ID (黑名单模式)
 const buffsVersion = ref(0);  // 用于触发 Buff UI 更新
 const isLoadingConfig = ref(false);  // 防止加载配置时触发自动保存
@@ -435,8 +445,7 @@ const onTeamChange = async () => {
     await updateBattleService();
     // 增加 buffsVersion 触发 Buff UI 更新
     buffsVersion.value++;
-    // 刷新战斗信息卡
-    battleInfoCardRef.value?.refresh();
+    // BattleInfoCard 已精简，内部无 refresh 逻辑
     // 加载队伍的优化配置
     loadTeamOptimizationConfig(team.id);
     // 加载队伍的优化结果缓存
@@ -498,8 +507,7 @@ const toggleBuff = (buffId: string) => {
     battleService.updateBuffStatus(buffId, false);
   }
   buffsVersion.value++;
-  // 刷新战斗信息卡
-  battleInfoCardRef.value?.refresh();
+  // BattleInfoCard 已精简，内部无 refresh 逻辑
 };
 
 const updateBattleService = async () => {
@@ -531,8 +539,7 @@ const updateBattleService = async () => {
 
   // 刷新 Buff 列表
   buffsVersion.value++;
-  // 刷新战斗信息卡
-  battleInfoCardRef.value?.refresh();
+  // BattleInfoCard 已精简，内部无 refresh 逻辑
 };
 
 const saveCurrentPreset = () => {
@@ -576,11 +583,14 @@ const getWEngineName = (id: string) => {
   return wengine?.name || id;
 };
 
-// 当前伤害（从 BattleInfoCard 获取）
-const currentDamage = computed(() => {
-  const dmg = battleInfoCardRef.value?.totalSkillDamage;
-  return unref(dmg) || 0;
-});
+// BattleInfoCard 已精简，不再提供伤害口径
+const currentDamage = computed(() => 0);
+
+const onBattleEnvChange = () => {
+  if (isRunning.value) {
+    updateEstimatedCombinations();
+  }
+};
 
 // 一键换装
 const handleEquipBuild = async (build: OptimizationBuild) => {
@@ -607,8 +617,7 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
       await battleService.setTeam(currentTeam.value);
     }
 
-    // 刷新战斗信息卡以显示新的属性
-    battleInfoCardRef.value?.refresh();
+    // BattleInfoCard 已精简，内部无 refresh 逻辑
 
     // 显示成功提示 (这里简单用 alert 或者 console，实际项目可能有 Toast 组件)
     console.log(`装备已更新，成功装备 ${successCount} 个驱动盘`);
@@ -704,7 +713,10 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
       agent,
       weapon,  // 角色已装备的武器
       skills: skillParams,
-      enemy,
+      enemy: battleService.getEnemy(),
+      enemyLevel: 60,
+      isStunned: battleService.getIsEnemyStunned(),
+      hasCorruptionShield: battleService.getEnemyHasCorruptionShield(),
       discs: optimizedDiscs.value,  // 使用优化后的驱动盘
       constraints: constraints.value,
       externalBuffs: selectedBuffs.value,

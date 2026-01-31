@@ -6,12 +6,10 @@
 
 import type { Agent } from '../model/agent';
 import type { Enemy } from '../model/enemy';
-import { Buff, BuffSource } from '../model/buff';
+import { Buff, BuffSource, BuffTarget } from '../model/buff';
 import { Team } from '../model/team';
-import { DamageCalculator } from '../utils/damage-calculator';
 import { PropertyCollection } from '../model/property-collection';
 import { PropertyType, ElementType, getPropertyCnName } from '../model/base';
-import { RatioSet } from '../model/ratio-set';
 import type { ZodBattleData } from '../model/save-data-zod';
 import type { WEngine } from '../model/wengine';
 import type { DriveDisk } from '../model/drive-disk';
@@ -19,7 +17,9 @@ import { OptimizerContext } from '../optimizer/services/optimizer-context';
 import { optimizerService } from '../optimizer/services/optimizer.service';
 
 /**
- * 技能伤害参数
+ * 技能伤害参数（用于 DamageCalculator / Worker 口径）
+ *
+ * 说明：BattleService 已不再负责具体伤害计算，但该类型仍会被其他模块复用。
  */
 export interface SkillDamageParams {
   damage_ratio: number;
@@ -31,34 +31,23 @@ export interface SkillDamageParams {
 }
 
 /**
- * 完整伤害计算结果
+ * 完整伤害计算结果（旧 UI/调用方可能引用）
  */
 export interface TotalDamageResult {
-  directDamage: number;         // 直伤/贯穿期望
-  anomalyDamage: number;        // 异常伤害期望（tick 型 / 一次型；统一按固定窗口折算总倍率）
-  disorderDamage: number;       // 紊乱伤害期望（一次性结算；倍率随元素变化）
-  specialAnomalyDamage: number; // 特殊异常伤害（烈霜等）
-  totalDamage: number;          // 总伤害期望
-  triggerExpectation: number;   // 异常触发期望 (归一化进度)
-  anomalyThreshold: number;     // 敌人异常阈值
-  workerResult?: import('../optimizer/types/precomputed').OptimizationBuildResult; // 统一口径：可选返回 Worker 完整结果
+  directDamage: number;
+  anomalyDamage: number;
+  disorderDamage: number;
+  specialAnomalyDamage: number;
+  totalDamage: number;
+  triggerExpectation: number;
+  anomalyThreshold: number;
+  workerResult?: import('../optimizer/types/precomputed').OptimizationBuildResult;
 }
 
 export interface DisorderTimeParams {
-  /**
-   * 当前异常状态的“总持续时间”（秒）
-   *
-   * 注意：该值可能受角色/Buff 影响，不应写死为 10。
-   */
   durationSec: number;
-  /**
-   * 发生紊乱的时间点（秒），相对于异常开始计时。
-   *
-   * 例如：默认异常持续 10 秒，选择“3 秒紊乱”，则 timepointSec=3，remaining=7。
-   */
   timepointSec: number;
 }
-
 /**
  * Buff状态管理
  */
@@ -557,7 +546,11 @@ export class BattleService {
     const self = combinedSelf.filter(buff => {
       if (this.manualBuffs.includes(buff)) return true;
       return buff.target.target_self || buff.target.target_enemy;
-    }).filter(buff => includeFourPiece || buff.source !== BuffSource.DRIVE_DISK_4PC);
+    })
+      // Step 1: buff 开关过滤（BattleService 唯一口径）
+      .filter(buff => buff.is_active)
+      // Step 2: 去掉四件套（可选）
+      .filter(buff => includeFourPiece || buff.source !== BuffSource.DRIVE_DISK_4PC);
 
     // 队友 buff：从队伍内其它角色取，按 target_teammate || target_enemy 过滤
     const teammate: Buff[] = [];
@@ -570,14 +563,79 @@ export class BattleService {
       const buffs = agent.getAllBuffsSync();
       for (const buff of buffs) {
         if (!(buff.target.target_teammate || buff.target.target_enemy)) continue;
+        // Step 2: 去掉四件套（可选）
         if (!includeFourPiece && buff.source === BuffSource.DRIVE_DISK_4PC) continue;
+
+        // Step 1: buff 开关过滤（BattleService 唯一口径）
+        if (!buff.is_active) continue;
+
+        // Step 3: 队友转换类替换为普通 buff（基于队友快照1结算）
+        if (buff.conversion) {
+          const converted = this.convertTeammateConversionBuffToNormalBuff(agent, buff);
+          if (converted) teammate.push(converted);
+          continue;
+        }
+
         teammate.push(buff);
       }
     }
 
-    // (debug logs removed)
-
     return { self, teammate };
+  }
+
+  /**
+   * 将“队友提供的转换类 Buff”基于队友快照1结算，并降级为普通 Buff。
+   *
+   * 说明：
+   * - 使用 teammate.getSelfProperties().toCombatStats() 作为队友快照1（局内基础面板）
+   * - 只将结算后的结果写入 in_combat_stats（固定值）
+   * - 保留原 Buff 的开关状态/来源/目标等信息，但移除 conversion 规则
+   */
+  private convertTeammateConversionBuffToNormalBuff(teammate: Agent, buff: Buff): Buff | null {
+    if (!buff.is_active || !buff.conversion) return null;
+
+    // 1) 基于队友快照1拿“源属性值”
+    const teammateSnapshot1 = teammate.getSelfProperties().toCombatStats();
+    const fromProp = buff.conversion.from_property;
+    const toProp = buff.conversion.to_property;
+    const threshold = buff.conversion.from_property_threshold ?? 0;
+
+    // PropertyCollection 快照1：从 in_combat 读取即可
+    const sourceValue = teammateSnapshot1.getInCombat(fromProp, 0);
+    const effectiveValue = Math.max(0, sourceValue - threshold);
+
+    // 2) 计算转换产物并应用上限
+    const ratio = buff.conversion.conversion_ratio;
+    let convertedValue = effectiveValue * ratio;
+    const maxValue = buff.conversion.max_value;
+    if (maxValue !== undefined && maxValue !== null) {
+      convertedValue = Math.min(convertedValue, maxValue);
+    }
+
+    if (!convertedValue) return null;
+
+    // 3) 生成普通 Buff：把产物写入 in_combat_stats
+    const inCombat = new Map(buff.in_combat_stats);
+    inCombat.set(toProp, (inCombat.get(toProp) ?? 0) + convertedValue);
+
+    const outOfCombat = new Map(buff.out_of_combat_stats);
+
+    const target = Object.assign(new (BuffTarget as any)(), buff.target);
+
+    return new Buff(
+      buff.source,           // source
+      inCombat,              // inCombatStats
+      outOfCombat,           // outOfCombatStats
+      undefined,             // conversion (已结算，移除)
+      target,                // target
+      buff.max_stacks,       // maxStacks
+      buff.stack_mode,       // stackMode
+      buff.is_active,        // isActive
+      buff.id,               // id
+      `${buff.name}（队友结算）`, // name
+      buff.description,      // description
+      buff.trigger_conditions // triggerConditions
+    );
   }
 
   getOptimizerAllBuffs(options?: { includeFourPiece?: boolean }): Buff[] {
@@ -739,11 +797,79 @@ export class BattleService {
   }
 
   getIsEnemyStunned(): boolean {
-    return this.isEnemyStunned;
+    // 叶瞬光：强制视为失衡
+    const isYeShunGuang = this.team?.frontAgent?.name_cn === '叶瞬光';
+    return isYeShunGuang ? true : this.isEnemyStunned;
   }
 
   getEnemyHasCorruptionShield(): boolean {
     return this.enemyHasCorruptionShield;
+  }
+
+  /**
+   * 获取“带战斗环境修正”的敌人战斗属性
+   *
+   * - 失衡：由 EnemyStats 内部根据 isStunned 处理失衡易伤乘区
+   * - 秽盾：防御翻倍（仅影响 EnemyStats.defense）
+   */
+  getEnemyCombatStats(level: number = 60): import('../model/enemy').EnemyStats | null {
+    if (!this.enemy) return null;
+    const stats = this.enemy.getCombatStats(level, this.getIsEnemyStunned());
+    if (this.enemyHasCorruptionShield) {
+      stats.defense *= 2;
+    }
+    return stats;
+  }
+
+  /**
+   * 获取优化器/Worker 使用的敌人序列化数据（由 BattleService 统一控制口径）
+   *
+   * 口径：
+   * - def: 基于 getEnemyCombatStats(level) 的最终防御（包含秽盾翻倍）
+   * - isStunned / stunVulnerability: 基于 BattleService 的失衡开关
+   */
+  getSerializedEnemy(level: number = 60): import('../optimizer/types').SerializedEnemy | null {
+    if (!this.enemy) return null;
+    const stats = this.getEnemyCombatStats(level);
+    if (!stats) return null;
+
+    return {
+      level,
+      def: stats.defense,
+      resistance: {
+        ice: this.enemy.ice_dmg_resistance,
+        fire: this.enemy.fire_dmg_resistance,
+        electric: this.enemy.electric_dmg_resistance,
+        physical: this.enemy.physical_dmg_resistance,
+        ether: this.enemy.ether_dmg_resistance,
+      },
+      isStunned: this.getIsEnemyStunned(),
+      stunVulnerability: this.getStunVulnerabilityMultiplier(),
+    };
+  }
+
+  /**
+   * 最终失衡易伤乘区（已包含开关 & 角色特殊机制）
+   *
+   * - 默认：非失衡 => 1.0；失衡 => 1 + enemy.stun_vulnerability_multiplier
+   * - 叶瞬光：强制视为失衡，且上限 2.1
+   */
+  getStunVulnerabilityMultiplier(): number {
+    if (!this.enemy) return 1.0;
+
+    const baseMult = 1 + (this.enemy.stun_vulnerability_multiplier ?? 0);
+
+    // 叶瞬光：强制失衡 + 上限 2.1
+    const isYeShunGuang = this.team?.frontAgent?.name_cn === '叶瞬光';
+    if (isYeShunGuang) return Math.min(2.1, Math.max(1.0, baseMult));
+
+    if (!this.isEnemyStunned) return 1.0;
+    return Math.max(1.0, baseMult);
+  }
+
+  // 旧版接口：伤害计算已移除（统一由 Worker / evaluator 口径负责）
+  calculateTotalDamage(): never {
+    throw new Error('BattleService.calculateTotalDamage 已废弃：伤害计算已迁移到 Worker 口径');
   }
 
   // ==================== 生命周期控制 ====================
@@ -1195,212 +1321,5 @@ export class BattleService {
     return this.finalPropertySnapshot;
   }
 
-  /**
-   * 计算完整伤害期望
-   * @param totalSkillRatio 技能总倍率
-   * @param anomalyBuildup 异常积蓄系数
-   */
-  calculateTotalDamage(
-    totalSkillRatio: number,
-    anomalyBuildup: number,
-    disorderTime?: Partial<DisorderTimeParams>
-  ): TotalDamageResult {
-    if (!this.team || !this.enemy) {
-      throw new Error('请先设置队伍和敌人');
-    }
-
-    const agent = this.team.frontAgent;
-    const isPenetration = agent.isPenetrationAgent();
-
-    // 统一口径：使用 Worker(FastEvaluator) 作为唯一的伤害计算来源
-    // 这里保留旧实现的参数签名，便于 UI 无痛切换。
-    const specialConfig = agent.getSpecialAnomalyConfig();
-
-    // 组装 Worker 输入：当前装备的 6 张盘作为“唯一组合”
-    // 注意：BattleService 的口径不做“开始优化”，只做一次 eval。
-    const equippedDiscs = agent.equipped_drive_disks
-      .map(id => this.driveDisks?.find(d => d.id === id) ?? null)
-      .filter((d): d is DriveDisk => !!d);
-
-    // driveDisks 列表由调用方在外部维护（BattleService 本身没有全量列表），
-    // 若为空则退回旧实现（避免页面直接崩）。
-    if (equippedDiscs.length !== 6) {
-      // fallback: keep existing DamageCalculator path (legacy)
-    } else {
-      const targetSetId = (() => {
-        const counts: Record<string, number> = {};
-        for (const d of equippedDiscs) counts[d.game_id] = (counts[d.game_id] ?? 0) + 1;
-        for (const [id, c] of Object.entries(counts)) if (c >= 4) return id;
-        return '';
-      })();
-
-      const buffs = this.getOptimizerAllBuffs({ includeFourPiece: false });
-      // BattleService 目前没有 buffStatusMap，沿用 Buff.is_active（面板开关会写回 is_active）
-      const buffStatusMap = new Map<string, { isActive: boolean }>();
-      for (const b of buffs) buffStatusMap.set(b.id, { isActive: b.is_active });
-
-      const skillParams = [{
-        id: 'battle-skill',
-        name: 'battle-skill',
-        element: agent.element,
-        ratio: totalSkillRatio,
-        tags: ['normal'],
-        isPenetration: agent.isPenetrationAgent(),
-        anomalyBuildup,
-      }];
-
-      const request = OptimizerContext.buildFastRequest({
-        agent,
-        weapon: agent.equipped_wengine ? this.wengines?.find(w => w.id === agent.equipped_wengine) ?? null : null,
-        skills: skillParams,
-        enemy: this.enemy,
-        discs: equippedDiscs,
-        constraints: {
-          mainStatFilters: {},
-          requiredSets: [],
-          pinnedSlots: {},
-          setMode: 'any',
-          selectedWeaponIds: [],
-          activeDiskSets: [],
-          targetSetId,
-        },
-        externalBuffs: buffs,
-        buffStatusMap,
-        config: { topN: 1, progressInterval: 0, pruneThreshold: 0 },
-      });
-
-      const discsData = request.precomputed.discsBySlot.map(slot => slot[0]);
-      // 用 Worker 单次计算
-      // 注意：这里是 Promise，但当前函数是同步的；先返回 legacy，后续再把 BattleService API 改成 async。
-    }
-
-    // 1. 计算直伤/贯穿伤害
-    let directDamage = 0;
-    if (isPenetration) {
-      const ratios = new RatioSet();
-      ratios.atk_ratio = totalSkillRatio;
-      const result = DamageCalculator.calculatePenetrationDamage(zones, ratios);
-      directDamage = result.damage_expected;
-    } else {
-      const ratios = new RatioSet();
-      ratios.atk_ratio = totalSkillRatio;
-      const result = DamageCalculator.calculateDirectDamageFromRatios(zones, ratios);
-      directDamage = result.damage_expected;
-    }
-
-    // 2. 计算异常触发期望
-    const triggerExpectation = this.calculateAnomalyTriggerExpectation(anomalyBuildup, element);
-
-    // 3. 计算异常持续伤害
-    const anomalyParams = DamageCalculator.getAnomalyDamageParams(element);
-    const anomalyRatios = new RatioSet();
-    anomalyRatios.atk_ratio = anomalyParams.totalRatio;
-    const anomalyResult = DamageCalculator.calculateAnomalyDamageFromZones(zones, anomalyRatios);
-    const anomalyDamage = anomalyResult.damage_expected * triggerExpectation;
-
-    // 4. 计算紊乱伤害（一次性结算；倍率与“当前异常状态”和“剩余时间/剩余 tick”相关）
-    const disorderRatios = new RatioSet();
-
-    const anomalyDurationSec = disorderTime?.durationSec ?? 10;
-    const disorderTimepointSec = disorderTime?.timepointSec ?? 3;
-    const T = Math.max(0, anomalyDurationSec - disorderTimepointSec);
-    let disorderRatio = 4.5; // 默认450%
-
-    // 根据元素类型计算紊乱伤害倍率
-    switch (element) {
-      case 'fire': // 灼烧
-        disorderRatio = 4.5 + Math.floor(T / 0.5) * 0.5;
-        break;
-      case 'electric': // 感电
-        disorderRatio = 4.5 + Math.floor(T) * 1.25;
-        break;
-      case 'ether': // 侵蚀
-      case 'ink': // 玄墨
-        disorderRatio = 4.5 + Math.floor(T / 0.5) * 0.625;
-        break;
-      case 'ice': // 霜寒
-        disorderRatio = 4.5 + Math.floor(T) * 0.075;
-        break;
-      case 'physical': // 畏缩
-        disorderRatio = 4.5 + Math.floor(T) * 0.075;
-        break;
-      case 'lieshuang': // 烈霜
-        // 烈霜专属紊乱伤害公式：600% + floor(T)×75%
-        disorderRatio = 6.0 + Math.floor(T) * 0.75;
-        break;
-      default:
-        // 默认450%
-        disorderRatio = 4.5;
-        break;
-    }
-
-    disorderRatios.atk_ratio = disorderRatio;
-
-    const disorderResult = DamageCalculator.calculateAnomalyDamageFromZones(zones, disorderRatios);
-    const disorderDamage = disorderResult.damage_expected * triggerExpectation;
-
-    // 5. 特殊异常伤害（星见雅烈霜 1500%）
-    let specialAnomalyDamage = 0;
-    if (specialConfig) {
-      if (specialConfig.element === 'lieshuang') {
-        // 烈霜使用专门的计算方法
-        const lieshuangDamage = DamageCalculator.calculateLieshuangDamage(
-          zones,
-          enemyStats,
-          triggerExpectation,
-          specialConfig.ratio
-        );
-        specialAnomalyDamage = lieshuangDamage.damage_expected;
-      } else {
-        // 其他特殊异常使用通用方法
-        const specialRatios = new RatioSet();
-        specialRatios.atk_ratio = specialConfig.ratio;
-        const specialResult = DamageCalculator.calculateAnomalyDamageFromZones(zones, specialRatios);
-        specialAnomalyDamage = specialResult.damage_expected * triggerExpectation;
-      }
-    }
-
-    return {
-      directDamage,
-      anomalyDamage,
-      disorderDamage,
-      specialAnomalyDamage,
-      totalDamage: directDamage + anomalyDamage + disorderDamage + specialAnomalyDamage,
-      triggerExpectation,
-      anomalyThreshold: this.getAnomalyThreshold(element)
-    };
-  }
-
-  /**
-   * 计算异常触发期望 (用于展示)
-   * 返回敌人异常条阈值
-   */
-  getAnomalyThreshold(element: string): number {
-    if (!this.enemy) return 0;
-    // 烈霜(lieshuang)使用冰元素的异常阈值
-    const actualElement = element === 'lieshuang' ? 'ice' : element;
-    return this.enemy.getCombatStats().getAnomalyThreshold(actualElement);
-  }
-
-  /**
-   * 计算异常触发期望
-   * 公式：异常积蓄 × (1 + buff效率) / 敌人异常条
-   */
-  calculateAnomalyTriggerExpectation(anomalyBuildup: number, element: string): number {
-    if (!this.enemy) return 0;
-
-    // 烈霜(lieshuang)使用冰元素的异常阈值
-    const actualElement = element === 'lieshuang' ? 'ice' : element;
-
-    const props = this.mergeCombatProperties();
-    // 使用伤害计算服务获取完整的乘区（包含属性积蓄效率和抗性）
-    const zones = DamageCalculator.updateAllZones(props, this.enemy.getCombatStats(), actualElement);
-    const enemyThreshold = this.enemy.getCombatStats().getAnomalyThreshold(actualElement);
-
-    // zones.accumulate_zone 已经计算了 (1 + 效率) * (1 - 抗性)
-    // 这里的返回值其实是触发进度 (0.5 = 50%)
-    // 但调用方可能把它作为期望次数，如果积蓄值远超阈值
-    // 这里我们返回归一化后的进度值，限制在0到1之间
-    return Math.min(1, Math.max(0, (anomalyBuildup * zones.accumulate_zone) / enemyThreshold));
-  }
+  // 伤害计算逻辑已迁移到 Worker / DamageCalculator 管线，BattleService 不再负责计算口径。
 }

@@ -330,7 +330,12 @@ export class OptimizerContext {
      * @param level 敌人等级（默认 60）
      * @param isStunned 是否处于失衡状态（默认 false）
      */
-    static serializeEnemy(enemy: Enemy, level: number = 60, isStunned: boolean = false): SerializedEnemy {
+    static serializeEnemy(
+        enemy: Enemy,
+        level: number = 60,
+        isStunned: boolean = false,
+        hasCorruptionShield: boolean = false
+    ): SerializedEnemy {
         // 获取各元素抗性
         const resistance: Partial<Record<string, number>> = {
             ice: enemy.ice_dmg_resistance,
@@ -342,7 +347,7 @@ export class OptimizerContext {
 
         return {
             level,
-            def: enemy.defense,
+            def: hasCorruptionShield ? enemy.defense * 2 : enemy.defense,
             resistance,
             isStunned,
             stunVulnerability: isStunned ? (1 + enemy.stun_vulnerability_multiplier) : 1.0,
@@ -395,15 +400,9 @@ export class OptimizerContext {
         buff: Buff,
         buffStatusMap?: Map<string, { isActive: boolean }>
     ): void {
-        // 检查 buff 的激活状态
-        let isActive = buff.is_active;
-        if (buffStatusMap) {
-            const status = buffStatusMap.get(buff.id);
-            if (status) {
-                isActive = status.isActive;
-            }
-        }
-        if (!isActive) return;
+        // Buff 开关口径：由 BattleService 在上游产出最终 Buff 列表并写入 buff.is_active，
+        // OptimizerContext/Worker 无条件信任该值，不再二次用 buffStatusMap 过滤。
+        if (!buff.is_active) return;
 
         // 局外属性
         if (buff.out_of_combat_stats) {
@@ -670,12 +669,15 @@ export class OptimizerContext {
         weapon: WEngine | null;
         skills: SkillParams[];
         enemy: Enemy;
+        enemySerialized?: SerializedEnemy;
         enemyLevel?: number;
         isStunned?: boolean;
+        hasCorruptionShield?: boolean;
         discs: DriveDisk[];
         constraints: OptimizationConstraints;
         externalBuffs?: Buff[];
         teammateConversionBuffs?: { buff: Buff; teammateStats: Float64Array }[];
+        // deprecated: buff 开关已由 BattleService 写入 buff.is_active，调度器不再二次过滤
         buffStatusMap?: Map<string, { isActive: boolean }>;
         config?: {
             topN?: number;
@@ -693,6 +695,7 @@ export class OptimizerContext {
             enemy,
             enemyLevel = 60,
             isStunned = false,
+            hasCorruptionShield = false,
             discs,
             constraints,
             externalBuffs = [],
@@ -781,13 +784,9 @@ export class OptimizerContext {
         // ============================================================================
         let mergedPairs = 0;
         for (const buff of allBuffs) {
-            // 检查激活状态（由 buffStatusMap 控制）
-            let isActive = buff.is_active;
-            if (buffStatusMap) {
-                const status = buffStatusMap.get(buff.id);
-                if (status) isActive = status.isActive;
-            }
-            if (!isActive) continue;
+            // Buff 开关口径：由 BattleService 在上游产出最终 Buff 列表并写入 buff.is_active，
+            // OptimizerContext/Worker 无条件信任该值，不再二次用 buffStatusMap 过滤。
+            if (!buff.is_active) continue;
 
             // 对敌人生效的 debuff 也必须计入（不论来源：自己/队友）
             // - 这些属性会影响抗性区/防御区等乘区，因此不能被“只看自身buff”的口径跳过
@@ -952,14 +951,36 @@ export class OptimizerContext {
         // 注意：这里不再把任何 Buff 预注入 fixedMultipliers（避免与 mergedBuff/targetSetFourPieceBuff 双算）。
         // Buff 对抗性/防御/易伤等的影响统一在 Worker 端，通过 workerMergedBuff 参与 res/def 等乘区计算。
         // ============================================================================
-        const fixedMultipliers = this.computeFixedMultipliers(
+        const fixedMultipliers = (() => {
+            const fm = this.computeFixedMultipliers(
             agent,
             weapon,
             enemy,
             skills[0],
             isStunned,
             []
-        );
+            );
+
+            if (options.enemySerialized) {
+                fm.defenseParams.enemyDef = options.enemySerialized.def;
+                fm.stunVulnerability = options.enemySerialized.isStunned
+                  ? Math.min(1.1, Math.max(0, options.enemySerialized.stunVulnerability - 1))
+                  : 0;
+            }
+
+            if (hasCorruptionShield) {
+                // compatibility: if caller only supplies a shield flag (no enemySerialized),
+                // treat it as "enemy defense x2"
+                fm.defenseParams.enemyDef *= 2;
+            }
+
+            if (isStunned && fm.stunVulnerability === 0) {
+                // fallback: maintain old behaviour if no serialized input supplied
+                fm.stunVulnerability = enemy.stun_vulnerability_multiplier ?? 0;
+            }
+
+            return fm;
+        })();
 
         // ============================================================================
         // 8. 构建预计算数据
@@ -977,7 +998,17 @@ export class OptimizerContext {
             fixedMultipliers,
             skillsParams: skills.map(s => this.createSkillParams(s, isPenetration)),
             agentLevel: agent.level,
-            enemyStats: enemy.getCombatStats(enemyLevel, isStunned),
+            enemyStats: (() => {
+                const serializedEnemy = options.enemySerialized;
+                if (serializedEnemy) {
+                    const stats = enemy.getCombatStats(serializedEnemy.level, serializedEnemy.isStunned);
+                    stats.defense = serializedEnemy.def;
+                    return stats;
+                }
+                const stats = enemy.getCombatStats(enemyLevel, isStunned);
+                if (hasCorruptionShield) stats.defense *= 2;
+                return stats;
+            })(),
             specialAnomalyConfig: agent.getSpecialAnomalyConfig(),
             anomalyTotalRatioAtT,
             disorderTotalRatioAtT,

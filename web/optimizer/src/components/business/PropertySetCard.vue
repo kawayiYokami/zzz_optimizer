@@ -10,6 +10,26 @@
 
 <!-- 属性表格 -->
 <div v-if="activeTab !== 'conversion'" class="overflow-x-auto">
+  <!-- 最终面板：四大面板（快照1基础 + 战斗内增量） -->
+  <div v-if="activeTab === 'final' && snapshots && snapshotDeltaRows.length > 0" class="p-2">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+      <div v-for="row in snapshotDeltaRows" :key="row.prop" class="rounded">
+        <div class="flex justify-between items-baseline">
+          <span class="text-xs text-base-content/70">{{ getPropName(row.prop) }}</span>
+          <span class="font-bold">
+            <template v-if="Math.round(row.delta) !== 0">
+              {{ formatValue(row.base, false) }} + {{ formatValue(row.delta, false) }}
+              <span class="text-primary font-extrabold">({{ formatValue(row.base + row.delta, false) }})</span>
+            </template>
+            <template v-else>
+              <span class="text-primary font-extrabold">{{ formatValue(row.base + row.delta, false) }}</span>
+            </template>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="divider my-2 text-xs text-base-content/40">其它最终属性</div>
+  </div>
   <div class="grid grid-cols-2 gap-x-8 gap-y-1 text-sm p-2">
     <!-- 左列：核心属性 -->
     <div class="space-y-1">
@@ -62,11 +82,17 @@ const props = withDefaults(defineProps<{
   noCard?: boolean;
   defaultActiveTab?: 'out' | 'in' | 'final' | 'conversion';
   finalStats?: Map<PropertyType, number>;
+  snapshots?: {
+    snapshot1: { atk: number; hp: number; def: number; impact: number };
+    snapshot2: { atk: number; hp: number; def: number; impact: number };
+    snapshot3: { atk: number; hp: number; def: number; impact: number };
+  };
 }>(), {
   conversionBuffs: () => [],
   noCard: true,
   defaultActiveTab: 'out',
-  finalStats: undefined
+  finalStats: undefined,
+  snapshots: undefined
 });
 
 const activeTab = ref<'out' | 'in' | 'final' | 'conversion'>('out');
@@ -76,12 +102,12 @@ if (props.defaultActiveTab) {
   activeTab.value = props.defaultActiveTab;
 }
 
-const tabNames: Record<'out' | 'in' | 'final' | 'conversion', string> = {
+const tabNames = computed<Record<'out' | 'in' | 'final' | 'conversion', string>>(() => ({
   'out': '局外属性',
   'in': '局内属性',
-  'final': '最终属性',
+  'final': props.snapshots ? '最终面板' : '最终属性',
   'conversion': '转换类属性'
-};
+}));
 
 // 检测哪些标签页有数据
 const availableTabs = computed(() => {
@@ -134,6 +160,19 @@ const CORE_PROPS = [
   PropertyType.ANOM_MAS_
 ];
 
+const snapshotDelta = computed(() => {
+  const s = props.snapshots;
+  if (!s) return null;
+  return [
+    { prop: PropertyType.HP, base: s.snapshot1.hp, delta: s.snapshot3.hp - s.snapshot1.hp },
+    { prop: PropertyType.ATK, base: s.snapshot1.atk, delta: s.snapshot3.atk - s.snapshot1.atk },
+    { prop: PropertyType.DEF, base: s.snapshot1.def, delta: s.snapshot3.def - s.snapshot1.def },
+    { prop: PropertyType.IMPACT, base: s.snapshot1.impact, delta: s.snapshot3.impact - s.snapshot1.impact },
+  ];
+});
+
+const snapshotDeltaRows = computed(() => snapshotDelta.value ?? []);
+
 // 根据当前标签页过滤属性
 const filteredProps = computed(() => {
   let stats: Map<PropertyType, number>;
@@ -148,11 +187,42 @@ const filteredProps = computed(() => {
     stats = props.propertyCollection.conversion;
   }
 
-  const allProps = Array.from(stats.entries()).filter(([_, value]) => value !== 0);
-  
+  let allProps = Array.from(stats.entries()).filter(([_, value]) => value !== 0);
+
+  // 最终面板：如果传入了 snapshots，说明调用方希望用“快照1基础 + (快照3-快照1)增量”来展示四大面板，
+  // 因此这里要先把 finalStats 里残留的“三元组维度”过滤掉，避免出现 ATK_%/HP_% 等不应出现在最终面板的字段。
+  if (activeTab.value === 'final' && props.snapshots) {
+    const triadProps = new Set<PropertyType>([
+      PropertyType.HP_BASE,
+      PropertyType.HP_,
+      PropertyType.HP,
+      PropertyType.ATK_BASE,
+      PropertyType.ATK_,
+      PropertyType.ATK,
+      PropertyType.DEF_BASE,
+      PropertyType.DEF_,
+      PropertyType.DEF,
+      PropertyType.IMPACT_,
+      PropertyType.IMPACT,
+    ]);
+    allProps = allProps.filter(([p]) => !triadProps.has(p));
+  }
+
+  // (debug logs removed)
+
+  // (debug logs removed)
+
+  // 最终面板（快照模式）：四大面板在模板里单独展示；这里仅负责“其它最终属性”
+  // 即：从 finalStats 中剔除四大三元组维度后展示剩余属性。
+  if (activeTab.value === 'final' && props.snapshots) {
+    // keep going; handled by allProps filtering above
+  }
+
   // 分离核心属性和其他属性
   let leftProps = allProps.filter(([prop]) => CORE_PROPS.includes(prop));
   let rightProps = allProps.filter(([prop]) => !CORE_PROPS.includes(prop));
+
+  // (final snapshots handled above)
 
   // 如果右侧没有属性，将左侧属性分一半到右侧
   if (rightProps.length === 0 && leftProps.length > 1) {
@@ -167,14 +237,14 @@ const filteredProps = computed(() => {
   const sortFunc = (a: [PropertyType, number], b: [PropertyType, number]) => {
     return sortOrder.indexOf(a[0]) - sortOrder.indexOf(b[0]);
   };
-  
+
   // 注意：如果分割了，rightProps 其实也是 CORE_PROPS 的一部分，也应该排序
   // 但由于 filter 出来的顺序本来就不确定，所以最好是先把 allProps 排好序，然后再分
-  
+
   // 更好的做法：先排序，再分割
   const allCoreProps = allProps.filter(([prop]) => CORE_PROPS.includes(prop));
   allCoreProps.sort(sortFunc);
-  
+
   const otherProps = allProps.filter(([prop]) => !CORE_PROPS.includes(prop));
 
   if (otherProps.length === 0 && allCoreProps.length > 1) {
@@ -225,6 +295,6 @@ function isPercent(prop: PropertyType) {
 
 function formatValue(val: number, isPct: boolean) {
   if (isPct) return (val * 100).toFixed(1) + '%';
-  return val % 1 === 0 ? Math.floor(val).toLocaleString() : val.toFixed(1);
+  return String(Math.round(val));
 }
 </script>

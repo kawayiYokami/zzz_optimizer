@@ -152,13 +152,14 @@ export class Enemy {
    * @returns Enemy实例
    */
   static fromGameData(enemyData: EnemyInfo): Enemy {
+    const defenseAt60 = enemyData.level_60_plus_defense ?? enemyData.defense;
     const enemy = new Enemy(
       enemyData.id,
       enemyData.CHS || enemyData.EN,
       enemyData.code_name,
       enemyData.hp,
       enemyData.atk,
-      enemyData.defense,
+      defenseAt60,
       enemyData.stun_max,
       enemyData.can_stun
     );

@@ -256,6 +256,12 @@ export interface OptimizationBuildResult {
   discIds: [string, string, string, string, string, string];
   /** 最终属性快照 */
   finalStats: Float64Array;
+  /** 调试用：快照1/2/3（用于 UI 展示“局内增量 = snapshot3 - snapshot1”） */
+  snapshots?: {
+    snapshot1: { atk: number; hp: number; def: number; impact: number };
+    snapshot2: { atk: number; hp: number; def: number; impact: number };
+    snapshot3: { atk: number; hp: number; def: number; impact: number };
+  };
   /** 伤害构成 */
   breakdown: {
     direct: number;

@@ -118,6 +118,16 @@ export class CombatStats {
   }
 
   /**
+   * 通用读取：获取某个属性的最终面板值
+   *
+   * 说明：用于外部（如 BattleService）在“快照1面板”上读取任意 PropertyType，
+   * 避免必须为每个属性写专用 getter。
+   */
+  getFinal(prop: PropertyType, defaultValue: number = 0): number {
+    return this.properties.getFinal(prop, defaultValue);
+  }
+
+  /**
    * 从属性集列表生成 CombatStats
    *
    * @param collections 属性集列表（角色+装备+BUFF）
