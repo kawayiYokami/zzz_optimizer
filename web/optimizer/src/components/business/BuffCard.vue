@@ -1,6 +1,6 @@
 <template>
   <div class="card bg-base-100 shadow-sm border border-base-200 w-64 text-sm">
-    <div class="card-body p-3">
+    <div class="card-body p-4">
         <div class="flex justify-between items-start mb-1">
             <h4 class="font-bold text-sm">{{ buff.name }}</h4>
             <span v-if="buff.max_stacks > 1" class="badge badge-xs badge-neutral">
@@ -17,7 +17,7 @@
         </div>
 
         <!-- Stats Preview -->
-        <div v-if="buff.in_combat_stats.size > 0" class="mt-2 bg-base-200 p-2 rounded text-xs">
+        <div v-if="buff.in_combat_stats.size > 0" class="mt-2 space-y-1.5 text-xs">
             <div v-for="[prop, val] in buff.in_combat_stats" :key="prop" class="flex justify-between">
                 <span>{{ getPropName(prop) }}</span>
                 <span class="font-mono">{{ formatValue(val, isPercent(prop)) }}</span>

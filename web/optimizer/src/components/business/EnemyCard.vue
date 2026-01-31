@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card bg-base-100 shadow-xl compact-card border border-base-300 overflow-hidden transition-all"
+    class="card bg-base-100 shadow compact-card border border-base-300 overflow-hidden transition-all"
     :class="{
       'cursor-pointer hover:shadow-2xl hover:scale-[1.02]': clickable
     }"

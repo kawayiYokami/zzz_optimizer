@@ -1,7 +1,8 @@
 <template>
   <div
-    class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52 overflow-hidden cursor-pointer hover:border-primary hover:shadow-2xl transition-all"
-    @click="$emit('edit', wengine.id)"
+    class="card bg-base-100 shadow compact-card border border-base-300 w-52 overflow-hidden transition-all"
+    :class="{ 'cursor-pointer hover:border-primary hover:shadow-2xl': !readonly }"
+    @click="!readonly && $emit('edit', wengine.id)"
   >
     <!-- Image Section with Rarity Gradient -->
     <figure :class="['relative h-32 w-full', rarityGradientClass]">

@@ -1,5 +1,5 @@
 <template>
-<div :class="noCard ? '' : 'card bg-base-100 shadow-xl border border-base-300'">
+<div :class="noCard ? '' : 'card bg-base-100 shadow border border-base-300'">
 <div :class="noCard ? '' : 'card-body p-4'">
 <!-- 标签切换 (仅在多个标签页时显示) -->
 <div v-if="availableTabs.length > 1" class="tabs tabs-boxed mb-4">

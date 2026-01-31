@@ -1,5 +1,5 @@
 <template>
-  <div class="card bg-base-100 shadow-xl border border-base-300 w-full max-w-4xl mx-auto overflow-hidden flex flex-col">
+  <div class="card bg-base-100 shadow border border-base-300 w-full max-w-4xl mx-auto overflow-hidden flex flex-col">
     <!-- Header: Character Basic Info -->
     <div class="bg-base-200 p-6 flex items-center gap-6 relative overflow-hidden">
         <!-- Background Decoration (Optional) -->

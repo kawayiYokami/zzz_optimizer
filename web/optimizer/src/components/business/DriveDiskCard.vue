@@ -1,5 +1,9 @@
 <template>
-  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52 cursor-pointer hover:border-primary hover:shadow-2xl transition-all" @click="$emit('edit', disk.id)">
+  <div
+    class="card bg-base-100 shadow compact-card border border-base-300 w-52 transition-all"
+    :class="{ 'cursor-pointer hover:border-primary hover:shadow-2xl': !readonly }"
+    @click="!readonly && $emit('edit', disk.id)"
+  >
 
     <div class="card-body p-3 gap-1">
       <!-- Icon & Set Name -->
@@ -78,6 +82,7 @@ import { useSaveStore } from '../../stores/save.store';
 
 const props = defineProps<{
   disk: DriveDisk;
+  readonly?: boolean;
 }>();
 
 defineEmits<{

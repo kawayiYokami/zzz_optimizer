@@ -203,20 +203,9 @@
                 <div class="font-bold font-mono text-base text-error">{{ zones?.crit_zone?.toFixed(2) || '-' }}</div>
               </div>
             </button>
-            <!-- 抗性区 -->
-            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
-              <div class="flex flex-col items-center w-full">
-                <div class="opacity-60 mb-1">抗性区</div>
-                <div class="font-bold font-mono text-base">{{ zones?.res_mult?.toFixed(3) || '-' }}</div>
-              </div>
-            </button>
-            <!-- 失衡区 -->
-            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200" :class="{'ring-1 ring-warning bg-warning/10': isStunned}">
-              <div class="flex flex-col items-center w-full">
-                <div class="opacity-60 mb-1">失衡易伤</div>
-                <div class="font-bold font-mono text-base">{{ zones?.stun_vuln_mult?.toFixed(2) || '-' }}</div>
-              </div>
-            </button>
+            <!-- 占位：通用乘区在下方展示，直伤乘区只展示基础/暴击 -->
+            <div class="hidden"></div>
+            <div class="hidden"></div>
 
             <!-- 异常乘区 -->
             <!-- 分割线 -->
@@ -277,6 +266,20 @@
               <div class="flex flex-col items-center w-full">
                 <div class="opacity-60 mb-1">增伤区</div>
                 <div class="font-bold font-mono text-base text-warning">{{ zones?.dmg_bonus?.toFixed(2) || '-' }}</div>
+              </div>
+            </button>
+            <!-- 抗性区 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">抗性区</div>
+                <div class="font-bold font-mono text-base">{{ zones?.res_mult?.toFixed(3) || '-' }}</div>
+              </div>
+            </button>
+            <!-- 失衡易伤 -->
+            <button class="btn btn-sm h-auto py-3 bg-base-100 border-base-200 hover:bg-base-200" :class="{'ring-1 ring-warning bg-warning/10': isStunned}">
+              <div class="flex flex-col items-center w-full">
+                <div class="opacity-60 mb-1">失衡易伤</div>
+                <div class="font-bold font-mono text-base">{{ zones?.stun_vuln_mult?.toFixed(2) || '-' }}</div>
               </div>
             </button>
             <!-- 承伤区 -->
@@ -495,7 +498,7 @@ const calculateData = () => {
   directResult.distance_mult = currentZones.distance_mult;
 
   // 3. 计算异常伤害 (单次)
-  const anomalyParams = DamageCalculator.getAnomalyDotParams(elementStr);
+  const anomalyParams = DamageCalculator.getAnomalyDamageParams(elementStr);
   const anomalyRatios = new RatioSet();
   anomalyRatios.atk_ratio = anomalyParams.ratio; // 单次/单跳倍率
   anomalyRatios.element = agent.element;

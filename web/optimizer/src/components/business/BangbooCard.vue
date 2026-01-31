@@ -1,5 +1,5 @@
 <template>
-  <div class="card bg-base-100 shadow-xl compact-card border border-base-300 w-52 overflow-hidden">
+  <div class="card bg-base-100 shadow compact-card border border-base-300 w-52 overflow-hidden">
     <!-- Image Section -->
     <figure :class="['relative h-32 w-full', rarityGradientClass]">
         <img
