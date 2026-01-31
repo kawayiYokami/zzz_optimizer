@@ -166,6 +166,36 @@ export class OptimizerService {
         }
     }
 
+    /**
+     * 使用 FastEvaluator Worker 对“当前已装备的 6 张盘”进行单次计算（用于 BattleService/展示口径对齐）
+     *
+     * 注意：这是一次性计算，不会启动优化循环。
+     */
+    evalOnceInWorker(precomputed: import('../types/precomputed').PrecomputedData, discs: import('../types/precomputed').DiscData[]): Promise<import('../types/precomputed').OptimizationBuildResult> {
+        if (this.fastWorkers.length === 0) {
+            this.initializeFastWorkers(1);
+        }
+
+        const worker = this.fastWorkers[0];
+        const requestId = `eval_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+
+        return new Promise((resolve, reject) => {
+            const onMessage = (event: MessageEvent) => {
+                const msg = event.data;
+                if (msg?.type === 'eval_result' && msg.requestId === requestId) {
+                    worker.removeEventListener('message', onMessage as any);
+                    resolve(msg.result);
+                }
+                if (msg?.type === 'error') {
+                    worker.removeEventListener('message', onMessage as any);
+                    reject(new Error(msg.message));
+                }
+            };
+            worker.addEventListener('message', onMessage as any);
+            worker.postMessage({ type: 'eval', requestId, precomputed, discs });
+        });
+    }
+
     // ============================================================================
     // 会话状态管理
     // ============================================================================

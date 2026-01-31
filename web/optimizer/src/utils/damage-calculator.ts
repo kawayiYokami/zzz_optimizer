@@ -96,6 +96,10 @@ export interface AnomalyDamageResult {
  * 确保在 Worker 和主线程中的计算结果一致
  */
 export class DamageCalculator {
+  static getDefenseLevelCoef(attackerLevel: number = 60): number {
+    // 口径：由于游戏内无法降级验证 1~60 的完整表，这里统一使用 60+ 的固定基数 794。
+    return 794;
+  }
   /**
    * 从技能参数创建倍率集合
    */
@@ -189,7 +193,7 @@ export class DamageCalculator {
    * @returns 防御乘区
    */
   static calculateDefenseMultiplier(zones: ZoneCollection, enemyStats: EnemyStats, attackerLevel: number = 60): number {
-    const level_coef = attackerLevel * 10 + 100;
+    const level_coef = this.getDefenseLevelCoef(attackerLevel);
 
     // 敌人有效防御 = 基础防御 × (1 - 防御降低% - 无视防御%) × (1 - 穿透率%) - 穿透值
     const defRed = zones.getFinal(PropertyType.DEF_RED_, 0);
@@ -807,6 +811,8 @@ export class DamageCalculator {
   ): {
     directBase: number;    // 直伤基础区
     anomalyBase: number;   // 异常基础区（总伤）
+    disorderBase: number;  // 紊乱基础区（总伤）
+    lieshuangBase: number; // 烈霜基础区（直伤，1500%）
   } {
     // 1. 获取技能数据
     if (!agent.skillSet) {
@@ -835,6 +841,25 @@ export class DamageCalculator {
     }
 
     // 2. 调用 calculateSkillBaseZones 计算基础区
-    return this.calculateSkillBaseZones(agent, skill.name, zones);
+    const base = this.calculateSkillBaseZones(agent, skill.name, zones);
+
+    // 3. 紊乱/烈霜基础区（用于展示参考值）
+    const baseStat = zones.getFinal(PropertyType.ATK_BASE, 0) + zones.getFinal(PropertyType.ATK, 0);
+    const elementStr = ElementType[agent.element].toLowerCase();
+    // 默认展示口径：异常持续 10 秒，在 3 秒时发生紊乱 => remainingTime=7
+    const disorderRatio = this.getDisorderDamageRatio(elementStr, 7);
+    const disorderBase = baseStat * disorderRatio;
+
+    const special = agent.getSpecialAnomalyConfig?.();
+    const lieshuangBase = special && special.element === 'lieshuang'
+      ? baseStat * (special.ratio ?? 0)
+      : 0;
+
+    return {
+      directBase: base.directBase,
+      anomalyBase: base.anomalyBase,
+      disorderBase,
+      lieshuangBase,
+    };
   }
 }

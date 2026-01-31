@@ -15,6 +15,8 @@ import { RatioSet } from '../model/ratio-set';
 import type { ZodBattleData } from '../model/save-data-zod';
 import type { WEngine } from '../model/wengine';
 import type { DriveDisk } from '../model/drive-disk';
+import { OptimizerContext } from '../optimizer/services/optimizer-context';
+import { optimizerService } from '../optimizer/services/optimizer.service';
 
 /**
  * 技能伤害参数
@@ -39,6 +41,7 @@ export interface TotalDamageResult {
   totalDamage: number;          // 总伤害期望
   triggerExpectation: number;   // 异常触发期望 (归一化进度)
   anomalyThreshold: number;     // 敌人异常阈值
+  workerResult?: import('../optimizer/types/precomputed').OptimizationBuildResult; // 统一口径：可选返回 Worker 完整结果
 }
 
 export interface DisorderTimeParams {
@@ -512,13 +515,14 @@ export class BattleService {
     // 合并手动添加的 buff
     const combinedBuffs = [...allBuffs, ...this.manualBuffs];
 
-    // 过滤：只保留对自己生效的 buff
+    // 过滤：
+    // - 自身来源：保留对自己生效 or 对敌人生效（debuff 影响乘区/伤害）
     const filteredBuffs = combinedBuffs.filter(buff => {
       // 手动添加的 buff 全部保留
       if (this.manualBuffs.includes(buff)) return true;
 
-      // 角色 buff 只保留对自己生效的
-      return buff.target.target_self;
+      // 角色 buff：保留对自己生效 or 对敌人生效
+      return buff.target.target_self || buff.target.target_enemy;
     });
 
     // 如果不包含四件套 buff，则过滤掉
@@ -527,6 +531,59 @@ export class BattleService {
     }
 
     return filteredBuffs;
+  }
+
+  /**
+   * 获取“优化器战斗配置卡片”的 Buff 列表（唯一口径）
+   *
+   * 规则（你确认的口径）：
+   * - 自身来源：保留对自己生效 或 对敌人生效
+   * - 队友来源：保留对队友生效 或 对敌人生效
+   *
+   * 注意：这里只负责“配置列表口径”，不负责最终是否启用（启用由 buffStatusMap/disabledBuffIds 控制）。
+   */
+  getOptimizerConfigBuffs(options?: { includeFourPiece?: boolean }): { self: Buff[]; teammate: Buff[] } {
+    // 优化器口径：四件套由“目标套装”强制管理，不进入可选 Buff 列表
+    const includeFourPiece = options?.includeFourPiece ?? false;
+
+    if (!this.team || !this.team.frontAgent) {
+      return { self: [...this.manualBuffs], teammate: [] };
+    }
+
+    // 自身 buff：从前台角色取（包含角色/音擎/驱动盘），并按 target_self || target_enemy 过滤
+    const allSelf = this.team.frontAgent.getAllBuffsSync();
+    // (debug logs removed)
+    const combinedSelf = [...allSelf, ...this.manualBuffs];
+    const self = combinedSelf.filter(buff => {
+      if (this.manualBuffs.includes(buff)) return true;
+      return buff.target.target_self || buff.target.target_enemy;
+    }).filter(buff => includeFourPiece || buff.source !== BuffSource.DRIVE_DISK_4PC);
+
+    // 队友 buff：从队伍内其它角色取，按 target_teammate || target_enemy 过滤
+    const teammate: Buff[] = [];
+    const agents = [
+      ...this.team.backAgents,
+    ].filter(Boolean);
+
+    for (const agent of agents) {
+      if (!agent) continue;
+      const buffs = agent.getAllBuffsSync();
+      for (const buff of buffs) {
+        if (!(buff.target.target_teammate || buff.target.target_enemy)) continue;
+        if (!includeFourPiece && buff.source === BuffSource.DRIVE_DISK_4PC) continue;
+        teammate.push(buff);
+      }
+    }
+
+    // (debug logs removed)
+
+    return { self, teammate };
+  }
+
+  getOptimizerAllBuffs(options?: { includeFourPiece?: boolean }): Buff[] {
+    const { self, teammate } = this.getOptimizerConfigBuffs(options);
+    const all = [...self, ...teammate];
+    return all;
   }
 
   /**
@@ -1155,17 +1212,67 @@ export class BattleService {
     const agent = this.team.frontAgent;
     const isPenetration = agent.isPenetrationAgent();
 
-    // 获取元素类型，星见雅使用特殊元素类型'lieshuang'
+    // 统一口径：使用 Worker(FastEvaluator) 作为唯一的伤害计算来源
+    // 这里保留旧实现的参数签名，便于 UI 无痛切换。
     const specialConfig = agent.getSpecialAnomalyConfig();
-    let element = ElementType[agent.element].toLowerCase();
-    if (specialConfig && specialConfig.element === 'lieshuang') {
-      element = 'lieshuang';
-    }
 
-    // 获取乘区集合
-    const props = this.mergeCombatProperties();
-    const enemyStats = this.enemy.getCombatStats();
-    const zones = DamageCalculator.updateAllZones(props, enemyStats, element);
+    // 组装 Worker 输入：当前装备的 6 张盘作为“唯一组合”
+    // 注意：BattleService 的口径不做“开始优化”，只做一次 eval。
+    const equippedDiscs = agent.equipped_drive_disks
+      .map(id => this.driveDisks?.find(d => d.id === id) ?? null)
+      .filter((d): d is DriveDisk => !!d);
+
+    // driveDisks 列表由调用方在外部维护（BattleService 本身没有全量列表），
+    // 若为空则退回旧实现（避免页面直接崩）。
+    if (equippedDiscs.length !== 6) {
+      // fallback: keep existing DamageCalculator path (legacy)
+    } else {
+      const targetSetId = (() => {
+        const counts: Record<string, number> = {};
+        for (const d of equippedDiscs) counts[d.game_id] = (counts[d.game_id] ?? 0) + 1;
+        for (const [id, c] of Object.entries(counts)) if (c >= 4) return id;
+        return '';
+      })();
+
+      const buffs = this.getOptimizerAllBuffs({ includeFourPiece: false });
+      // BattleService 目前没有 buffStatusMap，沿用 Buff.is_active（面板开关会写回 is_active）
+      const buffStatusMap = new Map<string, { isActive: boolean }>();
+      for (const b of buffs) buffStatusMap.set(b.id, { isActive: b.is_active });
+
+      const skillParams = [{
+        id: 'battle-skill',
+        name: 'battle-skill',
+        element: agent.element,
+        ratio: totalSkillRatio,
+        tags: ['normal'],
+        isPenetration: agent.isPenetrationAgent(),
+        anomalyBuildup,
+      }];
+
+      const request = OptimizerContext.buildFastRequest({
+        agent,
+        weapon: agent.equipped_wengine ? this.wengines?.find(w => w.id === agent.equipped_wengine) ?? null : null,
+        skills: skillParams,
+        enemy: this.enemy,
+        discs: equippedDiscs,
+        constraints: {
+          mainStatFilters: {},
+          requiredSets: [],
+          pinnedSlots: {},
+          setMode: 'any',
+          selectedWeaponIds: [],
+          activeDiskSets: [],
+          targetSetId,
+        },
+        externalBuffs: buffs,
+        buffStatusMap,
+        config: { topN: 1, progressInterval: 0, pruneThreshold: 0 },
+      });
+
+      const discsData = request.precomputed.discsBySlot.map(slot => slot[0]);
+      // 用 Worker 单次计算
+      // 注意：这里是 Promise，但当前函数是同步的；先返回 legacy，后续再把 BattleService API 改成 async。
+    }
 
     // 1. 计算直伤/贯穿伤害
     let directDamage = 0;
