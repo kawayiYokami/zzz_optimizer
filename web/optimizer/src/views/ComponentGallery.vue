@@ -36,7 +36,7 @@
       <section>
         <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">属性集卡片 (PropertySetCard)</h2>
         <div class="w-full">
-          <div class="card bg-base-100 shadow-xl">
+          <div class="card bg-base-100 shadow">
             <div class="card-body">
               <PropertySetCard
                 v-if="realAgent"
@@ -53,7 +53,7 @@
       <section>
         <h2 class="text-2xl font-bold mb-4 border-l-4 border-primary pl-3">技能列表 (SkillList)</h2>
         <div class="w-full">
-          <div class="card bg-base-100 shadow-xl">
+          <div class="card bg-base-100 shadow">
             <div class="card-body">
               <SkillList v-if="realAgent" :agent="realAgent" />
               <div v-else class="alert alert-warning">未找到角色数据，请确保已加载存档。</div>

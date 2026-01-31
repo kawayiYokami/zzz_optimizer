@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-base-200 p-4 md:p-8">
     <div class="max-w-4xl mx-auto space-y-6">
       <!-- 存档列表 -->
-      <div class="card bg-base-100 shadow-xl">
+      <div class="card bg-base-100 shadow">
         <div class="card-body">
           <div class="flex justify-between items-center mb-4">
             <h3 class="card-title">存档列表 ({{ saveNames.length }}/5)</h3>
@@ -70,7 +70,7 @@
       </div>
 
       <!-- 导入存档 -->
-      <div class="card bg-base-100 shadow-xl">
+      <div class="card bg-base-100 shadow">
         <div class="card-body">
           <h3 class="card-title">导入存档</h3>
           <p class="text-sm text-gray-500 mb-2">
