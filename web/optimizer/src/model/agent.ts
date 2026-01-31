@@ -701,17 +701,26 @@ export class Agent {
   /**
    * 获取所有有效的Buff（懒加载）
    */
-  async getAllBuffs(): Promise<Buff[]> {
+  async getAllBuffs(options?: {
+    includeWengineBuffs?: boolean;
+    includeDriveDisk4pcBuffs?: boolean;
+  }): Promise<Buff[]> {
     if (!this._isBuffsLoaded || !this.core_passive_buffs) {
       await this._loadBuffs();
     }
-    return this.getAllBuffsSync();
+    return this.getAllBuffsSync(options);
   }
 
   /**
    * 获取所有有效的Buff（同步，仅返回已加载的Buff）
    */
-  getAllBuffsSync(): Buff[] {
+  getAllBuffsSync(options?: {
+    includeWengineBuffs?: boolean;
+    includeDriveDisk4pcBuffs?: boolean;
+  }): Buff[] {
+    const includeWengineBuffs = options?.includeWengineBuffs ?? true;
+    const includeDriveDisk4pcBuffs = options?.includeDriveDisk4pcBuffs ?? true;
+
     const allBuffs: Buff[] = [
       ...this.core_passive_buffs || [],
       ...this.talent_buffs || [],
@@ -720,7 +729,7 @@ export class Agent {
     ];
 
     // 添加武器BUFF
-    if (this.equipped_wengine && this._wengines) {
+    if (includeWengineBuffs && this.equipped_wengine && this._wengines) {
       const wengine = this._wengines.get(this.equipped_wengine);
       if (wengine) {
         const wengineBuffs = wengine.getActiveBuffs();
@@ -731,7 +740,7 @@ export class Agent {
     }
 
     // 添加驱动盘4件套Buff
-    if (this._driveDisks) {
+    if (includeDriveDisk4pcBuffs && this._driveDisks) {
       // 统计套装数量
       const setCounts = new Map<string, number>();
       for (const diskId of this.equipped_drive_disks) {

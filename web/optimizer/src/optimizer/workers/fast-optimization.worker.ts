@@ -13,6 +13,7 @@ import type {
   FastOptimizationRequest,
   DiscData,
   OptimizationBuildResult,
+  PrecomputedData,
 } from '../types/precomputed';
 
 // Worker 上下文
@@ -55,6 +56,17 @@ interface FastWorkerError {
 }
 
 type FastWorkerMessage = FastOptimizationProgress | FastOptimizationResult | FastWorkerError;
+type FastWorkerSingleEval = {
+  type: 'eval';
+  requestId: string;
+  precomputed: PrecomputedData;
+  discs: DiscData[];
+};
+type FastWorkerSingleEvalResult = {
+  type: 'eval_result';
+  requestId: string;
+  result: OptimizationBuildResult;
+};
 
 /**
  * 最小堆，用于维护 TopN 结果
@@ -463,6 +475,30 @@ ctx.onmessage = (event: MessageEvent) => {
 
   if (message.type === 'cancel') {
     shouldCancel = true;
+    return;
+  }
+
+  if (message.type === 'eval') {
+    try {
+      const { requestId, precomputed, discs } = message as FastWorkerSingleEval;
+      const evaluator = new FastEvaluator(precomputed);
+      const res = evaluator.createFullResult(discs, 0, []);
+      const msg: FastWorkerSingleEvalResult = {
+        type: 'eval_result',
+        requestId,
+        result: res,
+      };
+      ctx.postMessage(msg);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      const errorMsg: FastWorkerError = {
+        type: 'error',
+        message: errorMessage,
+        stack: errorStack,
+      };
+      ctx.postMessage(errorMsg);
+    }
     return;
   }
 

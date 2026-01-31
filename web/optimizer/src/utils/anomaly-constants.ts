@@ -89,6 +89,66 @@ export function getAnomalyDamageParams(element: string): AnomalyDamageParams {
 }
 
 /**
+ * 获取异常在固定窗口 T 内的总倍率（只依赖 element 与 T）
+ */
+export function getAnomalyTotalRatioAtT(
+  element: string,
+  timepointSec: number = ANOMALY_EXPECT_WINDOW_SEC
+): number {
+  const elementLower = element.toLowerCase();
+
+  // 烈霜不作为异常伤害本体；这里返回 0，让调用方在“特殊异常”口径单独处理
+  if (elementLower === 'lieshuang') return 0;
+
+  const params = ANOMALY_DAMAGE_PARAMS[elementLower];
+  if (!params) return 0;
+
+  if (params.kind === 'tick' && params.interval > 0) {
+    return params.ratio * Math.floor(timepointSec / params.interval);
+  }
+  // single
+  return params.ratio;
+}
+
+/**
+ * 获取紊乱在“剩余持续时间 T”下的一次性总倍率（社区常用口径）
+ *
+ * - 不依赖属性与驱动盘组合，可在主线程预计算为常量下发 Worker
+ * - T 的定义：异常状态的剩余持续时间（秒）
+ */
+export function getDisorderTotalRatioByRemainingTime(
+  element: string,
+  remainingTimeSec: number
+): number {
+  const el = element.toLowerCase();
+  const t = Math.max(0, remainingTimeSec);
+
+  // 表公式：450% + floor(T / interval) * tickRatio
+  if (el === 'fire') return 4.5 + Math.floor(t / 0.5) * 0.5;
+  if (el === 'electric') return 4.5 + Math.floor(t / 1) * 1.25;
+  if (el === 'ether') return 4.5 + Math.floor(t / 0.5) * 0.625;
+  if (el === 'ink') return 4.5 + Math.floor(t / 0.5) * 0.625;
+  if (el === 'ice') return 4.5 + Math.floor(t / 1) * 0.075;
+  if (el === 'physical') return 4.5 + Math.floor(t / 1) * 0.075;
+  // 烈霜（霜寒）：600% + floor(T) * 75%
+  if (el === 'lieshuang') return 6.0 + Math.floor(t / 1) * 0.75;
+
+  return 0;
+}
+
+/**
+ * 根据“固定结算时间点”与“异常持续时间”计算剩余时间，并得到紊乱一次性总倍率
+ */
+export function getDisorderTotalRatioAtTimepoint(
+  element: string,
+  timepointSec: number = ANOMALY_EXPECT_WINDOW_SEC,
+  durationSec: number = 10
+): number {
+  const remaining = Math.max(0, durationSec - timepointSec);
+  return getDisorderTotalRatioByRemainingTime(element, remaining);
+}
+
+/**
  * 获取异常持续时间乘数
  */
 export function getAnomalyDurationMult(element: string): number {
@@ -109,6 +169,6 @@ export function getAnomalyDurationMult(element: string): number {
  * 获取紊乱伤害倍率
  */
 export function getDisorderRatio(element: string): number {
-  // 紊乱倍率（简化值）
+  // 旧接口：历史遗留。新代码应使用 getDisorderTotalRatioAtTimepoint(...)
   return 1.5;
 }

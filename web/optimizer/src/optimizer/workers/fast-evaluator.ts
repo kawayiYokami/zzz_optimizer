@@ -4,9 +4,12 @@
  * 使用 Float64Array 和预计算数据实现零对象创建的伤害计算。
  * 性能优化的核心组件。
  *
- * 新架构：
- * - mergedStats 已包含：角色+武器+所有非转换buff+目标4件套2+4效果
- * - Worker 只需：累加盘属性 + 检查目标盘数 + 非目标2件套 + 转换buff
+ * 新架构（注意：这里的“静态/局内”口径必须与 docs/damage_system.md 一致）：
+ * - mergedStats：作为“可复用底座”，应仅包含不会随驱动盘组合变化的那部分属性（例如角色+武器+与盘无关的静态项）
+ * - Worker 端：在每个组合上叠加盘词条、套装2件套（静态属性）、并应用转换类 buff 后计算伤害
+ *
+ * 警告：如果把“会随盘组合变化/触发条件变化的局内 Buff（例如4件套触发态）”混入 mergedStats，
+ * 将导致预计算输入与实际规则不一致，从而出现“输入总是有问题”的症状。
  */
 
 import {
@@ -20,9 +23,6 @@ import type {
   OptimizationBuildResult,
 } from '../types/precomputed';
 import {
-  getAnomalyDotParams,
-  getAnomalyDurationMult,
-  getDisorderRatio,
   STANDARD_BUILDUP_THRESHOLD,
 } from '../../utils/anomaly-constants';
 
@@ -43,13 +43,6 @@ export interface FastEvaluationResult {
 /**
  * 预计算的异常参数（避免热路径上的字符串转换）
  */
-interface PrecomputedAnomalyParams {
-  ratio: number;
-  durationMult: number;
-  disorderRatio: number;
-  threshold: number;
-}
-
 /**
  * 快速评估器
  *
@@ -65,49 +58,120 @@ export class FastEvaluator {
   /** 复用的累加器数组 */
   private accumulator: Float64Array;
 
+  /** Worker 复用的底座（mergedStats + target 2pc） */
+  private workerBaseStats: Float64Array;
+
+  /** Worker 复用的普通 buff 合并（mergedBuff + target 4pc buff） */
+  private workerMergedBuff: Float64Array;
+
   /** 非目标套装计数（用于2件套判断） */
   private otherSetCounts: Map<string, number>;
 
-  /** 预计算的异常参数表（以元素数字为键） */
-  private anomalyParamsCache: Map<number, PrecomputedAnomalyParams>;
+  /** 固定乘区（每个 worker 初始化一次） */
+  private fixed: {
+    resMult: number;
+    dmgTakenMult: number;
+    stunVulnMult: number;
+    distanceMult: number;
+    levelMult: number;
+    anomalyCritMult: number;
+    anomalyDmgMult: number;
+    resElementKey: string;
+    enemyResUsed: number;
+    totalResRedUsed: number;
+  };
 
   constructor(precomputed: PrecomputedData) {
     this.precomputed = precomputed;
     this.accumulator = new Float64Array(PROP_IDX.TOTAL_PROPS);
+    this.workerBaseStats = new Float64Array(PROP_IDX.TOTAL_PROPS);
+    this.workerMergedBuff = new Float64Array(PROP_IDX.TOTAL_PROPS);
     this.otherSetCounts = new Map();
-    // 预计算异常参数表
-    this.anomalyParamsCache = this.buildAnomalyParamsCache();
-  }
 
-  /**
-   * 构建预计算的异常参数缓存
-   */
-  private buildAnomalyParamsCache(): Map<number, PrecomputedAnomalyParams> {
-    const cache = new Map<number, PrecomputedAnomalyParams>();
-    const elements = [
-      { num: 200, str: 'physical' },
-      { num: 201, str: 'fire' },
-      { num: 202, str: 'ice' },
-      { num: 203, str: 'electric' },
-      { num: 205, str: 'ether' },
-    ];
-
-    for (const { num, str } of elements) {
-      const anomParams = getAnomalyDotParams(str);
-      const durationMult = getAnomalyDurationMult(str);
-      const disorderRatio = getDisorderRatio(str);
-      const threshold = this.precomputed.enemyStats?.anomaly_thresholds?.[str]
-        ?? STANDARD_BUILDUP_THRESHOLD;
-
-      cache.set(num, {
-        ratio: anomParams.ratio,
-        durationMult,
-        disorderRatio,
-        threshold,
-      });
+    // Worker 初始化阶段预合并目标套装（同一 worker 复用）
+    const { mergedStats, targetSetTwoPiece, mergedBuff, targetSetFourPieceBuff } = precomputed;
+    for (let i = 0; i < PROP_IDX.TOTAL_PROPS; i++) {
+      this.workerBaseStats[i] = mergedStats[i] + (targetSetTwoPiece?.[i] ?? 0);
+      this.workerMergedBuff[i] = mergedBuff[i] + (targetSetFourPieceBuff?.[i] ?? 0);
     }
 
-    return cache;
+    this.fixed = this.computeFixedMultipliers();
+  }
+
+  private computeFixedMultipliers(): FastEvaluator['fixed'] {
+    const { fixedMultipliers, skillsParams, enemyStats } = this.precomputed;
+
+    const distanceMult = fixedMultipliers.distanceMult ?? 1.0;
+    const dmgTakenMult = 1 + (fixedMultipliers.baseDmgTakenInc ?? 0);
+    const stunVulnMult = 1 + (fixedMultipliers.stunVulnerability ?? 0);
+    const levelMult = 1 + ((fixedMultipliers.attackerLevel ?? 1) - 1) / 59;
+
+    // 异常暴击：来自“普通 Buff 合并结果”（workerMergedBuff），一次优化过程固定，Worker 初始化时预计算一次
+    const anomCritRate = Math.min(1, Math.max(0, this.workerMergedBuff[PROP_IDX.ANOM_CRIT_] ?? 0));
+    const anomCritDmg = this.workerMergedBuff[PROP_IDX.ANOM_CRIT_DMG_] ?? 0;
+    const anomalyCritMult = 1 + anomCritRate * anomCritDmg;
+    const anomalyDmgMult = 1 + (fixedMultipliers.baseAnomalyDmgBonus ?? 0);
+
+    const elementKey = this.getElementString(skillsParams[0]?.element ?? 200);
+    const elementRes = enemyStats?.element_resistances?.[elementKey] ?? 0;
+
+    // 对齐 damage-calculator.ts:
+    // resMult = 1 - enemyRes + resRed + elResRed + resIgn + elResIgn （clamp 0..2）
+    const resRedCommon =
+      (this.workerMergedBuff[PROP_IDX.ENEMY_RES_RED_] ?? 0);
+    const resIgnCommon =
+      this.workerMergedBuff[PROP_IDX.RES_IGN_] ?? 0;
+
+    const elementResRedIdxMap: Record<string, number> = {
+      physical: PROP_IDX.PHYSICAL_RES_RED_,
+      fire: PROP_IDX.FIRE_RES_RED_,
+      ice: PROP_IDX.ICE_RES_RED_,
+      electric: PROP_IDX.ELECTRIC_RES_RED_,
+      ether: PROP_IDX.ETHER_RES_RED_,
+    };
+    const elementResIgnIdxMap: Record<string, number> = {
+      physical: PROP_IDX.PHYSICAL_RES_IGN_,
+      fire: PROP_IDX.FIRE_RES_IGN_,
+      ice: PROP_IDX.ICE_RES_IGN_,
+      electric: PROP_IDX.ELECTRIC_RES_IGN_,
+      ether: PROP_IDX.ETHER_RES_IGN_,
+    };
+
+    const elResRed = this.workerMergedBuff[elementResRedIdxMap[elementKey] ?? PROP_IDX.PHYSICAL_RES_RED_] ?? 0;
+    const elResIgn = this.workerMergedBuff[elementResIgnIdxMap[elementKey] ?? PROP_IDX.PHYSICAL_RES_IGN_] ?? 0;
+
+    const totalResRedUsed = resRedCommon + elResRed + resIgnCommon + elResIgn;
+    const resMult = Math.max(0, Math.min(2, 1 - elementRes + totalResRedUsed));
+
+    // 对齐 damage-calculator.ts: effective_def = max(0, baseDef*(1-defRed-defIgn)*(1-penRate)-penValue)
+    const defRed = this.workerMergedBuff[PROP_IDX.DEF_RED_] ?? 0;
+    const defIgn = this.workerMergedBuff[PROP_IDX.DEF_IGN_] ?? 0;
+    const penRate = this.workerMergedBuff[PROP_IDX.PEN_] ?? 0;
+    const penValue = this.workerMergedBuff[PROP_IDX.PEN] ?? 0;
+    let baseDef = enemyStats?.defense ?? 0;
+    if (enemyStats?.has_corruption_shield) baseDef *= 2;
+    const effectiveDef = Math.max(0, baseDef * (1 - defRed - defIgn) * (1 - penRate) - penValue);
+    const attackerLevel = fixedMultipliers.attackerLevel ?? 60;
+    const levelCoef = 794;
+    const defMult = levelCoef / (effectiveDef + levelCoef);
+
+    return {
+      resMult,
+      dmgTakenMult,
+      stunVulnMult,
+      distanceMult,
+      levelMult,
+      anomalyCritMult,
+      anomalyDmgMult,
+      resElementKey: elementKey,
+      enemyResUsed: elementRes,
+      totalResRedUsed,
+    };
+  }
+
+  // 调试：返回 Worker 初始化阶段预计算的固定乘区
+  getFixedMultipliersSnapshot(): FastEvaluator['fixed'] {
+    return { ...this.fixed };
   }
 
   /**
@@ -140,7 +204,6 @@ export class FastEvaluator {
     multipliers: number[];
   } | null {
     const {
-      mergedStats,
       conversionBuffs,
       targetSetId,
       otherSetTwoPiece,
@@ -160,9 +223,9 @@ export class FastEvaluator {
     }
 
     // ========================================================================
-    // 2. 复制预合并的属性（已包含目标套装2+4效果）
+    // 2. 复制 Worker 复用底座（mergedStats + 目标2件套；不含驱动盘、不含 Buff）
     // ========================================================================
-    this.accumulator.set(mergedStats);
+    this.accumulator.set(this.workerBaseStats);
 
     // ========================================================================
     // 3. 累加6个驱动盘属性 + 统计非目标套装
@@ -184,6 +247,8 @@ export class FastEvaluator {
       }
     }
 
+    // (debug logs removed)
+
     // ========================================================================
     // 4. 应用非目标套装的2件套效果（>=2则触发）
     // ========================================================================
@@ -199,29 +264,84 @@ export class FastEvaluator {
     }
 
     // ========================================================================
-    // 5. 计算最终属性（三层转换：局外 → 局内 → 最终）
+    // 5. 生成快照1（局外 → 局内基础属性；不含 Buff）
+    // - 生成面板 ATK/HP/DEF/IMPACT，并写回 accumulator，作为后续快照的基数
     // ========================================================================
-    const finalAtk =
+    const snapshot1Atk =
       this.accumulator[PROP_IDX.ATK_BASE] *
         (1 + this.accumulator[PROP_IDX.ATK_]) +
       this.accumulator[PROP_IDX.ATK];
-    const finalHp =
+    const snapshot1Hp =
       this.accumulator[PROP_IDX.HP_BASE] *
         (1 + this.accumulator[PROP_IDX.HP_]) +
       this.accumulator[PROP_IDX.HP];
-    const finalDef =
+    const snapshot1Def =
       this.accumulator[PROP_IDX.DEF_BASE] *
         (1 + this.accumulator[PROP_IDX.DEF_]) +
       this.accumulator[PROP_IDX.DEF];
-    const finalImpact =
+    const snapshot1Impact =
       this.accumulator[PROP_IDX.IMPACT] *
         (1 + this.accumulator[PROP_IDX.IMPACT_]);
 
+    // 用快照1面板值覆盖基础属性（后续快照统一以面板为基数）
+    // 注意：保留 *_BASE 和 *_ 维度，供普通 buff/转换 buff 继续使用；
+    // 这里仅写回“最终值维度”（ATK/HP/DEF/IMPACT）。
+    this.accumulator[PROP_IDX.ATK] = snapshot1Atk;
+    this.accumulator[PROP_IDX.HP] = snapshot1Hp;
+    this.accumulator[PROP_IDX.DEF] = snapshot1Def;
+    this.accumulator[PROP_IDX.IMPACT] = snapshot1Impact;
+
     // ========================================================================
-    // 6. 应用转换类Buff（需要最终属性才能计算）
+    // 6. 生成快照2（应用普通 Buff：mergedBuff + 目标4件套 Buff）
+    // - 严格按文档口径：snapshot2 = snapshot1 × (1 + buffPercent) + buffFlat
+    // - 这里只对四大基础属性做快照应用；其它属性视为直接加法叠加（如 CRIT_/DMG_/PEN_ 等）
     // ========================================================================
+    for (let i = 0; i < PROP_IDX.TOTAL_PROPS; i++) {
+      // 先加到非四大“最终值维度”的属性（例如 CRIT_/DMG_/PEN_ 等）
+      // ATK/HP/DEF/IMPACT 在下方用公式生成
+      if (
+        i === PROP_IDX.ATK ||
+        i === PROP_IDX.HP ||
+        i === PROP_IDX.DEF ||
+        i === PROP_IDX.IMPACT
+      ) {
+        continue;
+      }
+      this.accumulator[i] += this.workerMergedBuff[i];
+    }
+
+    // 对 ATK/HP/DEF/IMPACT 应用快照2公式
+    const snapshot2Atk =
+      snapshot1Atk * (1 + this.workerMergedBuff[PROP_IDX.ATK_]) +
+      this.workerMergedBuff[PROP_IDX.ATK];
+    const snapshot2Hp =
+      snapshot1Hp * (1 + this.workerMergedBuff[PROP_IDX.HP_]) +
+      this.workerMergedBuff[PROP_IDX.HP];
+    const snapshot2Def =
+      snapshot1Def * (1 + this.workerMergedBuff[PROP_IDX.DEF_]) +
+      this.workerMergedBuff[PROP_IDX.DEF];
+    const snapshot2Impact =
+      snapshot1Impact * (1 + this.workerMergedBuff[PROP_IDX.IMPACT_]) +
+      this.workerMergedBuff[PROP_IDX.IMPACT];
+
+    // 写回快照2面板值（进入转换阶段）
+    this.accumulator[PROP_IDX.ATK] = snapshot2Atk;
+    this.accumulator[PROP_IDX.HP] = snapshot2Hp;
+    this.accumulator[PROP_IDX.DEF] = snapshot2Def;
+    this.accumulator[PROP_IDX.IMPACT] = snapshot2Impact;
+
+    // ========================================================================
+    // 7. 应用转换类 Buff（快照3；源取快照2，不链式）
+    // ========================================================================
+
     for (const conv of conversionBuffs) {
-      const sourceValue = this.getFinalProp(conv.fromPropIdx, finalAtk, finalHp, finalDef, finalImpact);
+      const sourceValue = this.getFinalProp(
+        conv.fromPropIdx,
+        snapshot2Atk,
+        snapshot2Hp,
+        snapshot2Def,
+        snapshot2Impact
+      );
       const effectiveValue = Math.max(0, sourceValue - conv.threshold);
 
       let convertedValue = effectiveValue * conv.ratio;
@@ -233,22 +353,27 @@ export class FastEvaluator {
     }
 
     // ========================================================================
-    // 7. 重新计算可能受转换影响的最终攻击力
+    // 8. 重新计算快照3（转换后最终战斗属性）中可能受影响的基础属性
     // ========================================================================
-    const finalAtkAfterConv =
-      this.accumulator[PROP_IDX.ATK_BASE] *
-        (1 + this.accumulator[PROP_IDX.ATK_]) +
-      this.accumulator[PROP_IDX.ATK];
+    // 注意：此时 accumulator[ATK] 已是快照2面板值，并已叠加转换对 ATK 的影响（若有）
+    // 这里直接取“最终 ATK 面板值”作为直伤基数
+    const finalAtkAfterConv = this.accumulator[PROP_IDX.ATK];
 
     // ========================================================================
     // 8. 计算防御区
     // ========================================================================
     const { defenseParams } = fixedMultipliers;
-    const discPenRate = this.accumulator[PROP_IDX.PEN_];
-    const discDefIgn = this.accumulator[PROP_IDX.DEF_IGN_];
-    const totalDefRed = defenseParams.baseDefRed + defenseParams.baseDefIgn + discPenRate + discDefIgn;
-    const effectiveDef = defenseParams.enemyDef * Math.max(0, 1 - totalDefRed);
+    // 对齐 damage-calculator.ts:
+    // effective_def = max(0, baseDef * (1 - defRed - defIgn) * (1 - penRate) - penValue)
+    const defRed = defenseParams.baseDefRed + this.workerMergedBuff[PROP_IDX.DEF_RED_] + this.accumulator[PROP_IDX.DEF_RED_];
+    const defIgn = defenseParams.baseDefIgn + this.workerMergedBuff[PROP_IDX.DEF_IGN_] + this.accumulator[PROP_IDX.DEF_IGN_];
+    const penRate = this.accumulator[PROP_IDX.PEN_];
+    const penValue = this.accumulator[PROP_IDX.PEN];
+
+    const baseDef = defenseParams.enemyDef * (this.precomputed.enemyStats?.has_corruption_shield ? 2 : 1);
+    const effectiveDef = Math.max(0, baseDef * (1 - defRed - defIgn) * (1 - penRate) - penValue);
     const defMult = defenseParams.levelBase / (effectiveDef + defenseParams.levelBase);
+    // (debug logs removed)
 
     // ========================================================================
     // 9. 计算公共乘区
@@ -315,7 +440,30 @@ export class FastEvaluator {
       finalAtkAfterConv,
       0,
       this.accumulator[PROP_IDX.ANOM_PROF] / 100,
-      1 + this.accumulator[PROP_IDX.ANOM_BUILDUP_] + (ELEMENT_TO_BUILDUP_IDX[skillsParams[0].element] !== undefined ? this.accumulator[ELEMENT_TO_BUILDUP_IDX[skillsParams[0].element]] : 0),
+      (() => {
+        const element = skillsParams[0].element;
+        const anomalyMastery = this.accumulator[PROP_IDX.ANOM_MAS];
+        const masteryZone = anomalyMastery > 0 ? anomalyMastery / 100 : 1;
+
+        let efficiencyZone = 1 + this.accumulator[PROP_IDX.ANOM_BUILDUP_];
+        const elementBuildupIdx = ELEMENT_TO_BUILDUP_IDX[element];
+        if (elementBuildupIdx !== undefined) {
+          efficiencyZone += this.accumulator[elementBuildupIdx];
+        }
+
+        const resZoneCommon = this.accumulator[PROP_IDX.ANOM_BUILDUP_RES_];
+        const elementResIdx =
+          element === 200 ? PROP_IDX.PHYSICAL_ANOM_BUILDUP_RES_
+          : element === 201 ? PROP_IDX.FIRE_ANOM_BUILDUP_RES_
+          : element === 202 ? PROP_IDX.ICE_ANOM_BUILDUP_RES_
+          : element === 203 ? PROP_IDX.ELECTRIC_ANOM_BUILDUP_RES_
+          : element === 205 ? PROP_IDX.ETHER_ANOM_BUILDUP_RES_
+          : PROP_IDX.PHYSICAL_ANOM_BUILDUP_RES_;
+        const resZoneElement = this.accumulator[elementResIdx];
+        const resistanceZone = 1 - resZoneCommon - resZoneElement;
+
+        return Math.max(0, masteryZone * efficiencyZone * resistanceZone * this.fixed.distanceMult);
+      })(),
       1 + Math.min(1, Math.max(0, this.accumulator[PROP_IDX.CRIT_])) * this.accumulator[PROP_IDX.CRIT_DMG_],
       1 + this.accumulator[PROP_IDX.DMG_] + (ELEMENT_TO_DMG_IDX[skillsParams[0].element] !== undefined ? this.accumulator[ELEMENT_TO_DMG_IDX[skillsParams[0].element]] : 0),
     ];
@@ -363,35 +511,52 @@ export class FastEvaluator {
     element: number,
     anomalyBuildup: number
   ): { anomaly: number; disorder: number } {
-    const { fixedMultipliers } = this.precomputed;
     const {
       levelMult,
       anomalyCritMult,
       anomalyDmgMult,
-    } = fixedMultipliers;
+    } = this.fixed;
 
     const anomalyProf = this.accumulator[PROP_IDX.ANOM_PROF];
-    const anomalyProfMult = anomalyProf / 100;
+    const anomalyProfMult = Math.max(0, Math.min(10, anomalyProf / 100));
 
-    let buildupMult = 1 + this.accumulator[PROP_IDX.ANOM_BUILDUP_];
+    // 异常积蓄区（与 DamageCalculator.calculateAnomalyBuildupZone 对齐）
+    // buildupZone = (ANOM_MAS/100) * (1 + ANOM_BUILDUP_ + elementBuildup) * (1 - ANOM_BUILDUP_RES_ - elementRes) * distanceMult
+    const anomalyMastery = this.accumulator[PROP_IDX.ANOM_MAS];
+    const masteryZone = anomalyMastery > 0 ? anomalyMastery / 100 : 1;
+
+    let efficiencyZone = 1 + this.accumulator[PROP_IDX.ANOM_BUILDUP_];
     const elementBuildupIdx = ELEMENT_TO_BUILDUP_IDX[element];
     if (elementBuildupIdx !== undefined) {
-      buildupMult += this.accumulator[elementBuildupIdx];
+      efficiencyZone += this.accumulator[elementBuildupIdx];
     }
 
-    const cachedParams = this.anomalyParamsCache.get(element);
-    if (!cachedParams) {
-      return { anomaly: 0, disorder: 0 };
-    }
+    const resZoneCommon = this.accumulator[PROP_IDX.ANOM_BUILDUP_RES_];
+    // 元素积蓄抗性 idx 规则：buildUpIdx(31~) 对应 buildUpResIdx(84~) 在 property-index.ts 已定义
+    const elementResIdx =
+      element === 200 ? PROP_IDX.PHYSICAL_ANOM_BUILDUP_RES_
+      : element === 201 ? PROP_IDX.FIRE_ANOM_BUILDUP_RES_
+      : element === 202 ? PROP_IDX.ICE_ANOM_BUILDUP_RES_
+      : element === 203 ? PROP_IDX.ELECTRIC_ANOM_BUILDUP_RES_
+      : element === 205 ? PROP_IDX.ETHER_ANOM_BUILDUP_RES_
+      : PROP_IDX.PHYSICAL_ANOM_BUILDUP_RES_;
+    const resZoneElement = this.accumulator[elementResIdx];
+    const resistanceZone = 1 - resZoneCommon - resZoneElement;
 
-    const buildupPerSkill = anomalyBuildup * buildupMult;
-    const procsPerSkill = buildupPerSkill / cachedParams.threshold;
+    const buildupZone = Math.max(0, masteryZone * efficiencyZone * resistanceZone * this.fixed.distanceMult);
+
+    const buildupPerSkill = anomalyBuildup * buildupZone;
+    const elementStr = this.getElementString(element);
+    const threshold =
+      this.precomputed.enemyStats?.anomaly_thresholds?.[elementStr]
+      ?? STANDARD_BUILDUP_THRESHOLD;
+    const procsPerSkill = Math.max(0, Math.min(1, buildupPerSkill / threshold));
 
     if (procsPerSkill <= 0) {
       return { anomaly: 0, disorder: 0 };
     }
 
-    const anomalyBaseDamage = finalAtk * cachedParams.ratio;
+    const anomalyBaseDamage = finalAtk * this.precomputed.anomalyTotalRatioAtT;
 
     const anomalyDamage =
       anomalyBaseDamage *
@@ -402,12 +567,11 @@ export class FastEvaluator {
       levelMult *
       defMult;
 
-    const totalAnomalyDamagePerProc = anomalyDamage * cachedParams.durationMult;
-    const anomalyEarning = totalAnomalyDamagePerProc * procsPerSkill;
+    const anomalyEarning = anomalyDamage * procsPerSkill;
 
     const disorderDamage =
       finalAtk *
-      cachedParams.disorderRatio *
+      this.precomputed.disorderTotalRatioAtT *
       dmgBonus *
       anomalyProfMult *
       anomalyDmgMult *
@@ -453,7 +617,9 @@ export class FastEvaluator {
     }
 
     const anomalyBuildup = skillsParams[0]?.anomalyBuildup ?? 0;
-    const threshold = this.anomalyParamsCache.get(202)?.threshold ?? 600;
+    const threshold =
+      this.precomputed.enemyStats?.anomaly_thresholds?.ice
+      ?? 600;
     const buildupPerSkill = anomalyBuildup * buildupMult;
     const procsPerSkill = buildupPerSkill / threshold;
 
@@ -475,6 +641,17 @@ export class FastEvaluator {
     if (propIdx === PROP_IDX.DEF_BASE) return finalDef;
     if (propIdx === PROP_IDX.IMPACT) return finalImpact;
     return this.accumulator[propIdx];
+  }
+
+  private getElementString(element: number): string {
+    switch (element) {
+      case 200: return 'physical';
+      case 201: return 'fire';
+      case 202: return 'ice';
+      case 203: return 'electric';
+      case 205: return 'ether';
+      default: return 'physical';
+    }
   }
 
   /**
@@ -523,9 +700,10 @@ export class FastEvaluator {
       throw new Error('skillsParams is empty');
     }
 
-    // 通用乘区
-    const { resMult, dmgTakenMult, stunVulnMult, distanceMult, defenseParams } = fixedMultipliers;
-    const universalMult = resMult * dmgTakenMult * stunVulnMult;
+    // 通用乘区（Worker 初始化阶段已预计算）
+    const { distanceMult } = this.fixed;
+    const { defenseParams } = fixedMultipliers;
+    const universalMult = this.fixed.resMult * this.fixed.dmgTakenMult * this.fixed.stunVulnMult;
 
     const totalDamage = variableDamage * universalMult;
 
@@ -535,10 +713,13 @@ export class FastEvaluator {
     const critZone = multipliers[4];
     const dmgBonus = multipliers[5];
 
-    const discPenRate = this.accumulator[PROP_IDX.PEN_];
-    const discDefIgn = this.accumulator[PROP_IDX.DEF_IGN_];
-    const totalDefRed = defenseParams.baseDefRed + defenseParams.baseDefIgn + discPenRate + discDefIgn;
-    const effectiveDef = defenseParams.enemyDef * Math.max(0, 1 - totalDefRed);
+    const defRed = defenseParams.baseDefRed + this.workerMergedBuff[PROP_IDX.DEF_RED_] + this.accumulator[PROP_IDX.DEF_RED_];
+    const defIgn = defenseParams.baseDefIgn + this.workerMergedBuff[PROP_IDX.DEF_IGN_] + this.accumulator[PROP_IDX.DEF_IGN_];
+    const penRate = this.accumulator[PROP_IDX.PEN_];
+    const penValue = this.accumulator[PROP_IDX.PEN];
+
+    const baseDef = defenseParams.enemyDef * (this.precomputed.enemyStats?.has_corruption_shield ? 2 : 1);
+    const effectiveDef = Math.max(0, baseDef * (1 - defRed - defIgn) * (1 - penRate) - penValue);
     const defMult = defenseParams.levelBase / (effectiveDef + defenseParams.levelBase);
 
     const skillParams = skillsParams[0];
@@ -595,12 +776,18 @@ export class FastEvaluator {
       },
       multipliers: {
         baseDirectDamage: finalAtkAfterConv,
-        baseAnomalyDamage: 0,
+        baseAnomalyDamage: finalAtkAfterConv * (this.precomputed.anomalyTotalRatioAtT ?? 0),
+        baseDisorderDamage: finalAtkAfterConv * (this.precomputed.disorderTotalRatioAtT ?? 0),
+        baseLieshuangDamage:
+          this.precomputed.specialAnomalyConfig?.element === 'lieshuang'
+            ? finalAtkAfterConv * (this.precomputed.specialAnomalyConfig.ratio ?? 0)
+            : undefined,
         anomalyProfMult,
         accumulationZone,
         critZone,
         dmgBonus,
       },
+      defMult,
       setInfo: {
         twoPieceSets,
         fourPieceSet,

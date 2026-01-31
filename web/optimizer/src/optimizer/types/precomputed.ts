@@ -44,20 +44,43 @@ export interface DefenseParams {
  * 固定乘区（不受驱动盘影响，可预计算）
  */
 export interface FixedMultipliers {
-  /** 抗性区 = max(0, min(2, 1 - 敌人抗性 + 抗性削弱)) */
-  resMult: number;
-  /** 承伤区 = 1 + 易伤 */
-  dmgTakenMult: number;
-  /** 失衡易伤区 */
-  stunVulnMult: number;
-  /** 距离衰减区（默认 1.0） */
+  /**
+   * 敌人抗性削减（来源：角色/武器/可选 buff，不含驱动盘）
+   * Worker 在初始化阶段据此计算抗性区。
+   */
+  baseResRed: number;
+
+  /**
+   * 敌人易伤（来源：角色/武器/可选 buff，不含驱动盘）
+   * Worker 在初始化阶段据此计算承伤区。
+   */
+  baseDmgTakenInc: number;
+
+  /**
+   * 失衡易伤倍率（来源：敌人/战斗状态）
+   * Worker 在初始化阶段据此计算失衡易伤区。
+   */
+  stunVulnerability: number;
+
+  /**
+   * 距离衰减（默认 1.0）
+   * Worker 在初始化阶段据此计算距离区。
+   */
   distanceMult: number;
-  /** 等级区 = 1 + (level - 1) / 59 */
-  levelMult: number;
-  /** 异常暴击区 = 1 + 异常暴击率 × 异常暴击伤害 */
-  anomalyCritMult: number;
-  /** 异常增伤区 = 1 + 异常伤害加成 */
-  anomalyDmgMult: number;
+
+  /**
+   * 攻击者等级（用于等级区与防御区 levelBase）
+   */
+  attackerLevel: number;
+
+  /**
+   * 异常暴击率/暴击伤害/异常增伤（来源：角色/武器/可选 buff，不含驱动盘）
+   * Worker 在初始化阶段据此计算异常暴击区/异常增伤区。
+   */
+  baseAnomalyCritRate: number;
+  baseAnomalyCritDmg: number;
+  baseAnomalyDmgBonus: number;
+
   /** 防御区参数（穿透需要循环计算） */
   defenseParams: DefenseParams;
 }
@@ -115,10 +138,21 @@ export interface DiscData {
  */
 export interface PrecomputedData {
   /**
-   * 合并后的静态属性
-   * 包含：角色裸属性 + 武器属性 + 所有非转换buff + 目标4件套2+4效果
+   * 局外静态属性底座（不含驱动盘组合，也不含任何 Buff）
+   *
+   * 只允许包含：
+   * - 角色白值（Agent.getCharacterBaseStats().out_of_combat）
+   * - 音擎静态属性（WEngine.getBaseStats().out_of_combat）
+   * - 目标两件套静态属性（2pc out_of_combat）
    */
   mergedStats: Float64Array;
+
+  /**
+   * 普通 Buff 的合并结果（只参与快照2；禁止写入 mergedStats）
+   *
+   * 只允许包含：所有启用的普通 Buff 的 in_combat_stats 叠加后的结果。
+   */
+  mergedBuff: Float64Array;
 
   /**
    * 转换类 Buff 列表（需要最终属性才能计算）
@@ -135,6 +169,18 @@ export interface PrecomputedData {
    * 目标四件套 ID
    */
   targetSetId: string;
+
+  /**
+   * 目标套装的 2 件套静态属性（out_of_combat）
+   * - 由 Worker/FastEvaluator 在初始化阶段预合并（同一 worker 复用）
+   */
+  targetSetTwoPiece: Float64Array;
+
+  /**
+   * 目标套装的 4 件套 Buff（局内普通 Buff：in_combat_stats）
+   * - 由 Worker/FastEvaluator 在初始化阶段预合并（同一 worker 复用）
+   */
+  targetSetFourPieceBuff: Float64Array;
 
   /**
    * 非目标套装的2件套效果缓存
@@ -166,6 +212,16 @@ export interface PrecomputedData {
    * 特殊异常配置（如烈霜）
    */
   specialAnomalyConfig: { element: string; ratio: number } | null;
+
+  /**
+   * 异常在固定时间点/窗口 T 下的总倍率（类似技能倍率；可预计算下发）
+   */
+  anomalyTotalRatioAtT: number;
+
+  /**
+   * 紊乱在固定时间点/窗口 T 下的一次性总倍率（类似技能倍率；可预计算下发）
+   */
+  disorderTotalRatioAtT: number;
 }
 
 /**
@@ -176,6 +232,10 @@ export interface DamageMultipliers {
   baseDirectDamage: number;
   /** 基础异常伤 */
   baseAnomalyDamage: number;
+  /** 基础紊乱伤 */
+  baseDisorderDamage?: number;
+  /** 基础烈霜伤（星见雅特有） */
+  baseLieshuangDamage?: number;
   /** 精通区 */
   anomalyProfMult: number;
   /** 积蓄区 */
@@ -204,6 +264,8 @@ export interface OptimizationBuildResult {
   };
   /** 伤害乘区（可变区） */
   multipliers: DamageMultipliers;
+  /** 防御区（本次组合实际使用的 defMult，含盘穿透/减防） */
+  defMult?: number;
   /** 套装信息 */
   setInfo: {
     twoPieceSets: string[];
@@ -217,6 +279,11 @@ export interface OptimizationBuildResult {
 export interface FastOptimizationRequest {
   /** 预计算数据 */
   precomputed: PrecomputedData;
+  /** 调试信息（仅用于调试面板展示；不参与 Worker 计算） */
+  debug?: {
+    /** 优化器本次实际使用的 Buff 列表（已应用开关过滤） */
+    activeBuffsUsed: { id: string; name: string; source: string; isConversion: boolean }[];
+  };
   /** Worker ID（用于分片） */
   workerId: number;
   /** Worker 总数 */
@@ -237,18 +304,22 @@ export interface FastOptimizationRequest {
 export function createEmptyPrecomputedData(): PrecomputedData {
   return {
     mergedStats: new Float64Array(PROP_IDX.TOTAL_PROPS),
+    mergedBuff: new Float64Array(PROP_IDX.TOTAL_PROPS),
     conversionBuffs: [],
     discsBySlot: [[], [], [], [], [], []],
     targetSetId: '',
+    targetSetTwoPiece: new Float64Array(PROP_IDX.TOTAL_PROPS),
+    targetSetFourPieceBuff: new Float64Array(PROP_IDX.TOTAL_PROPS),
     otherSetTwoPiece: {},
     fixedMultipliers: {
-      resMult: 1,
-      dmgTakenMult: 1,
-      stunVulnMult: 1,
       distanceMult: 1,
-      levelMult: 1,
-      anomalyCritMult: 1,
-      anomalyDmgMult: 1,
+      baseResRed: 0,
+      baseDmgTakenInc: 0,
+      stunVulnerability: 1,
+      attackerLevel: 60,
+      baseAnomalyCritRate: 0,
+      baseAnomalyCritDmg: 0,
+      baseAnomalyDmgBonus: 0,
       defenseParams: {
         levelBase: 700,
         enemyDef: 800,
@@ -271,5 +342,7 @@ export function createEmptyPrecomputedData(): PrecomputedData {
       false   // hasCorruptionShield
     ),
     specialAnomalyConfig: null,
+    anomalyTotalRatioAtT: 0,
+    disorderTotalRatioAtT: 0,
   };
 }

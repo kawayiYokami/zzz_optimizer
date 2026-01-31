@@ -11,6 +11,12 @@ import { DriveDiskSetBonus } from '../../model/drive-disk';
 import type { Enemy } from '../../model/enemy';
 import type { Buff } from '../../model/buff';
 import { PropertyType, Rarity, ElementType } from '../../model/base';
+import {
+    ANOMALY_DEFAULT_DURATION,
+    ANOMALY_EXPECT_WINDOW_SEC,
+    getAnomalyTotalRatioAtT,
+    getDisorderTotalRatioAtTimepoint,
+} from '../../utils/anomaly-constants';
 import type {
     BuffData,
     SerializedAgent,
@@ -121,13 +127,10 @@ export class OptimizerContext {
         const baseProps = agent.getCharacterBaseStats();
         const baseStats: Partial<Record<PropertyType, number>> = {};
 
-        // 合并局外和局内属性
         for (const [prop, value] of baseProps.out_of_combat.entries()) {
             baseStats[prop] = (baseStats[prop] ?? 0) + value;
         }
-        for (const [prop, value] of baseProps.in_combat.entries()) {
-            baseStats[prop] = (baseStats[prop] ?? 0) + value;
-        }
+        // 注意：序列化 Agent 用于调试/展示，不应把局内属性混入“静态口径”。
 
         // 获取核心技属性
         const coreSkillMap = agent.getCoreSkillStats();
@@ -137,6 +140,8 @@ export class OptimizerContext {
         }
 
         // 获取被动 Buff（使用同步方法，假设已加载）
+        // 注意：此处保留默认行为（可能包含武器 buff / 4pc buff），仅用于展示；
+        // 优化器调度器构建 precomputed 时会显式排除驱动盘 4pc 注入，避免污染输入。
         const allBuffs = agent.getAllBuffsSync();
         const passiveBuffs: BuffData[] = this.serializeBuffs(allBuffs);
 
@@ -285,19 +290,13 @@ export class OptimizerContext {
             for (const [prop, value] of twoPieceProps.out_of_combat.entries()) {
                 twoPieceStats[prop] = value;
             }
-            for (const [prop, value] of twoPieceProps.in_combat.entries()) {
-                twoPieceStats[prop] = (twoPieceStats[prop] ?? 0) + value;
-            }
-
             // 获取 4 件套属性
             const fourPieceProps = disc.getSetBuff(DriveDiskSetBonus.FOUR_PIECE);
             const fourPieceStats: Partial<Record<PropertyType, number>> = {};
             for (const [prop, value] of fourPieceProps.out_of_combat.entries()) {
                 fourPieceStats[prop] = value;
             }
-            for (const [prop, value] of fourPieceProps.in_combat.entries()) {
-                fourPieceStats[prop] = (fourPieceStats[prop] ?? 0) + value;
-            }
+            // 注意：set bonus 序列化用于展示/调试；这里不混入 in_combat，避免静态/局内口径混淆
 
             // 4 件套可能有条件触发的 Buff，暂时设为空
             // TODO: 从 disc.set_buffs 提取
@@ -455,9 +454,7 @@ export class OptimizerContext {
         for (const [prop, value] of baseProps.out_of_combat.entries()) {
             addToPropArray(arr, prop, value);
         }
-        for (const [prop, value] of baseProps.in_combat.entries()) {
-            addToPropArray(arr, prop, value);
-        }
+        // 注意：静态数组构建仅使用 out_of_combat；in_combat 属于局内，不应进入静态口径
 
         // 注意：不再单独添加核心技属性，因为 getCharacterBaseStats() 已包含
         // 注意：不使用 getAllBuffsSync()，因为它包含武器Buff和驱动盘Buff
@@ -546,12 +543,11 @@ export class OptimizerContext {
         const attackerLevel = agent.level;
         const levelBase = attackerLevel * 10 + 100;
 
-        // 收集基础防御削弱/无视（来自角色/音擎/Buff，不含驱动盘）
+        // 收集基础防御削弱/无视/抗性削减/异常相关（来自角色/音擎/可选Buff，不含驱动盘）
         let baseDefRed = 0;
         let baseDefIgn = 0;
         let resRed = 0;
-        let anomalyCritRate = 0;
-        let anomalyCritDmg = 0;
+        let dmgTakenInc = 0;
         let anomalyDmgBonus = 0;
 
         // 从角色属性收集
@@ -559,8 +555,7 @@ export class OptimizerContext {
         baseDefRed += agentProps.getTotal(PropertyType.DEF_RED_, 0);
         baseDefIgn += agentProps.getTotal(PropertyType.DEF_IGN_, 0);
         resRed += agentProps.getTotal(PropertyType.ENEMY_RES_RED_, 0);
-        anomalyCritRate += agentProps.getTotal(PropertyType.ANOM_CRIT_, 0);
-        anomalyCritDmg += agentProps.getTotal(PropertyType.ANOM_CRIT_DMG_, 0);
+        dmgTakenInc += agentProps.getTotal(PropertyType.DMG_INC_, 0);
         anomalyDmgBonus += agentProps.getTotal(PropertyType.ANOMALY_DMG_, 0);
 
         // 从音擎收集
@@ -569,8 +564,7 @@ export class OptimizerContext {
             baseDefRed += wengineProps.getTotal(PropertyType.DEF_RED_, 0);
             baseDefIgn += wengineProps.getTotal(PropertyType.DEF_IGN_, 0);
             resRed += wengineProps.getTotal(PropertyType.ENEMY_RES_RED_, 0);
-            anomalyCritRate += wengineProps.getTotal(PropertyType.ANOM_CRIT_, 0);
-            anomalyCritDmg += wengineProps.getTotal(PropertyType.ANOM_CRIT_DMG_, 0);
+            dmgTakenInc += wengineProps.getTotal(PropertyType.DMG_INC_, 0);
             anomalyDmgBonus += wengineProps.getTotal(PropertyType.ANOMALY_DMG_, 0);
         }
 
@@ -581,51 +575,27 @@ export class OptimizerContext {
                 baseDefRed += buff.out_of_combat_stats.get(PropertyType.DEF_RED_) ?? 0;
                 baseDefIgn += buff.out_of_combat_stats.get(PropertyType.DEF_IGN_) ?? 0;
                 resRed += buff.out_of_combat_stats.get(PropertyType.ENEMY_RES_RED_) ?? 0;
-                anomalyCritRate += buff.out_of_combat_stats.get(PropertyType.ANOM_CRIT_) ?? 0;
-                anomalyCritDmg += buff.out_of_combat_stats.get(PropertyType.ANOM_CRIT_DMG_) ?? 0;
+                dmgTakenInc += buff.out_of_combat_stats.get(PropertyType.DMG_INC_) ?? 0;
                 anomalyDmgBonus += buff.out_of_combat_stats.get(PropertyType.ANOMALY_DMG_) ?? 0;
             }
             if (buff.in_combat_stats) {
                 baseDefRed += buff.in_combat_stats.get(PropertyType.DEF_RED_) ?? 0;
                 baseDefIgn += buff.in_combat_stats.get(PropertyType.DEF_IGN_) ?? 0;
                 resRed += buff.in_combat_stats.get(PropertyType.ENEMY_RES_RED_) ?? 0;
-                anomalyCritRate += buff.in_combat_stats.get(PropertyType.ANOM_CRIT_) ?? 0;
-                anomalyCritDmg += buff.in_combat_stats.get(PropertyType.ANOM_CRIT_DMG_) ?? 0;
+                dmgTakenInc += buff.in_combat_stats.get(PropertyType.DMG_INC_) ?? 0;
                 anomalyDmgBonus += buff.in_combat_stats.get(PropertyType.ANOMALY_DMG_) ?? 0;
             }
         }
 
-        // 抗性区
-        const elementKey = this.elementToKey(skill.element);
-        const elementRes = this.getEnemyResistance(enemy, elementKey);
-        const resMult = Math.max(0, Math.min(2, 1 - elementRes + resRed));
-
-        // 承伤区
-        const dmgTakenMult = 1.0;
-
-        // 失衡易伤区
-        const stunVulnMult = isStunned ? (1 + enemy.stun_vulnerability_multiplier) : 1.0;
-
-        // 距离衰减区
-        const distanceMult = 1.0;
-
-        // 等级区（异常用）
-        const levelMult = 1 + (attackerLevel - 1) / 59;
-
-        // 异常暴击区
-        const anomalyCritMult = 1 + anomalyCritRate * anomalyCritDmg;
-
-        // 异常增伤区
-        const anomalyDmgMult = 1 + anomalyDmgBonus;
-
         return {
-            resMult,
-            dmgTakenMult,
-            stunVulnMult,
-            distanceMult,
-            levelMult,
-            anomalyCritMult,
-            anomalyDmgMult,
+            baseResRed: resRed,
+            baseDmgTakenInc: dmgTakenInc,
+            stunVulnerability: enemy.stun_vulnerability_multiplier ?? 0,
+            distanceMult: 1.0,
+            attackerLevel,
+            baseAnomalyCritRate: 0,
+            baseAnomalyCritDmg: 0,
+            baseAnomalyDmgBonus: anomalyDmgBonus,
             defenseParams: {
                 levelBase,
                 enemyDef: enemy.defense,
@@ -688,10 +658,12 @@ export class OptimizerContext {
      * 构建快速优化请求（使用 Float64Array 预计算）
      *
      * 新架构：
-     * - mergedStats: 合并角色+武器+所有非转换buff+目标4件套2+4效果
-     * - conversionBuffs: 仅转换类buff（需要最终属性才能计算）
-     * - targetSetId: 目标四件套ID（单选）
-     * - otherSetTwoPiece: 非目标套装的2件套效果缓存
+     * - mergedStats: 合并角色白值 + 武器静态（仅 out_of_combat；不含任何驱动盘/BUFF）
+     * - mergedBuff: 合并普通 Buff（in_combat_stats；不含目标 4 件套）
+     * - targetSetTwoPiece: 目标套装 2 件套静态属性（out_of_combat）
+     * - targetSetFourPieceBuff: 目标套装 4 件套普通 Buff（in_combat_stats，强制启用）
+     * - conversionBuffs: 转换类 Buff 规则（运行时在快照3应用）
+     * - otherSetTwoPiece: 非目标套装 2 件套静态属性缓存
      */
     static buildFastRequest(options: {
         agent: Agent;
@@ -713,6 +685,7 @@ export class OptimizerContext {
             pruneThreshold?: number;
         };
     }): FastOptimizationRequest {
+        // eslint-disable-next-line no-console
         const {
             agent,
             weapon,
@@ -729,22 +702,21 @@ export class OptimizerContext {
         } = options;
 
         const targetSetId = constraints.targetSetId || '';
+        // (debug logs removed)
 
         // ============================================================================
-        // 1. 创建 mergedStats 并合并所有静态属性
+        // 1. 创建 mergedStats 并合并所有静态属性（仅 out_of_combat）
         // ============================================================================
         const mergedStats = createPropArray();
+        const mergedBuff = createPropArray();
 
-        // 1a. 添加角色裸属性（基础属性）
+        // 1a. 添加角色静态属性（仅 out_of_combat）
         const baseProps = agent.getCharacterBaseStats();
         for (const [prop, value] of baseProps.out_of_combat.entries()) {
             addToPropArray(mergedStats, prop, value);
         }
-        for (const [prop, value] of baseProps.in_combat.entries()) {
-            addToPropArray(mergedStats, prop, value);
-        }
 
-        // 1b. 添加武器属性
+        // 1b. 添加武器静态属性（仅 out_of_combat）
         if (weapon) {
             const weaponProps = weapon.getBaseStats();
             for (const [prop, value] of weaponProps.out_of_combat.entries()) {
@@ -753,67 +725,73 @@ export class OptimizerContext {
         }
 
         // ============================================================================
-        // 2. 收集所有Buff（明确来源，避免重复）
+        // 2. 收集所有 Buff（来自外部：BattleService.getOptimizerConfigBuffs 的结果）
         // ============================================================================
+        //
+        // 口径：调度器不再自行从 agent/weapon 拉取 Buff，避免与 UI 口径分叉或重复计入。
+        // BattleService 负责产出“优化器要用的最终 Buff 列表”：
+        // - externalBuffs 应是“已过滤后的普通 Buff 列表”，包含：前台自身 + 队友（不含目标 4 件套）
+        // - 启用/禁用由 buffStatusMap 控制（调度器只做一次开关过滤）
+        //
+        // 兼容：如果调用方仍旧传 externalBuffs（旧接口），这里会拼进去，但推荐只传 allBuffs。
         const conversionBuffs: ConversionBuffData[] = [];
         const allBuffs: Buff[] = [];
+        allBuffs.push(...externalBuffs);
+        // (debug logs removed)
 
-        // 2a. 角色自身Buff（不含武器和驱动盘）
-        if (agent.core_passive_buffs) allBuffs.push(...agent.core_passive_buffs);
-        if (agent.talent_buffs) allBuffs.push(...agent.talent_buffs);
-        if (agent.potential_buffs) allBuffs.push(...agent.potential_buffs);
-        // 注意：角色的 conversion_buffs 会在下面统一处理
-
-        // 2b. 武器Buff
-        if (weapon) {
-            allBuffs.push(...weapon.getActiveBuffs());
-        }
-
-        // 2c. 外部Buff（队友等）
-        if (externalBuffs) {
-            allBuffs.push(...externalBuffs);
-        }
+        // Debug: 记录“优化器实际使用的 Buff 列表”（已按开关过滤会在下方执行）
+        const debugActiveBuffsUsed: { id: string; name: string; source: string; isConversion: boolean }[] = [];
 
         // ============================================================================
-        // 3. 目标4件套效果预合并
+        // 3. 目标套装预处理（交由 Worker 复用）
+        // - targetSetTwoPiece: 2 件套静态属性（out_of_combat），Worker 在初始化阶段预合并
+        //
+        // 注意：目标 4 件套 Buff 由 BattleService/UI 作为普通 Buff 传入 allBuffs，调度器不在此处单独提取。
         // ============================================================================
+        const targetSetTwoPiece = createPropArray();
+        const targetSetFourPieceBuff = createPropArray();
+
         const targetSetDisc = discs.find(d => d.game_id === targetSetId);
         if (targetSetDisc && targetSetId) {
-            // 3a. 2件套静态属性
+
+            // 3a. 2件套静态属性（仅 out_of_combat）
             const twoPieceProps = targetSetDisc.getSetBuff(DriveDiskSetBonus.TWO_PIECE);
             for (const [prop, value] of twoPieceProps.out_of_combat.entries()) {
-                addToPropArray(mergedStats, prop, value);
-            }
-            for (const [prop, value] of twoPieceProps.in_combat.entries()) {
-                addToPropArray(mergedStats, prop, value);
+                addToPropArray(targetSetTwoPiece, prop, value);
             }
 
-            // 3b. 4件套静态属性
-            const fourPieceProps = targetSetDisc.getSetBuff(DriveDiskSetBonus.FOUR_PIECE);
-            for (const [prop, value] of fourPieceProps.out_of_combat.entries()) {
-                addToPropArray(mergedStats, prop, value);
+            // 3b. 4件套 Buff（普通 Buff：in_combat_stats）
+            // 注意：目标四件套是优化器强制选择项，默认纳入 targetSetFourPieceBuff（由 Worker 统一合并复用）
+            for (const buff of targetSetDisc.set_buffs ?? []) {
+                if (buff.in_combat_stats) {
+                    for (const [prop, value] of buff.in_combat_stats.entries()) {
+                        addToPropArray(targetSetFourPieceBuff, prop, value);
+                    }
+                }
             }
-            for (const [prop, value] of fourPieceProps.in_combat.entries()) {
-                addToPropArray(mergedStats, prop, value);
-            }
-
-            // 3c. 4件套Buff（某些套装有条件触发的效果）
-            if (targetSetDisc.set_buffs) {
-                allBuffs.push(...targetSetDisc.set_buffs);
-            }
+        } else {
+            // eslint-disable-next-line no-console
+            console.log('[OptimizerContext] targetSet precompute skipped');
         }
 
         // ============================================================================
-        // 4. 处理每个Buff（转换类单独收集，非转换类合并到mergedStats）
+        // 4. 处理每个Buff
+        // - 转换类：提取规则写入 conversionBuffs（运行时按组合应用）
+        // - 普通 Buff：合并为 mergedBuff（只参与快照2；禁止写入 mergedStats）
         // ============================================================================
+        let mergedPairs = 0;
         for (const buff of allBuffs) {
-            // 检查激活状态
+            // 检查激活状态（由 buffStatusMap 控制）
             let isActive = buff.is_active;
             if (buffStatusMap) {
                 const status = buffStatusMap.get(buff.id);
                 if (status) isActive = status.isActive;
             }
             if (!isActive) continue;
+
+            // 对敌人生效的 debuff 也必须计入（不论来源：自己/队友）
+            // - 这些属性会影响抗性区/防御区等乘区，因此不能被“只看自身buff”的口径跳过
+            // - 当前构建 mergedBuff 不做 target 过滤；只依赖 isActive/buffStatusMap 开关
 
             // 转换类Buff单独收集（需要最终属性才能计算）
             if (buff.conversion) {
@@ -822,20 +800,20 @@ export class OptimizerContext {
                 continue;
             }
 
-            // 非转换类Buff合并到mergedStats
-            if (buff.out_of_combat_stats) {
-                for (const [prop, value] of buff.out_of_combat_stats.entries()) {
-                    addToPropArray(mergedStats, prop, value);
-                }
-            }
+            // 普通 Buff：只把 in_combat_stats 叠加到 mergedBuff
             if (buff.in_combat_stats) {
                 for (const [prop, value] of buff.in_combat_stats.entries()) {
-                    addToPropArray(mergedStats, prop, value);
+                    addToPropArray(mergedBuff, prop, value);
+                    mergedPairs++;
                 }
             }
         }
 
-        // 4b. 预计算队友转换Buff（队友属性是固定的，可以直接计算）
+        // 4b. 预计算队友转换 Buff（队友属性是固定的，可以直接计算）
+        //
+        // 注意：这里“可预计算”的前提是 teammateStats 是一个不随本次优化组合变化的快照。
+        // 如果未来 teammateStats 也需要受驱动盘组合/局内 Buff 影响，这里就不能直接合并到 mergedStats，
+        // 必须改为与 conversionBuffs 一样的“规则预处理”，在 Worker 端按组合应用。
         for (const { buff, teammateStats } of teammateConversionBuffs) {
             if (!buff.conversion || !buff.is_active) continue;
 
@@ -857,6 +835,40 @@ export class OptimizerContext {
         }
 
         // ============================================================================
+        // 4c. 预计算异常/紊乱倍率（固定时间点/窗口）
+        // ============================================================================
+        const skill0 = skills[0];
+        const anomalyElement = (() => {
+            switch (skill0.element) {
+                case ElementType.PHYSICAL: return 'physical';
+                case ElementType.FIRE: return 'fire';
+                case ElementType.ICE: return 'ice';
+                case ElementType.ELECTRIC: return 'electric';
+                case ElementType.ETHER: return 'ether';
+                default: return 'physical';
+            }
+        })();
+
+        const durationSec =
+            ANOMALY_DEFAULT_DURATION[anomalyElement] ?? 10;
+
+        const anomalyTotalRatioAtT = getAnomalyTotalRatioAtT(
+            anomalyElement,
+            ANOMALY_EXPECT_WINDOW_SEC
+        );
+
+        // 星见雅：技能元素仍为 ICE（碎冰异常），但紊乱应使用“烈霜紊乱”独立公式
+        const special = agent.getSpecialAnomalyConfig?.();
+        const disorderElement =
+            special?.element === 'lieshuang' ? 'lieshuang' : anomalyElement;
+
+        const disorderTotalRatioAtT = getDisorderTotalRatioAtTimepoint(
+            disorderElement,
+            ANOMALY_EXPECT_WINDOW_SEC,
+            durationSec
+        );
+
+        // ============================================================================
         // 5. 收集非目标套装的2件套效果
         // ============================================================================
         const otherSetTwoPiece: Record<string, Float64Array> = {};
@@ -871,9 +883,6 @@ export class OptimizerContext {
             const twoPiece = createPropArray();
             const twoPieceProps = disc.getSetBuff(DriveDiskSetBonus.TWO_PIECE);
             for (const [prop, value] of twoPieceProps.out_of_combat.entries()) {
-                addToPropArray(twoPiece, prop, value);
-            }
-            for (const [prop, value] of twoPieceProps.in_combat.entries()) {
                 addToPropArray(twoPiece, prop, value);
             }
             otherSetTwoPiece[setId] = twoPiece;
@@ -933,10 +942,15 @@ export class OptimizerContext {
                 setId: disc.game_id,
                 isTargetSet: disc.game_id === targetSetId,
             });
+
+
         }
 
         // ============================================================================
         // 7. 计算固定乘区（使用第一个技能作为基准）
+        //
+        // 注意：这里不再把任何 Buff 预注入 fixedMultipliers（避免与 mergedBuff/targetSetFourPieceBuff 双算）。
+        // Buff 对抗性/防御/易伤等的影响统一在 Worker 端，通过 workerMergedBuff 参与 res/def 等乘区计算。
         // ============================================================================
         const fixedMultipliers = this.computeFixedMultipliers(
             agent,
@@ -944,7 +958,7 @@ export class OptimizerContext {
             enemy,
             skills[0],
             isStunned,
-            externalBuffs
+            []
         );
 
         // ============================================================================
@@ -953,15 +967,20 @@ export class OptimizerContext {
         const isPenetration = agent.isPenetrationAgent();
         const precomputed: PrecomputedData = {
             mergedStats,
+            mergedBuff,
             conversionBuffs,
             discsBySlot,
             targetSetId,
+            targetSetTwoPiece,
+            targetSetFourPieceBuff,
             otherSetTwoPiece,
             fixedMultipliers,
             skillsParams: skills.map(s => this.createSkillParams(s, isPenetration)),
             agentLevel: agent.level,
             enemyStats: enemy.getCombatStats(enemyLevel, isStunned),
             specialAnomalyConfig: agent.getSpecialAnomalyConfig(),
+            anomalyTotalRatioAtT,
+            disorderTotalRatioAtT,
         };
 
         return {

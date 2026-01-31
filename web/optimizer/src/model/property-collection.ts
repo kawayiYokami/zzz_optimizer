@@ -38,6 +38,29 @@ export class PropertyCollection {
   }
 
   /**
+   * 从优化器 Float64Array 属性快照创建 PropertyCollection
+   *
+   * 说明：
+   * - FastEvaluator/Worker 使用 Float64Array 表示属性快照（索引定义见 optimizer/types/property-index.ts）
+   * - 该快照为“最终结果数值”，无法还原 out_of_combat / in_combat / conversion 的来源拆分
+   * - 因此统一写入 final，供 PropertySetCard 直接展示
+   */
+  static fromOptimizerFinalStatsArray(
+    arr: Float64Array,
+    idxToPropType: Record<number, PropertyType>
+  ): PropertyCollection {
+    const pc = new PropertyCollection();
+    for (let i = 0; i < arr.length; i++) {
+      const prop = idxToPropType[i];
+      if (prop === undefined) continue;
+      const v = arr[i];
+      if (!v) continue;
+      pc.final.set(prop, v);
+    }
+    return pc;
+  }
+
+  /**
    * 添加单个属性值（局外属性）
    *
    * @param prop 属性类型（可以是 PropertyType 或字符串）
@@ -118,6 +141,8 @@ export class PropertyCollection {
     }
     return result;
   }
+
+
 
   /**
    * 获取局外属性值

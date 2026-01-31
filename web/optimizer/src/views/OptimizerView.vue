@@ -69,8 +69,8 @@
             :selected-skill-keys="selectedSkillKeys"
           />
 
-          <!-- FastEvaluator 调试卡片 -->
-          <FastEvaluatorDebugCard
+          <!-- 战斗环境（Worker 口径） -->
+          <BattleEvaluatorCard
             v-if="isDebugMode && targetAgent && selectedEnemy"
             ref="debugCardRef"
             :agent="targetAgent"
@@ -82,7 +82,7 @@
             :skill-name="selectedSkills[0]?.name || '未选择'"
             :skill-type="selectedSkills[0]?.type || 'normal'"
             :ui-damage="currentDamage"
-            :external-buffs="optimizerService.getTeammateBuffs()"
+            :external-buffs="availableBuffs"
             :buff-status-map="battleService.getBuffStatusMap()"
           />
 
@@ -122,7 +122,7 @@ import BattleConfigCard from '../components/business/BattleConfigCard.vue';
 import CalculationConfigCard from '../components/business/CalculationConfigCard.vue';
 import BattleInfoCard from '../components/business/BattleInfoCard.vue';
 import OptimizationResultCard from '../components/business/OptimizationResultCard.vue';
-import FastEvaluatorDebugCard from '../components/debug/FastEvaluatorDebugCard.vue';
+import BattleEvaluatorCard from '../components/business/BattleEvaluatorCard.vue';
 
 const saveStore = useSaveStore();
 const gameDataStore = useGameDataStore();
@@ -146,7 +146,7 @@ const battleInfoCardRef = ref<InstanceType<typeof BattleInfoCard> | null>(null);
 
 // 调试模式
 const isDebugMode = ref(true);  // 设为 true 开启调试卡片
-const debugCardRef = ref<InstanceType<typeof FastEvaluatorDebugCard> | null>(null);
+const debugCardRef = ref<InstanceType<typeof BattleEvaluatorCard> | null>(null);
 
 // Buff 配置相关
 const selectedEnemyId = ref('');  // 默认不选择敌人
@@ -346,24 +346,17 @@ const availableBuffs = computed(() => {
   buffsVersion.value; // 触发响应式依赖
   if (!currentTeam.value) return [];
   
-  // 合并前台角色buff和队友buff
-  const frontAgentBuffs = battleService.getFrontAgentBuffs(false); // 不包含四件套 buff
-  const teammateBuffs = optimizerService.getTeammateBuffs(); // 队友提供的buff
-  
-  // 去重合并（基于buff.id）
-  const buffMap = new Map<string, Buff>();
-  
-  // 先添加前台角色buff
-  for (const buff of frontAgentBuffs) {
-    buffMap.set(buff.id, buff);
-  }
-  
-  // 再添加队友buff（如果id不同则添加，相同则覆盖）
-  for (const buff of teammateBuffs) {
-    buffMap.set(buff.id, buff);
-  }
-  
-  return Array.from(buffMap.values());
+  // 合并前台角色buff和队友buff（统一由 battleService 提供，保证与战斗计算口径一致）
+  const { self: frontAgentBuffs, teammate: teammateBuffs } = battleService.getOptimizerConfigBuffs({ includeFourPiece: false });
+  // (debug logs removed)
+
+  // 不去重：调试/优化器配置层面需要看到“真实来源的 Buff 列表”。
+  // 后续若存在同 id 的 Buff，需要在数据层修复，而不是在 UI 静默覆盖。
+  const all = [...frontAgentBuffs, ...teammateBuffs];
+
+  // (debug logs removed)
+
+  return all;
 });
 
 const selectedBuffs = computed(() => {
@@ -714,7 +707,7 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
       enemy,
       discs: optimizedDiscs.value,  // 使用优化后的驱动盘
       constraints: constraints.value,
-      externalBuffs: optimizerService.getTeammateBuffs(),
+      externalBuffs: selectedBuffs.value,
       buffStatusMap: battleService.getBuffStatusMap(),
       topN: 10,
       estimatedTotal: estimatedCombinations.value.total,  // 传入UI计算的有效组合数
