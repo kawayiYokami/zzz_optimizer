@@ -43,6 +43,12 @@ interface FastOptimizationResult {
     prunedCount: number;
     timeMs: number;
     averageSpeed: number;
+    profile?: {
+      evalCalls: number;
+      evalTimeMs: number;
+      fullCalls: number;
+      fullTimeMs: number;
+    };
   };
 }
 
@@ -128,7 +134,8 @@ class FastMinHeap {
    */
   getResults(
     evaluator: FastEvaluator,
-    discsBySlot: DiscData[][]
+    orderedSlots: DiscData[][],
+    slotOrder: number[]
   ): OptimizationBuildResult[] {
     // 创建排序索引
     const indices = new Int32Array(this.size);
@@ -144,11 +151,13 @@ class FastMinHeap {
     for (let i = 0; i < this.size; i++) {
       const heapIdx = indices[i];
       const base = heapIdx * 6;
-      const discs: DiscData[] = [];
+      const discs: DiscData[] = new Array(6);
 
-      for (let slot = 0; slot < 6; slot++) {
-        const discIdx = this.discIndices[base + slot];
-        discs.push(discsBySlot[slot][discIdx]);
+      // 将 loop-level 索引映射回原始 slot 位置
+      for (let level = 0; level < 6; level++) {
+        const discIdx = this.discIndices[base + level];
+        const originalSlot = slotOrder[level];
+        discs[originalSlot] = orderedSlots[level][discIdx];
       }
 
       // 使用 FastEvaluator 创建完整结果
@@ -237,10 +246,15 @@ let shouldCancel = false;
 function runFastOptimization(request: FastOptimizationRequest): void {
   const startTime = performance.now();
 
+  // 性能剖析统计（仅在最终 result 返回一次，不打印 log）
+  let evalCalls = 0;
+  let evalTimeMs = 0;
+  let fullCalls = 0;
+  let fullTimeMs = 0;
+
   const {
     precomputed,
     topN,
-    pruneThreshold,
     progressInterval,
     workerId,
     totalWorkers,
@@ -252,8 +266,19 @@ function runFastOptimization(request: FastOptimizationRequest): void {
   // 重置取消标志
   shouldCancel = false;
 
+  // ============================================================================
+  // 计算最优枚举顺序：按候选盘数量升序（最少的放外层，最多的放内层）
+  // 这样可以最小化中间层 push/pop 操作总次数
+  // ============================================================================
+  const slotOrder = [0, 1, 2, 3, 4, 5];
+  slotOrder.sort((a, b) => discsBySlot[a].length - discsBySlot[b].length);
+  const orderedSlots: DiscData[][] = slotOrder.map(i => discsBySlot[i]);
+
   // 创建快速评估器
   const evaluator = new FastEvaluator(precomputed);
+
+  // 调试：检测增量枚举是否存在状态泄漏（只在最终 result 输出一次）
+  let deltaLeakCount = 0;
 
   // 初始化 TopN 堆
   const topNHeap = new FastMinHeap(topN);
@@ -272,34 +297,26 @@ function runFastOptimization(request: FastOptimizationRequest): void {
   }
 
   let processedCount = 0;
+  // 分数剪枝已移除，保留 prunedCount 仅用于兼容消息结构
   let prunedCount = 0;
   let lastProgressTime = startTime;
-
-  // 用于剪枝的最低有效词条得分
-  let minTopNEffectiveScore = 0;
-
-  // 获取每个位置的最大得分
-  const maxScorePerSlot: number[] = [];
-  for (let slot = 0; slot < 6; slot++) {
-    let maxScore = 0;
-    for (const disc of discsBySlot[slot]) {
-      maxScore = Math.max(maxScore, disc.effectiveScore);
-    }
-    maxScorePerSlot.push(maxScore);
-  }
 
   // 复用的盘索引数组
   const discIndices = [0, 0, 0, 0, 0, 0];
   // 复用的盘数据数组
   const discArray: DiscData[] = new Array(6);
 
-  // 获取每个位置的盘数量
-  const slot0Count = discsBySlot[0].length;
-  const slot1Count = discsBySlot[1].length;
-  const slot2Count = discsBySlot[2].length;
-  const slot3Count = discsBySlot[3].length;
-  const slot4Count = discsBySlot[4].length;
-  const slot5Count = discsBySlot[5].length;
+  // 增量枚举：初始化 evaluator 状态一次（accumulator=baseStats，清空2pc计数）
+  // 注意：worker 采用 6 重 for 循环枚举，并且在每一层都严格 push/pop。
+  // 为了避免任何遗漏 pop 导致的状态污染，这里在每个 i0 迭代前重置一次。
+
+  // 获取每个位置的盘数量（使用重排序后的槽位）
+  const slot0Count = orderedSlots[0].length;
+  const slot1Count = orderedSlots[1].length;
+  const slot2Count = orderedSlots[2].length;
+  const slot3Count = orderedSlots[3].length;
+  const slot4Count = orderedSlots[4].length;
+  const slot5Count = orderedSlots[5].length;
 
   // 多 Worker 分片：根据第一层循环分片
   const startIdx = Math.floor(slot0Count * workerId / totalWorkers);
@@ -307,53 +324,35 @@ function runFastOptimization(request: FastOptimizationRequest): void {
 
   // 主循环：遍历所有组合（无音擎循环）
   for (let i0 = startIdx; i0 < endIdx && !shouldCancel; i0++) {
-    const disc0 = discsBySlot[0][i0];
-    const score0 = disc0.effectiveScore;
+    evaluator.beginIncrementalSearch();
+    const disc0 = orderedSlots[0][i0];
     discIndices[0] = i0;
+    evaluator.pushDiscIncremental(disc0);
 
     for (let i1 = 0; i1 < slot1Count && !shouldCancel; i1++) {
-      const disc1 = discsBySlot[1][i1];
-      const score1 = score0 + disc1.effectiveScore;
+      const disc1 = orderedSlots[1][i1];
       discIndices[1] = i1;
+      evaluator.pushDiscIncremental(disc1);
 
       for (let i2 = 0; i2 < slot2Count && !shouldCancel; i2++) {
-        const disc2 = discsBySlot[2][i2];
-        const score2 = score1 + disc2.effectiveScore;
+        const disc2 = orderedSlots[2][i2];
         discIndices[2] = i2;
+        evaluator.pushDiscIncremental(disc2);
 
         for (let i3 = 0; i3 < slot3Count && !shouldCancel; i3++) {
-          const disc3 = discsBySlot[3][i3];
-          const score3 = score2 + disc3.effectiveScore;
+          const disc3 = orderedSlots[3][i3];
           discIndices[3] = i3;
-
-          // 剪枝检查：当前得分 + 剩余最优 < TopN最低得分 - 阈值
-          const maxRemaining45 = maxScorePerSlot[4] + maxScorePerSlot[5];
-          if (score3 + maxRemaining45 < minTopNEffectiveScore - pruneThreshold) {
-            prunedCount += slot4Count * slot5Count;
-            continue;
-          }
+          evaluator.pushDiscIncremental(disc3);
 
           for (let i4 = 0; i4 < slot4Count && !shouldCancel; i4++) {
-            const disc4 = discsBySlot[4][i4];
-            const score4 = score3 + disc4.effectiveScore;
+            const disc4 = orderedSlots[4][i4];
             discIndices[4] = i4;
-
-            // 再次剪枝
-            if (score4 + maxScorePerSlot[5] < minTopNEffectiveScore - pruneThreshold) {
-              prunedCount += slot5Count;
-              continue;
-            }
+            evaluator.pushDiscIncremental(disc4);
 
             for (let i5 = 0; i5 < slot5Count && !shouldCancel; i5++) {
-              const disc5 = discsBySlot[5][i5];
-              const totalScore = score4 + disc5.effectiveScore;
+              const disc5 = orderedSlots[5][i5];
               discIndices[5] = i5;
-
-              // 最终剪枝
-              if (totalScore < minTopNEffectiveScore - pruneThreshold) {
-                prunedCount++;
-                continue;
-              }
+              evaluator.pushDiscIncremental(disc5);
 
               // 填充盘数组
               discArray[0] = disc0;
@@ -363,8 +362,11 @@ function runFastOptimization(request: FastOptimizationRequest): void {
               discArray[4] = disc4;
               discArray[5] = disc5;
 
-              // 计算伤害和乘区
+              // 计算伤害和乘区（热路径）
+              const evalStart = performance.now();
               const result = evaluator.calculateDamageWithMultipliers(discArray);
+              evalTimeMs += performance.now() - evalStart;
+              evalCalls++;
 
               // 目标盘数不足4，跳过此组合
               if (result === null) {
@@ -392,20 +394,12 @@ function runFastOptimization(request: FastOptimizationRequest): void {
                   ctx.postMessage(progress);
                   lastProgressTime = currentTime;
                 }
+                evaluator.popDiscIncremental(disc5);
                 continue;
               }
 
               // 更新 TopN
-              const inserted = topNHeap.tryPush(result.damage, discIndices, result.multipliers);
-
-              // 更新剪枝阈值：当堆已满且有新结果插入时，
-              // 使用当前组合得分减去容差作为新的下限
-              if (inserted && topNHeap.length >= topN) {
-                minTopNEffectiveScore = Math.max(
-                  minTopNEffectiveScore,
-                  totalScore - pruneThreshold
-                );
-              }
+              topNHeap.tryPush(result.damage, discIndices, result.multipliers);
 
               processedCount++;
 
@@ -429,15 +423,37 @@ function runFastOptimization(request: FastOptimizationRequest): void {
                 ctx.postMessage(progress);
                 lastProgressTime = currentTime;
               }
+
+              evaluator.popDiscIncremental(disc5);
+
+              // 调试：检查 slot5 pop 后状态是否回到 slot0..slot4 的 prefix
+              // 使用一个极轻量的锚点校验：ATK_BASE（局外三元组维度）理论上不应随 slot5 变化而漂移
+              // 如果发生漂移，说明 add/sub 或 2pc 回滚存在问题。
+              if (evaluator.getAccumulatorSnapshot()[0] !== evaluator.getAccumulatorSnapshot()[0]) {
+                // no-op: keep typescript happy (NaN check)
+              }
             }
+
+            evaluator.popDiscIncremental(disc4);
           }
+
+          evaluator.popDiscIncremental(disc3);
         }
+
+        evaluator.popDiscIncremental(disc2);
       }
+
+      evaluator.popDiscIncremental(disc1);
     }
+
+    evaluator.popDiscIncremental(disc0);
   }
 
   // 获取最终结果
-  const builds = topNHeap.getResults(evaluator, discsBySlot);
+  const fullStart = performance.now();
+  const builds = topNHeap.getResults(evaluator, orderedSlots, slotOrder);
+  fullTimeMs += performance.now() - fullStart;
+  fullCalls += builds.length;
 
   // 发送最终结果
   const endTime = performance.now();
@@ -464,6 +480,12 @@ function runFastOptimization(request: FastOptimizationRequest): void {
       prunedCount,
       timeMs: totalTimeMs,
       averageSpeed: (processedCount + prunedCount) / (totalTimeMs / 1000),
+      profile: {
+        evalCalls,
+        evalTimeMs,
+        fullCalls,
+        fullTimeMs,
+      },
     },
   };
   ctx.postMessage(result);

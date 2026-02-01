@@ -33,8 +33,6 @@ export interface BuffData {
         maxValue?: number;
         fromPropertyThreshold?: number;
     };
-    /** 是否激活 */
-    isActive: boolean;
     /** 触发条件标识（用于 UI 显示） */
     triggerConditions?: string;
 }

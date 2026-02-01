@@ -13,7 +13,6 @@ import type { OptimizationConstraints, OptimizationBuild } from '../optimizer/ty
 export interface TeamOptimizationConfig {
   constraints: OptimizationConstraints;
   selectedSkillKeys: string[];
-  disabledBuffIds: string[];
   selectedEnemyId: string;
   lastUpdated: string;
 }

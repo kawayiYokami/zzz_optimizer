@@ -185,7 +185,7 @@ export class WEngine {
     let activeBuffs: Buff[] = [];
     for (const talent of this.talents) {
       if (talent.level === this.refinement) {
-        activeBuffs = talent.buffs.filter((buff) => buff.is_active);
+        activeBuffs = talent.buffs;
         break;
       }
     }

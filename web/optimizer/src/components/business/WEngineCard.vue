@@ -47,7 +47,7 @@
       </div>
 
       <!-- Talent (Collapsible) -->
-      <div class="collapse collapse-arrow border border-base-200 bg-base-200 rounded-box">
+      <div class="collapse collapse-arrow border border-base-200 bg-base-200 rounded-box" @click.stop>
         <input type="checkbox" />
         <div class="collapse-title text-xs font-medium p-2 min-h-0 flex items-center">
           <span class="truncate">{{ activeTalentName }}</span>
@@ -76,6 +76,7 @@ import { iconService } from '../../services/icon.service';
 
 const props = defineProps<{
   wengine: WEngine;
+  readonly?: boolean;
 }>();
 
 defineEmits<{

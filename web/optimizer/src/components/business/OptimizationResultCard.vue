@@ -37,12 +37,25 @@
                   </div>
                 </div>
               </div>
-              <button 
-                class="btn btn-primary"
-                @click="$emit('equip-build', build)"
-              >
-                装备此方案
-              </button>
+              <div class="flex items-center gap-2">
+                <button
+                  class="btn btn-ghost btn-sm"
+                  @click="toggleDebug(index)"
+                >
+                  调试
+                </button>
+                <button 
+                  class="btn btn-primary"
+                  @click="$emit('equip-build', build)"
+                >
+                  装备此方案
+                </button>
+              </div>
+            </div>
+
+            <!-- 调试信息（只求可查，不追求样式） -->
+            <div v-if="debugOpenIndex === index" class="mb-4">
+              <pre class="text-xs whitespace-pre-wrap bg-base-100 border border-base-300 rounded p-3 overflow-auto max-h-96">{{ formatBuildDebug(build) }}</pre>
             </div>
 
             <!-- 6个驱动盘卡片 -->
@@ -70,6 +83,7 @@
 import type { OptimizationBuild } from '../../optimizer/services';
 import { useSaveStore } from '../../stores/save.store';
 import DriveDiskCard from './DriveDiskCard.vue';
+import { ref } from 'vue';
 
 const props = defineProps<{
   results: OptimizationBuild[];
@@ -83,6 +97,27 @@ const emit = defineEmits<{
 }>();
 
 const saveStore = useSaveStore();
+const debugOpenIndex = ref<number | null>(null);
+
+const toggleDebug = (index: number) => {
+  debugOpenIndex.value = debugOpenIndex.value === index ? null : index;
+};
+
+const formatBuildDebug = (build: OptimizationBuild) => {
+  // OptimizationBuild 是主线程兼容结构，尽量把关键字段都 dump 出来
+  const payload: any = {
+    damage: build.damage,
+    discIds: build.discIds,
+    weaponId: build.weaponId,
+    setBonusInfo: build.setBonusInfo,
+    damageBreakdown: build.damageBreakdown,
+    damageMultipliers: build.damageMultipliers,
+    defMult: (build as any).defMult,
+    snapshots: (build as any).snapshots,
+    finalStats: build.finalStats,
+  };
+  return JSON.stringify(payload, null, 2);
+};
 
 const getDiscInfo = (discId: string) => {
   if (!discId) return null;

@@ -103,7 +103,6 @@ export class OptimizerContext {
             outOfCombatStats,
             inCombatStats,
             conversion,
-            isActive: buff.is_active,
             triggerConditions: buff.trigger_conditions,
         };
     }
@@ -400,10 +399,6 @@ export class OptimizerContext {
         buff: Buff,
         buffStatusMap?: Map<string, { isActive: boolean }>
     ): void {
-        // Buff 开关口径：由 BattleService 在上游产出最终 Buff 列表并写入 buff.is_active，
-        // OptimizerContext/Worker 无条件信任该值，不再二次用 buffStatusMap 过滤。
-        if (!buff.is_active) return;
-
         // 局外属性
         if (buff.out_of_combat_stats) {
             for (const [prop, value] of buff.out_of_combat_stats.entries()) {
@@ -423,8 +418,6 @@ export class OptimizerContext {
      * 将 BuffData 属性填充到 Float64Array
      */
     private static fillArrayFromBuffData(arr: Float64Array, buff: BuffData): void {
-        if (!buff.isActive) return;
-
         for (const [propKey, value] of Object.entries(buff.outOfCombatStats)) {
             const propType = Number(propKey) as PropertyType;
             addToPropArray(arr, propType, value as number);
@@ -511,7 +504,7 @@ export class OptimizerContext {
      * 提取转换类 Buff 数据
      */
     private static extractConversionBuff(buff: Buff, isTeammate: boolean): ConversionBuffData | null {
-        if (!buff.conversion || !buff.is_active) return null;
+        if (!buff.conversion) return null;
 
         const fromPropIdx = PROP_TYPE_TO_IDX[buff.conversion.from_property];
         const toPropIdx = PROP_TYPE_TO_IDX[buff.conversion.to_property];
@@ -569,7 +562,6 @@ export class OptimizerContext {
 
         // 从外部 Buff 收集
         for (const buff of externalBuffs) {
-            if (!buff.is_active) continue;
             if (buff.out_of_combat_stats) {
                 baseDefRed += buff.out_of_combat_stats.get(PropertyType.DEF_RED_) ?? 0;
                 baseDefIgn += buff.out_of_combat_stats.get(PropertyType.DEF_IGN_) ?? 0;
@@ -677,7 +669,7 @@ export class OptimizerContext {
         constraints: OptimizationConstraints;
         externalBuffs?: Buff[];
         teammateConversionBuffs?: { buff: Buff; teammateStats: Float64Array }[];
-        // deprecated: buff 开关已由 BattleService 写入 buff.is_active，调度器不再二次过滤
+        // deprecated: legacy comment kept to preserve line history
         buffStatusMap?: Map<string, { isActive: boolean }>;
         config?: {
             topN?: number;
@@ -784,9 +776,8 @@ export class OptimizerContext {
         // ============================================================================
         let mergedPairs = 0;
         for (const buff of allBuffs) {
-            // Buff 开关口径：由 BattleService 在上游产出最终 Buff 列表并写入 buff.is_active，
-            // OptimizerContext/Worker 无条件信任该值，不再二次用 buffStatusMap 过滤。
-            if (!buff.is_active) continue;
+            // Buff 开关口径：由 BattleService 在上游产出“计算用 Buff 列表”externalBuffs。
+            // OptimizerContext/Worker 无条件信任该列表，不再根据 Buff 自身字段进行二次过滤。
 
             // 对敌人生效的 debuff 也必须计入（不论来源：自己/队友）
             // - 这些属性会影响抗性区/防御区等乘区，因此不能被“只看自身buff”的口径跳过
@@ -814,7 +805,7 @@ export class OptimizerContext {
         // 如果未来 teammateStats 也需要受驱动盘组合/局内 Buff 影响，这里就不能直接合并到 mergedStats，
         // 必须改为与 conversionBuffs 一样的“规则预处理”，在 Worker 端按组合应用。
         for (const { buff, teammateStats } of teammateConversionBuffs) {
-            if (!buff.conversion || !buff.is_active) continue;
+            if (!buff.conversion) continue;
 
             const fromPropIdx = PROP_TYPE_TO_IDX[buff.conversion.from_property];
             const toPropIdx = PROP_TYPE_TO_IDX[buff.conversion.to_property];
@@ -916,9 +907,19 @@ export class OptimizerContext {
             return 0;
         };
 
+        const setIdToIdx = new Map<string, number>();
+
         for (const disc of discs) {
             const slotIdx = disc.position - 1;
             if (slotIdx < 0 || slotIdx > 5) continue;
+
+            // 预编码 setId -> setIdx（Worker 热路径使用）
+            const setId = disc.game_id;
+            let setIdx = setIdToIdx.get(setId);
+            if (setIdx === undefined) {
+                setIdx = setIdToIdx.size;
+                setIdToIdx.set(setId, setIdx);
+            }
 
             // 填充属性数组（主词条+副词条，不含套装效果）
             const stats = createPropArray();
@@ -938,11 +939,24 @@ export class OptimizerContext {
                 id: disc.id,
                 stats,
                 effectiveScore,
-                setId: disc.game_id,
-                isTargetSet: disc.game_id === targetSetId,
+                setId,
+                setIdx,
+                isTargetSet: setId === targetSetId,
             });
 
 
+        }
+
+        // ============================================================================
+        // 6b. 对每个位置的驱动盘进行排序（提升枚举局部性）
+        // - 先按套装聚集（setIdx 升序）
+        // - 同套装内按有效得分降序（更利于剪枝抬高阈值）
+        // ============================================================================
+        for (let slot = 0; slot < discsBySlot.length; slot++) {
+            discsBySlot[slot].sort((a, b) => {
+                if (a.setIdx !== b.setIdx) return a.setIdx - b.setIdx;
+                return b.effectiveScore - a.effectiveScore;
+            });
         }
 
         // ============================================================================
