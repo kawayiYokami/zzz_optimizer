@@ -42,6 +42,8 @@ export interface FastEvaluationResult {
   lieshuang?: number;
 }
 
+// (profiling helpers removed)
+
 /**
  * 预计算的异常参数（避免热路径上的字符串转换）
  */
@@ -66,6 +68,7 @@ export class FastEvaluator {
    */
   private evalBuffer: Float64Array;
 
+
   /** Worker 复用的底座（mergedStats + target 2pc） */
   private workerBaseStats: Float64Array;
 
@@ -79,6 +82,7 @@ export class FastEvaluator {
   private otherSetUsedCount: number = 0;
   /** otherSetTwoPiece(setId->arr) 映射为 setIdx->arr，避免每次组合 string key 查找 */
   private otherSetTwoPieceByIdx: Array<Float64Array | null>;
+  private otherSetTwoPieceSparseByIdx: Array<{ idx: Int16Array; val: Float64Array } | null>;
 
   /** 固定乘区（每个 worker 初始化一次） */
   private fixed: {
@@ -94,6 +98,13 @@ export class FastEvaluator {
     totalResRedUsed: number;
   };
 
+  // Debug 开关：校验 evalBuffer 是否始终满足
+  // evalBuffer[i] == accumulator[i] + workerMergedBuff[i]
+  // 默认关闭，避免任何性能影响。
+  private static readonly DEBUG_VERIFY_EVAL_BUFFER = false;
+  private static readonly DEBUG_VERIFY_INTERVAL_MASK = 0xfffff; // 每约 1,048,576 次触发一次
+  private debugVerifyCounter = 0;
+
   constructor(precomputed: PrecomputedData) {
     this.precomputed = precomputed;
     this.accumulator = new Float64Array(PROP_IDX.TOTAL_PROPS);
@@ -104,6 +115,7 @@ export class FastEvaluator {
     this.otherSetCounts = new Int8Array(maxSetIdx + 1);
     this.otherSetUsed = new Int16Array(6);
     this.otherSetTwoPieceByIdx = new Array(maxSetIdx + 1).fill(null);
+    this.otherSetTwoPieceSparseByIdx = new Array(maxSetIdx + 1).fill(null);
 
     // Worker 初始化阶段预合并目标套装（同一 worker 复用）
     const { mergedStats, targetSetTwoPiece, mergedBuff, targetSetFourPieceBuff } = precomputed;
@@ -111,6 +123,10 @@ export class FastEvaluator {
       this.workerBaseStats[i] = mergedStats[i] + (targetSetTwoPiece?.[i] ?? 0);
       this.workerMergedBuff[i] = mergedBuff[i] + (targetSetFourPieceBuff?.[i] ?? 0);
     }
+
+    // workerMergedBuffSparse* 已移除（方案1下 evalBuffer 直接维护“最终局内属性”）
+
+    // evalBuffer 在叶子评估阶段动态写入（accumulator + workerMergedBuff）
 
     // 预构建 otherSetTwoPieceByIdx：只在 worker 初始化做一次字符串查找
     const { otherSetTwoPiece } = precomputed;
@@ -121,7 +137,51 @@ export class FastEvaluator {
       }
     }
 
+    // 预构建 otherSetTwoPieceSparseByIdx
+    const otherSetTwoPieceSparse = (precomputed as any).otherSetTwoPieceSparse as Record<string, { idx: Int16Array; val: Float64Array }> | undefined;
+    if (otherSetTwoPieceSparse) {
+      for (const [setId, sparse] of Object.entries(otherSetTwoPieceSparse)) {
+        const setIdx = this.findSetIdxById(precomputed.discsBySlot, setId);
+        if (setIdx !== null) this.otherSetTwoPieceSparseByIdx[setIdx] = sparse;
+      }
+    }
+
     this.fixed = this.computeFixedMultipliers();
+  }
+
+  // (usedEvalIdx removed)
+
+  private applySparseTo(target: Float64Array, idx: Int16Array, val: Float64Array, sign: 1 | -1): void {
+    for (let k = 0; k < idx.length; k++) target[idx[k]] += val[k] * sign;
+  }
+
+  private debugVerifyEvalBuffer(): void {
+    if (!FastEvaluator.DEBUG_VERIFY_EVAL_BUFFER) return;
+    this.debugVerifyCounter++;
+    if ((this.debugVerifyCounter & FastEvaluator.DEBUG_VERIFY_INTERVAL_MASK) !== 0) return;
+
+    // 抽查少量关键槽位（避免全量 94 扫描）
+    const idxs = [
+      PROP_IDX.ATK_BASE,
+      PROP_IDX.ATK_,
+      PROP_IDX.ATK,
+      PROP_IDX.CRIT_,
+      PROP_IDX.CRIT_DMG_,
+      PROP_IDX.DMG_,
+      PROP_IDX.PEN_,
+      PROP_IDX.PEN,
+      PROP_IDX.DEF_RED_,
+      PROP_IDX.DEF_IGN_,
+    ];
+    for (let i = 0; i < idxs.length; i++) {
+      const idx = idxs[i];
+      const expected = this.accumulator[idx] + this.workerMergedBuff[idx];
+      const actual = this.evalBuffer[idx];
+      // 用较紧容差：这里都是加减法累积，误差应该极小
+      if (Math.abs(actual - expected) > 1e-9) {
+        throw new Error(`[FastEvaluator] evalBuffer mismatch at idx=${idx}: actual=${actual} expected=${expected}`);
+      }
+    }
   }
 
   /**
@@ -131,10 +191,16 @@ export class FastEvaluator {
    */
   beginIncrementalSearch(): void {
     this.accumulator.set(this.workerBaseStats);
+    // evalBuffer 直接维护为“局内最终属性底座”（= accumulator + workerMergedBuff）
+    // 这样 leaf eval 不再需要做 94 维合并
+    for (let i = 0; i < PROP_IDX.TOTAL_PROPS; i++) {
+      this.evalBuffer[i] = this.accumulator[i] + this.workerMergedBuff[i];
+    }
     for (let i = 0; i < this.otherSetUsedCount; i++) {
       this.otherSetCounts[this.otherSetUsed[i]] = 0;
     }
     this.otherSetUsedCount = 0;
+    this.debugVerifyEvalBuffer();
   }
 
   /**
@@ -145,8 +211,19 @@ export class FastEvaluator {
    * 返回：是否触发了 2pc（方便上层调试；逻辑不依赖返回值）
    */
   pushDiscIncremental(disc: DiscData): boolean {
-    const dStats = disc.stats;
-    for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) this.accumulator[j] += dStats[j];
+    const idx = disc.sparseStatsIdx;
+    const val = disc.sparseStatsVal;
+    if (idx && val) {
+      this.applySparseTo(this.accumulator, idx, val, 1);
+      this.applySparseTo(this.evalBuffer, idx, val, 1);
+    } else {
+      const dStats = disc.stats;
+      for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
+        this.accumulator[j] += dStats[j];
+        this.evalBuffer[j] += dStats[j];
+      }
+    }
+    this.debugVerifyEvalBuffer();
 
     if (disc.isTargetSet) return false;
 
@@ -157,12 +234,25 @@ export class FastEvaluator {
     if (prev === 0) this.otherSetUsed[this.otherSetUsedCount++] = setIdx;
 
     if (prev === 1) {
-      const twoPiece = this.otherSetTwoPieceByIdx[setIdx];
-      if (twoPiece) {
-        for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) this.accumulator[j] += twoPiece[j];
+      const sparse2pc = this.otherSetTwoPieceSparseByIdx[setIdx];
+      if (sparse2pc) {
+        const idx2 = sparse2pc.idx;
+        const val2 = sparse2pc.val;
+        this.applySparseTo(this.accumulator, idx2, val2, 1);
+        this.applySparseTo(this.evalBuffer, idx2, val2, 1);
+      } else {
+        const twoPiece = this.otherSetTwoPieceByIdx[setIdx];
+        if (twoPiece) {
+          for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
+            this.accumulator[j] += twoPiece[j];
+            this.evalBuffer[j] += twoPiece[j];
+          }
+        }
       }
+      this.debugVerifyEvalBuffer();
       return true;
     }
+    this.debugVerifyEvalBuffer();
     return false;
   }
 
@@ -183,16 +273,38 @@ export class FastEvaluator {
       this.otherSetCounts[setIdx] = next;
 
       if (prev === 2) {
-        const twoPiece = this.otherSetTwoPieceByIdx[setIdx];
-        if (twoPiece) {
-          for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) this.accumulator[j] -= twoPiece[j];
+        const sparse2pc = this.otherSetTwoPieceSparseByIdx[setIdx];
+        if (sparse2pc) {
+          const idx2 = sparse2pc.idx;
+          const val2 = sparse2pc.val;
+          this.applySparseTo(this.accumulator, idx2, val2, -1);
+          this.applySparseTo(this.evalBuffer, idx2, val2, -1);
+        } else {
+          const twoPiece = this.otherSetTwoPieceByIdx[setIdx];
+          if (twoPiece) {
+            for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
+              this.accumulator[j] -= twoPiece[j];
+              this.evalBuffer[j] -= twoPiece[j];
+            }
+          }
         }
         reverted2pc = true;
       }
     }
 
-    const dStats = disc.stats;
-    for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) this.accumulator[j] -= dStats[j];
+    const idx = disc.sparseStatsIdx;
+    const val = disc.sparseStatsVal;
+    if (idx && val) {
+      this.applySparseTo(this.accumulator, idx, val, -1);
+      this.applySparseTo(this.evalBuffer, idx, val, -1);
+    } else {
+      const dStats = disc.stats;
+      for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
+        this.accumulator[j] -= dStats[j];
+        this.evalBuffer[j] -= dStats[j];
+      }
+    }
+    this.debugVerifyEvalBuffer();
     return reverted2pc;
   }
 
@@ -370,13 +482,9 @@ export class FastEvaluator {
     // ========================================================================
 
     // ========================================================================
-    // 2.5 初始化评估缓冲区（accumulator + workerMergedBuff）
-    // - evalBuffer 用于本次叶子评估的所有计算，不污染 accumulator
-    // - 这样 popDiscIncremental 不需要撤销 buff，保持增量枚举的正确性
+    // 2.5 evalBuffer 已在 beginIncrementalSearch/pushDiscIncremental/popDiscIncremental 中维护为
+    // accumulator + workerMergedBuff 的“局内最终属性底座”，这里无需再做 94 维合并
     // ========================================================================
-    for (let i = 0; i < PROP_IDX.TOTAL_PROPS; i++) {
-      this.evalBuffer[i] = this.accumulator[i] + this.workerMergedBuff[i];
-    }
 
     // ========================================================================
     // 5. 生成快照1（局外 → 局内基础属性；不含 Buff）

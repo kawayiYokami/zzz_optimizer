@@ -127,6 +127,10 @@ export interface DiscData {
   id: string;
   /** 属性数组（主词条+副词条，不含套装效果） */
   stats: Float64Array;
+  /** stats 的稀疏表示（只包含有效词条；用于 Worker 热路径 push/pop） */
+  sparseStatsIdx?: Int16Array;
+  /** stats 的稀疏表示（与 sparseStatsIdx 对齐） */
+  sparseStatsVal?: Float64Array;
   /** 有效词条得分（用于剪枝） */
   effectiveScore: number;
   /** 套装 ID（用于2件套判断） */
@@ -135,6 +139,11 @@ export interface DiscData {
   setIdx: number;
   /** 是否为目标套装 */
   isTargetSet: boolean;
+}
+
+export interface SparseDelta {
+  idx: Int16Array;
+  val: Float64Array;
 }
 
 /**
@@ -179,18 +188,21 @@ export interface PrecomputedData {
    * - 由 Worker/FastEvaluator 在初始化阶段预合并（同一 worker 复用）
    */
   targetSetTwoPiece: Float64Array;
+  targetSetTwoPieceSparse?: SparseDelta;
 
   /**
    * 目标套装的 4 件套 Buff（局内普通 Buff：in_combat_stats）
    * - 由 Worker/FastEvaluator 在初始化阶段预合并（同一 worker 复用）
    */
   targetSetFourPieceBuff: Float64Array;
+  targetSetFourPieceBuffSparse?: SparseDelta;
 
   /**
    * 非目标套装的2件套效果缓存
    * key: 套装ID, value: 2件套属性数组
    */
   otherSetTwoPiece: Record<string, Float64Array>;
+  otherSetTwoPieceSparse?: Record<string, SparseDelta>;
 
   /**
    * 固定乘区（不受驱动盘影响）
