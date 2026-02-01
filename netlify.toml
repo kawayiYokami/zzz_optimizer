@@ -1,0 +1,11 @@
+[build]
+  base = "web/optimizer"
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+# Vite SPA: 所有路由回退到 index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
