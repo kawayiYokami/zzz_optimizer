@@ -46,9 +46,22 @@ export const useSaveStore = defineStore('save', () => {
       // 如果实例不存在，从rawSaves生成
       const rawSave = rawSaves.value.get(currentSaveName.value);
       if (rawSave) {
-        // 异步生成实例，这里我们直接返回null，让调用者处理
-        // 实际使用中应该有专门的机制来处理这种情况
-        console.warn(`Instance for save ${currentSaveName.value} not found, need to generate from raw data`);
+        // 某些场景（例如发布后首次导入）只写入了 rawSaves，但实例尚未生成。
+        // 这里做一个“兜底同步生成”，避免 UI/计算链路拿到 null。
+        // 注意：这会触发异步流程，因此调用方仍应处理短暂的 null。
+        console.warn(`Instance for save ${currentSaveName.value} not found, generating from raw data...`);
+        isLoading.value = true;
+        SaveData.fromZod(currentSaveName.value, normalizeZodData(rawSave), dataLoaderService)
+          .then((inst) => {
+            saves.value.set(currentSaveName.value!, inst);
+          })
+          .catch((err) => {
+            console.error(`Failed to generate instance for save ${currentSaveName.value}:`, err);
+            error.value = err instanceof Error ? err.message : String(err);
+          })
+          .finally(() => {
+            isLoading.value = false;
+          });
       }
     }
     return save ?? null;
@@ -141,6 +154,22 @@ export const useSaveStore = defineStore('save', () => {
       if (currentSave) {
         currentSaveName.value = currentSave;
       }
+
+      // 没有任何存档时，自动创建一个默认空存档（发布后首次使用/首次导入的兜底）
+      if (rawSaves.value.size === 0) {
+        const defaultName = '默认存档';
+        const newSave = new SaveData(defaultName);
+        saves.value.set(defaultName, newSave);
+        rawSaves.value.set(defaultName, newSave.toZodData());
+        currentSaveName.value = defaultName;
+        saveToStorage();
+        return;
+      }
+
+      // 有存档但没有当前存档指针时，默认选择第一个
+      if (!currentSaveName.value) {
+        currentSaveName.value = Array.from(rawSaves.value.keys())[0] ?? null;
+      }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error';
       console.error('Failed to load saves from storage:', err);
@@ -195,6 +224,12 @@ export const useSaveStore = defineStore('save', () => {
    */
   function deleteSave(name: string): boolean {
     if (!saves.value.has(name) && !rawSaves.value.has(name)) {
+      return false;
+    }
+
+    // 永远保留最后一个存档
+    if (rawSaves.value.size <= 1) {
+      console.warn('Cannot delete the last remaining save');
       return false;
     }
 
