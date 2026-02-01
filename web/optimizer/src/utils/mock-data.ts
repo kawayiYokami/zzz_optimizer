@@ -87,7 +87,6 @@ export const MockData = {
             new BuffTarget(),
             3,
             'linear',
-            true,
             'buff-1',
             '苍角：战旗',
             '攻击力提升25%，持续10秒。'
