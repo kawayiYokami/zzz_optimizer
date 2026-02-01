@@ -595,31 +595,31 @@ const onBattleEnvChange = () => {
 const handleEquipBuild = async (build: OptimizationBuild) => {
   if (!targetAgentId.value) return;
 
-  console.log('[handleEquipBuild] build.discIds:', build.discIds);
+  
 
   try {
     let successCount = 0;
     // 遍历6个位置装备驱动盘
     build.discIds.forEach((discId, index) => {
-      console.log(`[handleEquipBuild] 位置 ${index + 1}: discId = ${discId}`);
+      
       if (discId && saveStore.equipDriveDisk(targetAgentId.value, discId)) {
         successCount++;
-        console.log(`[handleEquipBuild] 位置 ${index + 1} 装备成功`);
+        
       } else {
-        console.log(`[handleEquipBuild] 位置 ${index + 1} 装备失败`);
+        
       }
     });
 
-    // 重新加载队伍以更新 BattleService 的缓存
+    // 装备会影响套装相关 Buff 候选；这里重新 setTeam 但采用差值同步，不再导致“全部重置”
     if (currentTeam.value) {
-      console.log('[handleEquipBuild] 重新加载队伍以更新属性缓存');
       await battleService.setTeam(currentTeam.value);
+      buffsVersion.value++;
     }
 
     // BattleInfoCard 已精简，内部无 refresh 逻辑
 
     // 显示成功提示 (这里简单用 alert 或者 console，实际项目可能有 Toast 组件)
-    console.log(`装备已更新，成功装备 ${successCount} 个驱动盘`);
+    
   } catch (e) {
     console.error('装备失败:', e);
     alert('装备失败，请重试');

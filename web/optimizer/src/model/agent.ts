@@ -5,11 +5,6 @@
 import { Rarity, ElementType, WeaponType, PropertyType, propIdToPropertyType, getPropertyCnName } from './base';
 import { PropertyCollection } from './property-collection';
 
-// 命破角色ID列表
-const PENETRATION_AGENT_IDS = [
-  '1371', // 星见雅 Miyabi
-];
-
 // 特殊异常配置（如烈霜）
 const SPECIAL_ANOMALY_AGENTS: Record<string, { element: string; ratio: number }> = {
   '1091': { element: 'lieshuang', ratio: 15.0 }, // 星见雅 烈霜 1500%
@@ -379,7 +374,22 @@ export class Agent {
   getCharacterCombatStats(): PropertyCollection {
     const equipmentStats = this.getCharacterEquipmentStats();
     // 直接返回toCombatStats()的结果，它已经是计算好的战斗属性PropertyCollection
-    return equipmentStats.toCombatStats();
+    const stats = equipmentStats.toCombatStats();
+
+    // 命破角色：UI 展示口径特殊处理
+    // - 穿透/穿透率展示为 0（游戏内常出现“虚假的穿透值”，这里直接清空）
+    // - 贯穿值 = (快照后的生命 * 0.1) + (快照后的攻击力 * 0.3)
+    //   说明：这里使用 toCombatStats() 生成的“局内基础面板快照”作为输入。
+    if (this.isPenetrationAgent()) {
+      stats.in_combat.set(PropertyType.PEN, 0);
+      stats.in_combat.set(PropertyType.PEN_, 0);
+
+      const hpBase = stats.getInCombat(PropertyType.HP_BASE, 0);
+      const atkBase = stats.getInCombat(PropertyType.ATK_BASE, 0);
+      stats.in_combat.set(PropertyType.SHEER_FORCE, hpBase * 0.1 + atkBase * 0.3);
+    }
+
+    return stats;
   }
 
   // 兼容层：保留原有方法，指向新方法
@@ -799,9 +809,6 @@ export class Agent {
     const position = disk.position;
     const index = position - 1;
 
-    console.log(`[Agent] 装备驱动盘: diskId=${diskId}, position=${position}, index=${index}`);
-    console.log(`[Agent] 装备前 equipped_drive_disks:`, this.equipped_drive_disks);
-
     // 先卸下当前驱动盘（如果有）
     const currentDiskId = this.equipped_drive_disks[index];
     if (currentDiskId && this._driveDisks) {
@@ -816,8 +823,6 @@ export class Agent {
 
     // 设置驱动盘的装备者
     disk.equipped_agent = this.id;
-
-    console.log(`[Agent] 装备后 equipped_drive_disks:`, this.equipped_drive_disks);
 
     this.clearPropertyCache();
   }
@@ -989,7 +994,7 @@ export class Agent {
    * 是否为命破角色（使用贯穿伤害）
    */
   isPenetrationAgent(): boolean {
-    return PENETRATION_AGENT_IDS.includes(this.game_id);
+    return this.weapon_type === WeaponType.RUPTURE;
   }
 
   /**

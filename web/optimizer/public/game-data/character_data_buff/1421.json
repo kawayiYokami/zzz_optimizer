@@ -38,7 +38,7 @@
         "out_of_combat_stats": {},
         "conversion": {
             "from_property": "ATK_BASE",
-            "to_property": "PENETRATION_",
+            "to_property": "SHEER_FORCE",
             "conversion_ratio": 0.18,
             "max_value": 540
         },

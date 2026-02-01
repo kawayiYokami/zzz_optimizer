@@ -39,7 +39,15 @@
         </div>
 
         <!-- Right side (navbar-end) - Theme Toggle -->
-        <div class="navbar-end">
+        <div class="navbar-end gap-1">
+          <button
+            class="btn btn-ghost btn-circle hidden md:inline-flex"
+            @click="showAnnouncement = true"
+            aria-label="公告"
+            title="公告"
+          >
+            <i class="ri-notification-3-line text-base"></i>
+          </button>
           <a
             class="btn btn-ghost btn-circle"
             href="https://github.com/kawayiYokami/zzz_optimizer/tree/master"
@@ -64,6 +72,21 @@
         </div>
      </div>
 
+     <dialog class="modal" :class="{ 'modal-open': showAnnouncement }">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">公告</h3>
+        <div class="mt-3 text-sm text-base-content/80 leading-relaxed">
+          角色 Buff 数据仍在持续校对与补全中。如果你发现某个角色的 Buff 缺失/数值不对/触发条件不对，欢迎在 GitHub 提交 issue 或 PR。
+        </div>
+        <div class="modal-action">
+          <button class="btn" @click="showAnnouncement = false">关闭</button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop" @submit.prevent="showAnnouncement = false">
+        <button aria-label="close">close</button>
+      </form>
+    </dialog>
+
      <!-- Content with KeepAlive -->
     <div class="flex-1 overflow-y-auto">
       <KeepAlive include="OptimizerView,CharacterView">
@@ -87,8 +110,10 @@ import NavigationButton from './components/common/NavigationButton.vue';
 declare const __DEV__: boolean;
 const isDev = __DEV__;
 
+const VIEW_STORAGE_KEY = 'zzz_optimizer.currentView';
 const currentView = ref('optimizer'); // 默认进入优化器
 const isDark = ref(false);
+const showAnnouncement = ref(false);
 
 const activeComponent = computed(() => {
   if (currentView.value === 'gallery') return __DEV__ ? ComponentGallery : OptimizerView;
@@ -119,6 +144,9 @@ function updateTheme() {
 
 // 初始化主题
 onMounted(() => {
+  const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
+  if (savedView) currentView.value = savedView;
+
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme) {
     isDark.value = savedTheme === 'halloween';
@@ -127,5 +155,9 @@ onMounted(() => {
     isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
   updateTheme();
+});
+
+watch(currentView, (v) => {
+  localStorage.setItem(VIEW_STORAGE_KEY, v);
 });
 </script>

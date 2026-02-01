@@ -103,6 +103,7 @@ const weaponTypes = [
   { value: WeaponType.ANOMALY, label: '异常' },
   { value: WeaponType.SUPPORT, label: '支援' },
   { value: WeaponType.DEFENSE, label: '防护' },
+  { value: WeaponType.RUPTURE, label: '命破' },
 ];
 
 // 计算属性

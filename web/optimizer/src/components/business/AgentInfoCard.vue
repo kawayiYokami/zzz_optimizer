@@ -237,6 +237,8 @@ const props = defineProps<{
   agent: Agent;
 }>();
 
+// (debug logs removed)
+
 const emit = defineEmits<{
   clickAvatar: [];
 }>();

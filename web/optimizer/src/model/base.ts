@@ -49,7 +49,7 @@ export enum WeaponType {
   ANOMALY = 3, // 异常
   SUPPORT = 4, // 支援
   DEFENSE = 5, // 防护
-  UNKNOWN_6 = 6, // 未知类型6（游戏新增）
+  RUPTURE = 6, // 命破
 }
 
 /**
@@ -61,7 +61,7 @@ export const WEAPON_CN_NAMES: Record<WeaponType, string> = {
   [WeaponType.ANOMALY]: "异常",
   [WeaponType.SUPPORT]: "支援",
   [WeaponType.DEFENSE]: "防护",
-  [WeaponType.UNKNOWN_6]: "未知",
+  [WeaponType.RUPTURE]: "命破",
 };
 
 /**
