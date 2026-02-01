@@ -19,7 +19,7 @@
               <NavigationButton label="音擎" icon="ri-sword-line" :is-active="currentView === 'wengines'" @click="currentView = 'wengines'" />
               <NavigationButton label="驱动盘" icon="ri-disc-line" :is-active="currentView === 'drive-disks'" @click="currentView = 'drive-disks'" />
               <NavigationButton label="存档" icon="ri-folder-3-line" :is-active="currentView === 'saves'" @click="currentView = 'saves'" />
-              <NavigationButton label="画廊" icon="ri-gallery-line" :is-active="currentView === 'gallery'" @click="currentView = 'gallery'" />
+              <NavigationButton v-if="isDev" label="画廊" icon="ri-gallery-line" :is-active="currentView === 'gallery'" @click="currentView = 'gallery'" />
             </ul>
           </div>
           <a class="btn btn-ghost normal-case text-xl font-bold">绝区零优化器</a>
@@ -34,7 +34,7 @@
             <NavigationButton label="音擎" icon="ri-sword-line" :is-active="currentView === 'wengines'" @click="currentView = 'wengines'" />
             <NavigationButton label="驱动盘" icon="ri-disc-line" :is-active="currentView === 'drive-disks'" @click="currentView = 'drive-disks'" />
             <NavigationButton label="存档" icon="ri-folder-3-line" :is-active="currentView === 'saves'" @click="currentView = 'saves'" />
-            <NavigationButton label="画廊" icon="ri-gallery-line" :is-active="currentView === 'gallery'" @click="currentView = 'gallery'" />
+            <NavigationButton v-if="isDev" label="画廊" icon="ri-gallery-line" :is-active="currentView === 'gallery'" @click="currentView = 'gallery'" />
           </ul>
         </div>
 
@@ -72,11 +72,14 @@ import WEngineView from './views/WEngineView.vue';
 import SaveManagementView from './views/SaveManagementView.vue';
 import NavigationButton from './components/common/NavigationButton.vue';
 
+declare const __DEV__: boolean;
+const isDev = __DEV__;
+
 const currentView = ref('optimizer'); // 默认进入优化器
 const isDark = ref(false);
 
 const activeComponent = computed(() => {
-  if (currentView.value === 'gallery') return ComponentGallery;
+  if (currentView.value === 'gallery') return __DEV__ ? ComponentGallery : OptimizerView;
   if (currentView.value === 'characters') return CharacterView;
   if (currentView.value === 'teams') return TeamView;
   if (currentView.value === 'wengines') return WEngineView;

@@ -39,6 +39,7 @@
               </div>
               <div class="flex items-center gap-2">
                 <button
+                  v-if="isDev"
                   class="btn btn-ghost btn-sm"
                   @click="toggleDebug(index)"
                 >
@@ -84,6 +85,9 @@ import type { OptimizationBuild } from '../../optimizer/services';
 import { useSaveStore } from '../../stores/save.store';
 import DriveDiskCard from './DriveDiskCard.vue';
 import { ref } from 'vue';
+
+declare const __DEV__: boolean;
+const isDev = __DEV__;
 
 const props = defineProps<{
   results: OptimizationBuild[];
