@@ -57,7 +57,7 @@
       "target_enemy": true
     },
     "in_combat_stats": {
-      "ELECTRIC_SHOCK_DMG_INC_": 0.18
+      "SHOCK_DMG_": 0.18
     },
     "out_of_combat_stats": {},
     "conversion": null,
