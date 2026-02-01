@@ -33,7 +33,7 @@
                 <div class="flex flex-wrap gap-2 justify-end">
                   <div class="badge badge-primary badge-lg">伤害: {{ calculateDamage(seg, group.level) }}%</div>
                   <div class="badge badge-secondary badge-lg">失衡: {{ calculateStun(seg, group.level) }}%</div>
-                  <div v-if="seg.energyRecovery > 0" class="badge badge-info badge-lg">能量: {{ seg.energyRecovery }}</div>
+                  <div v-if="seg.spRecovery > 0" class="badge badge-info badge-lg">能量: {{ seg.spRecovery }}</div>
                   <div v-if="seg.anomalyBuildup > 0" class="badge badge-accent badge-lg">积蓄: {{ seg.anomalyBuildup }}</div>
                 </div>
               </div>
