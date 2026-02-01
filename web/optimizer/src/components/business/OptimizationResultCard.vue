@@ -31,9 +31,15 @@
               <div class="flex items-center gap-4">
                 <div class="badge badge-lg badge-primary font-mono">#{{ index + 1 }}</div>
                 <div>
-                  <div class="font-mono font-bold text-2xl text-primary">{{ Math.round(build.damage).toLocaleString() }}</div>
-                  <div v-if="currentDamage > 0" class="text-sm font-mono" :class="getComparisonClass(build.damage)">
-                    {{ getComparisonText(build.damage) }}
+                  <div class="flex items-baseline gap-2">
+                    <div class="font-mono font-bold text-2xl text-primary">{{ Math.round(build.damage).toLocaleString() }}</div>
+                    <div
+                      v-if="objective === 'skill' && getComparisonInlineText(build.damage)"
+                      class="font-mono font-bold text-2xl"
+                      :class="getComparisonClass(build.damage)"
+                    >
+                      ({{ getComparisonInlineText(build.damage) }})
+                    </div>
                   </div>
                 </div>
               </div>
@@ -94,6 +100,7 @@ const props = defineProps<{
   isRunning: boolean;
   totalTime: number;
   currentDamage: number;
+  objective: 'skill' | 'atk' | 'hp';
 }>();
 
 const emit = defineEmits<{
@@ -142,6 +149,12 @@ const getComparisonText = (damage: number) => {
   const percent = (diff / props.currentDamage) * 100;
   if (diff > 0) return `+${percent.toFixed(1)}%`;
   if (diff < 0) return `${percent.toFixed(1)}%`;
-  return '持平';
+  return '0.0%';
+};
+
+const getComparisonInlineText = (damage: number) => {
+  // 结果卡片希望展示为：1,115,707 (+30.0%)
+  // 仅当 objective === 'skill' 才会调用
+  return getComparisonText(damage);
 };
 </script>

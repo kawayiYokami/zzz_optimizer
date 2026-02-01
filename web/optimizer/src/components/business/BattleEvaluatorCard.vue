@@ -309,6 +309,10 @@ const props = defineProps<{
   buffStatusMap?: Map<string, { isActive: boolean }>;
 }>();
 
+const emit = defineEmits<{
+  (e: 'damage-change', damage: number): void;
+}>();
+
 interface DebugData {
   agentName: string;
   atkBase: number;
@@ -665,6 +669,9 @@ const runDebugCalc = () => {
     _finalStats3: finalStats3,
     snapshots: fullResult.snapshots,
   };
+
+  // 将 battle 卡片实际算出的 worker 口径伤害上报给父组件（用于优化结果提升率对比）
+  emit('damage-change', fullResult.damage);
 };
 
 watch([() => props.agent, () => props.enemy, () => props.skillRatio, () => props.uiDamage, () => props.enemySerialized, () => props.externalBuffs, () => props.buffStatusMap, () => props.buffsVersion], () => {
