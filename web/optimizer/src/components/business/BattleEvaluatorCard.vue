@@ -304,6 +304,7 @@ const props = defineProps<{
   skillName?: string;
   skillType?: string;
   uiDamage: number;
+  buffsVersion?: number;
   externalBuffs?: Buff[];
   buffStatusMap?: Map<string, { isActive: boolean }>;
 }>();
@@ -448,7 +449,6 @@ const mergedBuffCard = computed(() => {
     description: '包含角色天赋、音擎、套装等所有已激活BUFF的属性加成',
     source: 0,
     max_stacks: 1,
-    is_active: true,
     out_of_combat_stats: new Map(),
     in_combat_stats: merged,
     conversion: null,
@@ -488,7 +488,6 @@ const targetFourPieceBuffCard = computed(() => {
     description: 'Worker 初始化阶段预合并到 mergedBuff 合并表。',
     source: 0,
     max_stacks: 1,
-    is_active: true,
     out_of_combat_stats: new Map(),
     in_combat_stats: merged,
     conversion: null,
@@ -578,15 +577,11 @@ const runDebugCalc = () => {
   const anomalyProf = baseStats[PROP_IDX.ANOM_PROF];
   const penRate = baseStats[PROP_IDX.PEN_];
 
-  const { baseDirectDamage: finalAtkAfterConv, critZone, dmgBonus: dmgBonusZone } = fullResult.multipliers;
+  // 直接使用优化器返回的乘区值（已在 createFullResult 中计算好）
+  const { baseDirectDamage, baseAnomalyDamage, baseDisorderDamage, baseLieshuangDamage, critZone, dmgBonus: dmgBonusZone } = fullResult.multipliers;
+  const finalAtkAfterConv = baseDirectDamage / props.skillRatio;  // 反推 ATK（用于其他展示）
   const finalAtkManual = atkBase * (1 + atkPercent) + atk;
-  const baseDamage = finalAtkAfterConv * props.skillRatio;
-  const baseAnomalyDamage = finalAtkAfterConv * (request.precomputed.anomalyTotalRatioAtT ?? 0);
-  const baseDisorderDamage = finalAtkAfterConv * (request.precomputed.disorderTotalRatioAtT ?? 0);
-  const baseLieshuangDamage =
-    request.precomputed.specialAnomalyConfig?.element === 'lieshuang'
-      ? finalAtkAfterConv * (request.precomputed.specialAnomalyConfig?.ratio ?? 0)
-      : undefined;
+  const baseDamage = baseDirectDamage;  // 现在 baseDirectDamage 已经是 ATK * ratio
 
   const defMult = fullResult.defMult ?? 1;
   const fixed = evaluator.getFixedMultipliersSnapshot?.();
@@ -672,7 +667,7 @@ const runDebugCalc = () => {
   };
 };
 
-watch([() => props.agent, () => props.enemy, () => props.skillRatio, () => props.uiDamage, () => props.enemySerialized], () => {
+watch([() => props.agent, () => props.enemy, () => props.skillRatio, () => props.uiDamage, () => props.enemySerialized, () => props.externalBuffs, () => props.buffStatusMap, () => props.buffsVersion], () => {
   runDebugCalc();
 }, { immediate: true });
 

@@ -70,8 +70,6 @@ export interface ZodTeamData {
     constraints: OptimizationConstraints;
     /** 选中的技能键列表 */
     selectedSkillKeys: string[];
-    /** 禁用的Buff ID列表（黑名单模式） */
-    disabledBuffIds: string[];
     /** 选中的敌人ID */
     selectedEnemyId: string;
     /** 最后更新时间 */

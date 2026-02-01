@@ -12,8 +12,6 @@
         
         <div class="flex flex-wrap gap-1">
             <span class="badge badge-xs badge-ghost text-[10px]">{{ formatSource(buff.source) }}</span>
-            <span v-if="buff.is_active" class="badge badge-xs badge-success text-[10px]">生效中</span>
-            <span v-else class="badge badge-xs badge-ghost opacity-50 text-[10px]">未生效</span>
         </div>
 
         <!-- Stats Preview -->

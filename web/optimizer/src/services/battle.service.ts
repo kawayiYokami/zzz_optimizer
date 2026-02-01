@@ -160,7 +160,7 @@ export class BattleService {
           frontAgentName: this.team.frontAgent.name_cn,
           mergedProperties: this.mergeCombatProperties(),
           finalStats: this.convertToFinalStats(),
-          activeBuffs: this.getActiveBuffs(),
+          activeBuffs: [],
           timestamp: Date.now()
         };
       }
@@ -190,15 +190,12 @@ export class BattleService {
         frontAgentName: this.team.frontAgent.name_cn,
         mergedProperties: this.mergeCombatProperties(),
         finalStats: this.convertToFinalStats(),
-        activeBuffs: this.getActiveBuffs(),
+        activeBuffs: [],
         timestamp: Date.now()
       };
 
       // 验证激活buff数量一致性
-      const generatedActiveBuffs = this.getActiveBuffs();
-      if (generatedActiveBuffs.length !== this.finalPropertySnapshot.activeBuffs.length) {
-        throw new Error('激活buff数量不一致');
-      }
+      // legacy: activeBuffs 仅用于旧调试快照，已废弃
 
     } catch (error) {
       console.error('队伍更换失败:', error);
@@ -465,61 +462,10 @@ export class BattleService {
   }
 
   /**
-   * 获取Buff的开关状态
-   */
-  getBuffIsActive(buffId: string): boolean {
-    return this.buffStatusMap.get(buffId)?.isActive || false;
-  }
-
-  /**
-   * 获取当前激活的Buff列表
-   */
-  getActiveBuffs(): Buff[] {
-    const allBuffs = [...this.characterBuffs, ...this.manualBuffs];
-    return allBuffs.filter(buff => {
-      const status = this.buffStatusMap.get(buff.id);
-      return status?.isActive === true;
-    });
-  }
-
-  /**
-   * 获取所有Buff列表
+   * 获取所有 Buff 列表（不含开关语义，仅用于同步/初始化）
    */
   getAllBuffs(): Buff[] {
     return [...this.characterBuffs, ...this.manualBuffs];
-  }
-
-  /**
-   * 获取前台角色的Buff列表（用于优化器）
-   * @param includeFourPiece 是否包含四件套buff
-   */
-  getFrontAgentBuffs(includeFourPiece: boolean = false): Buff[] {
-    if (!this.team || !this.team.frontAgent) {
-      return [...this.manualBuffs];
-    }
-
-    // 直接从前台角色加载所有 buff（包含角色、音擎、驱动盘）
-    const allBuffs = this.team.frontAgent.getAllBuffsSync();
-
-    // 合并手动添加的 buff
-    const combinedBuffs = [...allBuffs, ...this.manualBuffs];
-
-    // 过滤：
-    // - 自身来源：保留对自己生效 or 对敌人生效（debuff 影响乘区/伤害）
-    const filteredBuffs = combinedBuffs.filter(buff => {
-      // 手动添加的 buff 全部保留
-      if (this.manualBuffs.includes(buff)) return true;
-
-      // 角色 buff：保留对自己生效 or 对敌人生效
-      return buff.target.target_self || buff.target.target_enemy;
-    });
-
-    // 如果不包含四件套 buff，则过滤掉
-    if (!includeFourPiece) {
-      return filteredBuffs.filter(buff => buff.source !== BuffSource.DRIVE_DISK_4PC);
-    }
-
-    return filteredBuffs;
   }
 
   /**
@@ -529,7 +475,7 @@ export class BattleService {
    * - 自身来源：保留对自己生效 或 对敌人生效
    * - 队友来源：保留对队友生效 或 对敌人生效
    *
-   * 注意：这里只负责“配置列表口径”，不负责最终是否启用（启用由 buffStatusMap/disabledBuffIds 控制）。
+   * 注意：这里只负责“配置列表口径”，不负责最终是否启用（启用由 buffStatusMap 控制）。
    */
   getOptimizerConfigBuffs(options?: { includeFourPiece?: boolean }): { self: Buff[]; teammate: Buff[] } {
     // 优化器口径：四件套由“目标套装”强制管理，不进入可选 Buff 列表
@@ -547,8 +493,6 @@ export class BattleService {
       if (this.manualBuffs.includes(buff)) return true;
       return buff.target.target_self || buff.target.target_enemy;
     })
-      // Step 1: buff 开关过滤（BattleService 唯一口径）
-      .filter(buff => buff.is_active)
       // Step 2: 去掉四件套（可选）
       .filter(buff => includeFourPiece || buff.source !== BuffSource.DRIVE_DISK_4PC);
 
@@ -566,9 +510,6 @@ export class BattleService {
         // Step 2: 去掉四件套（可选）
         if (!includeFourPiece && buff.source === BuffSource.DRIVE_DISK_4PC) continue;
 
-        // Step 1: buff 开关过滤（BattleService 唯一口径）
-        if (!buff.is_active) continue;
-
         // Step 3: 队友转换类替换为普通 buff（基于队友快照1结算）
         if (buff.conversion) {
           const converted = this.convertTeammateConversionBuffToNormalBuff(agent, buff);
@@ -584,6 +525,51 @@ export class BattleService {
   }
 
   /**
+   * 获取“优化器配置层”的已选中 Buff（用于 UI 高亮/已激活列表）
+   * - 只按 buffStatusMap 过滤
+   * - 不做四件套过滤、不做队友转换替换（这些属于计算口径）
+   */
+  getOptimizerConfigActiveBuffs(options?: { includeFourPiece?: boolean }): { self: Buff[]; teammate: Buff[] } {
+    const { self, teammate } = this.getOptimizerConfigBuffs(options);
+    const isActive = (buffId: string) => this.buffStatusMap.get(buffId)?.isActive === true;
+    return {
+      self: self.filter(b => isActive(b.id)),
+      teammate: teammate.filter(b => isActive(b.id)),
+    };
+  }
+
+  /**
+   * 获取“优化器计算层”最终使用的 Buff（用于 OptimizerContext/Worker）
+   *
+   * 规则（你确认的口径）：
+   * 1) 只按 buffStatusMap 过滤（玩家选中）
+   * 2) 去掉四件套普通 Buff（4pc 由目标套装机制统一处理）
+   * 3) 队友转换类 Buff：基于队友快照1结算为普通 Buff（替换）
+   */
+  getOptimizerEvaluatorBuffs(): { self: Buff[]; teammate: Buff[] } {
+    const isActive = (buffId: string) => this.buffStatusMap.get(buffId)?.isActive === true;
+    const { self, teammate } = this.getOptimizerConfigBuffs({ includeFourPiece: true });
+
+    const selfFiltered = self
+      .filter(b => isActive(b.id))
+      .filter(b => b.source !== BuffSource.DRIVE_DISK_4PC);
+
+    const teammateFiltered: Buff[] = [];
+    for (const buff of teammate) {
+      if (!isActive(buff.id)) continue;
+      if (buff.source === BuffSource.DRIVE_DISK_4PC) continue;
+      // teammate 列表可能已经包含“队友转换替换”的普通 buff；这里再保险处理一次
+      if (buff.conversion) {
+        // 理论上 teammate 列表里不应存在 conversion（getOptimizerConfigBuffs 已替换），但保持防御性
+        continue;
+      }
+      teammateFiltered.push(buff);
+    }
+
+    return { self: selfFiltered, teammate: teammateFiltered };
+  }
+
+  /**
    * 将“队友提供的转换类 Buff”基于队友快照1结算，并降级为普通 Buff。
    *
    * 说明：
@@ -592,7 +578,7 @@ export class BattleService {
    * - 保留原 Buff 的开关状态/来源/目标等信息，但移除 conversion 规则
    */
   private convertTeammateConversionBuffToNormalBuff(teammate: Agent, buff: Buff): Buff | null {
-    if (!buff.is_active || !buff.conversion) return null;
+    if (!buff.conversion) return null;
 
     // 1) 基于队友快照1拿“源属性值”
     const teammateSnapshot1 = teammate.getSelfProperties().toCombatStats();
@@ -630,7 +616,6 @@ export class BattleService {
       target,                // target
       buff.max_stacks,       // maxStacks
       buff.stack_mode,       // stackMode
-      buff.is_active,        // isActive
       buff.id,               // id
       `${buff.name}（队友结算）`, // name
       buff.description,      // description
@@ -638,18 +623,7 @@ export class BattleService {
     );
   }
 
-  getOptimizerAllBuffs(options?: { includeFourPiece?: boolean }): Buff[] {
-    const { self, teammate } = this.getOptimizerConfigBuffs(options);
-    const all = [...self, ...teammate];
-    return all;
-  }
-
-  /**
-   * 获取角色Buff列表
-   */
-  getCharacterBuffs(): Buff[] {
-    return this.characterBuffs;
-  }
+  // getOptimizerAllBuffs removed: use getOptimizerConfigBuffs() return values directly
 
   /**
    * 获取装备详情
@@ -724,13 +698,6 @@ export class BattleService {
     }
 
     return details;
-  }
-
-  /**
-   * 获取手动Buff列表
-   */
-  getManualBuffs(): Buff[] {
-    return this.manualBuffs;
   }
 
   /**
@@ -964,8 +931,9 @@ export class BattleService {
     }
 
     const combatStats = this.team.frontAgent.getCharacterCombatStats();
-    const activeBuffs = this.getActiveBuffs();
-    const mergedProperties = this.applyBuffs(activeBuffs, combatStats);
+    // legacy: BattleService 内部的“activeBuffs 口径”已废弃（容易与优化器/配置层混淆）。
+    // 当前战斗/优化计算应统一通过 getOptimizerEvaluatorBuffs() 产生的 Buff 列表驱动。
+    const mergedProperties = this.applyBuffs([], combatStats);
 
     this.mergedInCombatProperties = mergedProperties;
     return mergedProperties;
@@ -1042,7 +1010,7 @@ export class BattleService {
       character_buff_count: this.characterBuffs.length,
       manual_buff_count: this.manualBuffs.length,
       total_buff_count: this.characterBuffs.length + this.manualBuffs.length,
-      active_buff_count: this.getActiveBuffs().length,
+      active_buff_count: 0,
       back_agent_count: this.team ? this.team.backAgents.length : 0,
     };
   }
@@ -1085,7 +1053,7 @@ export class BattleService {
     // Buff列表
     const allBuffs = [...this.characterBuffs, ...this.manualBuffs];
     if (allBuffs.length > 0) {
-      lines.push(`${prefix}【Buff】(${allBuffs.length}个，激活${this.getActiveBuffs().length}个)`);
+      lines.push(`${prefix}【Buff】(${allBuffs.length}个)`);
 
       // 角色Buff
       if (this.characterBuffs.length > 0) {
@@ -1141,17 +1109,10 @@ export class BattleService {
   }
 
   /**
-   * 获取所有Buff列表
-   */
-  getBuffs(): Buff[] {
-    return [...this.characterBuffs, ...this.manualBuffs];
-  }
-
-  /**
-   * 获取所有Buff信息列表（包含开关状态）
+   * 获取所有 Buff 信息列表（包含开关状态）
    */
   getBuffInfos(): BuffInfo[] {
-    return this.getBuffs().map(buff => {
+    return this.getAllBuffs().map(buff => {
       // 获取buff状态
       const status = this.getBuffStatus(buff.id);
 

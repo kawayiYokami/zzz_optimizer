@@ -96,9 +96,6 @@ export class Buff {
   max_stacks: number = 1;
   stack_mode: 'linear' | 'full_only' = 'linear';
 
-  // 生效状态
-  is_active: boolean = true;
-
   constructor(
     source: BuffSource,
     inCombatStats?: Map<PropertyType, number> | Record<PropertyType, number>,
@@ -107,7 +104,6 @@ export class Buff {
     target?: BuffTarget,
     maxStacks: number = 1,
     stackMode: 'linear' | 'full_only' = 'linear',
-    isActive: boolean = true,
     id: string = '',
     name: string = '',
     description: string = '',
@@ -128,7 +124,6 @@ export class Buff {
     this.trigger_conditions = triggerConditions;
     this.max_stacks = maxStacks;
     this.stack_mode = stackMode;
-    this.is_active = isActive;
   }
 
   // === 辅助方法 ===
@@ -160,7 +155,7 @@ export class Buff {
    * @returns 应用后的属性集（新实例）
    */
   applyInCombatStats(props: PropertyCollection): PropertyCollection {
-    if (!this.is_active || this.in_combat_stats.size === 0) {
+    if (this.in_combat_stats.size === 0) {
       return props;
     }
 
@@ -183,7 +178,7 @@ export class Buff {
    * @returns 应用后的属性集（新实例）
    */
   applyConversionStats(props: PropertyCollection): PropertyCollection {
-    if (!this.is_active || !this.conversion) {
+    if (!this.conversion) {
       return props;
     }
 
@@ -245,8 +240,6 @@ export class Buff {
 
   /** 计算叠层后的属性值 */
   calculateValue(currentStacks: number = 1): Map<PropertyType, number> {
-    if (!this.is_active) return new Map();
-
     const stats = new Map<PropertyType, number>();
     
     if (this.stack_mode === 'linear') {
@@ -319,7 +312,6 @@ export class Buff {
       target,
       data.max_stacks ?? 1,
       data.stack_mode ?? 'linear',
-      data.is_active ?? true,
       data.id ?? '',
       data.name ?? '',
       data.description ?? '',
@@ -368,7 +360,6 @@ export class Buff {
       trigger_conditions: this.trigger_conditions,
       max_stacks: this.max_stacks,
       stack_mode: this.stack_mode,
-      is_active: this.is_active,
     };
   }
 
@@ -428,7 +419,6 @@ export class ConversionBuff extends Buff {
     target?: BuffTarget,
     maxStacks: number = 1,
     stackMode: 'linear' | 'full_only' = 'linear',
-    isActive: boolean = true,
     id: string = '',
     name: string = '',
     description: string = '',
@@ -442,7 +432,6 @@ export class ConversionBuff extends Buff {
       target,
       maxStacks,
       stackMode,
-      isActive,
       id,
       name,
       description,
@@ -482,7 +471,6 @@ export class ConversionBuff extends Buff {
       target,
       data.max_stacks ?? 1,
       data.stack_mode ?? 'linear',
-      data.is_active ?? true,
       data.id ?? '',
       data.name ?? '',
       data.description ?? '',

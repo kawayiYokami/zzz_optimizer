@@ -81,13 +81,14 @@
             :weapon="equippedWeapon"
             :enemy="selectedEnemy"
             :key="`battle_eval_${battleEnvVersion}`"
+            :buffs-version="buffsVersion"
             :discs="saveStore.driveDisks"
             :skill-ratio="selectedSkills[0]?.defaultRatio || 1"
             :skill-anomaly="selectedSkills[0]?.defaultAnomaly || 0"
             :skill-name="selectedSkills[0]?.name || '未选择'"
             :skill-type="selectedSkills[0]?.type || 'normal'"
             :ui-damage="currentDamage"
-            :external-buffs="availableBuffs"
+            :external-buffs="[...evaluatorBuffs.self, ...evaluatorBuffs.teammate]"
             :buff-status-map="battleService.getBuffStatusMap()"
             :enemy-level="60"
             :is-stunned="battleService.getIsEnemyStunned()"
@@ -160,7 +161,6 @@ const debugCardRef = ref<InstanceType<typeof BattleEvaluatorCard> | null>(null);
 // Buff 配置相关
 const selectedEnemyId = ref('');  // 默认不选择敌人
 const battleEnvVersion = ref(0);
-const disabledBuffIds = ref<string[]>([]); // 存储被禁用的 Buff ID (黑名单模式)
 const buffsVersion = ref(0);  // 用于触发 Buff UI 更新
 const isLoadingConfig = ref(false);  // 防止加载配置时触发自动保存
 
@@ -356,7 +356,7 @@ const availableBuffs = computed(() => {
   buffsVersion.value; // 触发响应式依赖
   if (!currentTeam.value) return [];
   
-  // 合并前台角色buff和队友buff（统一由 battleService 提供，保证与战斗计算口径一致）
+  // 合并前台角色buff和队友buff（配置候选口径，不含“是否选中”语义）
   const { self: frontAgentBuffs, teammate: teammateBuffs } = battleService.getOptimizerConfigBuffs({ includeFourPiece: false });
   // (debug logs removed)
 
@@ -370,13 +370,23 @@ const availableBuffs = computed(() => {
 });
 
 const selectedBuffs = computed(() => {
-  // 黑名单模式：不在 disabledBuffIds 中的为选中
-  return availableBuffs.value.filter(buff => !disabledBuffIds.value.includes(buff.id));
+  buffsVersion.value; // BattleService 非响应式：用 version 驱动刷新
+  // UI “已选中/高亮”口径：只按 buffStatusMap 过滤（配置层）
+  const { self, teammate } = battleService.getOptimizerConfigActiveBuffs({ includeFourPiece: false });
+  return [...self, ...teammate];
+});
+
+// 计算口径：由 BattleService 产出最终“计算用 Buff 列表”
+const evaluatorBuffs = computed(() => {
+  buffsVersion.value; // BattleService 非响应式：用 version 驱动刷新
+  return battleService.getOptimizerEvaluatorBuffs();
 });
 
 const unselectedBuffs = computed(() => {
-  // 黑名单模式：在 disabledBuffIds 中的为未选中
-  return availableBuffs.value.filter(buff => disabledBuffIds.value.includes(buff.id));
+  buffsVersion.value; // BattleService 非响应式：用 version 驱动刷新
+  // UI “未选中” = 候选 - 已选中（按 buffStatusMap）
+  const activeIds = new Set(selectedBuffs.value.map(b => b.id));
+  return availableBuffs.value.filter(b => !activeIds.has(b.id));
 });
 
 // 从队伍加载配置
@@ -402,8 +412,17 @@ const loadTeamOptimizationConfig = (teamId: string) => {
     // 应用配置到界面
     constraints.value = config.constraints;
     selectedSkillKeys.value = config.selectedSkillKeys;
-    disabledBuffIds.value = config.disabledBuffIds;
     selectedEnemyId.value = config.selectedEnemyId;
+
+    // 恢复 Buff 开关：如果有 battleData.activeBuffs（单一真相），同步到 BattleService
+    const battle = saveStore.battleInstances?.find?.((b: any) => b.teamId === teamId);
+    const activeBuffs = battle?.activeBuffs as Record<string, boolean> | undefined;
+    if (activeBuffs) {
+      for (const [buffId, isActive] of Object.entries(activeBuffs)) {
+        battleService.updateBuffStatus(buffId, isActive);
+      }
+      buffsVersion.value++;
+    }
 
   } catch (e) {
     console.error('[Optimizer] Failed to load team config:', e);
@@ -418,7 +437,6 @@ const saveTeamOptimizationConfig = (teamId: string) => {
     const config = {
       constraints: constraints.value,
       selectedSkillKeys: selectedSkillKeys.value,
-      disabledBuffIds: disabledBuffIds.value,
       selectedEnemyId: selectedEnemyId.value,
       lastUpdated: new Date().toISOString(),
     };
@@ -496,16 +514,8 @@ const toggleSkill = (skillKey: string) => {
 };
 
 const toggleBuff = (buffId: string) => {
-  const index = disabledBuffIds.value.indexOf(buffId);
-  if (index >= 0) {
-    // 之前在黑名单中（未激活），现在移除（激活）
-    disabledBuffIds.value.splice(index, 1);
-    battleService.updateBuffStatus(buffId, true);
-  } else {
-    // 之前不在黑名单中（激活），现在添加（禁用）
-    disabledBuffIds.value.push(buffId);
-    battleService.updateBuffStatus(buffId, false);
-  }
+  const current = battleService.getBuffStatus(buffId)?.isActive === true;
+  battleService.updateBuffStatus(buffId, !current);
   buffsVersion.value++;
   // BattleInfoCard 已精简，内部无 refresh 逻辑
 };
@@ -525,17 +535,6 @@ const updateBattleService = async () => {
     // 保持之前的状态，不重置敌人状态
     // battleService.setEnemyStatus(false, false);
   }
-
-  // 同步 Buff 状态
-  // BattleService 默认全开，我们需要根据 disabledBuffIds 关闭对应的 Buff
-  const allBuffs = battleService.getAllBuffs();
-  allBuffs.forEach(buff => {
-    if (disabledBuffIds.value.includes(buff.id)) {
-      battleService.updateBuffStatus(buff.id, false);
-    } else {
-      battleService.updateBuffStatus(buff.id, true);
-    }
-  });
 
   // 刷新 Buff 列表
   buffsVersion.value++;
@@ -702,10 +701,10 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
     const skillParams = skills.map(skill => ({
       id: skill.key || 'default',
       name: skill.name || '默认技能',
-      element: ElementType[agent.element].toLowerCase(),  // 转换为字符串
+      element: agent.element,  // 直接传枚举值，不要转字符串
       ratio: skill.defaultRatio || 1,
       tags: [skill.type || 'normal'],
-      isPenetration: false,
+      isPenetration: agent.isPenetrationAgent?.() || false,
       anomalyBuildup: skill.defaultAnomaly || 0,
     }));
 
@@ -714,12 +713,13 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
       weapon,  // 角色已装备的武器
       skills: skillParams,
       enemy: battleService.getEnemy(),
+      enemySerialized: battleService.getSerializedEnemy(60),  // 传递序列化敌人数据，保持与 BattleEvaluatorCard 口径一致
       enemyLevel: 60,
       isStunned: battleService.getIsEnemyStunned(),
       hasCorruptionShield: battleService.getEnemyHasCorruptionShield(),
       discs: optimizedDiscs.value,  // 使用优化后的驱动盘
       constraints: constraints.value,
-      externalBuffs: selectedBuffs.value,
+      externalBuffs: [...evaluatorBuffs.value.self, ...evaluatorBuffs.value.teammate],
       buffStatusMap: battleService.getBuffStatusMap(),
       topN: 10,
       estimatedTotal: estimatedCombinations.value.total,  // 传入UI计算的有效组合数
@@ -790,7 +790,7 @@ onMounted(async () => {
 });
 
 // 监听配置变化并自动保存到当前队伍
-watch([constraints, selectedSkillKeys, disabledBuffIds, selectedEnemyId], () => {
+watch([constraints, selectedSkillKeys, selectedEnemyId], () => {
   if (selectedTeamId.value && !isLoadingConfig.value) {
     saveTeamOptimizationConfig(selectedTeamId.value);
   }

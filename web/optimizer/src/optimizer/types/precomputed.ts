@@ -129,6 +129,8 @@ export interface DiscData {
   effectiveScore: number;
   /** 套装 ID（用于2件套判断） */
   setId: string;
+  /** 套装索引（用于 Worker 热路径计数；由 OptimizerContext 预编码） */
+  setIdx: number;
   /** 是否为目标套装 */
   isTargetSet: boolean;
 }
@@ -267,6 +269,7 @@ export interface OptimizationBuildResult {
     direct: number;
     anomaly: number;
     disorder: number;
+    lieshuang?: number;
   };
   /** 伤害乘区（可变区） */
   multipliers: DamageMultipliers;

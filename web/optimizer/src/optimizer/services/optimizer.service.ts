@@ -102,7 +102,7 @@ export class OptimizerService {
 
     // 进度跟踪
     private fastWorkerResults: Map<number, OptimizationBuildResult[]> = new Map();
-    private fastWorkerStats: Map<number, { processed: number; pruned: number; timeMs: number }> = new Map();
+    private fastWorkerStats: Map<number, { processed: number; pruned: number; timeMs: number; profile?: any }> = new Map();
     private fastWorkerProgress: Map<number, number> = new Map();  // workerId -> processedCount
     private completedWorkers = 0;
     private startTime = 0;
@@ -397,8 +397,10 @@ export class OptimizerService {
         weapon: WEngine | null;  // 固定音擎（可选）
         skills: SkillParams[];  // 支持多个技能
         enemy: Enemy;
+        enemySerialized?: import('../types').SerializedEnemy;  // 序列化敌人数据（优先使用）
         enemyLevel?: number;
         isStunned?: boolean;
+        hasCorruptionShield?: boolean;  // 是否有秽盾（防御翻倍）
         discs: DriveDisk[];
         constraints: OptimizationConstraints;
         externalBuffs?: Buff[];
@@ -432,8 +434,10 @@ export class OptimizerService {
             weapon: options.weapon,
             skills: options.skills,
             enemy: options.enemy,
+            enemySerialized: options.enemySerialized,
             enemyLevel: options.enemyLevel,
             isStunned: options.isStunned,
+            hasCorruptionShield: options.hasCorruptionShield,
             discs: options.discs,
             constraints: options.constraints,
             externalBuffs: options.externalBuffs,
@@ -529,6 +533,7 @@ export class OptimizerService {
             processed: result.stats.totalProcessed,
             pruned: result.stats.prunedCount,
             timeMs: result.stats.timeMs,
+            profile: result.stats.profile,
         });
         this.completedWorkers++;
 
@@ -548,6 +553,11 @@ export class OptimizerService {
         const allBuilds: OptimizationBuildResult[] = [];
         let totalProcessed = 0;
         let totalPruned = 0;
+        let totalEvalCalls = 0;
+        let totalEvalTimeMs = 0;
+        let totalFullCalls = 0;
+        let totalFullTimeMs = 0;
+        let workersWithProfile = 0;
 
         for (const builds of this.fastWorkerResults.values()) {
             allBuilds.push(...builds);
@@ -555,6 +565,13 @@ export class OptimizerService {
         for (const stats of this.fastWorkerStats.values()) {
             totalProcessed += stats.processed;
             totalPruned += stats.pruned;
+            if (stats.profile) {
+                workersWithProfile++;
+                totalEvalCalls += stats.profile.evalCalls ?? 0;
+                totalEvalTimeMs += stats.profile.evalTimeMs ?? 0;
+                totalFullCalls += stats.profile.fullCalls ?? 0;
+                totalFullTimeMs += stats.profile.fullTimeMs ?? 0;
+            }
         }
 
         // 排序并取前 N 个
@@ -584,6 +601,21 @@ export class OptimizerService {
             totalTimeMs,
             averageSpeed: (totalProcessed + totalPruned) / (totalTimeMs / 1000),
         };
+
+        if (workersWithProfile > 0) {
+            // 仅一条日志：总计 + 均值（避免刷屏）
+            const avgEvalUs = totalEvalCalls > 0 ? (totalEvalTimeMs * 1000) / totalEvalCalls : 0;
+            const avgFullMs = totalFullCalls > 0 ? totalFullTimeMs / totalFullCalls : 0;
+            console.log('[FastOpt profile]', {
+                workers: this.fastWorkers.length,
+                totalEvalCalls,
+                totalEvalTimeMs: Number(totalEvalTimeMs.toFixed(1)),
+                avgEvalUs: Number(avgEvalUs.toFixed(2)),
+                totalFullCalls,
+                totalFullTimeMs: Number(totalFullTimeMs.toFixed(1)),
+                avgFullMs: Number(avgFullMs.toFixed(2)),
+            });
+        }
 
         if (this.callbacks.onComplete) {
             this.callbacks.onComplete(aggregatedResult);

@@ -47,7 +47,6 @@ export class PresetGenerator {
     return {
       constraints,
       selectedSkillKeys: [],
-      disabledBuffIds: [],
       selectedEnemyId: '',
       lastUpdated: new Date().toISOString(),
     };
@@ -76,7 +75,6 @@ export class PresetGenerator {
     return {
       constraints,
       selectedSkillKeys: [],
-      disabledBuffIds: [],
       selectedEnemyId: '',
       lastUpdated: new Date().toISOString(),
     };
