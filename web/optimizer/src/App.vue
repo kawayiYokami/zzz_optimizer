@@ -40,6 +40,18 @@
 
         <!-- Right side (navbar-end) - Theme Toggle -->
         <div class="navbar-end">
+          <a
+            class="btn btn-ghost btn-circle"
+            href="https://github.com/kawayiYokami/zzz_optimizer/tree/master"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="GitHub"
+            title="GitHub"
+          >
+            <svg viewBox="0 0 24 24" class="h-5 w-5 fill-current" aria-hidden="true">
+              <path d="M12 .5C5.73.5.75 5.68.75 12.1c0 5.14 3.32 9.5 7.93 11.04.58.11.79-.26.79-.57 0-.28-.01-1.02-.02-2-3.23.72-3.91-1.61-3.91-1.61-.53-1.38-1.29-1.75-1.29-1.75-1.06-.74.08-.73.08-.73 1.17.08 1.79 1.25 1.79 1.25 1.04 1.83 2.73 1.3 3.39.99.11-.77.41-1.3.74-1.6-2.58-.3-5.29-1.33-5.29-5.91 0-1.31.45-2.38 1.19-3.22-.12-.3-.52-1.53.11-3.18 0 0 .97-.32 3.18 1.23.92-.26 1.9-.39 2.88-.39.98 0 1.96.13 2.88.39 2.21-1.55 3.18-1.23 3.18-1.23.63 1.65.23 2.88.11 3.18.74.84 1.19 1.91 1.19 3.22 0 4.59-2.71 5.61-5.3 5.91.42.37.79 1.1.79 2.23 0 1.61-.01 2.9-.01 3.29 0 .31.21.69.8.57 4.61-1.54 7.92-5.9 7.92-11.04C23.25 5.68 18.27.5 12 .5z"/>
+            </svg>
+          </a>
           <label class="swap swap-rotate btn btn-ghost btn-circle">
             <input type="checkbox" :checked="isDark" @change="toggleTheme" />
             <svg class="swap-on h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
