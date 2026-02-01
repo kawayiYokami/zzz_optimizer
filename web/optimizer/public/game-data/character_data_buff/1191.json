@@ -91,7 +91,7 @@
       "target_self": true
     },
     "in_combat_stats": {
-      "ICE_DMG_PEN_": 0.1
+      "ICE_RES_IGN_": 0.1
     },
     "out_of_combat_stats": {},
     "conversion": null,

@@ -42,7 +42,7 @@
       "target_self": true
     },
     "in_combat_stats": {
-      "SPECIAL_DMG_": 0.15
+      "SPECIAL_ATK_DMG_": 0.15
     },
     "out_of_combat_stats": {},
     "conversion": null,
@@ -93,7 +93,7 @@
       "target_enemy": true
     },
     "in_combat_stats": {
-      "ADDL_ATK_DMG_RED_": 0.30
+      "ADDL_ATK_DMG_": 0.30
     },
     "out_of_combat_stats": {},
     "conversion": null,
