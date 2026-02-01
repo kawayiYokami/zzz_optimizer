@@ -34,6 +34,7 @@
             :estimated-combinations="estimatedCombinations"
             :can-start="canStart"
             :target-set-id="constraints.targetSetId"
+            :objective="constraints.objective"
             :optimized-discs="optimizedDiscs"
             :all-discs="saveStore.driveDisks"
             :constraints="constraints"
@@ -46,6 +47,7 @@
             @start-optimization="startOptimization"
             @cancel-optimization="cancelOptimization"
             @update:target-set-id="constraints.targetSetId = $event"
+            @update:objective="constraints.objective = $event"
             @update:main-stat-filters="handleMainStatFiltersUpdate"
             @update:excluded-team-ids="handleExcludedTeamIdsUpdate"
           />
@@ -188,6 +190,7 @@ const constraints = ref<OptimizationConstraints>({
     pruneThreshold: 10,
   },
   targetSetId: '', // 目标四件套ID（单选）
+  objective: 'skill',
 });
 
 // 计算属性

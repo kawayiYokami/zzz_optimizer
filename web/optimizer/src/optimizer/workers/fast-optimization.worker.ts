@@ -253,6 +253,7 @@ function runFastOptimization(request: FastOptimizationRequest): void {
   } = request;
 
   const { discsBySlot } = precomputed;
+  const hasTargetSet = !!precomputed.targetSetId;
 
   // 重置取消标志
   shouldCancel = false;
@@ -309,6 +310,13 @@ function runFastOptimization(request: FastOptimizationRequest): void {
   const slot4Count = orderedSlots[4].length;
   const slot5Count = orderedSlots[5].length;
 
+  // 预计算各层剪枝时“被跳过的组合数”（用于精确进度/统计）
+  const subtreeAfter0 = slot1Count * slot2Count * slot3Count * slot4Count * slot5Count;
+  const subtreeAfter1 = slot2Count * slot3Count * slot4Count * slot5Count;
+  const subtreeAfter2 = slot3Count * slot4Count * slot5Count;
+  const subtreeAfter3 = slot4Count * slot5Count;
+  const subtreeAfter4 = slot5Count;
+
   // 多 Worker 分片：根据第一层循环分片
   const startIdx = Math.floor(slot0Count * workerId / totalWorkers);
   const endIdx = Math.floor(slot0Count * (workerId + 1) / totalWorkers);
@@ -319,31 +327,71 @@ function runFastOptimization(request: FastOptimizationRequest): void {
     const disc0 = orderedSlots[0][i0];
     discIndices[0] = i0;
     evaluator.pushDiscIncremental(disc0);
+    let targetCount0 = hasTargetSet && disc0.isTargetSet ? 1 : 0;
+    // 剩余 5 个位置，即使全是目标套装也凑不够 4 件套则剪枝
+    if (hasTargetSet && targetCount0 + 5 < 4) {
+      prunedCount += subtreeAfter0;
+      evaluator.popDiscIncremental(disc0);
+      continue;
+    }
 
     for (let i1 = 0; i1 < slot1Count && !shouldCancel; i1++) {
       const disc1 = orderedSlots[1][i1];
       discIndices[1] = i1;
       evaluator.pushDiscIncremental(disc1);
+      const targetCount1 = targetCount0 + (disc1.isTargetSet ? 1 : 0);
+      if (hasTargetSet && targetCount1 + 4 < 4) {
+        prunedCount += subtreeAfter1;
+        evaluator.popDiscIncremental(disc1);
+        continue;
+      }
 
       for (let i2 = 0; i2 < slot2Count && !shouldCancel; i2++) {
         const disc2 = orderedSlots[2][i2];
         discIndices[2] = i2;
         evaluator.pushDiscIncremental(disc2);
+        const targetCount2 = targetCount1 + (disc2.isTargetSet ? 1 : 0);
+        if (hasTargetSet && targetCount2 + 3 < 4) {
+          prunedCount += subtreeAfter2;
+          evaluator.popDiscIncremental(disc2);
+          continue;
+        }
 
         for (let i3 = 0; i3 < slot3Count && !shouldCancel; i3++) {
           const disc3 = orderedSlots[3][i3];
           discIndices[3] = i3;
           evaluator.pushDiscIncremental(disc3);
+          const targetCount3 = targetCount2 + (disc3.isTargetSet ? 1 : 0);
+          if (hasTargetSet && targetCount3 + 2 < 4) {
+            prunedCount += subtreeAfter3;
+            evaluator.popDiscIncremental(disc3);
+            continue;
+          }
 
           for (let i4 = 0; i4 < slot4Count && !shouldCancel; i4++) {
             const disc4 = orderedSlots[4][i4];
             discIndices[4] = i4;
             evaluator.pushDiscIncremental(disc4);
+            const targetCount4 = targetCount3 + (disc4.isTargetSet ? 1 : 0);
+            if (hasTargetSet && targetCount4 + 1 < 4) {
+              prunedCount += subtreeAfter4;
+              evaluator.popDiscIncremental(disc4);
+              continue;
+            }
 
             for (let i5 = 0; i5 < slot5Count && !shouldCancel; i5++) {
               const disc5 = orderedSlots[5][i5];
               discIndices[5] = i5;
               evaluator.pushDiscIncremental(disc5);
+              // 最后一层只需判断是否满足 4 件套
+              if (hasTargetSet) {
+                const targetCount5 = targetCount4 + (disc5.isTargetSet ? 1 : 0);
+                if (targetCount5 < 4) {
+                  prunedCount++;
+                  evaluator.popDiscIncremental(disc5);
+                  continue;
+                }
+              }
 
               // 填充盘数组
               discArray[0] = disc0;
@@ -356,7 +404,6 @@ function runFastOptimization(request: FastOptimizationRequest): void {
               // 计算伤害和乘区（热路径）
               const result = evaluator.calculateDamageWithMultipliers(discArray);
 
-              // 目标盘数不足4，跳过此组合
               if (result === null) {
                 // 只计入 processedCount，不计入 prunedCount
                 // prunedCount 用于早期剪枝（分数剪枝），这里是完整遍历后的过滤

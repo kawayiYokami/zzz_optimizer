@@ -98,6 +98,32 @@
         </button>
       </div>
 
+      <!-- 优化目标 -->
+      <div class="divider text-xs font-bold text-base-content/50 my-2">优化目标</div>
+      <div class="join w-full mt-2">
+        <button
+          class="btn join-item flex-1"
+          :class="(objective ?? 'skill') === 'skill' ? 'btn-primary' : 'btn-base-200'"
+          @click="emit('update:objective', 'skill')"
+        >
+          目标技能
+        </button>
+        <button
+          class="btn join-item flex-1"
+          :class="objective === 'atk' ? 'btn-primary' : 'btn-base-200'"
+          @click="emit('update:objective', 'atk')"
+        >
+          攻击
+        </button>
+        <button
+          class="btn join-item flex-1"
+          :class="objective === 'hp' ? 'btn-primary' : 'btn-base-200'"
+          @click="emit('update:objective', 'hp')"
+        >
+          生命
+        </button>
+      </div>
+
       <!-- 组合明细 -->
       <div class="divider text-xs font-bold text-base-content/50 my-2">组合明细</div>
       <div class="grid grid-cols-3 gap-2 mt-2">
@@ -254,6 +280,7 @@ interface Props {
   estimatedCombinations: CombinationEstimate;
   canStart: boolean;
   targetSetId: string; // 目标四件套ID（单选）
+  objective?: 'skill' | 'atk' | 'hp'; // 优化目标（互斥）
   optimizedDiscs: any[]; // 优化后的驱动盘（已完成所有过滤）
   allDiscs: any[]; // 所有驱动盘
   constraints: any; // 约束配置（包含主词条限定器）
@@ -273,6 +300,7 @@ const props = withDefaults(defineProps<Props>(), {
   estimatedCombinations: () => ({ total: 0, breakdown: {} }),
   canStart: false,
   targetSetId: '',
+  objective: 'skill',
   optimizedDiscs: () => [],
   allDiscs: () => [],
   constraints: () => ({}),
@@ -286,6 +314,7 @@ interface Emits {
   'startOptimization': [];
   'cancelOptimization': [];
   'update:targetSetId': [setId: string];
+  'update:objective': [objective: 'skill' | 'atk' | 'hp'];
   'update:mainStatFilters': [filters: any]; // 更新主词条限定器
   'update:excludedTeamIds': [teamIds: string[]]; // 更新排除的队伍ID列表
 }

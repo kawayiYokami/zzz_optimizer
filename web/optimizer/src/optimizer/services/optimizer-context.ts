@@ -1046,6 +1046,12 @@ export class OptimizerContext {
             ),
             fixedMultipliers,
             skillsParams: skills.map(s => this.createSkillParams(s, isPenetration)),
+            objective: (() => {
+                const o = (constraints as any)?.objective;
+                if (o === 'hp') return 'hp';
+                if (o === 'atk') return 'atk';
+                return 'damage';
+            })(),
             agentLevel: agent.level,
             enemyStats: (() => {
                 const serializedEnemy = options.enemySerialized;

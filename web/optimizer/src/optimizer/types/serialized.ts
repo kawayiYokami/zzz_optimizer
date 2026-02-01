@@ -199,6 +199,14 @@ export interface OptimizationConstraints {
      * 空字符串表示未选择
      */
     targetSetId: string;
+
+    /**
+     * 优化目标（互斥）
+     * - 'skill': 目标技能（按完整伤害/目标技能得分）
+     * - 'atk': 攻击
+     * - 'hp': 生命
+     */
+    objective?: 'skill' | 'atk' | 'hp';
     /**
      * 排除的队伍 ID 列表（优先级比当前队伍高的队伍）
      * 这些队伍身上的驱动盘将被排除
