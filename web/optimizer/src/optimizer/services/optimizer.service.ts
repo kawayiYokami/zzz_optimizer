@@ -553,10 +553,6 @@ export class OptimizerService {
         const allBuilds: OptimizationBuildResult[] = [];
         let totalProcessed = 0;
         let totalPruned = 0;
-        let totalEvalCalls = 0;
-        let totalEvalTimeMs = 0;
-        let totalFullCalls = 0;
-        let totalFullTimeMs = 0;
         let workersWithProfile = 0;
 
         for (const builds of this.fastWorkerResults.values()) {
@@ -567,10 +563,6 @@ export class OptimizerService {
             totalPruned += stats.pruned;
             if (stats.profile) {
                 workersWithProfile++;
-                totalEvalCalls += stats.profile.evalCalls ?? 0;
-                totalEvalTimeMs += stats.profile.evalTimeMs ?? 0;
-                totalFullCalls += stats.profile.fullCalls ?? 0;
-                totalFullTimeMs += stats.profile.fullTimeMs ?? 0;
             }
         }
 
@@ -602,20 +594,7 @@ export class OptimizerService {
             averageSpeed: (totalProcessed + totalPruned) / (totalTimeMs / 1000),
         };
 
-        if (workersWithProfile > 0) {
-            // 仅一条日志：总计 + 均值（避免刷屏）
-            const avgEvalUs = totalEvalCalls > 0 ? (totalEvalTimeMs * 1000) / totalEvalCalls : 0;
-            const avgFullMs = totalFullCalls > 0 ? totalFullTimeMs / totalFullCalls : 0;
-            console.log('[FastOpt profile]', {
-                workers: this.fastWorkers.length,
-                totalEvalCalls,
-                totalEvalTimeMs: Number(totalEvalTimeMs.toFixed(1)),
-                avgEvalUs: Number(avgEvalUs.toFixed(2)),
-                totalFullCalls,
-                totalFullTimeMs: Number(totalFullTimeMs.toFixed(1)),
-                avgFullMs: Number(avgFullMs.toFixed(2)),
-            });
-        }
+        // FastOpt profile logging removed
 
         if (this.callbacks.onComplete) {
             this.callbacks.onComplete(aggregatedResult);

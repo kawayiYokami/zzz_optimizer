@@ -43,12 +43,7 @@ interface FastOptimizationResult {
     prunedCount: number;
     timeMs: number;
     averageSpeed: number;
-    profile?: {
-      evalCalls: number;
-      evalTimeMs: number;
-      fullCalls: number;
-      fullTimeMs: number;
-    };
+    profile?: Record<string, never>;
   };
 }
 
@@ -246,11 +241,7 @@ let shouldCancel = false;
 function runFastOptimization(request: FastOptimizationRequest): void {
   const startTime = performance.now();
 
-  // 性能剖析统计（仅在最终 result 返回一次，不打印 log）
-  let evalCalls = 0;
-  let evalTimeMs = 0;
-  let fullCalls = 0;
-  let fullTimeMs = 0;
+  // 性能统计已移除（如需性能剖析请使用浏览器 Performance/Profiler）
 
   const {
     precomputed,
@@ -363,10 +354,7 @@ function runFastOptimization(request: FastOptimizationRequest): void {
               discArray[5] = disc5;
 
               // 计算伤害和乘区（热路径）
-              const evalStart = performance.now();
               const result = evaluator.calculateDamageWithMultipliers(discArray);
-              evalTimeMs += performance.now() - evalStart;
-              evalCalls++;
 
               // 目标盘数不足4，跳过此组合
               if (result === null) {
@@ -450,10 +438,7 @@ function runFastOptimization(request: FastOptimizationRequest): void {
   }
 
   // 获取最终结果
-  const fullStart = performance.now();
   const builds = topNHeap.getResults(evaluator, orderedSlots, slotOrder);
-  fullTimeMs += performance.now() - fullStart;
-  fullCalls += builds.length;
 
   // 发送最终结果
   const endTime = performance.now();
@@ -480,12 +465,7 @@ function runFastOptimization(request: FastOptimizationRequest): void {
       prunedCount,
       timeMs: totalTimeMs,
       averageSpeed: (processedCount + prunedCount) / (totalTimeMs / 1000),
-      profile: {
-        evalCalls,
-        evalTimeMs,
-        fullCalls,
-        fullTimeMs,
-      },
+      profile: {},
     },
   };
   ctx.postMessage(result);

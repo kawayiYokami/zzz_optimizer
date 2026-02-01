@@ -497,6 +497,8 @@ export class OptimizerContext {
         const props = disc.getStats();
 
         for (const [prop, value] of props.out_of_combat.entries()) {
+            // 无效词条：两种防御（不参与当前优化目标）
+            if (prop === 'DEF' || prop === 'DEF_') continue;
             addToPropArray(arr, prop, value);
         }
     }
@@ -705,6 +707,19 @@ export class OptimizerContext {
         // ============================================================================
         const mergedStats = createPropArray();
         const mergedBuff = createPropArray();
+
+        const toSparseDelta = (arr: Float64Array): { idx: Int16Array; val: Float64Array } => {
+            const idxTmp: number[] = [];
+            const valTmp: number[] = [];
+            for (let i = 0; i < arr.length; i++) {
+                const v = arr[i];
+                if (v !== 0) {
+                    idxTmp.push(i);
+                    valTmp.push(v);
+                }
+            }
+            return { idx: Int16Array.from(idxTmp), val: Float64Array.from(valTmp) };
+        };
 
         // 1a. 添加角色静态属性（仅 out_of_combat）
         const baseProps = agent.getCharacterBaseStats();
@@ -926,6 +941,18 @@ export class OptimizerContext {
             const stats = createPropArray();
             this.fillArrayFromDisc(stats, disc);
 
+            // 稀疏化 stats（只保留非零项）；Worker 热路径 push/pop 用
+            // 注意：fillArrayFromDisc 已过滤无效词条（两种防御）
+            const idxTmp: number[] = [];
+            const valTmp: number[] = [];
+            for (let i = 0; i < stats.length; i++) {
+                const v = stats[i];
+                if (v !== 0) {
+                    idxTmp.push(i);
+                    valTmp.push(v);
+                }
+            }
+
             // 计算有效词条得分
             let effectiveScore = 0;
             const props = disc.getStats();
@@ -939,6 +966,8 @@ export class OptimizerContext {
             discsBySlot[slotIdx].push({
                 id: disc.id,
                 stats,
+                sparseStatsIdx: Int16Array.from(idxTmp),
+                sparseStatsVal: Float64Array.from(valTmp),
                 effectiveScore,
                 setId,
                 setIdx,
@@ -1010,6 +1039,11 @@ export class OptimizerContext {
             targetSetTwoPiece,
             targetSetFourPieceBuff,
             otherSetTwoPiece,
+            targetSetTwoPieceSparse: toSparseDelta(targetSetTwoPiece),
+            targetSetFourPieceBuffSparse: toSparseDelta(targetSetFourPieceBuff),
+            otherSetTwoPieceSparse: Object.fromEntries(
+                Object.entries(otherSetTwoPiece).map(([k, v]) => [k, toSparseDelta(v)])
+            ),
             fixedMultipliers,
             skillsParams: skills.map(s => this.createSkillParams(s, isPenetration)),
             agentLevel: agent.level,
