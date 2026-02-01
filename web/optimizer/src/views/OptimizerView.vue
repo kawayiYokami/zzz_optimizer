@@ -90,6 +90,7 @@
             :skill-name="selectedSkills[0]?.name || '未选择'"
             :skill-type="selectedSkills[0]?.type || 'normal'"
             :ui-damage="currentDamage"
+            @damage-change="currentDamage = $event"
             :external-buffs="[...evaluatorBuffs.self, ...evaluatorBuffs.teammate]"
             :buff-status-map="battleService.getBuffStatusMap()"
             :enemy-level="60"
@@ -104,6 +105,7 @@
             :is-running="isRunning"
             :total-time="totalTime"
             :current-damage="currentDamage"
+            :objective="constraints.objective"
             @equip-build="handleEquipBuild"
           />
         </div>
@@ -585,8 +587,8 @@ const getWEngineName = (id: string) => {
   return wengine?.name || id;
 };
 
-// BattleInfoCard 已精简，不再提供伤害口径
-const currentDamage = computed(() => 0);
+// 基准伤害：来自 BattleEvaluatorCard（与 worker 口径一致），用于“目标技能/伤害”提升率对比
+const currentDamage = ref(0);
 
 const onBattleEnvChange = () => {
   if (isRunning.value) {
