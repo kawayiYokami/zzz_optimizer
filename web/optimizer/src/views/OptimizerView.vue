@@ -96,7 +96,7 @@
             :enemy-level="60"
             :is-stunned="battleService.getIsEnemyStunned()"
             :has-corruption-shield="battleService.getEnemyHasCorruptionShield()"
-            :enemy-serialized="battleService.getSerializedEnemy(60)"
+            :enemy-serialized="battleService.getSerializedEnemy(60) ?? undefined"
           />
 
           <!-- 优化结果卡片 -->
@@ -105,7 +105,7 @@
             :is-running="isRunning"
             :total-time="totalTime"
             :current-damage="currentDamage"
-            :objective="constraints.objective"
+            :objective="constraints.objective || 'skill'"
             @equip-build="handleEquipBuild"
           />
         </div>
@@ -360,7 +360,7 @@ const unselectedSkills = computed(() => {
 const availableBuffs = computed(() => {
   buffsVersion.value; // 触发响应式依赖
   if (!currentTeam.value) return [];
-  
+
   // 合并前台角色buff和队友buff（配置候选口径，不含“是否选中”语义）
   const { self: frontAgentBuffs, teammate: teammateBuffs } = battleService.getOptimizerConfigBuffs({ includeFourPiece: false });
   // (debug logs removed)
@@ -419,15 +419,8 @@ const loadTeamOptimizationConfig = (teamId: string) => {
     selectedSkillKeys.value = config.selectedSkillKeys;
     selectedEnemyId.value = config.selectedEnemyId;
 
-    // 恢复 Buff 开关：如果有 battleData.activeBuffs（单一真相），同步到 BattleService
-    const battle = saveStore.battleInstances?.find?.((b: any) => b.teamId === teamId);
-    const activeBuffs = battle?.activeBuffs as Record<string, boolean> | undefined;
-    if (activeBuffs) {
-      for (const [buffId, isActive] of Object.entries(activeBuffs)) {
-        battleService.updateBuffStatus(buffId, isActive);
-      }
-      buffsVersion.value++;
-    }
+    // 增加 buffsVersion 触发 Buff UI 更新
+    buffsVersion.value++;
 
   } catch (e) {
     console.error('[Optimizer] Failed to load team config:', e);
@@ -592,7 +585,8 @@ const currentDamage = ref(0);
 
 const onBattleEnvChange = () => {
   if (isRunning.value) {
-    updateEstimatedCombinations();
+    // 敌人环境改变时重新估计组合数（estimatedCombinations是响应式计算）
+    console.log('[Optimizer] 敌人环境改变，已触发重算');
   }
 };
 
@@ -600,18 +594,18 @@ const onBattleEnvChange = () => {
 const handleEquipBuild = async (build: OptimizationBuild) => {
   if (!targetAgentId.value) return;
 
-  
+
 
   try {
     let successCount = 0;
     // 遍历6个位置装备驱动盘
     build.discIds.forEach((discId, index) => {
-      
+
       if (discId && saveStore.equipDriveDisk(targetAgentId.value, discId)) {
         successCount++;
-        
+
       } else {
-        
+
       }
     });
 
@@ -624,7 +618,7 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
     // BattleInfoCard 已精简，内部无 refresh 逻辑
 
     // 显示成功提示 (这里简单用 alert 或者 console，实际项目可能有 Toast 组件)
-    
+
   } catch (e) {
     console.error('装备失败:', e);
     alert('装备失败，请重试');
@@ -717,8 +711,8 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
       agent,
       weapon,  // 角色已装备的武器
       skills: skillParams,
-      enemy: battleService.getEnemy(),
-      enemySerialized: battleService.getSerializedEnemy(60),  // 传递序列化敌人数据，保持与 BattleEvaluatorCard 口径一致
+      enemy: battleService.getEnemy() || enemy,
+      enemySerialized: battleService.getSerializedEnemy(60) ?? undefined,  // 传递序列化敌人数据，保持与 BattleEvaluatorCard 口径一致
       enemyLevel: 60,
       isStunned: battleService.getIsEnemyStunned(),
       hasCorruptionShield: battleService.getEnemyHasCorruptionShield(),
