@@ -576,6 +576,28 @@ export class FastEvaluator {
     const finalAtkAfterConv = snapshot3Atk;
 
     // ========================================================================
+    // 8.8 目标属性模式：不计算任何乘区/伤害，直接返回快照3的目标属性
+    // - 注意：仍然需要完成 conversion（快照3口径要求）
+    // ========================================================================
+    if (this.precomputed.objective === 'hp' || this.precomputed.objective === 'atk') {
+      // 保持 evalBuffer 的四维最终面板值维度，便于 createFullResult/finalStats 展示一致
+      this.evalBuffer[PROP_IDX.ATK] = snapshot3Atk;
+      this.evalBuffer[PROP_IDX.HP] = snapshot3Hp;
+      this.evalBuffer[PROP_IDX.DEF] = snapshot3Def;
+      this.evalBuffer[PROP_IDX.IMPACT] = snapshot3Impact;
+
+      return {
+        damage: this.precomputed.objective === 'hp' ? snapshot3Hp : snapshot3Atk,
+        multipliers: [],
+        snapshots: {
+          snapshot1: { atk: snapshot1Atk, hp: snapshot1Hp, def: snapshot1Def, impact: snapshot1Impact },
+          snapshot2: { atk: snapshot2Atk, hp: snapshot2Hp, def: snapshot2Def, impact: snapshot2Impact },
+          snapshot3: { atk: snapshot3Atk, hp: snapshot3Hp, def: snapshot3Def, impact: snapshot3Impact },
+        },
+      };
+    }
+
+    // ========================================================================
     // 8.5 命破角色：强制覆盖贯穿值（在所有转换类 Buff 应用完之后）
     // - 游戏内存在“到处显示虚假贯穿值”的问题，这里采用强制口径：
     //   SHEER_FORCE = snapshot3Hp * 0.1 + snapshot3Atk * 0.3
@@ -624,7 +646,6 @@ export class FastEvaluator {
     // 10. 对每个技能计算伤害
     // ========================================================================
     let totalVariableDamage = 0;
-
     for (const skillParams of skillsParams) {
       const dmgBonus = this.calculateDamageBonus(skillParams);
       const critZone = 1 + critRate * critDmg;
@@ -663,9 +684,8 @@ export class FastEvaluator {
     // ========================================================================
     // 11. 烈霜特殊处理（星见雅）
     // ========================================================================
-    let variableLieshuangDamage = 0;
     if (this.precomputed.specialAnomalyConfig?.element === 'lieshuang') {
-      variableLieshuangDamage = this.calculateLieshuangDamage(
+      const variableLieshuangDamage = this.calculateLieshuangDamage(
         finalAtkAfterConv,
         defMult,
         critRate,

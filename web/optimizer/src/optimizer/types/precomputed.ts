@@ -215,6 +215,13 @@ export interface PrecomputedData {
   skillsParams: PrecomputedSkillParams[];
 
   /**
+   * 优化目标
+   * - damage: 计算完整伤害（默认）
+   * - hp: 使用 snapshot3 的 HP 作为目标值（适用于辅助/生存向）
+   */
+  objective?: 'damage' | 'atk' | 'hp';
+
+  /**
    * 角色等级
    */
   agentLevel: number;
