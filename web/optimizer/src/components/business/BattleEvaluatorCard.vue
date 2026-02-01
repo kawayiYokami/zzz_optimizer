@@ -3,7 +3,7 @@
     <div class="card-body p-2">
       <div class="tabs tabs-border rounded-box p-2">
         <label class="tab">
-          <input type="radio" name="battle_tabs_eval" checked="checked" />
+          <input type="radio" name="battle_tabs_eval" :checked="true" />
           伤害期望
         </label>
         <div class="tab-content">
@@ -550,7 +550,6 @@ const runDebugCalc = () => {
       pinnedSlots: {},
       setMode: 'any',
       selectedWeaponIds: [],
-      activeDiskSets: [],
       targetSetId,
     },
     externalBuffs: props.externalBuffs || [],
@@ -582,7 +581,8 @@ const runDebugCalc = () => {
   const penRate = baseStats[PROP_IDX.PEN_];
 
   // 直接使用优化器返回的乘区值（已在 createFullResult 中计算好）
-  const { baseDirectDamage, baseAnomalyDamage, baseDisorderDamage, baseLieshuangDamage, critZone, dmgBonus: dmgBonusZone } = fullResult.multipliers;
+  const { baseDirectDamage, baseAnomalyDamage, baseDisorderDamage: baseDisorderDamageValue, baseLieshuangDamage, critZone, dmgBonus: dmgBonusZone } = fullResult.multipliers;
+  const baseDisorderDamage = baseDisorderDamageValue ?? 0;  // 提供默认值
   const finalAtkAfterConv = baseDirectDamage / props.skillRatio;  // 反推 ATK（用于其他展示）
   const finalAtkManual = atkBase * (1 + atkPercent) + atk;
   const baseDamage = baseDirectDamage;  // 现在 baseDirectDamage 已经是 ATK * ratio

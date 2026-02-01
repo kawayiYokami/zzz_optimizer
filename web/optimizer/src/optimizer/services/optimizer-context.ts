@@ -498,7 +498,7 @@ export class OptimizerContext {
 
         for (const [prop, value] of props.out_of_combat.entries()) {
             // 无效词条：两种防御（不参与当前优化目标）
-            if (prop === 'DEF' || prop === 'DEF_') continue;
+            if (prop === PropertyType.DEF || prop === PropertyType.DEF_) continue;
             addToPropArray(arr, prop, value);
         }
     }
