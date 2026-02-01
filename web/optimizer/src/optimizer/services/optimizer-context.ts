@@ -384,6 +384,7 @@ export class OptimizerContext {
             anomalyBuildup: params.anomalyBuildup ?? 0,
             tags: params.tags.map(tag => this.tagToNumber(tag)),
             isPenetration,
+            isMingpo: isPenetration,
         };
     }
 

@@ -99,6 +99,8 @@ export interface PrecomputedSkillParams {
   tags: number[];
   /** 是否为贯穿伤害（仪玄等角色） */
   isPenetration?: boolean;
+  /** 贯穿面板覆盖（命破类口径；用于 worker 在快照3后强制覆盖贯穿值） */
+  isMingpo?: boolean;
 }
 
 /**

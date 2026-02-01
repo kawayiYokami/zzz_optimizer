@@ -9,7 +9,7 @@ import type { Enemy } from '../model/enemy';
 import { Buff, BuffSource, BuffTarget } from '../model/buff';
 import { Team } from '../model/team';
 import { PropertyCollection } from '../model/property-collection';
-import { PropertyType, ElementType, getPropertyCnName } from '../model/base';
+import { PropertyType, ElementType, WeaponType, getPropertyCnName } from '../model/base';
 import type { ZodBattleData } from '../model/save-data-zod';
 import type { WEngine } from '../model/wengine';
 import type { DriveDisk } from '../model/drive-disk';
@@ -135,6 +135,29 @@ export class BattleService {
     // 初始化
   }
 
+  /**
+   * 差值同步 Buff 开关状态：
+   * - 保留既有 buffId 的 isActive
+   * - 新出现的 buffId 默认 isActive=true
+   * - 消失的 buffId 从 map 移除（避免无限增长）
+   */
+  private syncBuffStatusMap(candidateBuffs: Buff[]): void {
+    const nextIds = new Set(candidateBuffs.map(b => b.id));
+
+    // 删除不存在的
+    for (const buffId of Array.from(this.buffStatusMap.keys())) {
+      if (!nextIds.has(buffId)) this.buffStatusMap.delete(buffId);
+    }
+
+    // 补齐新增的（默认开启）
+    for (const buff of candidateBuffs) {
+      if (!this.buffStatusMap.has(buff.id)) {
+        const isToggleable = true; // 默认可开关；需要更严格规则可复用 isBuffToggleable
+        this.buffStatusMap.set(buff.id, { buffId: buff.id, isActive: true, isToggleable });
+      }
+    }
+  }
+
   // ==================== 设置/变更方法 ====================
 
   /**
@@ -166,12 +189,8 @@ export class BattleService {
       }
 
       // 步骤2：更新所有相关的buff效果
-      // 清除当前角色buff和相关状态映射
-      const characterBuffIds = new Set(this.characterBuffs.map(buff => buff.id));
+      // 清空角色 buff 列表，但不直接清空 buffStatusMap（需要差值同步）
       this.characterBuffs = [];
-      characterBuffIds.forEach(buffId => {
-        this.buffStatusMap.delete(buffId);
-      });
 
       // 设置新队伍
       this.team = team;
@@ -181,6 +200,9 @@ export class BattleService {
 
       // 加载新队伍的buff
       await this.loadBuffsFromAllAgentsAsync();
+
+      // 差值同步开关状态（包括角色 buff + 手动 buff）
+      this.syncBuffStatusMap(this.getAllBuffs());
 
       // 步骤3：生成并保存更新后的最终属性快照
       this.finalPropertySnapshot = {
@@ -398,10 +420,6 @@ export class BattleService {
    * 清空所有角色Buff
    */
   clearCharacterBuffs(): void {
-    // 清除相关状态映射
-    this.characterBuffs.forEach(buff => {
-      this.buffStatusMap.delete(buff.id);
-    });
     // 清空角色buff列表
     this.characterBuffs = [];
   }
@@ -410,10 +428,6 @@ export class BattleService {
    * 清空所有手动Buff
    */
   clearManualBuffs(): void {
-    // 清除相关状态映射
-    this.manualBuffs.forEach(buff => {
-      this.buffStatusMap.delete(buff.id);
-    });
     // 清空手动buff列表
     this.manualBuffs = [];
   }
@@ -424,7 +438,8 @@ export class BattleService {
   clearBuffs(): void {
     this.characterBuffs = [];
     this.manualBuffs = [];
-    this.buffStatusMap.clear();
+    // buffStatusMap 是“玩家选择状态”的唯一真相，不应随清空 buff 列表而清空。
+    // 允许保留开关状态，等下次同步候选列表时做差值收敛。
   }
 
   /**
@@ -550,8 +565,14 @@ export class BattleService {
     const isActive = (buffId: string) => this.buffStatusMap.get(buffId)?.isActive === true;
     const { self, teammate } = this.getOptimizerConfigBuffs({ includeFourPiece: true });
 
+    const isFrontRupture = this.team?.frontAgent?.weapon_type === WeaponType.RUPTURE;
+
     const selfFiltered = self
       .filter(b => isActive(b.id))
+      // 命破：worker 会在快照3阶段“额外追加”贯穿值（不覆盖），因此：
+      // - 仅对【前台角色自己的】“to=贯穿值”的转换类 buff 做过滤，避免重复计算
+      // - 队友/手动的“贯穿值来源”应保留（例如辅助加贯穿）
+      .filter(b => !(isFrontRupture && b.conversion?.to_property === PropertyType.SHEER_FORCE))
       .filter(b => b.source !== BuffSource.DRIVE_DISK_4PC);
 
     const teammateFiltered: Buff[] = [];
@@ -904,7 +925,7 @@ export class BattleService {
    */
   applyBuffs(buffs: Buff[], props: PropertyCollection): PropertyCollection {
     const inCombatBuffs = buffs.filter(b => b.hasInCombatStats());
-    const conversionBuffs = buffs.filter(b => b.isConversion());
+    const conversionBuffs = buffs.filter(b => b.isConversion() && b.conversion?.to_property !== PropertyType.SHEER_FORCE);
 
     let result = props;
     for (const buff of inCombatBuffs) {

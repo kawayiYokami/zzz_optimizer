@@ -468,6 +468,21 @@ export class FastEvaluator {
     const finalAtkAfterConv = snapshot3Atk;
 
     // ========================================================================
+    // 8.5 命破角色：强制覆盖贯穿值（在所有转换类 Buff 应用完之后）
+    // - 游戏内存在“到处显示虚假贯穿值”的问题，这里采用强制口径：
+    //   SHEER_FORCE = snapshot3Hp * 0.1 + snapshot3Atk * 0.3
+    // - 同时清空穿透/穿透率（避免继续影响防御区与展示）
+    // ========================================================================
+    // 说明：isPenetration 在 buildFastRequest 时由 agent.isPenetrationAgent() 决定，属于角色机制。
+    const isMingpo = skillsParams?.[0]?.isMingpo === true || skillsParams?.[0]?.isPenetration === true;
+    if (isMingpo) {
+      this.evalBuffer[PROP_IDX.PEN] = 0;
+      this.evalBuffer[PROP_IDX.PEN_] = 0;
+      // 注意：口径对齐“转换类 Buff”：源取快照2（不链式），产物写入快照3
+      this.evalBuffer[PROP_IDX.SHEER_FORCE] += snapshot2Hp * 0.1 + snapshot2Atk * 0.3;
+    }
+
+    // ========================================================================
     // 8. 计算防御区
     // ========================================================================
     const { defenseParams } = fixedMultipliers;

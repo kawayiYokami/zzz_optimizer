@@ -112,7 +112,7 @@ export class CharacterAnalyzer {
       [WeaponType.STUN]: '击破型',
       [WeaponType.SUPPORT]: '支援型',
       [WeaponType.DEFENSE]: '防护型',
-      [WeaponType.UNKNOWN_6]: '未知类型',
+      [WeaponType.RUPTURE]: '命破',
     };
 
     const elementNames: Record<ElementType, string> = {

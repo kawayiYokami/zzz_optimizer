@@ -22,7 +22,7 @@
         "description": "[熔锋]状态下，真斗无视目标8%火属性伤害抗性。",
         "source": "TALENT",
         "target": { "target_self": true },
-        "in_combat_stats": { "FIRE_DMG_PEN_": 0.08 },
+        "in_combat_stats": { "FIRE_RES_IGN_": 0.08 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "[熔锋]状态下",
@@ -51,7 +51,7 @@
         "out_of_combat_stats": {},
         "conversion": {
             "from_property": "HP_MAX",
-            "to_property": "PENETRATION_",
+            "to_property": "SHEER_FORCE",
             "conversion_ratio": 0.1
         },
         "trigger_conditions": null,

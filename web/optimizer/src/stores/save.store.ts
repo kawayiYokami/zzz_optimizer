@@ -661,17 +661,14 @@ export const useSaveStore = defineStore('save', () => {
         if (diskToEquip) {
           // 从 slotKey 转换为 position
           const position = parseInt(diskToEquip.slotKey.replace('slot', ''));
-          console.log(`[saveStore] 装备驱动盘: diskId=${diskId}, slotKey=${diskToEquip.slotKey}, position=${position}`);
-          
+
           rawSave.discs.forEach(disk => {
             const diskPosition = parseInt(disk.slotKey.replace('slot', ''));
             if (disk.location === agentId && diskPosition === position) {
-              console.log(`[saveStore] 清除位置 ${position} 的驱动盘: ${disk.id}`);
               disk.location = '';
             }
           });
           diskToEquip.location = agentId;
-          console.log(`[saveStore] 设置驱动盘 location: ${diskToEquip.id} -> ${agentId}`);
         } else {
           console.warn(`[saveStore] 找不到驱动盘: ${diskId}`);
         }
@@ -687,16 +684,11 @@ export const useSaveStore = defineStore('save', () => {
       }
     }
 
-    console.log(`[saveStore] 保存前 rawSave.discs 数量: ${rawSave.discs?.length}`);
-    console.log(`[saveStore] 装备的驱动盘:`, rawSave.discs?.filter(d => d.location === agentId).map(d => ({ id: d.id, slotKey: d.slotKey, location: d.location })));
-
     // 保存到localStorage
     saveToStorage();
-    
+
     // 同步实例数据到rawSaves，确保equippedDiscs字段正确更新
     syncInstanceToRawSave();
-    
-    console.log(`[saveStore] 保存完成`);
     return true;
   }
 

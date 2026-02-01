@@ -256,6 +256,7 @@ const weaponTypes = [
   { value: WeaponType.ANOMALY, label: '异常', icon: iconService.getWeaponTypeIconUrl(WeaponType.ANOMALY) },
   { value: WeaponType.SUPPORT, label: '支援', icon: iconService.getWeaponTypeIconUrl(WeaponType.SUPPORT) },
   { value: WeaponType.DEFENSE, label: '防护', icon: iconService.getWeaponTypeIconUrl(WeaponType.DEFENSE) },
+  { value: WeaponType.RUPTURE, label: '命破', icon: iconService.getWeaponTypeIconUrl(WeaponType.RUPTURE) },
 ];
 
 // 影画选项
@@ -276,6 +277,7 @@ const ownedAgentIdsMap = computed(() => {
 // 获取所有可显示的角色列表
 const displayAgentList = computed(() => {
   const result: { agent: Agent; isOwned: boolean }[] = [];
+  if (!gameDataStore.isInitialized) return result;
   const characterData = dataLoaderService.characterData;
 
   if (!characterData) return result;
@@ -339,6 +341,7 @@ const displayAgentList = computed(() => {
       else if (charInfo.type === 3) tempAgent.weapon_type = WeaponType.ANOMALY;
       else if (charInfo.type === 4) tempAgent.weapon_type = WeaponType.SUPPORT;
       else if (charInfo.type === 5) tempAgent.weapon_type = WeaponType.DEFENSE;
+      else if (charInfo.type === 6) tempAgent.weapon_type = WeaponType.RUPTURE;
       
       result.push({ agent: tempAgent, isOwned: false });
     }
@@ -362,6 +365,8 @@ const filteredAndSortedAgents = computed(() => {
       filters.value.weaponTypes.includes(item.agent.weapon_type)
     );
   }
+
+  // (debug logs removed)
 
   // 应用排序
   result.sort((a, b) => {

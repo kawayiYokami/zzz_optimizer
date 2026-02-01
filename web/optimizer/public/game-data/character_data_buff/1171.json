@@ -42,7 +42,7 @@
         "description": "发动[强化特殊技：灼热摇荡法·双份]命中敌人后，招式发动期间，[强化特殊技：灼热摇荡法·双份]、特殊的[余烬]效果、[灼烧]效果将无视目标25%火属性伤害抗性。",
         "source": "TALENT",
         "target": { "target_self": true },
-        "in_combat_stats": { "FIRE_DMG_PEN_": 0.25 },
+        "in_combat_stats": { "FIRE_RES_IGN_": 0.25 },
         "out_of_combat_stats": {},
         "conversion": null,
         "trigger_conditions": "发动[强化特殊技：灼热摇荡法·双份]期间",

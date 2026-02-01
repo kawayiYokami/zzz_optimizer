@@ -70,7 +70,7 @@
         "out_of_combat_stats": {},
         "conversion": {
             "from_property": "HP_MAX",
-            "to_property": "PENETRATION_",
+            "to_property": "SHEER_FORCE",
             "conversion_ratio": 0.1
         },
         "trigger_conditions": null,
@@ -83,7 +83,7 @@
         "source": "CORE_PASSIVE",
         "target": { "target_self": true },
         "in_combat_stats": {
-            "PENETRATION": 300,
+            "SHEER_FORCE": 300,
             "FIRE_DMG_": 0.36,
             "CRIT_DMG_": 0.36
         },
