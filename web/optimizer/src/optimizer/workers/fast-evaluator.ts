@@ -387,18 +387,6 @@ export class FastEvaluator {
     const totalResRedUsed = resRedCommon + elResRed + resIgnCommon + elResIgn;
     const resMult = Math.max(0, Math.min(2, 1 - elementRes + totalResRedUsed));
 
-    // 对齐 damage-calculator.ts: effective_def = max(0, baseDef*(1-defRed-defIgn)*(1-penRate)-penValue)
-    const defRed = this.workerMergedBuff[PROP_IDX.DEF_RED_] ?? 0;
-    const defIgn = this.workerMergedBuff[PROP_IDX.DEF_IGN_] ?? 0;
-    const penRate = this.workerMergedBuff[PROP_IDX.PEN_] ?? 0;
-    const penValue = this.workerMergedBuff[PROP_IDX.PEN] ?? 0;
-    let baseDef = enemyStats?.defense ?? 0;
-    if (enemyStats?.has_corruption_shield) baseDef *= 2;
-    const effectiveDef = Math.max(0, baseDef * (1 - defRed - defIgn) * (1 - penRate) - penValue);
-    const attackerLevel = fixedMultipliers.attackerLevel ?? 60;
-    const levelCoef = 794;
-    const defMult = levelCoef / (effectiveDef + levelCoef);
-
     return {
       resMult,
       dmgTakenMult,
@@ -604,7 +592,8 @@ export class FastEvaluator {
     // - 同时清空穿透/穿透率（避免继续影响防御区与展示）
     // ========================================================================
     // 说明：isPenetration 在 buildFastRequest 时由 agent.isPenetrationAgent() 决定，属于角色机制。
-    const isMingpo = skillsParams?.[0]?.isMingpo === true || skillsParams?.[0]?.isPenetration === true;
+    // 多技能模式：只要任一技能为命破/贯穿，就按命破口径处理（角色机制）
+    const isMingpo = skillsParams.some(s => s?.isMingpo === true || s?.isPenetration === true);
     if (isMingpo) {
       this.evalBuffer[PROP_IDX.PEN] = 0;
       this.evalBuffer[PROP_IDX.PEN_] = 0;
@@ -892,7 +881,16 @@ export class FastEvaluator {
       buildupMult += this.evalBuffer[iceBuildupIdx];
     }
 
-    const anomalyBuildup = skillsParams[0]?.anomalyBuildup ?? 0;
+    // 多技能模式：认为每个技能都会释放一次，所以烈霜触发用“本轮总积蓄”更合理
+    // 仅统计冰元素技能的积蓄（烈霜属于 ICE 异常口径）
+    let anomalyBuildup = 0;
+    for (const s of skillsParams) {
+      if (s?.element === 202) anomalyBuildup += (s.anomalyBuildup ?? 0);
+    }
+    // 兼容：如果没有冰技能/积蓄为 0，则回退到第一个技能
+    if (anomalyBuildup === 0) {
+      anomalyBuildup = skillsParams[0]?.anomalyBuildup ?? 0;
+    }
     const threshold =
       this.precomputed.enemyStats?.anomaly_thresholds?.ice
       ?? 600;
@@ -1015,23 +1013,51 @@ export class FastEvaluator {
 
     const skillParams = skillsParams[0];
 
-    // 直伤 breakdown
-    let directDamage: number;
-    if (skillParams.isPenetration) {
-      const sheerForce = this.evalBuffer[PROP_IDX.SHEER_FORCE];
-      const pierceBonus = 1 + this.evalBuffer[PROP_IDX.SHEER_DMG_];
-      directDamage = sheerForce * skillParams.ratio * dmgBonus * critZone * pierceBonus * universalMult * distanceMult;
-    } else {
-      const baseDamage = finalAtkAfterConv * skillParams.ratio;
-      directDamage = baseDamage * dmgBonus * critZone * defMult * universalMult * distanceMult;
-    }
+    // 多技能模式：同一套驱动盘组合下，对每个技能各算一次再求和（breakdown 也要汇总）
+    let directDamage = 0;
+    let finalAnomaly = 0;
+    let finalDisorder = 0;
 
-    // 异常伤害 breakdown
-    const anomalyResult = skillParams.anomalyBuildup > 0
-      ? this.calculateAnomalyDamage(finalAtkAfterConv, dmgBonus, defMult, skillParams.element, skillParams.anomalyBuildup)
-      : { anomaly: 0, disorder: 0 };
-    const finalAnomaly = anomalyResult.anomaly * universalMult;
-    const finalDisorder = anomalyResult.disorder * universalMult;
+    const sheerForce = this.evalBuffer[PROP_IDX.SHEER_FORCE];
+    const pierceBonus = 1 + (this.evalBuffer[PROP_IDX.SHEER_DMG_] ?? 0);
+
+    for (const s of skillsParams) {
+      const dmgBonusSkill = this.calculateDamageBonus(s);
+
+      // 直伤
+      if (s.isPenetration) {
+        directDamage +=
+          sheerForce *
+          s.ratio *
+          dmgBonusSkill *
+          critZone *
+          pierceBonus *
+          universalMult *
+          distanceMult;
+      } else {
+        const baseDamage = finalAtkAfterConv * s.ratio;
+        directDamage +=
+          baseDamage *
+          dmgBonusSkill *
+          critZone *
+          defMult *
+          universalMult *
+          distanceMult;
+      }
+
+      // 异常/紊乱
+      if ((s.anomalyBuildup ?? 0) > 0) {
+        const ar = this.calculateAnomalyDamage(
+          finalAtkAfterConv,
+          dmgBonusSkill,
+          defMult,
+          s.element,
+          s.anomalyBuildup
+        );
+        finalAnomaly += ar.anomaly * universalMult;
+        finalDisorder += ar.disorder * universalMult;
+      }
+    }
 
     // 烈霜伤害 breakdown（星见雅等特殊机制）
     let variableLieshuangDamage = 0;
