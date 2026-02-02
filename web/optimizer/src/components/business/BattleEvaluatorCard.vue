@@ -18,13 +18,35 @@
             <div class="col-span-2 card bg-base-200/30 shadow">
               <div class="card-body p-4">
                 <div class="flex items-center gap-1.5">
-                  <img v-if="elementIconUrl" :src="elementIconUrl" class="w-5 h-5" :alt="skillInfo?.element" />
-                  <span class="font-bold">{{ skillInfo?.name || '-' }}</span>
+                  <img v-if="elementIconUrl" :src="elementIconUrl" class="w-5 h-5" :alt="skillSummary?.element" />
+                  <span class="font-bold">{{ skillSummary?.title || '-' }}</span>
                 </div>
                 <div class="flex flex-wrap gap-2 mt-2">
-                  <div class="badge badge-primary">倍率 {{ ((skillInfo?.ratio || 0) * 100).toFixed(0) }}%</div>
-                  <div class="badge badge-accent">积蓄 {{ skillInfo?.anomaly?.toFixed(0) || '0' }}</div>
-                  <div v-if="skillInfo?.isPenetration" class="badge badge-warning">贯穿</div>
+                  <div v-if="skillSummary?.count === 1" class="badge badge-primary">
+                    倍率 {{ ((skillSummary?.totalRatio || 0) * 100).toFixed(0) }}%
+                  </div>
+                  <div v-if="skillSummary?.count === 1" class="badge badge-accent">
+                    积蓄 {{ (skillSummary?.totalAnomaly || 0).toFixed(0) }}
+                  </div>
+
+                  <template v-if="(skillSummary?.count || 0) > 1">
+                    <div class="badge badge-primary">
+                      倍率合计 {{ ((skillSummary?.totalRatio || 0) * 100).toFixed(0) }}%
+                    </div>
+                    <div class="badge badge-accent">
+                      积蓄合计 {{ (skillSummary?.totalAnomaly || 0).toFixed(0) }}
+                    </div>
+                    <div
+                      v-for="s in skillSummary?.skills || []"
+                      :key="s.key"
+                      class="badge badge-ghost"
+                      :title="s.name"
+                    >
+                      {{ s.name }} {{ (s.defaultRatio * 100).toFixed(0) }}%
+                    </div>
+                  </template>
+
+                  <div v-if="skillSummary?.isPenetration" class="badge badge-warning">贯穿</div>
                 </div>
               </div>
             </div>
@@ -158,20 +180,20 @@
                     <div class="font-bold font-mono text-base">{{ debugData?.critZone?.toFixed(4) || '-' }}</div>
                   </div>
                 </div>
-                <div v-if="!skillInfo?.isPenetration" class="card bg-base-200/30 shadow">
+                <div v-if="!skillSummary?.isPenetration" class="card bg-base-200/30 shadow">
                   <div class="card-body p-3">
                     <div class="text-xs text-base-content/60">防御区</div>
                     <div class="font-bold font-mono text-base">{{ debugData?.defMult?.toFixed(4) || '-' }}</div>
                   </div>
                 </div>
-                <div v-if="skillInfo?.isPenetration" class="card bg-base-200/30 shadow">
+                <div v-if="skillSummary?.isPenetration" class="card bg-base-200/30 shadow">
                   <div class="card-body p-3">
                     <div class="text-xs text-base-content/60">贯穿增伤区</div>
                     <div class="font-bold font-mono text-base">{{ debugData?.pierceDmgMult?.toFixed(4) || '-' }}</div>
                   </div>
                 </div>
-                <div v-if="skillInfo?.isPenetration" class="hidden md:block"></div>
-                <div v-if="!skillInfo?.isPenetration" class="hidden md:block"></div>
+                <div v-if="skillSummary?.isPenetration" class="hidden md:block"></div>
+                <div v-if="!skillSummary?.isPenetration" class="hidden md:block"></div>
               </div>
             </div>
 
@@ -258,7 +280,9 @@
                 </div>
                 <div class="card bg-base-200/30 shadow">
                   <div class="card-body p-3">
-                    <div class="text-xs text-base-content/60">积蓄比例</div>
+                    <div class="text-xs text-base-content/60">
+                      {{ (skillSummary?.count || 0) > 1 ? '积蓄比例(总)' : '积蓄比例' }}
+                    </div>
                     <div class="font-bold font-mono text-base">{{ debugData?.procsPerSkill?.toFixed(4) || '-' }}</div>
                   </div>
                 </div>
@@ -282,6 +306,7 @@ import type { WEngine } from '../../model/wengine';
 import type { DriveDisk } from '../../model/drive-disk';
 import type { Enemy } from '../../model/enemy';
 import type { Buff } from '../../model/buff';
+import type { AgentSkillOption } from '../../optimizer/services/optimizer.service';
 import { ElementType, PropertyType } from '../../model/base';
 import { PropertyCollection } from '../../model/property-collection';
 import { iconService } from '../../services/icon.service';
@@ -299,10 +324,7 @@ const props = defineProps<{
   hasCorruptionShield?: boolean;
   enemySerialized?: import('../../optimizer/types').SerializedEnemy;
   discs: DriveDisk[];
-  skillRatio: number;
-  skillAnomaly: number;
-  skillName?: string;
-  skillType?: string;
+  skills: AgentSkillOption[];
   uiDamage: number;
   buffsVersion?: number;
   externalBuffs?: Buff[];
@@ -383,15 +405,22 @@ const debugRequest = ref<ReturnType<typeof OptimizerContext.buildFastRequest> | 
 const onEnterZonesTab = () => runDebugCalc();
 const isDev = import.meta.env.DEV;
 
-const skillInfo = computed(() => {
+const skillSummary = computed(() => {
   if (!props.agent) return null;
+  const skills = (props.skills ?? []).filter(Boolean);
+  const count = skills.length;
+  const totalRatio = skills.reduce((acc, s) => acc + (s.defaultRatio ?? 0), 0);
+  const totalAnomaly = skills.reduce((acc, s) => acc + (s.defaultAnomaly ?? 0), 0);
+  const isPenetration = props.agent.isPenetrationAgent?.() || false;
+
   return {
-    name: props.skillName || '未知技能',
-    type: props.skillType || 'normal',
-    ratio: props.skillRatio,
-    anomaly: props.skillAnomaly,
+    title: count <= 1 ? (skills[0]?.name || '未选择') : `已选${count}个技能`,
     element: ElementType[props.agent.element] || 'PHYSICAL',
-    isPenetration: props.agent.isPenetrationAgent?.() || false,
+    isPenetration,
+    count,
+    totalRatio,
+    totalAnomaly,
+    skills,
   };
 });
 
@@ -506,6 +535,14 @@ const formatValue = (prop: PropertyType, value: number): string => {
 const runDebugCalc = () => {
   if (!props.agent || !props.enemy) return;
 
+  // 未选择技能时不计算
+  if (!props.skills || props.skills.length === 0) {
+    debugData.value = null;
+    debugRequest.value = null;
+    emit('damage-change', 0);
+    return;
+  }
+
   const equipped = equippedDiscs.value;
   const sortedDiscs = [...equipped].sort((a, b) => a.position - b.position);
   discInfo.value = sortedDiscs.map(disc => ({
@@ -524,15 +561,16 @@ const runDebugCalc = () => {
     if (count >= 4) { targetSetId = setId; break; }
   }
 
-  const skillParams = [{
-    id: 'battle-skill',
-    name: props.skillName || '技能',
-    element: props.agent.element,
-    ratio: props.skillRatio,
-    tags: [props.skillType || 'normal'],
-    isPenetration: props.agent.isPenetrationAgent?.() || false,
-    anomalyBuildup: props.skillAnomaly,
-  }];
+  const isPenetration = props.agent.isPenetrationAgent?.() || false;
+  const skillParams = props.skills.map((s, idx) => ({
+    id: s.key || `battle-skill-${idx}`,
+    name: s.name || '技能',
+    element: props.agent!.element,
+    ratio: s.defaultRatio ?? 1,
+    tags: [s.type || 'normal'],
+    isPenetration,
+    anomalyBuildup: s.defaultAnomaly ?? 0,
+  }));
 
   const request = OptimizerContext.buildFastRequest({
     agent: props.agent,
@@ -583,9 +621,13 @@ const runDebugCalc = () => {
   // 直接使用优化器返回的乘区值（已在 createFullResult 中计算好）
   const { baseDirectDamage, baseAnomalyDamage, baseDisorderDamage: baseDisorderDamageValue, baseLieshuangDamage, critZone, dmgBonus: dmgBonusZone } = fullResult.multipliers;
   const baseDisorderDamage = baseDisorderDamageValue ?? 0;  // 提供默认值
-  const finalAtkAfterConv = baseDirectDamage / props.skillRatio;  // 反推 ATK（用于其他展示）
+  // 多技能模式下 baseDirectDamage 不再能用于反推 ATK，直接使用 snapshot3.atk 作为“参与乘区计算的最终 ATK”
+  const finalAtkAfterConv = fullResult.snapshots?.snapshot3?.atk ?? (atkBase * (1 + atkPercent) + atk);
   const finalAtkManual = atkBase * (1 + atkPercent) + atk;
-  const baseDamage = baseDirectDamage;  // 现在 baseDirectDamage 已经是 ATK * ratio
+  // 基础区（直伤）：按“每个技能释放一次”的口径，汇总所有技能倍率
+  const totalSkillRatio = props.skills.reduce((acc, s) => acc + (s.defaultRatio ?? 0), 0);
+  const sheerForce = (fullResult.finalStats?.[PROP_IDX.SHEER_FORCE] ?? 0);
+  const baseDamage = (isPenetration ? sheerForce : finalAtkAfterConv) * totalSkillRatio;
 
   const defMult = fullResult.defMult ?? 1;
   const fixed = evaluator.getFixedMultipliersSnapshot?.();
@@ -613,9 +655,26 @@ const runDebugCalc = () => {
   const anomalyDmgMult = fixed?.anomalyDmgMult ?? 1;
   const pierceDmgMult = 1 + (finalStats3[PROP_IDX.SHEER_DMG_] ?? 0);
 
-  const threshold = request.precomputed.enemyStats?.anomaly_thresholds?.[resElementKey] ?? 1000;
-  const buildupPerSkill = (props.skillAnomaly || 0) * accumulationZone;
-  const procsPerSkill = threshold > 0 ? Math.max(0, Math.min(1, buildupPerSkill / threshold)) : 0;
+  const elementKeyFromEnum = (element: number): string => {
+    switch (element) {
+      case 200: return 'physical';
+      case 201: return 'fire';
+      case 202: return 'ice';
+      case 203: return 'electric';
+      case 205: return 'ether';
+      default: return 'physical';
+    }
+  };
+
+  // 多技能模式：每个技能各算一次积蓄比例，再求和（用于展示）
+  let procsPerSkill = 0;
+  for (const s of props.skills) {
+    const elementKey = elementKeyFromEnum(props.agent.element);
+    const threshold = request.precomputed.enemyStats?.anomaly_thresholds?.[elementKey] ?? 1000;
+    const buildup = (s.defaultAnomaly ?? 0) * accumulationZone;
+    const p = threshold > 0 ? Math.max(0, Math.min(1, buildup / threshold)) : 0;
+    procsPerSkill += p;
+  }
 
   debugData.value = {
     agentName: props.agent.name_cn || props.agent.id,
@@ -674,9 +733,9 @@ const runDebugCalc = () => {
   emit('damage-change', fullResult.damage);
 };
 
-watch([() => props.agent, () => props.enemy, () => props.skillRatio, () => props.uiDamage, () => props.enemySerialized, () => props.externalBuffs, () => props.buffStatusMap, () => props.buffsVersion], () => {
+watch([() => props.agent, () => props.enemy, () => props.skills, () => props.uiDamage, () => props.enemySerialized, () => props.externalBuffs, () => props.buffStatusMap, () => props.buffsVersion], () => {
   runDebugCalc();
-}, { immediate: true });
+}, { immediate: true, deep: true });
 
 // NOTE: battle env (stun/shield/enemySerialized) is driven by BattleService (non-reactive class).
 // We intentionally do not watch those props here; the parent triggers recalculation via the exposed runDebugCalc().

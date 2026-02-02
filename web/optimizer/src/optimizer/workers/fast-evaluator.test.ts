@@ -150,6 +150,34 @@ function createMockPrecomputed(): PrecomputedData {
   };
 }
 
+function createMockPrecomputedMultiSkills(): PrecomputedData {
+  const precomputed = createMockPrecomputed();
+
+  // 追加技能类型增伤：normal +10%，chain +20%
+  precomputed.mergedBuff[PROP_IDX.NORMAL_ATK_DMG_] = 0.1;
+  precomputed.mergedBuff[PROP_IDX.CHAIN_ATK_DMG_] = 0.2;
+
+  // 两个技能：normal(500%) + chain(200%)
+  precomputed.skillsParams = [
+    {
+      ratio: 5.0,
+      element: 200,
+      anomalyBuildup: 0,
+      tags: [1],
+      isPenetration: false,
+    },
+    {
+      ratio: 2.0,
+      element: 200,
+      anomalyBuildup: 0,
+      tags: [3],
+      isPenetration: false,
+    },
+  ];
+
+  return precomputed;
+}
+
 describe('FastEvaluator 增量枚举测试', () => {
 
   it('应该对 4 组不同组合返回一致的伤害值', () => {
@@ -242,6 +270,47 @@ describe('FastEvaluator 增量枚举测试', () => {
       console.log(`组合 ${i + 1}: 全量=${full?.toFixed(2) ?? 'null'}, 增量=${incr?.toFixed(2) ?? 'null'}, 匹配=${match ? '✓' : '✗'}`);
       expect(match).toBe(true);
     }
+  });
+
+  it('createFullResult 应该对多技能的 breakdown 做加总', () => {
+    const precomputed = createMockPrecomputedMultiSkills();
+    const evaluator = new FastEvaluator(precomputed);
+
+    // 选择全 A（目标套装）组合
+    const discs: DiscData[] = [];
+    for (let slot = 0; slot < 6; slot++) {
+      discs.push(precomputed.discsBySlot[slot][0]);
+    }
+
+    // 保证 evaluator 的累加器状态正确（createFullResult 会自己重置，但这里也走一遍完整路径）
+    const res = evaluator.calculateDamageWithMultipliers(discs);
+    expect(res).not.toBeNull();
+
+    const full = evaluator.createFullResult(discs, res!.damage, res!.multipliers);
+
+    // mock 数据下没有异常/紊乱/烈霜，damage 应等于 direct breakdown
+    expect(Math.abs(full.breakdown.anomaly)).toBeLessThan(1e-9);
+    expect(Math.abs(full.breakdown.disorder)).toBeLessThan(1e-9);
+    expect(full.breakdown.lieshuang).toBeUndefined();
+    expect(Math.abs(full.damage - full.breakdown.direct)).toBeLessThan(1e-6);
+
+    // 手工期望值（只验证“加总口径正确”）
+    // finalAtkAfterConv = 1000 * (1 + 0.1(merged) + 0.1(2pc) + 6*0.05(discs)) = 1500
+    // critRate = 0.05 + 6*0.02 = 0.17, critDmg = 0.5 => critZone = 1.085
+    // defMult = 700/(800+700) = 0.4666666667
+    // dmgBonus:
+    // - normal: 1 + (0.2+0.15) + 0.1 = 1.45
+    // - chain:  1 + (0.2+0.15) + 0.2 = 1.55
+    const finalAtkAfterConv = 1500;
+    const critZone = 1 + 0.17 * 0.5;
+    const defMult = 700 / (800 + 700);
+    const dmgBonusNormal = 1 + 0.35 + 0.1;
+    const dmgBonusChain = 1 + 0.35 + 0.2;
+    const expected =
+      finalAtkAfterConv * 5.0 * dmgBonusNormal * critZone * defMult +
+      finalAtkAfterConv * 2.0 * dmgBonusChain * critZone * defMult;
+
+    expect(Math.abs(full.damage - expected)).toBeLessThan(1e-6);
   });
 
   it('accumulator 在 pop 后应该正确恢复', () => {
