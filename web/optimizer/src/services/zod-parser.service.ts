@@ -9,6 +9,7 @@ import { Agent } from "../model/agent";
 import { DriveDisk } from "../model/drive-disk";
 import { WEngine } from "../model/wengine";
 import { dataLoaderService } from "./data-loader.service";
+import type { ParseErrorEntry } from "../model/import-result";
 
 /**
  * ZOD 格式的驱动盘数据
@@ -75,6 +76,17 @@ export interface ZodData {
 }
 
 /**
+ * 解析结果（带错误收集）
+ */
+export interface ZodParseResult {
+  agents: Map<string, Agent>;
+  driveDisks: Map<string, DriveDisk>;
+  wengines: Map<string, WEngine>;
+  /** 所有解析错误 */
+  errors: ParseErrorEntry[];
+}
+
+/**
  * ZOD 解析服务
  */
 export class ZodParserService {
@@ -135,6 +147,123 @@ export class ZodParserService {
     }
 
     return { agents, driveDisks, wengines };
+  }
+
+  /**
+   * 解析 ZOD 格式数据（带错误收集）
+   */
+  async parseZodDataWithErrors(data: ZodData): Promise<ZodParseResult> {
+    const agents = new Map<string, Agent>();
+    const driveDisks = new Map<string, DriveDisk>();
+    const wengines = new Map<string, WEngine>();
+    const errors: ParseErrorEntry[] = [];
+
+    // 解析驱动盘
+    if (data.discs) {
+      for (const discData of data.discs) {
+        const result = await this.parseDiscSafe(discData);
+        if (result.data) {
+          driveDisks.set(result.data.id, result.data);
+        } else if (result.error) {
+          errors.push(result.error);
+        }
+      }
+    }
+
+    // 解析角色
+    if (data.characters) {
+      for (const charData of data.characters) {
+        const result = await this.parseCharacterSafe(charData);
+        if (result.data) {
+          agents.set(result.data.id, result.data);
+        } else if (result.error) {
+          errors.push(result.error);
+        }
+      }
+    }
+
+    // 解析音擎
+    if (data.wengines) {
+      for (const wengineData of data.wengines) {
+        const result = await this.parseWengineSafe(wengineData);
+        if (result.data) {
+          wengines.set(result.data.id, result.data);
+        } else if (result.error) {
+          errors.push(result.error);
+        }
+      }
+    }
+
+    return { agents, driveDisks, wengines, errors };
+  }
+
+  /**
+   * 安全解析驱动盘（捕获错误）
+   */
+  private async parseDiscSafe(data: ZodDiscData): Promise<{ data: DriveDisk | null; error: ParseErrorEntry | null }> {
+    try {
+      const disk = await DriveDisk.fromZodData(data, dataLoaderService);
+      return { data: disk, error: null };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to parse disc ${data.id}:`, error);
+      return {
+        data: null,
+        error: {
+          type: 'disc',
+          rawData: data,
+          errorMessage,
+          id: data.id,
+          displayName: `${data.setKey} (位置${data.slotKey})`,
+        },
+      };
+    }
+  }
+
+  /**
+   * 安全解析角色（捕获错误）
+   */
+  private async parseCharacterSafe(data: ZodCharacterData): Promise<{ data: Agent | null; error: ParseErrorEntry | null }> {
+    try {
+      const agent = await Agent.fromZodData(data as any, dataLoaderService);
+      return { data: agent, error: null };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to parse character ${data.id}:`, error);
+      return {
+        data: null,
+        error: {
+          type: 'character',
+          rawData: data,
+          errorMessage,
+          id: data.id,
+          displayName: data.key,
+        },
+      };
+    }
+  }
+
+  /**
+   * 安全解析音擎（捕获错误）
+   */
+  private async parseWengineSafe(data: ZodWengineData): Promise<{ data: WEngine | null; error: ParseErrorEntry | null }> {
+    try {
+      const wengine = await WEngine.fromZodData(data, dataLoaderService);
+      return { data: wengine, error: null };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to parse wengine ${data.id}:`, error);
+      return {
+        data: null,
+        error: {
+          type: 'wengine',
+          rawData: data,
+          errorMessage,
+          id: data.id,
+          displayName: data.key,
+        },
+      };
+    }
   }
 
   /**
