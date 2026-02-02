@@ -808,8 +808,16 @@ export class OptimizerContext {
 
             // 普通 Buff：只把 in_combat_stats 叠加到 mergedBuff
             if (buff.in_combat_stats) {
+                // 绝区零口径：BUFF 默认按“可达到的满层/最大值”计入优化器计算。
+                // - linear: 直接按 max_stacks 线性叠加
+                // - full_only: 只有满层才生效，也按 max_stacks 计入（等价于“满层值”）
+                // - 未提供 stack_mode/max_stacks 时按 1 处理
+                const stacks =
+                    buff.stack_mode && buff.max_stacks
+                        ? Math.max(1, buff.max_stacks)
+                        : 1;
                 for (const [prop, value] of buff.in_combat_stats.entries()) {
-                    addToPropArray(mergedBuff, prop, value);
+                    addToPropArray(mergedBuff, prop, value * stacks);
                     mergedPairs++;
                 }
             }
