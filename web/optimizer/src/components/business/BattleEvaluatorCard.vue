@@ -42,7 +42,7 @@
                       class="badge badge-ghost"
                       :title="s.name"
                     >
-                      {{ s.name }} {{ (s.defaultRatio * 100).toFixed(0) }}%
+                      {{ s.name }} x{{ s.count }} {{ ((s.defaultRatio * s.count) * 100).toFixed(0) }}%
                     </div>
                   </template>
 
@@ -324,7 +324,7 @@ const props = defineProps<{
   hasCorruptionShield?: boolean;
   enemySerialized?: import('../../optimizer/types').SerializedEnemy;
   discs: DriveDisk[];
-  skills: AgentSkillOption[];
+  skills: (AgentSkillOption & { count?: number })[];
   uiDamage: number;
   buffsVersion?: number;
   externalBuffs?: Buff[];
@@ -407,10 +407,19 @@ const isDev = import.meta.env.DEV;
 
 const skillSummary = computed(() => {
   if (!props.agent) return null;
-  const skills = (props.skills ?? []).filter(Boolean);
+  const input = (props.skills ?? []).filter(Boolean);
+  const grouped = new Map<string, { skill: AgentSkillOption; count: number }>();
+  for (const s of input) {
+    const c = s.count ?? 1;
+    const prev = grouped.get(s.key);
+    if (prev) prev.count += c;
+    else grouped.set(s.key, { skill: s, count: c });
+  }
+  const skills: Array<AgentSkillOption & { count: number }> =
+    Array.from(grouped.values()).map(v => ({ ...v.skill, count: v.count }));
   const count = skills.length;
-  const totalRatio = skills.reduce((acc, s) => acc + (s.defaultRatio ?? 0), 0);
-  const totalAnomaly = skills.reduce((acc, s) => acc + (s.defaultAnomaly ?? 0), 0);
+  const totalRatio = skills.reduce((acc, s) => acc + (s.defaultRatio ?? 0) * (s.count ?? 1), 0);
+  const totalAnomaly = skills.reduce((acc, s) => acc + (s.defaultAnomaly ?? 0) * (s.count ?? 1), 0);
   const isPenetration = props.agent.isPenetrationAgent?.() || false;
 
   return {
@@ -562,14 +571,21 @@ const runDebugCalc = () => {
   }
 
   const isPenetration = props.agent.isPenetrationAgent?.() || false;
-  const skillParams = props.skills.map((s, idx) => ({
+  const grouped = new Map<string, { skill: AgentSkillOption; count: number }>();
+  for (const s of props.skills) {
+    const c = s.count ?? 1;
+    const prev = grouped.get(s.key);
+    if (prev) prev.count += c;
+    else grouped.set(s.key, { skill: s, count: c });
+  }
+  const skillParams = Array.from(grouped.values()).map(({ skill: s, count }, idx) => ({
     id: s.key || `battle-skill-${idx}`,
     name: s.name || '技能',
     element: props.agent!.element,
-    ratio: s.defaultRatio ?? 1,
+    ratio: (s.defaultRatio ?? 1) * count,
     tags: [s.type || 'normal'],
     isPenetration,
-    anomalyBuildup: s.defaultAnomaly ?? 0,
+    anomalyBuildup: (s.defaultAnomaly ?? 0) * count,
   }));
 
   const request = OptimizerContext.buildFastRequest({
@@ -625,7 +641,7 @@ const runDebugCalc = () => {
   const finalAtkAfterConv = fullResult.snapshots?.snapshot3?.atk ?? (atkBase * (1 + atkPercent) + atk);
   const finalAtkManual = atkBase * (1 + atkPercent) + atk;
   // 基础区（直伤）：按“每个技能释放一次”的口径，汇总所有技能倍率
-  const totalSkillRatio = props.skills.reduce((acc, s) => acc + (s.defaultRatio ?? 0), 0);
+  const totalSkillRatio = props.skills.reduce((acc, s) => acc + (s.defaultRatio ?? 0) * (s.count ?? 1), 0);
   const sheerForce = (fullResult.finalStats?.[PROP_IDX.SHEER_FORCE] ?? 0);
   const baseDamage = (isPenetration ? sheerForce : finalAtkAfterConv) * totalSkillRatio;
 
@@ -671,7 +687,7 @@ const runDebugCalc = () => {
   for (const s of props.skills) {
     const elementKey = elementKeyFromEnum(props.agent.element);
     const threshold = request.precomputed.enemyStats?.anomaly_thresholds?.[elementKey] ?? 1000;
-    const buildup = (s.defaultAnomaly ?? 0) * accumulationZone;
+    const buildup = (s.defaultAnomaly ?? 0) * (s.count ?? 1) * accumulationZone;
     const p = threshold > 0 ? Math.max(0, Math.min(1, buildup / threshold)) : 0;
     procsPerSkill += p;
   }

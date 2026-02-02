@@ -11,16 +11,18 @@
           <BattleConfigCard
             :current-team="currentTeam"
             :selected-enemy="selectedEnemy"
+            :all-skills="availableSkills"
             :selected-skills="selectedSkills"
             :unselected-skills="unselectedSkills"
             :selected-buffs="selectedBuffs"
             :unselected-buffs="unselectedBuffs"
             @update:selected-team-id="selectedTeamId = $event"
-            @update:selected-enemy-id="selectedEnemyId = $event"
-            @toggle-skill="toggleSkill"
-            @toggle-buff="toggleBuff"
-            @create-team="onTeamChange"
-          />
+             @update:selected-enemy-id="selectedEnemyId = $event"
+             @inc-skill="incSkill"
+             @dec-skill="decSkill"
+             @toggle-buff="toggleBuff"
+             @create-team="onTeamChange"
+           />
 
           <!-- 计算设置和组合明细 -->
           <CalculationConfigCard
@@ -343,14 +345,29 @@ const unselectedStats = computed(() => {
   return effectiveStatOptions.filter(opt => !stats.includes(opt.value));
 });
 
-// 已选技能
-const selectedSkills = computed(() => {
-  return availableSkills.value.filter(skill => selectedSkillKeys.value.includes(skill.key));
+const selectedSkillCountMap = computed(() => {
+  const map = new Map<string, number>();
+  for (const key of selectedSkillKeys.value) {
+    map.set(key, (map.get(key) ?? 0) + 1);
+  }
+  return map;
 });
 
-// 未选技能
+// 已选技能（去重 + 统计次数）
+const selectedSkills = computed(() => {
+  const map = selectedSkillCountMap.value;
+  const out: Array<(typeof availableSkills.value)[number] & { count: number }> = [];
+  for (const [key, count] of map.entries()) {
+    const skill = availableSkills.value.find(s => s.key === key);
+    if (skill) out.push({ ...skill, count });
+  }
+  return out;
+});
+
+// 未选技能（count===0）
 const unselectedSkills = computed(() => {
-  return availableSkills.value.filter(skill => !selectedSkillKeys.value.includes(skill.key));
+  const map = selectedSkillCountMap.value;
+  return availableSkills.value.filter(skill => !map.has(skill.key));
 });
 
 // Buff 列表
@@ -499,13 +516,13 @@ const handleExcludedTeamIdsUpdate = (teamIds: string[]) => {
   constraints.value.excludedTeamIds = teamIds;
 };
 
-const toggleSkill = (skillKey: string) => {
+const incSkill = (skillKey: string) => {
+  selectedSkillKeys.value.push(skillKey);
+};
+
+const decSkill = (skillKey: string) => {
   const index = selectedSkillKeys.value.indexOf(skillKey);
-  if (index >= 0) {
-    selectedSkillKeys.value.splice(index, 1);
-  } else {
-    selectedSkillKeys.value.push(skillKey);
-  }
+  if (index >= 0) selectedSkillKeys.value.splice(index, 1);
 };
 
 const toggleBuff = (buffId: string) => {
@@ -679,8 +696,8 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
     enemy.physical_dmg_resistance = -0.2;
   }
 
-  // 获取所有选中的技能
-  const skills = selectedSkillKeys.value.map(key => availableSkills.value.find(s => s.key === key)).filter(s => s !== undefined);
+  // 获取所有选中的技能（已按 key 汇总 count）
+  const skills = selectedSkills.value;
 
   if (skills.length === 0) {
     console.error('[Optimizer] 没有选择任何技能');
@@ -698,10 +715,10 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
       id: skill.key || 'default',
       name: skill.name || '默认技能',
       element: agent.element,  // 直接传枚举值，不要转字符串
-      ratio: skill.defaultRatio || 1,
+      ratio: (skill.defaultRatio || 1) * (skill.count ?? 1),
       tags: [skill.type || 'normal'],
       isPenetration: agent.isPenetrationAgent?.() || false,
-      anomalyBuildup: skill.defaultAnomaly || 0,
+      anomalyBuildup: (skill.defaultAnomaly || 0) * (skill.count ?? 1),
     }));
 
     optimizerService.startFastOptimization({
