@@ -1,6 +1,6 @@
 [build]
   base = "web/optimizer"
-  command = "npm ci && npm run build"
+  command = "pnpm install && pnpm build"
   publish = "dist"
 
 # Vite SPA: 所有路由回退到 index.html

@@ -25,10 +25,10 @@
 cd web/optimizer
 
 # 安装依赖
-npm install
+pnpm install
 
 # 启动开发服务器
-npm run dev
+pnpm dev
 ```
 
 然后在浏览器打开 `http://localhost:8522`
