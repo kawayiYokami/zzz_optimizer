@@ -770,16 +770,14 @@ const cancelOptimization = () => {
 
 onMounted(async () => {
   console.log('[OptimizerView] onMounted 开始');
-  // 1. 初始化游戏数据
-  await gameDataStore.initialize();
+  // 游戏数据和存档已在 App.vue 中全局初始化完成
+  // 这里只需要初始化优化器特有的逻辑
 
-  // 2. 加载存档
-  await saveStore.loadFromStorage();
-  // 3. 初始化快速 Workers
+  // 1. 初始化快速 Workers
   optimizerService.initializeFastWorkers(workerCount.value);
-  // 4. 加载预设
+  // 2. 加载预设
   presets.value = optimizerService.loadPresets();
-  // 5. 自动选择第一个队伍或恢复已保存的队伍
+  // 3. 自动选择第一个队伍或恢复已保存的队伍
   if (teams.value.length > 0) {
     if (!selectedTeamId.value) {
       selectedTeamId.value = teams.value[0].id;

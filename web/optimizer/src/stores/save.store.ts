@@ -41,31 +41,46 @@ export const useSaveStore = defineStore('save', () => {
     if (currentSaveName.value === null) {
       return null;
     }
-    let save = saves.value.get(currentSaveName.value);
-    if (!save) {
-      // 如果实例不存在，从rawSaves生成
-      const rawSave = rawSaves.value.get(currentSaveName.value);
-      if (rawSave) {
-        // 某些场景（例如发布后首次导入）只写入了 rawSaves，但实例尚未生成。
-        // 这里做一个“兜底同步生成”，避免 UI/计算链路拿到 null。
-        // 注意：这会触发异步流程，因此调用方仍应处理短暂的 null。
-        console.warn(`Instance for save ${currentSaveName.value} not found, generating from raw data...`);
-        isLoading.value = true;
-        SaveData.fromZod(currentSaveName.value, normalizeZodData(rawSave), dataLoaderService)
-          .then((inst) => {
-            saves.value.set(currentSaveName.value!, inst);
-          })
-          .catch((err) => {
-            console.error(`Failed to generate instance for save ${currentSaveName.value}:`, err);
-            error.value = err instanceof Error ? err.message : String(err);
-          })
-          .finally(() => {
-            isLoading.value = false;
-          });
+    return saves.value.get(currentSaveName.value) ?? null;
+  });
+
+  /**
+   * 确保当前存档的实例已生成
+   * 如果实例不存在但rawSaves中有数据，则生成实例
+   */
+  async function ensureCurrentSaveInstance(): Promise<SaveData | null> {
+    if (currentSaveName.value === null) {
+      return null;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    if (save) {
+      return save as SaveData;
+    }
+
+    // 如果实例不存在，从rawSaves生成
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (rawSave) {
+      console.warn(`Instance for save ${currentSaveName.value} not found, generating from raw data...`);
+      isLoading.value = true;
+      try {
+        const inst = await SaveData.fromZod(currentSaveName.value, normalizeZodData(rawSave), dataLoaderService);
+        // 使用新的 Map 替换旧的 Map，以触发 Vue 响应式更新
+        const newSaves = new Map(saves.value);
+        newSaves.set(currentSaveName.value!, inst);
+        saves.value = newSaves;
+        return inst;
+      } catch (err) {
+        console.error(`Failed to generate instance for save ${currentSaveName.value}:`, err);
+        error.value = err instanceof Error ? err.message : String(err);
+        return null;
+      } finally {
+        isLoading.value = false;
       }
     }
-    return save ?? null;
-  });
+
+    return null;
+  }
 
   const currentRawSave = computed(() => {
     if (currentSaveName.value === null) {
@@ -1163,6 +1178,7 @@ export const useSaveStore = defineStore('save', () => {
     exportSingleSave,         // 导出单个存档
     importSaveData,           // 导入存档数据（覆盖或新建）
     reset,
+    ensureCurrentSaveInstance, // 确保当前存档实例已生成
     equipWengine,             // 装备音擎
     equipDriveDisk,           // 装备驱动盘
     syncInstanceToRawSave,    // 同步实例数据到rawSaves
