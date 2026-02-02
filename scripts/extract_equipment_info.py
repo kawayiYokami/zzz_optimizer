@@ -51,7 +51,7 @@ def main():
     import sys
     
     # 驱动盘数据目录
-    equipment_dir = Path.cwd() / "assets" / "inventory_data" / "equipment"
+    equipment_dir = Path.cwd() / "web" / "optimizer" / "public" / "game-data" / "equipment"
     
     # 解析命令行参数
     if len(sys.argv) > 1:

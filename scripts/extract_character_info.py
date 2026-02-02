@@ -119,7 +119,8 @@ def main():
     import sys
     
     # 角色数据目录
-    char_dir = Path.cwd() / r"assets\inventory_data\character"
+    repo_root = Path.cwd()
+    char_dir = repo_root / "web" / "optimizer" / "public" / "game-data" / "character"
     
     # 解析命令行参数
     if len(sys.argv) > 1:
@@ -130,6 +131,11 @@ def main():
             path = char_dir / f"{char_id}.json"
         else:
             path = Path(arg)
+            # 支持传入单独的角色ID文件名（如 "1311.json"）
+            if not path.is_absolute() and not path.exists():
+                maybe = char_dir / path.name
+                if maybe.exists():
+                    path = maybe
     else:
         # 默认1011（安比）
         path = char_dir / "1011.json"
