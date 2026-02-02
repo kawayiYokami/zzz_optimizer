@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# TypeScript Build Info
+*.tsbuildinfo
+
+# pnpm
+node_modules
+.pnpm-debug.log*
