@@ -17,7 +17,9 @@
       <!-- 技能配置 -->
       <div class="divider text-xs font-bold text-base-content/50 my-2">技能配置</div>
       <div class="flex flex-col gap-3">
-        <div v-for="group in groupedSkills" :key="group.agentName" class="flex flex-col gap-1">
+        <div class="text-xs font-bold text-base-content/70 pl-1">已激活</div>
+
+        <div v-for="group in groupedActiveSkills" :key="group.agentName" class="flex flex-col gap-1">
           <div class="text-xs font-bold text-base-content/70 pl-1">{{ group.agentName }}</div>
           <div class="flex flex-wrap gap-1.5">
             <div
@@ -27,29 +29,67 @@
               :data-tip="formatSkillTooltip(skill)"
             >
               <button
-                class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200"
-                :class="skill.isActive ? 'badge-primary font-medium shadow-sm' : 'badge-ghost border-base-300 text-base-content/60'"
-                @click="emit('toggleSkill', skill.key)"
+                class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200 badge-primary font-medium shadow-sm"
+                @click="emit('decSkill', skill.key)"
+              >
+                {{ skill.name }} x{{ skill.count }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="ungroupedActiveSkills.length > 0" class="flex flex-col gap-1">
+          <div class="text-xs font-bold text-base-content/70 pl-1">其他</div>
+          <div class="flex flex-wrap gap-1.5">
+            <div
+              v-for="skill in ungroupedActiveSkills"
+              :key="skill.key"
+              class="tooltip tooltip-bottom"
+              :data-tip="formatSkillTooltip(skill)"
+            >
+              <button
+                class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200 badge-primary font-medium shadow-sm"
+                @click="emit('decSkill', skill.key)"
+              >
+                {{ skill.name }} x{{ skill.count }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider text-xs font-bold text-base-content/50 my-1">全部技能（点击 +1）</div>
+
+        <div v-for="group in groupedAllSkills" :key="group.agentName" class="flex flex-col gap-1">
+          <div class="text-xs font-bold text-base-content/70 pl-1">{{ group.agentName }}</div>
+          <div class="flex flex-wrap gap-1.5">
+            <div
+              v-for="skill in group.skills"
+              :key="skill.key"
+              class="tooltip tooltip-bottom"
+              :data-tip="formatSkillTooltip(skill)"
+            >
+              <button
+                class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200 badge-ghost border-base-300 text-base-content/60"
+                @click="emit('incSkill', skill.key)"
               >
                 {{ skill.name }}
               </button>
             </div>
           </div>
         </div>
-        <!-- 未归类技能 (如有) -->
-        <div v-if="ungroupedSkills.length > 0" class="flex flex-col gap-1">
+
+        <div v-if="ungroupedAllSkills.length > 0" class="flex flex-col gap-1">
           <div class="text-xs font-bold text-base-content/70 pl-1">其他</div>
           <div class="flex flex-wrap gap-1.5">
             <div
-              v-for="skill in ungroupedSkills"
+              v-for="skill in ungroupedAllSkills"
               :key="skill.key"
               class="tooltip tooltip-bottom"
               :data-tip="formatSkillTooltip(skill)"
             >
               <button
-                class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200"
-                :class="skill.isActive ? 'badge-primary font-medium shadow-sm' : 'badge-ghost border-base-300 text-base-content/60'"
-                @click="emit('toggleSkill', skill.key)"
+                class="badge badge-md py-3 h-auto min-h-[1.5rem] cursor-pointer transition-all duration-200 badge-ghost border-base-300 text-base-content/60"
+                @click="emit('incSkill', skill.key)"
               >
                 {{ skill.name }}
               </button>
@@ -130,7 +170,8 @@ import { Buff, BuffSource } from '../../model/buff';
 interface Props {
   currentTeam: Team | null;
   selectedEnemy: Enemy | null;
-  selectedSkills: AgentSkillOption[];
+  allSkills: AgentSkillOption[];
+  selectedSkills: (AgentSkillOption & { count: number })[];
   unselectedSkills: AgentSkillOption[];
   selectedBuffs: Buff[];
   unselectedBuffs: Buff[];
@@ -139,6 +180,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   currentTeam: null,
   selectedEnemy: null,
+  allSkills: () => [],
   selectedSkills: () => [],
   unselectedSkills: () => [],
   selectedBuffs: () => [],
@@ -149,7 +191,8 @@ const props = withDefaults(defineProps<Props>(), {
 interface Emits {
   'update:selectedTeamId': [teamId: string];
   'update:selectedEnemyId': [enemyId: string];
-  'toggleSkill': [skillKey: string];
+  'incSkill': [skillKey: string];
+  'decSkill': [skillKey: string];
   'toggleBuff': [buffId: string];
   'createTeam': [];
 }
@@ -162,25 +205,15 @@ const showTeamEditModal = ref(false);
 const editingTeamId = ref<string | undefined>();
 // 敌人选择已迁移到「战斗环境」卡片
 
-// === 技能分组逻辑 ===
+// === 技能分组逻辑（上：已激活；下：可选） ===
 
-interface SkillWithStatus extends AgentSkillOption {
-  isActive: boolean;
-}
+type SelectedSkill = AgentSkillOption & { count: number };
 
-const allSkills = computed(() => {
-  const active = props.selectedSkills.map(s => ({ ...s, isActive: true }));
-  const inactive = props.unselectedSkills.map(s => ({ ...s, isActive: false }));
-  return [...active, ...inactive];
-});
-
-const groupedSkills = computed(() => {
+const groupedActiveSkills = computed(() => {
   if (!props.currentTeam) return [];
   
-  const groups: { agentName: string; skills: SkillWithStatus[] }[] = [];
-  const processedSkillKeys = new Set<string>();
+  const groups: { agentName: string; skills: SelectedSkill[] }[] = [];
 
-  // 1. 遍历当前队伍的代理人
   const agents = [
     props.currentTeam.frontAgent,
     ...props.currentTeam.backAgents
@@ -189,36 +222,53 @@ const groupedSkills = computed(() => {
   for (const agent of agents) {
     if (!agent) continue;
     
-    // 查找该代理人的技能
-    // 假设 key 包含代理人名字 (例如: "安比·德玛拉_普通攻击_一段")
-    // 或者我们简单地将所有未归类的技能归类到匹配名字的代理人下
-    const agentSkills = allSkills.value.filter(skill => {
-        // 简单匹配：如果 key 包含代理人名字
-        // 注意：这里假设 skill.key 包含中文名，这可能需要根据实际数据调整
-        return skill.key.includes(agent.name_cn);
-    });
+    const agentSkills = props.selectedSkills.filter(skill => skill.key.includes(agent.name_cn));
 
     if (agentSkills.length > 0) {
       groups.push({
         agentName: agent.name_cn,
         skills: agentSkills
       });
-      agentSkills.forEach(s => processedSkillKeys.add(s.key));
     }
   }
 
   return groups;
 });
 
-const ungroupedSkills = computed(() => {
-  const processedKeys = new Set(groupedSkills.value.flatMap(g => g.skills.map(s => s.key)));
-  return allSkills.value.filter(s => !processedKeys.has(s.key));
+const groupedAllSkills = computed(() => {
+  if (!props.currentTeam) return [];
+
+  const groups: { agentName: string; skills: AgentSkillOption[] }[] = [];
+
+  const agents = [
+    props.currentTeam.frontAgent,
+    ...props.currentTeam.backAgents
+  ].filter(Boolean);
+
+  for (const agent of agents) {
+    if (!agent) continue;
+    const agentSkills = props.allSkills.filter(skill => skill.key.includes(agent.name_cn));
+    if (agentSkills.length > 0) groups.push({ agentName: agent.name_cn, skills: agentSkills });
+  }
+
+  return groups;
 });
 
-function formatSkillTooltip(skill: AgentSkillOption) {
+const ungroupedActiveSkills = computed(() => {
+  const processedKeys = new Set(groupedActiveSkills.value.flatMap(g => g.skills.map(s => s.key)));
+  return props.selectedSkills.filter(s => !processedKeys.has(s.key));
+});
+
+const ungroupedAllSkills = computed(() => {
+  const processedKeys = new Set(groupedAllSkills.value.flatMap(g => g.skills.map(s => s.key)));
+  return props.allSkills.filter(s => !processedKeys.has(s.key));
+});
+
+function formatSkillTooltip(skill: AgentSkillOption & Partial<{ count: number }>) {
     const parts = [];
-    if (skill.defaultRatio) parts.push(`倍率: ${(skill.defaultRatio * 100).toFixed(0)}%`);
-    if (skill.defaultAnomaly) parts.push(`积蓄: ${skill.defaultAnomaly}`);
+    const count = skill.count ?? 1;
+    if (skill.defaultRatio) parts.push(`倍率: ${(skill.defaultRatio * 100).toFixed(0)}% x${count} = ${((skill.defaultRatio * count) * 100).toFixed(0)}%`);
+    if (skill.defaultAnomaly) parts.push(`积蓄: ${skill.defaultAnomaly} x${count} = ${(skill.defaultAnomaly * count).toFixed(0)}`);
     return parts.join(' | ') || skill.name;
 }
 

@@ -58,6 +58,8 @@ export interface FastEvaluationResult {
  */
 export class FastEvaluator {
   private precomputed: PrecomputedData;
+  // 多技能模式：命破/贯穿判定属于角色机制，整场优化固定；避免在每个组合内重复遍历 skillsParams
+  private hasMingpo: boolean;
 
   /** 复用的累加器数组（仅存储盘增量+2pc，不含 buff） */
   private accumulator: Float64Array;
@@ -107,6 +109,7 @@ export class FastEvaluator {
 
   constructor(precomputed: PrecomputedData) {
     this.precomputed = precomputed;
+    this.hasMingpo = precomputed.skillsParams.some(s => s?.isMingpo === true || s?.isPenetration === true);
     this.accumulator = new Float64Array(PROP_IDX.TOTAL_PROPS);
     this.evalBuffer = new Float64Array(PROP_IDX.TOTAL_PROPS);
     this.workerBaseStats = new Float64Array(PROP_IDX.TOTAL_PROPS);
@@ -592,9 +595,7 @@ export class FastEvaluator {
     // - 同时清空穿透/穿透率（避免继续影响防御区与展示）
     // ========================================================================
     // 说明：isPenetration 在 buildFastRequest 时由 agent.isPenetrationAgent() 决定，属于角色机制。
-    // 多技能模式：只要任一技能为命破/贯穿，就按命破口径处理（角色机制）
-    const isMingpo = skillsParams.some(s => s?.isMingpo === true || s?.isPenetration === true);
-    if (isMingpo) {
+    if (this.hasMingpo) {
       this.evalBuffer[PROP_IDX.PEN] = 0;
       this.evalBuffer[PROP_IDX.PEN_] = 0;
       // 注意：口径对齐“转换类 Buff”：源取快照2（不链式），产物写入快照3
