@@ -670,8 +670,8 @@
     "rarity": 3,
     "group": 290,
     "EN": "Mirage Archer Unit",
-    "desc": "CardDesc_30015",
-    "KO": "BriefName_Monster_ObsoleteAndroid",
+    "desc": "...",
+    "KO": "환영의 화살 유닛",
     "CHS": "幻矢单元",
     "JA": "幻矢ユニット"
   },
@@ -3324,8 +3324,8 @@
     "rarity": 4,
     "group": 290,
     "EN": "叛律孤歌·???",
-    "desc": "CardDesc_40001",
-    "KO": "BriefName_Monster_Vesper",
+    "desc": "...",
+    "KO": "叛律孤歌·???",
     "CHS": "叛律孤歌·???",
     "JA": "叛律孤歌·???"
   },
@@ -4038,8 +4038,8 @@
     "rarity": 3,
     "group": 290,
     "EN": "终曲之愿·???",
-    "desc": "CardDesc_30014",
-    "KO": "BriefName_Monster_PinkBowTrooper",
+    "desc": "...",
+    "KO": "终曲之愿·???",
     "CHS": "终曲之愿·???",
     "JA": "终曲之愿·???"
   },
@@ -4092,8 +4092,8 @@
     "rarity": 3,
     "group": 203,
     "EN": "Miasmic - Rampant Brute",
-    "desc": "CardDesc_30045",
-    "KO": "BriefName_Monster_MiasmaDubiousHero",
+    "desc": "...",
+    "KO": "미아즈믹·횡포자",
     "CHS": "秽蚀·蛮横力士",
     "JA": "ミアズミック・剛力横暴者"
   },

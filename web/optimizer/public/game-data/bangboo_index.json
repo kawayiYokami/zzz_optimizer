@@ -232,10 +232,10 @@
   "54010": {
     "icon": "UI/Sprite/A1DynamicLoad/BangbooModGarage/UnPacker/BangbooRole/BangbooGarageRole46.png",
     "rank": 4,
-    "codename": "筆頭ファン",
+    "codename": "BiggestFan",
     "EN": "Biggest Fan",
-    "desc": "Angels of Delusion stan forever and always!",
-    "KO": "팬",
+    "desc": "An Angels of Delusion superfan for life!",
+    "KO": "팬팬",
     "CHS": "阿饭",
     "JA": "コサン"
   },
