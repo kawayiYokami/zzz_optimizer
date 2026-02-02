@@ -40,7 +40,7 @@
               </div>
 
               <!-- 角色列表区 -->
-              <div>
+              <div ref="characterListContainer" class="max-h-[70vh] overflow-y-auto">
                 <div v-if="filteredAndSortedAgents.length === 0" class="text-center py-10 text-base-content/50">
                   <div class="text-4xl mb-2">🔍</div>
                   <p>没有找到符合条件的代理人</p>
@@ -203,7 +203,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { useSaveStore } from '../stores/save.store';
 import { useGameDataStore } from '../stores/game-data.store';
 import AgentCard from '../components/business/AgentCard.vue';
@@ -219,6 +219,8 @@ const gameDataStore = useGameDataStore();
 
 // 状态
 const selectedAgentId = ref<string | null>(null);
+const selectedOrderStack = ref<string[]>([]); // 选中顺序栈，最近选中的在前
+const characterListContainer = ref<HTMLElement | null>(null);
 const showFullImageModal = ref(false);
 const showCreateAgentModal = ref(false);
 const selectedCharacterInfo = ref<CharacterInfo | null>(null);
@@ -372,7 +374,20 @@ const filteredAndSortedAgents = computed(() => {
   result.sort((a, b) => {
     let comparison = 0;
 
-    // 先按是否拥有排序（拥有的在前）
+    // 首先按选中顺序排序（选中栈中的角色优先，越晚选中的越靠前）
+    const aSelectedIndex = selectedOrderStack.value.indexOf(a.agent.game_id);
+    const bSelectedIndex = selectedOrderStack.value.indexOf(b.agent.game_id);
+    const aInStack = aSelectedIndex !== -1;
+    const bInStack = bSelectedIndex !== -1;
+
+    if (aInStack && !bInStack) return -1;
+    if (!aInStack && bInStack) return 1;
+    if (aInStack && bInStack) {
+      // 两者都在栈中，索引小的（后选中的）排前面
+      return aSelectedIndex - bSelectedIndex;
+    }
+
+    // 然后按是否拥有排序（拥有的在前）
     if (a.isOwned !== b.isOwned) {
       return a.isOwned ? -1 : 1;
     }
@@ -413,6 +428,20 @@ function selectAgent(agentId: string, isOwned: boolean) {
     selectedAgentId.value = agentId;
     // 保存到 localStorage
     localStorage.setItem('zzz_selected_agent_id', agentId);
+
+    // 更新选中顺序栈：移除已存在的，然后加到最前面
+    const existingIndex = selectedOrderStack.value.indexOf(agentId);
+    if (existingIndex !== -1) {
+      selectedOrderStack.value.splice(existingIndex, 1);
+    }
+    selectedOrderStack.value.unshift(agentId);
+
+    // 滚动到顶部
+    nextTick(() => {
+      if (characterListContainer.value) {
+        characterListContainer.value.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
   } else {
     // 打开创建角色弹窗
     selectedCharacterGameId.value = agentId;
