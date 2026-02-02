@@ -283,11 +283,11 @@
     "icon": "Weapon_S_1491",
     "rank": 4,
     "type": 4,
-    "EN": "Song of Thoughts",
+    "EN": "Thoughtbop",
     "desc": "...",
-    "KO": "Item_Weapon_S_1491_Name",
+    "KO": "사유로 빚은 노래",
     "CHS": "思络成歌",
-    "JA": "この思いを歌へ"
+    "JA": "想いが織りなす歌"
   },
   "12015": {
     "icon": "Weapon_B_Common_15",
@@ -485,7 +485,7 @@
     "type": 3,
     "EN": "Angel in the Shell",
     "desc": "...",
-    "KO": "Item_Weapon_S_1501_Name",
+    "KO": "껍데기 속 영혼",
     "CHS": "壳中之灵",
     "JA": "殻の中の魂"
   },

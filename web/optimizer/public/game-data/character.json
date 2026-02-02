@@ -31,6 +31,7 @@
     "icon": "IconRole29",
     "potential": [],
     "EN": "Qingyi",
+    "live2d": "UISpine_Qingyi",
     "skin": {
       "3112510": {
         "Name": "Qingyi: Clarity, Peace, and Joy",
@@ -53,6 +54,7 @@
     "icon": "IconRole24",
     "potential": [],
     "EN": "Jane",
+    "live2d": "UISpine_Jian",
     "skin": {
       "3112610": {
         "Name": "Jane: Hidden Nightfade",
@@ -102,6 +104,7 @@
     "icon": "IconRole53",
     "potential": [],
     "EN": "Banyue",
+    "live2d": "UISpineBanyue",
     "skin": {
       "3114710": {
         "Name": "Banyue: Blazestone Heart",
@@ -115,7 +118,7 @@
     "JA": "盤岳"
   },
   "1491": {
-    "code": "Avatar_Female_Size01_Summer_En",
+    "code": "Sunna",
     "rank": 4,
     "type": 4,
     "element": 200,
@@ -123,18 +126,24 @@
     "camp": 13,
     "icon": "IconRole58",
     "potential": [],
-    "EN": "Avatar_Female_Size01_Summer",
+    "EN": "Sunna",
+    "live2d": "UISpine_Qianxialeimi",
     "skin": {
       "3114910": {
-        "Name": "AvatarSkin_Summer_Name_000",
-        "Desc": "AvatarSkin_Summer_Desc_000",
+        "Name": "Sunna: Dreams on Loop",
+        "Desc": "...",
         "Image": "IconRole58"
+      },
+      "3114911": {
+        "Name": "Sunna: Afternoon Tea Break",
+        "Desc": "...",
+        "Image": "IconRole58_01"
       }
     },
-    "desc": "Partner_ProfileDesc_1491",
-    "KO": "Avatar_Female_Size01_Summer",
-    "CHS": "(Test1)千夏",
-    "JA": "Avatar_Female_Size01_Summer"
+    "desc": "...",
+    "KO": "수나",
+    "CHS": "千夏",
+    "JA": "千夏"
   },
   "1201": {
     "code": "Harumasa",
@@ -153,6 +162,7 @@
       120105
     ],
     "EN": "Harumasa",
+    "live2d": "UISpine_Qianyuyouzhen",
     "skin": {
       "3112010": {
         "Name": "Asaba Harumasa: Full-Fledged Strings",
@@ -182,8 +192,8 @@
         "Image": "IconRole45"
       },
       "3114211": {
-        "Name": "AvatarSkin_PanYinhu_Name_001",
-        "Desc": "AvatarSkin_PanYinhu_Desc_001",
+        "Name": "Pan Yinhu: Culinary Jewel",
+        "Desc": "...",
         "Image": "IconRole45_01"
       }
     },
@@ -202,6 +212,7 @@
     "icon": "IconRole41",
     "potential": [],
     "EN": "Vivian",
+    "live2d": "UISpine_Vivian",
     "skin": {
       "3113310": {
         "Name": "Vivian: Fluttering Violet",
@@ -281,6 +292,7 @@
     "potential": [],
     "EN": "Yixuan",
     "spelement": "UI/Sprite/A1DynamicLoad/IconGeneralBuff/Packer/IconAuricInk.png",
+    "live2d": "UISpine_Yixuan",
     "skin": {
       "3113710": {
         "Name": "Yixuan: Summit of Clouds",
@@ -308,6 +320,7 @@
     "icon": "IconRole37",
     "potential": [],
     "EN": "Evelyn",
+    "live2d": "UISpineEvelyn",
     "skin": {
       "3113210": {
         "Name": "Evelyn: A Moth to Light",
@@ -330,6 +343,7 @@
     "icon": "IconRole46",
     "potential": [],
     "EN": "Alice",
+    "live2d": "UISpineAlice",
     "skin": {
       "3114010": {
         "Name": "Alice: Celestian Etiquette",
@@ -379,6 +393,7 @@
     "icon": "IconRole25",
     "potential": [],
     "EN": "Caesar",
+    "live2d": "UISpineCeasar",
     "skin": {
       "3110710": {
         "Name": "Caesar: Inferno Joyride",
@@ -401,6 +416,7 @@
     "icon": "IconRole43",
     "potential": [],
     "EN": "Ju Fufu",
+    "live2d": "UISpineJufufu",
     "skin": {
       "3113910": {
         "Name": "Ju Fufu: Summit's Cute Tiger",
@@ -494,6 +510,7 @@
     "icon": "IconRole23",
     "potential": [],
     "EN": "Zhu Yuan",
+    "live2d": "UISpineZhuyuan",
     "skin": {
       "3112410": {
         "Name": "Zhu Yuan: Suppressor of Evil",
@@ -545,6 +562,7 @@
     "icon": "IconRole26",
     "potential": [],
     "EN": "Lighter",
+    "live2d": "UISpine_Lighter",
     "skin": {
       "3111610": {
         "Name": "Lighter: Everburn Embers",
@@ -567,6 +585,7 @@
     "icon": "IconRole48",
     "potential": [],
     "EN": "Seed",
+    "live2d": "UISpine_Seed",
     "skin": {
       "3114610": {
         "Name": "Seed: Flower in Bloom",
@@ -640,6 +659,7 @@
     "icon": "IconRole50",
     "potential": [],
     "EN": "Lucia",
+    "live2d": "UISpineLucia",
     "skin": {
       "3114510": {
         "Name": "Lucia: Whispering Dreams",
@@ -663,6 +683,7 @@
     "potential": [],
     "EN": "Miyabi",
     "spelement": "UI/Sprite/A1DynamicLoad/IconGeneralBuff/Packer/IconFrost.png",
+    "live2d": "UISpine_Xingjianya",
     "skin": {
       "3110910": {
         "Name": "Hoshimi Miyabi: Frostgleam Dew",
@@ -685,6 +706,7 @@
     "icon": "IconRole39",
     "potential": [],
     "EN": "Trigger",
+    "live2d": "UIspineTrigger",
     "skin": {
       "3113610": {
         "Name": "Trigger: Gaze Into the Light",
@@ -708,6 +730,7 @@
     "potential": [],
     "EN": "Ye Shunguang",
     "spelement": "UI/Sprite/A1DynamicLoad/IconGeneralBuff/Packer/IconHonedEdge.png",
+    "live2d": "UISpine_Yeshunguang",
     "skin": {
       "3114310": {
         "Name": "Ye Shunguang: Clouddrift Illumination",
@@ -779,6 +802,7 @@
     "icon": "IconRole52",
     "potential": [],
     "EN": "Yidhari",
+    "live2d": "UISpine_Yidhari",
     "skin": {
       "3110510": {
         "Name": "Yidhari: Stream of Consciousness",
@@ -801,6 +825,7 @@
     "icon": "IconRole47",
     "potential": [],
     "EN": "Yuzuha",
+    "live2d": "UISpine_Youye",
     "skin": {
       "3114110": {
         "Name": "Yuzuha: Tanuki Under the Shade",
@@ -828,6 +853,7 @@
     "icon": "IconRole56",
     "potential": [],
     "EN": "Zhao",
+    "live2d": "UISpinezhao",
     "skin": {
       "3113410": {
         "Name": "Zhao: Cuddly Executor",
@@ -850,6 +876,7 @@
     "icon": "IconRole54",
     "potential": [],
     "EN": "Dialyn",
+    "live2d": "UISpine_Liuyin",
     "skin": {
       "3114810": {
         "Name": "Dialyn: Ringing Judgment",
@@ -872,6 +899,7 @@
     "icon": "IconRole42",
     "potential": [],
     "EN": "Hugo",
+    "live2d": "UISpine_Hugo",
     "skin": {
       "3112910": {
         "Name": "Hugo: Crownless Rebellion",
@@ -916,6 +944,7 @@
     "icon": "IconRole36",
     "potential": [],
     "EN": "Astra Yao",
+    "live2d": "UISpineYaoJiayin",
     "skin": {
       "3113110": {
         "Name": "Astra Yao: Scarlet Rock",
@@ -943,6 +972,7 @@
     "icon": "IconRole49",
     "potential": [],
     "EN": "Orphie & Magus",
+    "live2d": "UISpine_Aofeisi",
     "skin": {
       "3113010": {
         "Name": "Orphie & Magus: Two Banks of the River",
@@ -1036,6 +1066,7 @@
     "icon": "IconRole31",
     "potential": [],
     "EN": "Yanagi",
+    "live2d": "UISpineYanagi",
     "skin": {
       "3112210": {
         "Name": "Tsukishiro Yanagi: Flowing Moonshade",
@@ -1058,14 +1089,20 @@
     "icon": "IconRole57",
     "potential": [],
     "EN": "Aria",
+    "live2d": "UISpineAria",
     "skin": {
       "3115010": {
-        "Name": "AvatarSkin_Aria_Name_000",
-        "Desc": "AvatarSkin_Aria_Desc_000",
+        "Name": "Aria: Energetic Idol",
+        "Desc": "...",
         "Image": "IconRole57"
+      },
+      "3115011": {
+        "Name": "Aria: Discordant Note",
+        "Desc": "...",
+        "Image": "IconRole57_01"
       }
     },
-    "desc": "Partner_ProfileDesc_1501",
+    "desc": "...",
     "KO": "아리아",
     "CHS": "爱芮",
     "JA": "アリア"
@@ -1109,6 +1146,7 @@
       117105
     ],
     "EN": "Burnice",
+    "live2d": "UISpine_Burnice",
     "skin": {
       "3111710": {
         "Name": "Burnice: Wildfire Rave",
@@ -1138,6 +1176,7 @@
       138105
     ],
     "EN": "Soldier 0 - Anby",
+    "live2d": "UISpineSPAnbi",
     "skin": {
       "3113810": {
         "Name": "Soldier 0 - Anby: Silver Soldier",
@@ -1167,6 +1206,7 @@
       119105
     ],
     "EN": "Ellen",
+    "live2d": "UISpineEllen",
     "skin": {
       "3111910": {
         "Name": "Ellen: Ellen Scissorhands",
