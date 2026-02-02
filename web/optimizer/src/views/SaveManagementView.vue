@@ -1,5 +1,18 @@
 <template>
   <div class="min-h-screen bg-base-200 p-4 md:p-8">
+    <!-- 导入进度遮罩 -->
+    <div v-if="isImporting" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+      <div class="card bg-base-100 shadow-xl w-80">
+        <div class="card-body items-center text-center">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+          <h3 class="card-title mt-4">正在导入存档</h3>
+          <p class="text-sm text-base-content/70">{{ importStatus }}</p>
+          <progress class="progress progress-primary w-full mt-2" :value="importProgress" max="100"></progress>
+          <p class="text-xs text-base-content/50 mt-2">请勿离开此页面...</p>
+        </div>
+      </div>
+    </div>
+
     <div class="max-w-4xl mx-auto space-y-6">
       <!-- 存档列表 -->
       <div class="card bg-base-100 shadow">
@@ -9,7 +22,7 @@
             <button
               @click="createNewSave"
               class="btn btn-primary btn-sm"
-              :disabled="saveNames.length >= 5"
+              :disabled="saveNames.length >= 5 || isImporting"
             >
               + 新建存档
             </button>
@@ -41,19 +54,21 @@
                         v-if="name !== currentSaveName"
                         @click="switchToSave(name)"
                         class="btn btn-sm btn-primary"
+                        :disabled="isImporting"
                       >
                         切换
                       </button>
                       <button
                         @click="exportSave(name)"
                         class="btn btn-sm btn-secondary"
+                        :disabled="isImporting"
                       >
                         导出
                       </button>
                       <button
                         @click="deleteSave(name)"
                         class="btn btn-sm btn-error"
-                        :disabled="saveNames.length === 1"
+                        :disabled="saveNames.length === 1 || isImporting"
                       >
                         删除
                       </button>
@@ -81,7 +96,7 @@
             accept=".json"
             @change="handleFileImport"
             class="file-input file-input-bordered w-full max-w-xs"
-            :disabled="saveNames.length >= 5"
+            :disabled="saveNames.length >= 5 || isImporting"
           />
           <div v-if="saveNames.length >= 5" class="text-warning mt-2">
             存档已满（5个），请先删除一个存档
@@ -105,6 +120,9 @@ import { useSaveStore } from '../stores/save.store';
 const saveStore = useSaveStore();
 const importError = ref<string | null>(null);
 const importSuccess = ref(false);
+const isImporting = ref(false);
+const importStatus = ref('准备中...');
+const importProgress = ref(0);
 
 const saveNames = computed(() => saveStore.saveNames);
 const currentSaveName = computed(() => saveStore.currentSaveName);
@@ -180,7 +198,7 @@ function exportSave(name: string) {
   }
 }
 
-function handleFileImport(event: Event) {
+async function handleFileImport(event: Event) {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
 
@@ -194,43 +212,77 @@ function handleFileImport(event: Event) {
     return;
   }
 
+  // 重置状态
   importError.value = null;
   importSuccess.value = false;
+  isImporting.value = true;
+  importStatus.value = '读取文件中...';
+  importProgress.value = 10;
 
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    try {
-      const content = e.target?.result as string;
-      const data = JSON.parse(content);
+  try {
+    // 读取文件
+    const content = await readFileAsText(file);
+    importProgress.value = 30;
+    importStatus.value = '解析数据中...';
 
-      // 生成新的存档名
-      const originalName = data.name || '导入存档';
-      let saveName = originalName;
-      let counter = 1;
+    // 解析 JSON
+    const data = JSON.parse(content);
+    importProgress.value = 50;
+    importStatus.value = '验证数据格式...';
 
-      // 如果存档名已存在，添加序号
-      while (saveNames.value.includes(saveName)) {
-        saveName = `${originalName}_${counter}`;
-        counter++;
-      }
+    // 生成新的存档名
+    const originalName = data.name || '导入存档';
+    let saveName = originalName;
+    let counter = 1;
 
-      // 导入数据
-      await saveStore.importZodData(data, saveName);
-
-      importSuccess.value = true;
-      importError.value = null;
-      setTimeout(() => {
-        importSuccess.value = false;
-      }, 3000);
-    } catch (err) {
-      importError.value = err instanceof Error ? err.message : 'JSON解析失败';
-      importSuccess.value = false;
+    // 如果存档名已存在，添加序号
+    while (saveNames.value.includes(saveName)) {
+      saveName = `${originalName}_${counter}`;
+      counter++;
     }
-  };
 
-  reader.readAsText(file);
-  // 清空文件选择
-  target.value = '';
+    importProgress.value = 70;
+    importStatus.value = '创建存档实例...';
+
+    // 导入数据
+    await saveStore.importZodData(data, saveName);
+
+    importProgress.value = 100;
+    importStatus.value = '导入完成！';
+
+    // 短暂延迟后关闭遮罩
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    importSuccess.value = true;
+    importError.value = null;
+
+    setTimeout(() => {
+      importSuccess.value = false;
+    }, 3000);
+
+  } catch (err) {
+    importError.value = err instanceof Error ? err.message : 'JSON解析失败';
+    importSuccess.value = false;
+  } finally {
+    isImporting.value = false;
+    importProgress.value = 0;
+    importStatus.value = '准备中...';
+    // 清空文件选择
+    target.value = '';
+  }
+}
+
+function readFileAsText(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      resolve(e.target?.result as string);
+    };
+    reader.onerror = () => {
+      reject(new Error('文件读取失败'));
+    };
+    reader.readAsText(file);
+  });
 }
 
 function downloadJson(content: string, filename: string) {

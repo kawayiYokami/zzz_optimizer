@@ -89,7 +89,15 @@
 
      <!-- Content with KeepAlive -->
     <div class="flex-1 overflow-y-auto">
-      <KeepAlive include="OptimizerView,CharacterView">
+      <!-- 显示加载状态 -->
+      <div v-if="!isAppInitialized" class="flex items-center justify-center h-full">
+        <div class="text-center">
+          <span class="loading loading-spinner loading-lg"></span>
+          <p class="mt-4 text-base-content/70">正在加载游戏数据...</p>
+        </div>
+      </div>
+      <!-- 初始化完成后显示视图 -->
+      <KeepAlive v-else include="OptimizerView,CharacterView">
         <component :is="activeComponent" />
       </KeepAlive>
     </div>
@@ -106,14 +114,20 @@ import DriveDiskView from './views/DriveDiskView.vue';
 import WEngineView from './views/WEngineView.vue';
 import SaveManagementView from './views/SaveManagementView.vue';
 import NavigationButton from './components/common/NavigationButton.vue';
+import { useGameDataStore } from './stores/game-data.store';
+import { useSaveStore } from './stores/save.store';
 
 declare const __DEV__: boolean;
 const isDev = __DEV__;
+
+const gameDataStore = useGameDataStore();
+const saveStore = useSaveStore();
 
 const VIEW_STORAGE_KEY = 'zzz_optimizer.currentView';
 const currentView = ref('optimizer'); // 默认进入优化器
 const isDark = ref(false);
 const showAnnouncement = ref(false);
+const isAppInitialized = ref(false); // 应用初始化状态
 
 const activeComponent = computed(() => {
   if (currentView.value === 'gallery') return __DEV__ ? ComponentGallery : OptimizerView;
@@ -143,7 +157,7 @@ function updateTheme() {
 }
 
 // 初始化主题
-onMounted(() => {
+onMounted(async () => {
   const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
   if (savedView) currentView.value = savedView;
 
@@ -155,6 +169,19 @@ onMounted(() => {
     isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
   updateTheme();
+
+  // 全局初始化：加载游戏数据和存档
+  try {
+    console.log('[App] 开始全局初始化...');
+    await gameDataStore.initialize();
+    console.log('[App] 游戏数据加载完成');
+    await saveStore.loadFromStorage();
+    console.log('[App] 存档加载完成');
+    isAppInitialized.value = true;
+    console.log('[App] 全局初始化完成');
+  } catch (err) {
+    console.error('[App] 全局初始化失败:', err);
+  }
 });
 
 watch(currentView, (v) => {
