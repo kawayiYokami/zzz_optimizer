@@ -93,7 +93,7 @@
       <div v-if="!isAppInitialized" class="flex items-center justify-center h-full">
         <div class="text-center">
           <span class="loading loading-spinner loading-lg"></span>
-          <p class="mt-4 text-base-content/70">正在加载游戏数据...</p>
+          <p class="mt-4 text-base-content/70">{{ loadingStatus }}</p>
         </div>
       </div>
       <!-- 初始化完成后显示视图 -->
@@ -128,6 +128,7 @@ const currentView = ref('optimizer'); // 默认进入优化器
 const isDark = ref(false);
 const showAnnouncement = ref(false);
 const isAppInitialized = ref(false); // 应用初始化状态
+const loadingStatus = ref('正在加载游戏数据...'); // 加载状态提示
 
 const activeComponent = computed(() => {
   if (currentView.value === 'gallery') return __DEV__ ? ComponentGallery : OptimizerView;
@@ -173,14 +174,17 @@ onMounted(async () => {
   // 全局初始化：加载游戏数据和存档
   try {
     console.log('[App] 开始全局初始化...');
+    loadingStatus.value = '正在加载游戏数据...';
     await gameDataStore.initialize();
     console.log('[App] 游戏数据加载完成');
+    loadingStatus.value = '正在加载存档...';
     await saveStore.loadFromStorage();
     console.log('[App] 存档加载完成');
     isAppInitialized.value = true;
     console.log('[App] 全局初始化完成');
   } catch (err) {
     console.error('[App] 全局初始化失败:', err);
+    loadingStatus.value = '初始化失败，请刷新页面重试';
   }
 });
 

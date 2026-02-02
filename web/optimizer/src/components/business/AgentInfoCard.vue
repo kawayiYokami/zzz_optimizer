@@ -97,20 +97,8 @@
                 <div v-if="allBuffs.length === 0" class="text-center opacity-50 py-8 bg-base-200 rounded-lg border border-dashed border-base-300">
                     暂无激活的 Buff
                 </div>
-                <div v-else class="grid gap-3">
-                    <div v-for="(buff, idx) in allBuffs" :key="idx" class="collapse collapse-arrow bg-base-200 rounded-box border border-base-300">
-                        <input type="checkbox" />
-                        <div class="collapse-title font-medium">
-                            {{ buff.description || buff.name || '未知效果' }}
-                        </div>
-                        <div class="collapse-content text-sm">
-                            <PropertySetCard
-                                :property-collection="createPropertyCollectionFromBuff(buff)"
-                                :conversion-buffs="buff.conversion ? [buff] : []"
-                                :no-card="true"
-                            />
-                        </div>
-                    </div>
+                <div v-else class="flex flex-wrap gap-3">
+                    <BuffCard v-for="(buff, idx) in allBuffs" :key="idx" :buff="buff" />
                 </div>
             </section>
         </div>
@@ -229,6 +217,7 @@ import SkillList from './SkillList.vue';
 import EquipmentSelector from './EquipmentSelector.vue';
 import WEngineCard from './WEngineCard.vue';
 import DriveDiskCard from './DriveDiskCard.vue';
+import BuffCard from './BuffCard.vue';
 import { DriveDiskPosition } from '../../model/drive-disk';
 
 const saveStore = useSaveStore();
@@ -431,15 +420,6 @@ function formatPropName(prop: string | number) {
     } catch (e) {
         return `[错误:${prop}]`;
     }
-}
-
-// 从 Buff 创建 PropertyCollection
-function createPropertyCollectionFromBuff(buff: Buff): PropertyCollection {
-    const collection = new PropertyCollection();
-    collection.in_combat = new Map(buff.in_combat_stats);
-    collection.out_of_combat = new Map(buff.out_of_combat_stats);
-    collection.conversion = new Map();
-    return collection;
 }
 
 function adjustCoreSkill(event: Event): void {
