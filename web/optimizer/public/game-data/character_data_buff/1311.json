@@ -1,93 +1,96 @@
 [
   {
     "id": "1311_talent_1",
-    "name": "影画1-「太乙」遗音-增伤",
-    "description": "拥有[声之花]的代理人攻击时，造成的伤害提升20%。",
+    "name": "天赋1-十二平均律-全属性抗性降低",
+    "description": "耀嘉音攻击命中敌人时，目标的全属性伤害抗性降低6%，最多叠加3层，持续30秒，重复触发时刷新持续时间。",
     "source": "TALENT",
+    "target": {
+      "target_enemy": true
+    },
+    "in_combat_stats": {
+      "ENEMY_RES_RED_": 0.06
+    },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "攻击命中敌人时",
+    "max_stacks": 3,
+    "stack_mode": "linear"
+  },
+  {
+    "id": "1311_skill_special_1",
+    "name": "咏叹华彩-全队伤害提升",
+    "description": "耀嘉音进入[咏叹华彩]状态后，全队角色造成的伤害提升20%。",
+    "source": "CORE_PASSIVE",
     "target": {
       "target_self": true,
       "target_teammate": true
     },
     "in_combat_stats": {
-      "DMG_": 0.20
+      "DMG_": 0.2
     },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "拥有[声之花]时",
+    "trigger_conditions": "进入[咏叹华彩]状态后",
     "max_stacks": 1,
     "stack_mode": "full_only"
   },
   {
-    "id": "1311_talent_2",
-    "name": "影画2-「太素」遗音-声之花",
-    "description": "[声之花]：暴击率提高20%，造成的伤害无视目标20%的防御。",
-    "source": "TALENT",
+    "id": "1311_skill_special_2",
+    "name": "咏叹华彩-全队暴击伤害提升",
+    "description": "耀嘉音进入[咏叹华彩]状态后，全队角色暴击伤害提升25%。",
+    "source": "CORE_PASSIVE",
     "target": {
       "target_self": true,
       "target_teammate": true
     },
     "in_combat_stats": {
-      "CRIT_": 0.20,
-      "DEF_IGN_": 0.20
+      "CRIT_DMG_": 0.25
     },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": "摇嘉音离场时能量>=50",
+    "trigger_conditions": "进入[咏叹华彩]状态后",
     "max_stacks": 1,
     "stack_mode": "full_only"
   },
   {
     "id": "1311_core_passive_1",
-    "name": "核心被动-太上清音-暴伤",
-    "description": "摇嘉音的暴击伤害提高50%。",
+    "name": "核心被动-如歌的行板-攻击力提升",
+    "description": "[咏叹华彩]状态下，队伍中其他角色通过[快速支援]、[连携技]、[招架支援]或[回避支援]入场，耀嘉音消耗能量追加释放[震音]进行攻击时，耀嘉音和入场角色的攻击力提升，提升效果等同于耀嘉音初始攻击力的35%，最高不超过1200点，持续20秒，重复触发时延长持续时间，最多不超过30秒。",
     "source": "CORE_PASSIVE",
     "target": {
-      "target_self": true
-    },
-    "in_combat_stats": {
-      "CRIT_DMG_": 0.50
-    },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "常驻",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1311_core_passive_2",
-    "name": "核心被动-太上清音-易伤",
-    "description": "受到[雷伤·附加]伤害的敌人，受到的所有伤害提高36%。",
-    "source": "CORE_PASSIVE",
-    "target": {
-      "target_enemy": true
-    },
-    "in_combat_stats": {
-      "DMG_INC_": 0.36
-    },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": "受到[雷伤·附加]伤害时",
-    "max_stacks": 1,
-    "stack_mode": "full_only"
-  },
-  {
-    "id": "1311_additional_ability_2",
-    "name": "额外能力-太初清音",
-    "description": "摇嘉音的攻击力提高，提升值等于异常精通的100%。",
-    "source": "CORE_PASSIVE",
-    "target": {
-      "target_self": true
+      "target_self": true,
+      "target_teammate": true
     },
     "in_combat_stats": {},
     "out_of_combat_stats": {},
     "conversion": {
-      "source_stat": "ANOM_MAS",
-      "target_stat": "ATK",
-      "ratio": 1.0,
-      "source_is_flat": true,
-      "target_is_flat": true
+      "from_property": "ATK_BASE",
+      "to_property": "ATK",
+      "conversion_ratio": 0.35,
+      "max_value": 1200
     },
-    "trigger_conditions": "常驻",
+    "trigger_conditions": "[咏叹华彩]状态下，队伍中其他角色通过[快速支援]、[连携技]、[招架支援]或[回避支援]入场，且耀嘉音消耗能量追加释放[震音]进行攻击时",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
+  },
+  {
+    "id": "1311_talent_2",
+    "name": "天赋2-贪心艺术-攻击力提升加成",
+    "description": "[核心被动：《如歌的行板》]中的攻击力提升效果额外提升19%，上限额外提升400点。",
+    "source": "TALENT",
+    "target": {
+      "target_self": true,
+      "target_teammate": true
+    },
+    "in_combat_stats": {},
+    "out_of_combat_stats": {},
+    "conversion": {
+      "from_property": "ATK_BASE",
+      "to_property": "ATK",
+      "conversion_ratio": 0.19,
+      "max_value": 400
+    },
+    "trigger_conditions": "常驻（叠加到[核心被动：《如歌的行板》]的攻击力提升效果上）",
     "max_stacks": 1,
     "stack_mode": "full_only"
   }
