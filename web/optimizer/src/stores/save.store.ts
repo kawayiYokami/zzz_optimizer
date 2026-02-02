@@ -24,6 +24,9 @@ import { ref, computed } from 'vue';
 import { SaveData } from '../model/save-data-instance';
 import { dataLoaderService } from '../services/data-loader.service';
 import type { SaveDataZod, ZodDiscData, ZodWengineData } from '../model/save-data-zod';
+import type { ImportOptions, ImportResult } from '../model/import-result';
+import { DEFAULT_IMPORT_OPTIONS } from '../model/import-result';
+import { mergeZodData, formatImportResultSummary } from '../services/merge.service';
 
 const STORAGE_KEY = 'zzz_optimizer_saves';
 const CURRENT_SAVE_KEY = 'zzz_optimizer_current_save';
@@ -223,11 +226,11 @@ export const useSaveStore = defineStore('save', () => {
 
     const newSave = new SaveData(name);
     saves.value.set(name, newSave);
-    
+
     // 初始化rawSaves
     const zodData = newSave.toZodData();
     rawSaves.value.set(name, zodData);
-    
+
     currentSaveName.value = name;
     saveToStorage();
 
@@ -280,10 +283,10 @@ export const useSaveStore = defineStore('save', () => {
       if (rawSave) {
         // 规范化数据，确保 key 格式正确
         const normalizedRawSave = normalizeZodData(rawSave);
-        
+
         const saveData = await SaveData.fromZod(name, normalizedRawSave, dataLoaderService);
         saves.value.set(name, saveData);
-        
+
         // 同步规范化后的数据回 rawSaves
         rawSaves.value.set(name, normalizedRawSave);
       }
@@ -312,17 +315,17 @@ export const useSaveStore = defineStore('save', () => {
         throw new Error('Invalid ZOD data');
       }
       const normalized = normalizeZodData(data as SaveDataZod);
-      
+
       // 直接保存原始ZOD数据到rawSaves
       rawSaves.value.set(name, normalized);
-      
+
       // 从原始ZOD数据生成实例
       const newSave = await SaveData.fromZod(name, normalized, dataLoaderService);
       saves.value.set(name, newSave);
-      
+
       // 设置当前存档
       currentSaveName.value = name;
-      
+
       // 保存到localStorage（直接保存rawSaves，不修改原始数据）
       saveToStorage();
 
@@ -330,6 +333,75 @@ export const useSaveStore = defineStore('save', () => {
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error';
       console.error('Failed to import ZOD data:', err);
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /**
+   * 带去重选项的 ZOD 数据导入
+   *
+   * @param data ZOD 格式数据
+   * @param options 导入选项（检测重复、删除不存在项）
+   * @param targetSaveName 目标存档名（默认当前存档或新建）
+   * @returns 导入结果和保存的数据
+   */
+  async function importZodDataWithOptions(
+    data: any,
+    options: ImportOptions = DEFAULT_IMPORT_OPTIONS,
+    targetSaveName?: string
+  ): Promise<{ saveData: SaveData; result: ImportResult }> {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      if (!isZodSaveData(data)) {
+        throw new Error('Invalid ZOD data');
+      }
+
+      const importData = normalizeZodData(data as SaveDataZod);
+      const name = targetSaveName ?? currentSaveName.value ?? `import_${Date.now()}`;
+
+      // 获取现有数据
+      const existingData = rawSaves.value.get(name);
+
+      // 合并数据
+      const { merged, result } = mergeZodData(importData, existingData, options);
+
+      // 保存原始 ZOD 数据
+      rawSaves.value.set(name, merged);
+
+      // 生成实例
+      const saveData = await SaveData.fromZod(name, merged, dataLoaderService);
+
+      // 为所有 Agent 设置装备引用
+      const agents = saveData.getAllAgents();
+      const wengines = saveData.getAllWEngines();
+      const driveDisks = saveData.getAllDriveDisks();
+
+      const wenginesMap = new Map(wengines.map((w) => [w.id, w]));
+      const driveDisksMap = new Map(driveDisks.map((d) => [d.id, d]));
+
+      agents.forEach((agent) => {
+        agent.setEquipmentReferences(wenginesMap, driveDisksMap);
+      });
+
+      saves.value.set(name, saveData);
+
+      // 设置当前存档
+      currentSaveName.value = name;
+
+      // 保存到 localStorage
+      saveToStorage();
+
+      // 输出导入摘要日志
+      console.log('[SaveStore] Import completed:', formatImportResultSummary(result));
+
+      return { saveData, result };
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Failed to import ZOD data with options:', err);
       throw err;
     } finally {
       isLoading.value = false;
@@ -624,7 +696,7 @@ export const useSaveStore = defineStore('save', () => {
     const character = rawSave.characters?.find(c => c.id === agentId);
     if (character) {
       character.equippedWengine = wengineId || '';
-      
+
       // 更新音擎的装备状态
       if (agent.equipped_wengine) {
         // 查找并更新之前装备的音擎
@@ -632,7 +704,7 @@ export const useSaveStore = defineStore('save', () => {
         if (oldWengine) {
           oldWengine.location = '';
         }
-        
+
         // 更新新装备的音擎
         const newWengine = rawSave.wengines?.find(w => w.id === wengineId);
         if (newWengine) {
@@ -668,7 +740,7 @@ export const useSaveStore = defineStore('save', () => {
     // 调用 Agent 类的 equipDriveDisk 方法（自动根据驱动盘位置装备）
     if (diskId) {
       agent.equipDriveDisk(diskId);
-      
+
       // 更新 rawSave 中的驱动盘 location
       if (rawSave.discs) {
         // 只清除该角色当前装备位置的驱动盘（不是所有位置）
@@ -736,10 +808,10 @@ export const useSaveStore = defineStore('save', () => {
         character.assist = agent.skills.assist;
         character.special = agent.skills.special;
         character.chain = agent.skills.chain;
-        
+
         // 更新装备信息
         character.equippedWengine = agent.equipped_wengine || '';
-        
+
         // 更新驱动盘装备
         const discs: Record<string, string> = {
           '1': agent.equipped_drive_disks[0] || '',
@@ -775,7 +847,7 @@ export const useSaveStore = defineStore('save', () => {
 
     // 同步队伍数据
     rawSave.teams = save.getAllTeams();
-    
+
     // 同步战场数据
     rawSave.battles = save.getAllBattles();
 
@@ -1171,6 +1243,7 @@ export const useSaveStore = defineStore('save', () => {
     deleteSave,
     switchSave,
     importZodData,           // 导入ZOD格式数据
+    importZodDataWithOptions, // 带去重选项的导入
     exportSaveData,           // 导出实例格式（直接从localStorage读取）
     exportAsZod,              // 导出ZOD格式（直接从原始数据读取）
     exportSaveDataAsInstance, // 导出实例格式（从实例生成，调试用）

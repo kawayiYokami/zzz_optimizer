@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-base-200 p-4 md:p-8">
     <!-- 导入进度遮罩 -->
     <div v-if="isImporting" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-      <div class="card bg-base-100 shadow-xl w-80">
+      <div class="card bg-base-100 shadow-xl w-96">
         <div class="card-body items-center text-center">
           <span class="loading loading-spinner loading-lg text-primary"></span>
           <h3 class="card-title mt-4">正在导入存档</h3>
@@ -89,12 +89,12 @@
         <div class="card-body">
           <h3 class="card-title">导入存档</h3>
           <p class="text-sm text-gray-500 mb-2">
-            从JSON文件导入存档数据，将创建新的存档
+            从JSON文件导入存档数据，支持检测重复和升级
           </p>
           <input
             type="file"
             accept=".json"
-            @change="handleFileImport"
+            @change="handleFileSelect"
             class="file-input file-input-bordered w-full max-w-xs"
             :disabled="saveNames.length >= 5 || isImporting"
           />
@@ -105,27 +105,149 @@
             <span>{{ importError }}</span>
           </div>
           <div v-if="importSuccess" class="alert alert-success mt-4">
-            <span>数据导入成功！</span>
+            <span>{{ importSuccessMessage }}</span>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- 导入配置对话框 -->
+    <dialog class="modal" :class="{ 'modal-open': showConfigModal }">
+      <div class="modal-box max-w-2xl">
+        <h3 class="font-bold text-lg mb-4">导入配置</h3>
+
+        <!-- 导入选项 -->
+        <div class="space-y-4 mb-6">
+          <div class="form-control">
+            <label class="label cursor-pointer justify-start gap-3">
+              <input
+                type="checkbox"
+                v-model="importOptions.detectDups"
+                class="checkbox checkbox-primary"
+              />
+              <div>
+                <span class="label-text font-semibold">检测更新/重复</span>
+                <p class="text-xs text-base-content/60">
+                  识别导入数据中与本地相同或升级的项目，避免创建重复条目
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="label cursor-pointer justify-start gap-3">
+              <input
+                type="checkbox"
+                v-model="importOptions.deleteNotInImport"
+                class="checkbox checkbox-error"
+              />
+              <div>
+                <span class="label-text font-semibold">删除导入中不存在的项</span>
+                <p class="text-xs text-base-content/60">
+                  删除本地有但导入文件中没有的项目（谨慎使用）
+                </p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- 模式说明 -->
+        <div class="alert mb-4" :class="modeAlertClass">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <h4 class="font-bold">{{ modeTitle }}</h4>
+            <p class="text-xs">{{ modeDescription }}</p>
+          </div>
+        </div>
+
+        <!-- 目标存档选择 -->
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text font-semibold">目标存档</span>
+          </label>
+          <select v-model="targetSaveName" class="select select-bordered w-full">
+            <option :value="pendingSaveName">{{ pendingSaveName }} (新建)</option>
+            <option v-for="name in saveNames" :key="name" :value="name">
+              {{ name }} (覆盖/合并)
+            </option>
+          </select>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="modal-action">
+          <button class="btn" @click="closeConfigModal">取消</button>
+          <button class="btn btn-primary" @click="confirmImport">
+            确认导入
+          </button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button @click="closeConfigModal">close</button>
+      </form>
+    </dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useSaveStore } from '../stores/save.store';
+import type { ImportOptions, ImportResult } from '../model/import-result';
+import { DEFAULT_IMPORT_OPTIONS } from '../model/import-result';
 
 const saveStore = useSaveStore();
+
+// 基础状态
 const importError = ref<string | null>(null);
 const importSuccess = ref(false);
+const importSuccessMessage = ref('数据导入成功！');
+
+// 进度状态
 const isImporting = ref(false);
 const importStatus = ref('准备中...');
 const importProgress = ref(0);
 
+// 配置对话框状态
+const showConfigModal = ref(false);
+const pendingFileData = ref<any>(null);
+const pendingSaveName = ref('');
+const targetSaveName = ref('');
+const importOptions = ref<ImportOptions>({ ...DEFAULT_IMPORT_OPTIONS });
+
 const saveNames = computed(() => saveStore.saveNames);
 const currentSaveName = computed(() => saveStore.currentSaveName);
+
+// 模式说明
+const modeTitle = computed(() => {
+  const { detectDups, deleteNotInImport } = importOptions.value;
+  if (detectDups && deleteNotInImport) return '完全替换模式';
+  if (detectDups && !deleteNotInImport) return '合并模式（推荐）';
+  if (!detectDups && deleteNotInImport) return '清空+导入模式';
+  return '追加模式';
+});
+
+const modeDescription = computed(() => {
+  const { detectDups, deleteNotInImport } = importOptions.value;
+  if (detectDups && deleteNotInImport) {
+    return '检测重复/升级，删除本地多余项。导入后本地数据将与导入文件完全一致。';
+  }
+  if (detectDups && !deleteNotInImport) {
+    return '检测重复/升级，保留本地多余项。智能合并，不会丢失数据。';
+  }
+  if (!detectDups && deleteNotInImport) {
+    return '全部作为新增，删除本地多余项。警告：可能产生重复数据！';
+  }
+  return '全部作为新增，保留本地多余项。适合首次导入或追加数据。';
+});
+
+const modeAlertClass = computed(() => {
+  const { detectDups, deleteNotInImport } = importOptions.value;
+  if (detectDups && deleteNotInImport) return 'alert-warning';
+  if (detectDups && !deleteNotInImport) return 'alert-success';
+  if (!detectDups && deleteNotInImport) return 'alert-error';
+  return 'alert-info';
+});
 
 function getSaveStats(name: string) {
   const save = saveStore.saves.get(name);
@@ -198,7 +320,8 @@ function exportSave(name: string) {
   }
 }
 
-async function handleFileImport(event: Event) {
+// 选择文件后，先解析数据再弹出配置对话框
+async function handleFileSelect(event: Event) {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
 
@@ -206,70 +329,136 @@ async function handleFileImport(event: Event) {
     return;
   }
 
-  // 检查存档数量限制
+  // 检查存档数量限制（如果是新建）
   if (saveNames.value.length >= 5) {
     importError.value = '存档已满（5个），请先删除一个存档';
+    target.value = '';
     return;
   }
 
-  // 重置状态
   importError.value = null;
   importSuccess.value = false;
-  isImporting.value = true;
-  importStatus.value = '读取文件中...';
-  importProgress.value = 10;
 
   try {
-    // 读取文件
     const content = await readFileAsText(file);
-    importProgress.value = 30;
-    importStatus.value = '解析数据中...';
-
-    // 解析 JSON
     const data = JSON.parse(content);
-    importProgress.value = 50;
-    importStatus.value = '验证数据格式...';
 
     // 生成新的存档名
     const originalName = data.name || '导入存档';
     let saveName = originalName;
     let counter = 1;
 
-    // 如果存档名已存在，添加序号
     while (saveNames.value.includes(saveName)) {
       saveName = `${originalName}_${counter}`;
       counter++;
     }
 
-    importProgress.value = 70;
-    importStatus.value = '创建存档实例...';
+    // 设置待导入数据并打开配置对话框
+    pendingFileData.value = data;
+    pendingSaveName.value = saveName;
+    targetSaveName.value = saveName; // 默认新建
+    importOptions.value = { ...DEFAULT_IMPORT_OPTIONS };
+    showConfigModal.value = true;
+  } catch (err) {
+    importError.value = err instanceof Error ? err.message : 'JSON解析失败';
+  }
 
-    // 导入数据
-    await saveStore.importZodData(data, saveName);
+  target.value = '';
+}
+
+function closeConfigModal() {
+  showConfigModal.value = false;
+  pendingFileData.value = null;
+}
+
+// 确认导入，显示进度条并执行
+async function confirmImport() {
+  if (!pendingFileData.value) return;
+
+  showConfigModal.value = false;
+  isImporting.value = true;
+  importProgress.value = 10;
+  importStatus.value = '准备导入...';
+
+  try {
+    importProgress.value = 30;
+    importStatus.value = '验证数据格式...';
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    importProgress.value = 50;
+    importStatus.value = '合并数据...';
+
+    // 使用带选项的导入方法
+    const { result } = await saveStore.importZodDataWithOptions(
+      pendingFileData.value,
+      importOptions.value,
+      targetSaveName.value
+    );
+
+    importProgress.value = 90;
+    importStatus.value = '完成处理...';
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     importProgress.value = 100;
     importStatus.value = '导入完成！';
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-    // 短暂延迟后关闭遮罩
-    await new Promise(resolve => setTimeout(resolve, 500));
-
+    // 生成成功消息
+    importSuccessMessage.value = formatResultMessage(result);
     importSuccess.value = true;
     importError.value = null;
 
     setTimeout(() => {
       importSuccess.value = false;
-    }, 3000);
+    }, 5000);
 
   } catch (err) {
-    importError.value = err instanceof Error ? err.message : 'JSON解析失败';
+    importError.value = err instanceof Error ? err.message : '导入失败';
     importSuccess.value = false;
   } finally {
     isImporting.value = false;
     importProgress.value = 0;
     importStatus.value = '准备中...';
-    // 清空文件选择
-    target.value = '';
+    pendingFileData.value = null;
   }
+}
+
+function formatResultMessage(result: ImportResult): string {
+  const parts: string[] = [];
+
+  const discNew = result.discs.new.length;
+  const discUpgraded = result.discs.upgraded.length;
+  const discUnchanged = result.discs.unchanged.length;
+  const discRemoved = result.discs.remove.length;
+
+  if (discNew > 0 || discUpgraded > 0 || discUnchanged > 0 || discRemoved > 0) {
+    const discParts: string[] = [];
+    if (discNew > 0) discParts.push(`+${discNew}新`);
+    if (discUpgraded > 0) discParts.push(`↑${discUpgraded}升级`);
+    if (discUnchanged > 0) discParts.push(`=${discUnchanged}重复`);
+    if (discRemoved > 0) discParts.push(`-${discRemoved}删除`);
+    parts.push(`驱动盘: ${discParts.join(' ')}`);
+  }
+
+  const wengineNew = result.wengines.new.length;
+  const wengineUpgraded = result.wengines.upgraded.length;
+  if (wengineNew > 0 || wengineUpgraded > 0) {
+    const wengineParts: string[] = [];
+    if (wengineNew > 0) wengineParts.push(`+${wengineNew}新`);
+    if (wengineUpgraded > 0) wengineParts.push(`↑${wengineUpgraded}升级`);
+    parts.push(`音擎: ${wengineParts.join(' ')}`);
+  }
+
+  const charNew = result.characters.new.length;
+  const charUpgraded = result.characters.upgraded.length;
+  if (charNew > 0 || charUpgraded > 0) {
+    const charParts: string[] = [];
+    if (charNew > 0) charParts.push(`+${charNew}新`);
+    if (charUpgraded > 0) charParts.push(`↑${charUpgraded}升级`);
+    parts.push(`角色: ${charParts.join(' ')}`);
+  }
+
+  return parts.length > 0 ? `导入成功！${parts.join('，')}` : '导入成功！';
 }
 
 function readFileAsText(file: File): Promise<string> {
