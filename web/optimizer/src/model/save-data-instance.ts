@@ -450,13 +450,10 @@ export class SaveData {
 
     // 添加队伍数据
     (zodData.teams ?? []).forEach((team) => {
-      save.addTeam(team);
-      // 创建Team实例并存储到teamsMap中
       try {
-        const teamInstance = Team.fromZod(team, save.agents);
-        save.teamsMap.set(team.id, teamInstance);
+        save.addTeam(team);
       } catch (error) {
-        console.error(`创建队伍实例失败 [${team.id}]:`, error);
+        console.warn(`忽略无效队伍数据 [${team.id ?? 'unknown'}]:`, error);
       }
     });
 
@@ -728,17 +725,14 @@ export class SaveData {
     if (!team.id) {
       team.id = this.getNextTeamId();
     }
+
+    // 先验证并创建 Team 实例；失败则不落盘到 teams，避免产生“有队伍但实例为空”的状态
+    const teamInstance = Team.fromZod(team, this.agents);
+
     this.teams.set(team.id, team);
+    this.teamsMap.set(team.id, teamInstance);
     this.updated_at = new Date();
     this._invalidateCache();
-    
-    // 创建Team实例并存储到teamsMap中
-    try {
-      const teamInstance = Team.fromZod(team, this.agents);
-      this.teamsMap.set(team.id, teamInstance);
-    } catch (error) {
-      console.error(`创建队伍实例失败 [${team.id}]:`, error);
-    }
   }
 
   /**
@@ -796,30 +790,13 @@ export class SaveData {
       throw new Error(`队伍 ${teamId} 不存在`);
     }
     
-    // 更新ZodTeamData
     const updatedTeam = { ...existingTeam, ...updates };
+
+    // 原子化：只有当新的 Team 实例可构造时才提交更新
+    const newTeamInstance = Team.fromZod(updatedTeam, this.agents);
+
     this.teams.set(teamId, updatedTeam);
-    
-    // 更新Team实例
-    const existingTeamInstance = this.teamsMap.get(teamId);
-    if (existingTeamInstance) {
-      // 如果Team实例存在，更新它
-      try {
-        const newTeamInstance = Team.fromZod(updatedTeam, this.agents);
-        this.teamsMap.set(teamId, newTeamInstance);
-      } catch (error) {
-        console.error(`更新队伍实例失败 [${teamId}]:`, error);
-      }
-    } else {
-      // 如果Team实例不存在，创建一个新的
-      try {
-        const newTeamInstance = Team.fromZod(updatedTeam, this.agents);
-        this.teamsMap.set(teamId, newTeamInstance);
-      } catch (error) {
-        console.error(`创建队伍实例失败 [${teamId}]:`, error);
-      }
-    }
-    
+    this.teamsMap.set(teamId, newTeamInstance);
     this.updated_at = new Date();
     this._invalidateCache();
   }

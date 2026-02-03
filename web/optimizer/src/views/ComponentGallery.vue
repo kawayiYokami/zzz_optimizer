@@ -115,6 +115,7 @@
           :is-running="false"
           :total-time="5000"
           :current-damage="850000"
+          objective="skill"
         />
       </div>
     </section>

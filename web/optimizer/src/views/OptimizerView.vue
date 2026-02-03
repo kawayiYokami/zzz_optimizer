@@ -201,6 +201,12 @@ const currentTeam = computed<Team | null>(() => {
   return teams.value.find(t => t.id === selectedTeamId.value) || null;
 });
 
+function pickDefaultTeamId(teamList: Team[]): string {
+  if (teamList.length === 0) return '';
+  // 优先选择优先级最高的队伍，其次取第一个（保持稳定）
+  return [...teamList].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0].id;
+}
+
 // 排除的驱动盘数量
 const excludedDiscsCount = computed(() => {
   if (!constraints.value.excludedTeamIds || constraints.value.excludedTeamIds.length === 0) {
@@ -791,13 +797,6 @@ onMounted(async () => {
   optimizerService.initializeFastWorkers(workerCount.value);
   // 2. 加载预设
   presets.value = optimizerService.loadPresets();
-  // 3. 自动选择第一个队伍或恢复已保存的队伍
-  if (teams.value.length > 0) {
-    if (!selectedTeamId.value) {
-      selectedTeamId.value = teams.value[0].id;
-    }
-    await onTeamChange();
-  }
 });
 
 // 监听配置变化并自动保存到当前队伍
@@ -807,11 +806,43 @@ watch([constraints, selectedSkillKeys, selectedEnemyId], () => {
   }
 }, { deep: true });
 
-// 监听队伍切换
-watch(selectedTeamId, () => {
-  localStorage.setItem('optimizer_selected_team_id', selectedTeamId.value);
-  onTeamChange();
-});
+// 监听队伍列表/选择变化：
+// - 兜底：localStorage 里记住了不存在的 teamId 时，自动切到一个有效队伍
+// - 初始化：首次进入也会触发一次 onTeamChange，加载队伍配置
+let lastAppliedTeamId = '';
+watch([teams, selectedTeamId], async () => {
+  const teamList = teams.value;
+  if (teamList.length === 0) {
+    if (selectedTeamId.value) {
+      selectedTeamId.value = '';
+    }
+    localStorage.removeItem('optimizer_selected_team_id');
+    lastAppliedTeamId = '';
+    return;
+  }
+
+  const exists = teamList.some(t => t.id === selectedTeamId.value);
+  if (!selectedTeamId.value || !exists) {
+    const nextId = pickDefaultTeamId(teamList);
+    if (nextId && selectedTeamId.value !== nextId) {
+      selectedTeamId.value = nextId;
+      return;
+    }
+  }
+
+  // 持久化选择
+  if (selectedTeamId.value) {
+    localStorage.setItem('optimizer_selected_team_id', selectedTeamId.value);
+  } else {
+    localStorage.removeItem('optimizer_selected_team_id');
+  }
+
+  // 仅在 teamId 变化时应用，避免重复重置 UI / service
+  if (selectedTeamId.value && selectedTeamId.value !== lastAppliedTeamId) {
+    lastAppliedTeamId = selectedTeamId.value;
+    await onTeamChange();
+  }
+}, { immediate: true });
 
 // 监听敌人变化
 watch(selectedEnemyId, () => {

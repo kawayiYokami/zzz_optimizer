@@ -932,6 +932,10 @@ export const useSaveStore = defineStore('save', () => {
       return null;
     }
 
+    if (!name?.trim() || !frontAgentId) {
+      return null;
+    }
+
     const save = saves.value.get(currentSaveName.value);
     const rawSave = rawSaves.value.get(currentSaveName.value);
     if (!save || !rawSave) {
@@ -950,7 +954,12 @@ export const useSaveStore = defineStore('save', () => {
     };
 
     // 添加到SaveData
-    save.addTeam(newTeam);
+    try {
+      save.addTeam(newTeam);
+    } catch (error) {
+      console.error('创建队伍失败:', error);
+      return null;
+    }
 
     // 同步到rawSaves
     syncInstanceToRawSave();
