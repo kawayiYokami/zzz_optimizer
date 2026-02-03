@@ -96,10 +96,10 @@
             accept=".json"
             @change="handleFileSelect"
             class="file-input file-input-bordered w-full max-w-xs"
-            :disabled="saveNames.length >= 5 || isImporting"
+            :disabled="isImporting"
           />
           <div v-if="saveNames.length >= 5" class="text-warning mt-2">
-            存档已满（5个），请先删除一个存档
+            存档已满（5个），只能覆盖现有存档，不能新建
           </div>
           <div v-if="importError" class="alert alert-error mt-4">
             <span>{{ importError }}</span>
@@ -111,82 +111,17 @@
       </div>
     </div>
 
-    <!-- 导入配置对话框 -->
-    <dialog class="modal" :class="{ 'modal-open': showConfigModal }">
-      <div class="modal-box max-w-2xl">
-        <h3 class="font-bold text-lg mb-4">导入配置</h3>
-
-        <!-- 导入选项 -->
-        <div class="space-y-4 mb-6">
-          <div class="form-control">
-            <label class="label cursor-pointer justify-start gap-3">
-              <input
-                type="checkbox"
-                v-model="importOptions.detectDups"
-                class="checkbox checkbox-primary"
-              />
-              <div>
-                <span class="label-text font-semibold">检测更新/重复</span>
-                <p class="text-xs text-base-content/60">
-                  识别导入数据中与本地相同或升级的项目，避免创建重复条目
-                </p>
-              </div>
-            </label>
-          </div>
-
-          <div class="form-control">
-            <label class="label cursor-pointer justify-start gap-3">
-              <input
-                type="checkbox"
-                v-model="importOptions.deleteNotInImport"
-                class="checkbox checkbox-error"
-              />
-              <div>
-                <span class="label-text font-semibold">删除导入中不存在的项</span>
-                <p class="text-xs text-base-content/60">
-                  删除本地有但导入文件中没有的项目（谨慎使用）
-                </p>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- 模式说明 -->
-        <div class="alert mb-4" :class="modeAlertClass">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <h4 class="font-bold">{{ modeTitle }}</h4>
-            <p class="text-xs">{{ modeDescription }}</p>
-          </div>
-        </div>
-
-        <!-- 目标存档选择 -->
-        <div class="form-control mb-4">
-          <label class="label">
-            <span class="label-text font-semibold">目标存档</span>
-          </label>
-          <select v-model="targetSaveName" class="select select-bordered w-full">
-            <option :value="pendingSaveName">{{ pendingSaveName }} (新建)</option>
-            <option v-for="name in saveNames" :key="name" :value="name">
-              {{ name }} (覆盖/合并)
-            </option>
-          </select>
-        </div>
-
-        <!-- 操作按钮 -->
-        <div class="modal-action">
-          <button class="btn" @click="closeConfigModal">取消</button>
-          <button class="btn btn-primary" @click="confirmImport">
-            确认导入
-          </button>
-        </div>
-      </div>
-      <form method="dialog" class="modal-backdrop">
-        <button @click="closeConfigModal">close</button>
-      </form>
-    </dialog>
+    <ImportConfigModal
+      :show="showConfigModal"
+      :fileData="pendingFileData"
+      :suggestedSaveName="pendingSaveName"
+      :saveNames="saveNames"
+      :canCreateNew="saveNames.length < 5"
+      :defaultTargetSaveName="currentSaveName || undefined"
+      :isBusy="isImporting"
+      @cancel="closeConfigModal"
+      @confirm="handleModalConfirm"
+    />
   </div>
 </template>
 
@@ -195,6 +130,7 @@ import { ref, computed } from 'vue';
 import { useSaveStore } from '../stores/save.store';
 import type { ImportOptions, ImportResult } from '../model/import-result';
 import { DEFAULT_IMPORT_OPTIONS } from '../model/import-result';
+import ImportConfigModal from '../components/business/ImportConfigModal.vue';
 
 const saveStore = useSaveStore();
 
@@ -217,37 +153,6 @@ const importOptions = ref<ImportOptions>({ ...DEFAULT_IMPORT_OPTIONS });
 
 const saveNames = computed(() => saveStore.saveNames);
 const currentSaveName = computed(() => saveStore.currentSaveName);
-
-// 模式说明
-const modeTitle = computed(() => {
-  const { detectDups, deleteNotInImport } = importOptions.value;
-  if (detectDups && deleteNotInImport) return '完全替换模式';
-  if (detectDups && !deleteNotInImport) return '合并模式（推荐）';
-  if (!detectDups && deleteNotInImport) return '清空+导入模式';
-  return '追加模式';
-});
-
-const modeDescription = computed(() => {
-  const { detectDups, deleteNotInImport } = importOptions.value;
-  if (detectDups && deleteNotInImport) {
-    return '检测重复/升级，删除本地多余项。导入后本地数据将与导入文件完全一致。';
-  }
-  if (detectDups && !deleteNotInImport) {
-    return '检测重复/升级，保留本地多余项。智能合并，不会丢失数据。';
-  }
-  if (!detectDups && deleteNotInImport) {
-    return '全部作为新增，删除本地多余项。警告：可能产生重复数据！';
-  }
-  return '全部作为新增，保留本地多余项。适合首次导入或追加数据。';
-});
-
-const modeAlertClass = computed(() => {
-  const { detectDups, deleteNotInImport } = importOptions.value;
-  if (detectDups && deleteNotInImport) return 'alert-warning';
-  if (detectDups && !deleteNotInImport) return 'alert-success';
-  if (!detectDups && deleteNotInImport) return 'alert-error';
-  return 'alert-info';
-});
 
 function getSaveStats(name: string) {
   const save = saveStore.saves.get(name);
@@ -329,13 +234,6 @@ async function handleFileSelect(event: Event) {
     return;
   }
 
-  // 检查存档数量限制（如果是新建）
-  if (saveNames.value.length >= 5) {
-    importError.value = '存档已满（5个），请先删除一个存档';
-    target.value = '';
-    return;
-  }
-
   importError.value = null;
   importSuccess.value = false;
 
@@ -369,6 +267,12 @@ async function handleFileSelect(event: Event) {
 function closeConfigModal() {
   showConfigModal.value = false;
   pendingFileData.value = null;
+}
+
+function handleModalConfirm(payload: { options: ImportOptions; targetSaveName: string }) {
+  importOptions.value = payload.options;
+  targetSaveName.value = payload.targetSaveName;
+  void confirmImport();
 }
 
 // 确认导入，显示进度条并执行

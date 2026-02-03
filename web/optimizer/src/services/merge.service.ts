@@ -5,7 +5,7 @@
  */
 
 import type { ZodDiscData, ZodWengineData, ZodCharacterData, SaveDataZod } from '../model/save-data-zod';
-import type { ImportResult, ImportResultCounter, ImportOptions } from '../model/import-result';
+import type { ImportResult, ImportResultCounter, ImportOptions, ParseErrorEntry } from '../model/import-result';
 import { newCounter, newImportResult } from '../model/import-result';
 
 // ============================================================================
@@ -385,13 +385,15 @@ export function mergeCharacters(
 export function mergeZodData(
     importData: SaveDataZod,
     existingData: SaveDataZod | undefined,
-    options: ImportOptions
+    options: ImportOptions,
+    parseErrors: ParseErrorEntry[] = []
 ): { merged: SaveDataZod; result: ImportResult } {
     const source = importData.source ?? 'Unknown';
     const keepNotInImport = !options.deleteNotInImport;
     const ignoreDups = !options.detectDups;
 
     const result = newImportResult(source, keepNotInImport, ignoreDups);
+    result.parseErrors = parseErrors;
 
     const existing: SaveDataZod = existingData ?? {
         format: 'ZOD',

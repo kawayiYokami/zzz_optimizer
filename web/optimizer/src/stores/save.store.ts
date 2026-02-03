@@ -27,6 +27,7 @@ import type { SaveDataZod, ZodDiscData, ZodWengineData } from '../model/save-dat
 import type { ImportOptions, ImportResult } from '../model/import-result';
 import { DEFAULT_IMPORT_OPTIONS } from '../model/import-result';
 import { mergeZodData, formatImportResultSummary } from '../services/merge.service';
+import { zodParserService } from '../services/zod-parser.service';
 
 const STORAGE_KEY = 'zzz_optimizer_saves';
 const CURRENT_SAVE_KEY = 'zzz_optimizer_current_save';
@@ -366,8 +367,7 @@ export const useSaveStore = defineStore('save', () => {
       // 获取现有数据
       const existingData = rawSaves.value.get(name);
 
-      // 合并数据
-      const { merged, result } = mergeZodData(importData, existingData, options);
+      const { merged, result } = await computeZodImportMerge(importData, existingData, options);
 
       // 保存原始 ZOD 数据
       rawSaves.value.set(name, merged);
@@ -406,6 +406,75 @@ export const useSaveStore = defineStore('save', () => {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /**
+   * 预览导入（不写入 localStorage / 不更新当前存档）
+   *
+   * 用于 UI 在选择文件/切换选项时即时计算「会发生什么」以及解析失败列表。
+   */
+  async function previewZodImportWithOptions(
+    data: any,
+    options: ImportOptions = DEFAULT_IMPORT_OPTIONS,
+    targetSaveName?: string
+  ): Promise<{ result: ImportResult }> {
+    if (!isZodSaveData(data)) {
+      throw new Error('Invalid ZOD data');
+    }
+
+    const importData = normalizeZodData(data as SaveDataZod);
+    const name = targetSaveName ?? currentSaveName.value ?? `import_${Date.now()}`;
+    const existingData = rawSaves.value.get(name);
+
+    const { result } = await computeZodImportMerge(importData, existingData, options);
+    return { result };
+  }
+
+  async function computeZodImportMerge(
+    importData: SaveDataZod,
+    existingData: SaveDataZod | undefined,
+    options: ImportOptions
+  ): Promise<{ merged: SaveDataZod; result: ImportResult }> {
+    // 先解析导入数据，收集解析错误
+    const parseResult = await zodParserService.parseZodDataWithErrors(importData);
+    const parseErrors = parseResult.errors;
+
+    // 安全保护：如果存在解析失败条目，"删除导入中不存在项" 会导致误删（导入文件里有但解析失败的项会被当作“不在导入中”）
+    if (options.deleteNotInImport && parseErrors.length > 0) {
+      throw new Error('导入文件存在解析失败条目：为避免误删，请先关闭“删除导入中不存在的项”，或修复导入文件后再尝试。');
+    }
+
+    // 过滤掉无法解析的条目：避免 SaveData.fromZod 在生成实例时崩溃
+    const sanitizedImportData: SaveDataZod = {
+      ...importData,
+      discs: (importData.discs ?? []).filter((d) => parseResult.driveDisks.has(d.id)),
+      characters: (importData.characters ?? []).filter((c) => parseResult.agents.has(c.id)),
+      wengines: (importData.wengines ?? []).filter((w) => parseResult.wengines.has(w.id)),
+    };
+
+    // 合并数据（传入解析错误，用于 UI 展示）
+    const { merged, result } = mergeZodData(sanitizedImportData, existingData, options, parseErrors);
+
+    // 修正统计：import 计数应该以文件原始数量为准；invalid 列表用于 UI 展示“被跳过”的条目。
+    result.discs.import = importData.discs?.length ?? 0;
+    result.characters.import = importData.characters?.length ?? 0;
+    result.wengines.import = importData.wengines?.length ?? 0;
+
+    const invalidDiscs: any[] = [];
+    const invalidCharacters: any[] = [];
+    const invalidWengines: any[] = [];
+
+    for (const e of parseErrors) {
+      if (e.type === 'disc') invalidDiscs.push(e.rawData);
+      if (e.type === 'character') invalidCharacters.push(e.rawData);
+      if (e.type === 'wengine') invalidWengines.push(e.rawData);
+    }
+
+    result.discs.invalid = invalidDiscs as any;
+    result.characters.invalid = invalidCharacters as any;
+    result.wengines.invalid = invalidWengines as any;
+
+    return { merged, result };
   }
 
   /**
@@ -1266,5 +1335,8 @@ export const useSaveStore = defineStore('save', () => {
     updateDriveDiskSubstats,      // 更新驱动盘副词条（编辑用）
     deleteDriveDisk,              // 删除驱动盘（编辑用）
     updateWEngineRefinement,      // 更新音擎精炼（编辑用）
+    normalizeZodData,             // 规范化ZOD数据
+    isZodSaveData,                // 校验ZOD数据格式
+    previewZodImportWithOptions,  // 预览导入结果（不落盘）
   };
 });

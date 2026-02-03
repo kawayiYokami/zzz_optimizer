@@ -5,6 +5,27 @@
 import type { ZodDiscData, ZodWengineData, ZodCharacterData } from './save-data-zod';
 
 /**
+ * 解析错误的条目类型
+ */
+export type ParseErrorType = 'disc' | 'wengine' | 'character';
+
+/**
+ * 单个解析错误条目
+ */
+export interface ParseErrorEntry {
+    /** 错误类型 */
+    type: ParseErrorType;
+    /** 原始JSON数据 */
+    rawData: ZodDiscData | ZodWengineData | ZodCharacterData;
+    /** 错误消息 */
+    errorMessage: string;
+    /** 数据ID（用于展示识别） */
+    id: string;
+    /** 友好名称（如套装名、角色名等，用于展示） */
+    displayName: string;
+}
+
+/**
  * 单项导入结果计数器
  */
 export interface ImportResultCounter<T> {
@@ -58,6 +79,8 @@ export interface ImportResult {
     keepNotInImport: boolean;
     /** 是否忽略去重检测（全部作为新增） */
     ignoreDups: boolean;
+    /** 解析错误列表 */
+    parseErrors: ParseErrorEntry[];
 }
 
 /**
@@ -76,6 +99,7 @@ export function newImportResult(
         characters: newCounter(),
         keepNotInImport,
         ignoreDups,
+        parseErrors: [],
     };
 }
 
