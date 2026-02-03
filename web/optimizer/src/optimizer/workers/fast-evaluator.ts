@@ -455,11 +455,13 @@ export class FastEvaluator {
     // ========================================================================
     // ========================================================================
     // 1. 检查目标盘数>=4（不满足则跳过此组合）
+    // 注意：如果传入的 discs 数量少于 6，说明是战斗面板预览模式，跳过此检查
     // ========================================================================
-    if (targetSetId) {
+    const discCount = discs.length;
+    if (targetSetId && discCount === 6) {
       let targetCount = 0;
-      for (let i = 0; i < 6; i++) {
-        if (discs[i].isTargetSet) targetCount++;
+      for (let i = 0; i < discCount; i++) {
+        if (discs[i]?.isTargetSet) targetCount++;
       }
       if (targetCount < 4) return null;
     }

@@ -8,11 +8,18 @@
         </label>
         <div class="tab-content">
           <div class="divider text-xs font-bold text-base-content/50 my-2">伤害</div>
+          <div v-if="calcError" class="alert alert-warning text-sm mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+            <span>{{ calcError }}</span>
+          </div>
           <div class="grid grid-cols-4 gap-3">
             <div class="col-span-2 card bg-base-200/30 shadow">
               <div class="card-body p-4">
                 <div class="font-bold text-sm text-primary">总伤害期望</div>
-                <div class="font-bold font-mono text-3xl mt-1 text-primary">{{ debugData?.fastDamage?.toFixed(0) || '-' }}</div>
+                <div class="font-bold font-mono text-3xl mt-1 text-primary">
+                  {{ debugData?.fastDamage?.toFixed(0) || '-' }}
+                  <span v-if="debugData?.fastDamage" class="opacity-60">({{ (debugData.fastDamage / 10000).toFixed(1) }}万)</span>
+                </div>
               </div>
             </div>
             <div class="col-span-2 card bg-base-200/30 shadow">
@@ -402,6 +409,7 @@ interface DiscInfo {
 const debugData = ref<DebugData | null>(null);
 const discInfo = ref<DiscInfo[]>([]);
 const debugRequest = ref<ReturnType<typeof OptimizerContext.buildFastRequest> | null>(null);
+const calcError = ref<string | null>(null);
 const onEnterZonesTab = () => runDebugCalc();
 const isDev = import.meta.env.DEV;
 
@@ -541,11 +549,31 @@ const formatValue = (prop: PropertyType, value: number): string => {
   return Number.isInteger(value) ? value.toFixed(0) : value.toFixed(4);
 };
 
+/** 创建空驱动盘数据（用于缺失槽位） */
+const createEmptyDiscData = (slot: number): DiscData => ({
+  id: `empty-slot-${slot}`,
+  stats: new Float64Array(PROP_IDX.TOTAL_PROPS),
+  effectiveScore: 0,
+  setId: '',
+  setIdx: -1,
+  isTargetSet: false,
+});
+
 const runDebugCalc = () => {
-  if (!props.agent || !props.enemy) return;
+  // 清除之前的错误
+  calcError.value = null;
+
+  if (!props.agent || !props.enemy) {
+    calcError.value = !props.agent ? '请先选择角色' : '请先选择敌人';
+    debugData.value = null;
+    debugRequest.value = null;
+    emit('damage-change', 0);
+    return;
+  }
 
   // 未选择技能时不计算
   if (!props.skills || props.skills.length === 0) {
+    calcError.value = '请选择至少一个技能';
     debugData.value = null;
     debugRequest.value = null;
     emit('damage-change', 0);
@@ -561,7 +589,7 @@ const runDebugCalc = () => {
     subStats: Array.from(disc.sub_stats?.entries() || []).map(([prop]) => `${PropertyType[prop]}`).join(', '),
   }));
 
-  if (sortedDiscs.length !== 6) return;
+  // 不再要求必须装备6个驱动盘，缺失的槽位会用空驱动盘填充
 
   const setCount: Record<string, number> = {};
   for (const d of sortedDiscs) setCount[d.game_id] = (setCount[d.game_id] ?? 0) + 1;
@@ -615,12 +643,21 @@ const runDebugCalc = () => {
   const discDataArray: DiscData[] = [];
   for (let slot = 0; slot < 6; slot++) {
     const slotDiscs = request.precomputed.discsBySlot[slot];
-    if (!slotDiscs || slotDiscs.length === 0) return;
-    discDataArray.push(slotDiscs[0]);
+    if (!slotDiscs || slotDiscs.length === 0) {
+      // 缺失的槽位用空驱动盘填充
+      discDataArray.push(createEmptyDiscData(slot));
+    } else {
+      discDataArray.push(slotDiscs[0]);
+    }
   }
 
   const result = evaluator.calculateDamageWithMultipliers(discDataArray);
-  if (result === null) return;
+  if (result === null) {
+    calcError.value = '伤害计算失败，请检查配置';
+    debugData.value = null;
+    emit('damage-change', 0);
+    return;
+  }
 
   const fullResult = evaluator.createFullResult(discDataArray, result.damage, result.multipliers);
   const baseStats = request.precomputed.mergedStats;

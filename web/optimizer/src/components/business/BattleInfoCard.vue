@@ -102,7 +102,7 @@
       <h3 class="font-bold text-lg mb-4 shrink-0">选择敌人</h3>
       <div class="flex-1 overflow-y-auto min-h-0 pr-2">
         <EnemyList
-          @select="(enemyId) => { showEnemySelector = false; emit('update:selectedEnemyId', enemyId); envVersion.value++; emit('update:envVersion', envVersion.value); emit('change'); }"
+          @select="handleSelectEnemy"
         />
       </div>
     </div>
@@ -162,6 +162,14 @@ const toggleStun = (event: Event) => {
 const toggleShield = (event: Event) => {
   const target = event.target as HTMLInputElement;
   props.battleService.updateEnemyStatus('shield', target.checked);
+  envVersion.value++;
+  emit('update:envVersion', envVersion.value);
+  emit('change');
+};
+
+const handleSelectEnemy = (enemyId: string) => {
+  showEnemySelector.value = false;
+  emit('update:selectedEnemyId', enemyId);
   envVersion.value++;
   emit('update:envVersion', envVersion.value);
   emit('change');
