@@ -776,6 +776,8 @@ function parsePropertyType(key: string): PropertyType {
     'ETHER_DMG_': PropertyType.ETHER_DMG_,
     'ENERGY_REGEN': PropertyType.ENER_REGEN,
     'ENERGY_REGEN_': PropertyType.ENER_REGEN_,
+    'ANOMALY_MASTERY': PropertyType.ANOM_MAS,
+    'ANOMALY_MASTERY_': PropertyType.ANOM_MAS_,
     'IMPACT': PropertyType.IMPACT,
     'IMPACT_': PropertyType.IMPACT_,
     // 小写形式
@@ -791,8 +793,12 @@ function parsePropertyType(key: string): PropertyType {
     'crit_dmg_': PropertyType.CRIT_DMG_,
     'energyregen': PropertyType.ENER_REGEN,
     'energyregen_': PropertyType.ENER_REGEN_,
+    'enerregen': PropertyType.ENER_REGEN,
+    'enerregen_': PropertyType.ENER_REGEN_,
     'anomprof': PropertyType.ANOM_PROF,
     'anomaly_proficiency': PropertyType.ANOM_PROF,
+    'anommas': PropertyType.ANOM_MAS,
+    'anommas_': PropertyType.ANOM_MAS_,
     'impact': PropertyType.IMPACT,
     'impact_': PropertyType.IMPACT_,
     'physical_dmg_': PropertyType.PHYSICAL_DMG_,
@@ -803,7 +809,12 @@ function parsePropertyType(key: string): PropertyType {
     // 驼峰形式
     'energyRegen': PropertyType.ENER_REGEN,
     'energyRegen_': PropertyType.ENER_REGEN_,
+    // 一些工具/导出会用 enerRegen 作为 energyRegen 的简写
+    'enerRegen': PropertyType.ENER_REGEN,
+    'enerRegen_': PropertyType.ENER_REGEN_,
     'anomProf': PropertyType.ANOM_PROF,
+    'anomMas': PropertyType.ANOM_MAS,
+    'anomMas_': PropertyType.ANOM_MAS_,
   };
 
   const mapped = keyMap[key];
