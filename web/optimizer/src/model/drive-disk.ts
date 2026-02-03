@@ -138,6 +138,9 @@ export class DriveDisk {
   // 套装属性和Buff（从游戏数据加载）
   set_properties: Buff[] = []; // 2件套属性（静态，直接加面板）
   set_buffs: Buff[] = []; // 4件套Buff（动态，战斗生效）
+  private _detailsLoaded: boolean = false;
+  private _detailsLoadPromise: Promise<void> | null = null;
+  private _dataLoader: typeof dataLoaderService | null = null;
 
   constructor(
     id: string,
@@ -245,15 +248,15 @@ export class DriveDisk {
 
     for (const [prop, statValue] of this.sub_stats.entries()) {
       const subStatKey = this.propertyTypeToKey(prop);
-      
+
       if (subStatKey && (DriveDiskStats.SUB_STAT_BASE_VALUES[rarityStr] as any)[subStatKey] !== undefined) {
         // statValue.value 存储的是强化次数（rolls）
         const rolls = statValue.value;
         const actualValue = DriveDiskStats.calculateSubStatValue(rarityStr, subStatKey, rolls);
-        
+
         // 根据数值判断是否是百分比（小于1的认为是百分比）
         const isPercent = actualValue < 1;
-        
+
         // 强化次数显示为 rolls - 1（因为初始有1条副词条）
         const displayRolls = Math.max(0, rolls - 1);
 
@@ -420,6 +423,10 @@ export class DriveDisk {
    * @returns 属性集合
    */
   getSetBuff(setBonus: DriveDiskSetBonus): PropertyCollection {
+    if (!this._detailsLoaded) {
+      // 触发惰性加载（不阻塞当前调用）
+      void this.ensureDetailsLoaded();
+    }
     const collections: PropertyCollection[] = [];
 
     if (setBonus === DriveDiskSetBonus.TWO_PIECE) {
@@ -500,6 +507,7 @@ export class DriveDisk {
       new StatValue(data.main_stat_value.value, data.main_stat_value.isPercent),
       subStats
     );
+    disk._dataLoader = dataLoader;
 
     // 恢复装备状态
     disk.equipped_agent = data.equipped_agent;
@@ -530,6 +538,8 @@ export class DriveDisk {
       }
     } catch (err) {
       console.warn(`加载驱动盘套装Buff数据失败: ${data.game_id}`, err);
+    } finally {
+      disk._detailsLoaded = true;
     }
 
     return disk;
@@ -628,29 +638,44 @@ export class DriveDisk {
     disk.set_name = equipmentInfo.CHS?.name || equipmentInfo.EN?.name || zodData.setKey;
     disk.equipped_agent = zodData.location || null;
     disk.locked = zodData.lock;
-
-    // 9. 加载套装Buff数据
-    try {
-      const equipBuffData = await dataLoader.getEquipmentBuff(gameEquipId);
-
-      // 2件套属性
-      if (equipBuffData.two_piece_buffs) {
-        disk.set_properties = equipBuffData.two_piece_buffs.map((b: any) =>
-          Buff.fromBuffData(b)
-        );
-      }
-
-      // 4件套Buff
-      if (equipBuffData.four_piece_buffs) {
-        disk.set_buffs = equipBuffData.four_piece_buffs.map((b: any) =>
-          Buff.fromBuffData(b)
-        );
-      }
-    } catch (err) {
-      console.warn(`加载驱动盘套装Buff数据失败: ${zodData.setKey}`, err);
-    }
+    disk._dataLoader = dataLoader;
+    disk._detailsLoaded = false;
 
     return disk;
+  }
+
+  /**
+   * 确保套装Buff详情已加载
+   */
+  async ensureDetailsLoaded(): Promise<void> {
+    if (this._detailsLoaded) return;
+    if (!this._dataLoader) return;
+
+    if (!this._detailsLoadPromise) {
+      this._detailsLoadPromise = (async () => {
+        try {
+          const equipBuffData = await this._dataLoader!.getEquipmentBuff(this.game_id);
+
+          if (equipBuffData.two_piece_buffs) {
+            this.set_properties = equipBuffData.two_piece_buffs.map((b: any) =>
+              Buff.fromBuffData(b)
+            );
+          }
+
+          if (equipBuffData.four_piece_buffs) {
+            this.set_buffs = equipBuffData.four_piece_buffs.map((b: any) =>
+              Buff.fromBuffData(b)
+            );
+          }
+        } catch (err) {
+          console.warn(`加载驱动盘套装Buff数据失败: ${this.game_id}`, err);
+        } finally {
+          this._detailsLoaded = true;
+        }
+      })();
+    }
+
+    await this._detailsLoadPromise;
   }
 
   /**

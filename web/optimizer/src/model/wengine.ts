@@ -125,6 +125,9 @@ export class WEngine {
 
   // 懒加载标志位
   private _isBaseStatsLoaded: boolean = false;
+  private _detailsLoaded: boolean = false;
+  private _detailsLoadPromise: Promise<void> | null = null;
+  private _dataLoader: typeof dataLoaderService | null = null;
 
   constructor(id: string, wengineId: string, name: string) {
     this.id = id;
@@ -170,6 +173,10 @@ export class WEngine {
    * 获取当前等级的基础属性集（局外）
    */
   getBaseStats(): PropertyCollection {
+    if (!this._detailsLoaded) {
+      // 触发惰性加载（不阻塞当前调用）
+      void this.ensureDetailsLoaded();
+    }
     if (!this._isBaseStatsLoaded || this.base_stats.out_of_combat.size === 0) {
       this.base_stats = this.getStatsAtLevel(this.level, this.breakthrough);
       this._isBaseStatsLoaded = true;
@@ -181,6 +188,10 @@ export class WEngine {
    * 获取当前精炼等级的所有有效 Buff（局内）
    */
   getActiveBuffs(): Buff[] {
+    if (!this._detailsLoaded) {
+      // 触发惰性加载（不阻塞当前调用）
+      void this.ensureDetailsLoaded();
+    }
     // 从talents中获取当前精炼等级的buff
     let activeBuffs: Buff[] = [];
     for (const talent of this.talents) {
@@ -235,6 +246,7 @@ export class WEngine {
 
     // 创建实例
     const wengine = new WEngine(data.id, wengineId, name);
+    wengine._dataLoader = dataLoader;
 
     // 恢复玩家数据，使用默认值防止错误
     wengine.level = data.level ?? 1;
@@ -335,6 +347,7 @@ export class WEngine {
 
         // 更新当前精炼等级的buff缓存
         wengine.getActiveBuffs();
+        wengine._detailsLoaded = true;
       } catch (err) {
         console.warn(`加载音擎数据失败: ${data.wengine_id}`, err);
       }
@@ -389,98 +402,121 @@ export class WEngine {
     wengine.equipped_agent = zodData.location || null;
     wengine.weapon_type = weaponInfo.type as WeaponType;
 
-    // 5. 加载音擎详细数据和Buff数据
-    try {
-      const wengineDetail = await dataLoader.getWeaponDetail(gameWengineId);
-      const wengineBuffData = await dataLoader.getWeaponBuff(gameWengineId);
-
-      // 设置基础属性（从 BaseProperty.Value 获取）
-      if (wengineDetail.BaseProperty && wengineDetail.BaseProperty.Value !== undefined) {
-        wengine.base_atk = wengineDetail.BaseProperty.Value;
-      }
-
-      // 设置副属性类型（从 RandProperty.Name 推断）
-      if (wengineDetail.RandProperty) {
-        const randPropName = wengineDetail.RandProperty.Name || wengineDetail.RandProperty.Name2;
-        const randPropFormat = wengineDetail.RandProperty.Format || '';
-        const isPercent = randPropFormat.includes('%');
-        // 根据名称推断属性类型
-        if (randPropName.includes('攻击力')) {
-          wengine.rand_stat_type = isPercent ? PropertyType.ATK_ : PropertyType.ATK;
-        } else if (randPropName.includes('生命值')) {
-          wengine.rand_stat_type = isPercent ? PropertyType.HP_ : PropertyType.HP;
-        } else if (randPropName.includes('防御力')) {
-          wengine.rand_stat_type = isPercent ? PropertyType.DEF_ : PropertyType.DEF;
-        } else if (randPropName.includes('暴击率')) {
-          wengine.rand_stat_type = PropertyType.CRIT_;
-        } else if (randPropName.includes('暴击伤害')) {
-          wengine.rand_stat_type = PropertyType.CRIT_DMG_;
-        } else if (randPropName.includes('穿透')) {
-          wengine.rand_stat_type = PropertyType.PEN_;
-        } else if (randPropName.includes('异常精通')) {
-          wengine.rand_stat_type = PropertyType.ANOM_PROF;
-        } else if (randPropName.includes('能量自动回复')) {
-          wengine.rand_stat_type = PropertyType.ENER_REGEN_;
-        }
-      }
-
-      // 设置副属性基础值
-            if (wengineDetail.RandProperty && wengineDetail.RandProperty.Value !== undefined) {
-              // 根据属性类型判断是否是百分比属性
-              let isPercentType = false;
-              if (wengine.rand_stat_type) {
-                isPercentType = [
-                              PropertyType.CRIT_,
-                              PropertyType.CRIT_DMG_,
-                              PropertyType.ATK_,
-                              PropertyType.HP_,
-                              PropertyType.DEF_,
-                              PropertyType.PEN_,
-                              PropertyType.SHIELD_,
-                              PropertyType.ENER_REGEN_
-                            ].includes(wengine.rand_stat_type);              }
-              // 游戏数据是万分比，百分比属性需要除以10000转换为小数
-              wengine.rand_stat = isPercentType ? wengineDetail.RandProperty.Value / 10000 : wengineDetail.RandProperty.Value;
-            }
-      // 设置等级成长数据（从 Level 获取）
-      if (wengineDetail.Level) {
-        for (const [level, data] of Object.entries(wengineDetail.Level)) {
-          wengine.level_data.set(
-            parseInt(level),
-            new WEngineLevelData(
-              parseInt(level),
-              (data as any).Exp || 0,
-              (data as any).Rate || 0
-            )
-          );
-        }
-      }
-
-      // 计算当前等级的基础属性
-      wengine.base_stats = wengine.getStatsAtLevel(zodData.level, zodData.promotion);
-
-      // 加载天赋数据（从 wengineBuffData.talents 获取）
-      if (wengineBuffData.talents) {
-        for (const talentData of wengineBuffData.talents) {
-          const buffs = (talentData.buffs || []).map((b: any) => Buff.fromBuffData(b));
-          wengine.talents.push(
-            new WEngineTalent(
-              talentData.level,
-              talentData.name,
-              talentData.description || '',
-              buffs
-            )
-          );
-        }
-      }
-
-      // 更新当前精炼等级的buff缓存
-      wengine.getActiveBuffs();
-    } catch (err) {
-      console.warn(`加载音擎数据失败: ${zodData.key}`, err);
-    }
+    // 懒加载：仅记录 dataLoader，详情在需要时加载
+    wengine._dataLoader = dataLoader;
+    wengine._detailsLoaded = false;
 
     return wengine;
+  }
+
+  /**
+   * 确保音擎详情已加载（基础属性 + 天赋 Buff）
+   */
+  async ensureDetailsLoaded(): Promise<void> {
+    if (this._detailsLoaded) return;
+    if (!this._dataLoader) return;
+
+    if (!this._detailsLoadPromise) {
+      this._detailsLoadPromise = (async () => {
+        const gameWengineId = this.wengine_id;
+        const dataLoader = this._dataLoader!;
+
+        const weaponInfo = dataLoader.weaponData?.get(gameWengineId);
+        if (!weaponInfo) {
+          console.warn(`未找到音擎游戏数据: ${gameWengineId}`);
+          this._detailsLoaded = true;
+          return;
+        }
+
+        try {
+          const wengineDetail = await dataLoader.getWeaponDetail(gameWengineId);
+          const wengineBuffData = await dataLoader.getWeaponBuff(gameWengineId);
+
+          if (wengineDetail.BaseProperty && wengineDetail.BaseProperty.Value !== undefined) {
+            this.base_atk = wengineDetail.BaseProperty.Value;
+          }
+
+          if (wengineDetail.RandProperty) {
+            const randPropName = wengineDetail.RandProperty.Name || wengineDetail.RandProperty.Name2;
+            const randPropFormat = wengineDetail.RandProperty.Format || '';
+            const isPercent = randPropFormat.includes('%');
+            if (randPropName.includes('攻击力')) {
+              this.rand_stat_type = isPercent ? PropertyType.ATK_ : PropertyType.ATK;
+            } else if (randPropName.includes('生命值')) {
+              this.rand_stat_type = isPercent ? PropertyType.HP_ : PropertyType.HP;
+            } else if (randPropName.includes('防御力')) {
+              this.rand_stat_type = isPercent ? PropertyType.DEF_ : PropertyType.DEF;
+            } else if (randPropName.includes('暴击率')) {
+              this.rand_stat_type = PropertyType.CRIT_;
+            } else if (randPropName.includes('暴击伤害')) {
+              this.rand_stat_type = PropertyType.CRIT_DMG_;
+            } else if (randPropName.includes('穿透')) {
+              this.rand_stat_type = PropertyType.PEN_;
+            } else if (randPropName.includes('异常精通')) {
+              this.rand_stat_type = PropertyType.ANOM_PROF;
+            } else if (randPropName.includes('能量自动回复')) {
+              this.rand_stat_type = PropertyType.ENER_REGEN_;
+            }
+          }
+
+          if (wengineDetail.RandProperty && wengineDetail.RandProperty.Value !== undefined) {
+            let isPercentType = false;
+            if (this.rand_stat_type) {
+              isPercentType = [
+                PropertyType.CRIT_,
+                PropertyType.CRIT_DMG_,
+                PropertyType.ATK_,
+                PropertyType.HP_,
+                PropertyType.DEF_,
+                PropertyType.PEN_,
+                PropertyType.SHIELD_,
+                PropertyType.ENER_REGEN_,
+              ].includes(this.rand_stat_type);
+            }
+            this.rand_stat = isPercentType ? wengineDetail.RandProperty.Value / 10000 : wengineDetail.RandProperty.Value;
+          }
+
+          if (wengineDetail.Level) {
+            for (const [level, data] of Object.entries(wengineDetail.Level)) {
+              this.level_data.set(
+                parseInt(level),
+                new WEngineLevelData(
+                  parseInt(level),
+                  (data as any).Exp || 0,
+                  (data as any).Rate || 0
+                )
+              );
+            }
+          }
+
+          this.base_stats = this.getStatsAtLevel(this.level, this.breakthrough);
+          this._isBaseStatsLoaded = true;
+
+          if (wengineBuffData.talents) {
+            for (const talentData of wengineBuffData.talents) {
+              const buffs = (talentData.buffs || []).map((b: any) => Buff.fromBuffData(b));
+              this.talents.push(
+                new WEngineTalent(
+                  talentData.level,
+                  talentData.name,
+                  talentData.description || '',
+                  buffs
+                )
+              );
+            }
+          }
+
+          // 更新当前精炼等级的buff缓存
+          this.getActiveBuffs();
+        } catch (err) {
+          console.warn(`加载音擎数据失败: ${gameWengineId}`, err);
+        } finally {
+          this._detailsLoaded = true;
+        }
+      })();
+    }
+
+    await this._detailsLoadPromise;
   }
 
   /**

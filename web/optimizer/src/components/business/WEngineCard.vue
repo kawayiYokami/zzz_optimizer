@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { WEngine } from '../../model/wengine';
 import { PropertyType, getPropertyCnName, isPercentageProperty, getWeaponCnName } from '../../model/base';
 import { iconService } from '../../services/icon.service';
@@ -82,6 +82,15 @@ const props = defineProps<{
 defineEmits<{
   edit: [wengineId: string];
 }>();
+
+const detailsVersion = ref(0);
+
+async function ensureWengineReady() {
+  if (typeof (props.wengine as any).ensureDetailsLoaded === 'function') {
+    await (props.wengine as any).ensureDetailsLoaded();
+  }
+  detailsVersion.value++;
+}
 
 const rarityGradientClass = computed(() => {
     // Determine rarity based on some logic (e.g. from ID or if we have rarity in model)
@@ -107,6 +116,7 @@ function getWeaponTypeName() {
 }
 
 const activeTalent = computed(() => {
+    detailsVersion.value;
     return props.wengine.talents.find(t => t.level === props.wengine.refinement);
 });
 
@@ -114,7 +124,10 @@ const activeTalentName = computed(() => activeTalent.value?.name || '未知天�
 const activeTalentDesc = computed(() => activeTalent.value?.description || '无描述');
 
 // 使用 getBaseStats() 获取基础属性
-const baseStats = computed(() => props.wengine.getBaseStats());
+const baseStats = computed(() => {
+  detailsVersion.value;
+  return props.wengine.getBaseStats();
+});
 
 // 从属性集合中获取基础攻击力
 const baseAtk = computed(() => {
@@ -151,6 +164,14 @@ function formatValue(value: number, isPercent: boolean) {
   }
   return value.toFixed(0);
 }
+
+onMounted(async () => {
+  await ensureWengineReady();
+});
+
+watch(() => props.wengine, async () => {
+  await ensureWengineReady();
+});
 </script>
 
 <style scoped>

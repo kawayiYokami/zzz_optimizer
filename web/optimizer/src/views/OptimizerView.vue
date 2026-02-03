@@ -475,6 +475,29 @@ const saveTeamOptimizationConfig = (teamId: string) => {
 const onTeamChange = async () => {
   const team = teams.value.find(t => t.id === selectedTeamId.value);
   if (team) {
+    // 预加载队伍角色与装备详情（惰性实例化场景）
+    // 使用 Promise.allSettled 以支持错误容忍，确保所有agent都尝试加载
+    const preloadResults = await Promise.allSettled(
+      team.allAgents.map(async (agent) => {
+        try {
+          await agent.ensureDetailsLoaded();
+          await agent.ensureEquippedDetailsLoaded();
+        } catch (err) {
+          console.error(`Failed to preload agent ${agent.name_cn}:`, err);
+          // 单个agent失败不中断整体流程，继续处理其他agent
+          throw err;
+        }
+      })
+    );
+
+    // 记录加载失败的agent
+    preloadResults.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        const agent = team.allAgents[index];
+        console.warn(`Agent preload failed for ${agent.name_cn}:`, result.reason);
+      }
+    });
+
     await optimizerService.setTargetTeam(team);
     targetAgentId.value = team.frontAgent?.id || '';
     // 更新战场服务
@@ -668,7 +691,7 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
     return excludedIds;
   });
 
-  const startOptimization = async () => {
+const startOptimization = async () => {
   const agent = targetAgent.value;
   if (!agent) return;
 
@@ -713,6 +736,24 @@ const handleEquipBuild = async (build: OptimizationBuild) => {
   }
 
   try {
+    // 确保角色/装备/驱动盘详情已加载
+    await agent.ensureDetailsLoaded();
+    await agent.ensureEquippedDetailsLoaded();
+
+    if (weapon && typeof (weapon as any).ensureDetailsLoaded === 'function') {
+      await (weapon as any).ensureDetailsLoaded();
+    }
+
+    if (optimizedDiscs.value.length > 0) {
+      await Promise.all(
+        optimizedDiscs.value.map(async (disc) => {
+          if (disc && typeof (disc as any).ensureDetailsLoaded === 'function') {
+            await (disc as any).ensureDetailsLoaded();
+          }
+        })
+      );
+    }
+
     // 使用快速优化模式
     optimizerService.initializeFastWorkers(workerCount.value);
 

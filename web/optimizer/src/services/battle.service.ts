@@ -198,6 +198,14 @@ export class BattleService {
       // 清除属性缓存
       this.clearPropertyCache();
 
+      // 确保角色与装备详情已加载（惰性实例化场景）
+      await Promise.all(
+        this.team.allAgents.map(async (agent) => {
+          await agent.ensureDetailsLoaded();
+          await agent.ensureEquippedDetailsLoaded();
+        })
+      );
+
       // 加载新队伍的buff
       await this.loadBuffsFromAllAgentsAsync();
 

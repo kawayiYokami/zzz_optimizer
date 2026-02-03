@@ -68,7 +68,7 @@ export const useSaveStore = defineStore('save', () => {
       console.warn(`Instance for save ${currentSaveName.value} not found, generating from raw data...`);
       isLoading.value = true;
       try {
-        const inst = await SaveData.fromZod(currentSaveName.value, normalizeZodData(rawSave), dataLoaderService);
+        const inst = await instantiateSaveWithEquipment(currentSaveName.value, rawSave);
         // 使用新的 Map 替换旧的 Map，以触发 Vue 响应式更新
         const newSaves = new Map(saves.value);
         newSaves.set(currentSaveName.value!, inst);
@@ -122,6 +122,32 @@ export const useSaveStore = defineStore('save', () => {
   });
 
   /**
+   * 为SaveData实例设置装备引用
+   * 提取为共享辅助函数，确保所有SaveData实例初始化一致
+   */
+  async function instantiateSaveWithEquipment(
+    name: string,
+    rawData: SaveDataZod
+  ): Promise<SaveData> {
+    const normalized = normalizeZodData(rawData);
+    const saveData = await SaveData.fromZod(name, normalized, dataLoaderService);
+
+    // 为所有Agent设置装备引用
+    const agents = saveData.getAllAgents();
+    const wengines = saveData.getAllWEngines();
+    const driveDisks = saveData.getAllDriveDisks();
+
+    const wenginesMap = new Map(wengines.map(w => [w.id, w]));
+    const driveDisksMap = new Map(driveDisks.map(d => [d.id, d]));
+
+    agents.forEach(agent => {
+      agent.setEquipmentReferences(wenginesMap, driveDisksMap);
+    });
+
+    return saveData;
+  }
+
+  /**
    * 从localStorage加载存档
    */
   async function loadFromStorage(): Promise<void> {
@@ -138,22 +164,6 @@ export const useSaveStore = defineStore('save', () => {
               const normalized = normalizeZodData(data as SaveDataZod);
               // 直接保存原始ZOD数据到rawSaves
               newRawSaves.set(name, normalized);
-              // 从原始ZOD数据生成实例
-              const saveData = await SaveData.fromZod(name, normalized, dataLoaderService);
-
-              // 为所有Agent设置装备引用
-              const agents = saveData.getAllAgents();
-              const wengines = saveData.getAllWEngines();
-              const driveDisks = saveData.getAllDriveDisks();
-
-              const wenginesMap = new Map(wengines.map(w => [w.id, w]));
-              const driveDisksMap = new Map(driveDisks.map(d => [d.id, d]));
-
-              agents.forEach(agent => {
-                agent.setEquipmentReferences(wenginesMap, driveDisksMap);
-              });
-
-              newSaves.set(name, saveData);
             }
           } catch (err) {
             console.error(`加载存档失败 [${name}]:`, err);
@@ -188,6 +198,20 @@ export const useSaveStore = defineStore('save', () => {
       // 有存档但没有当前存档指针时，默认选择第一个
       if (!currentSaveName.value) {
         currentSaveName.value = Array.from(rawSaves.value.keys())[0] ?? null;
+      }
+
+      // 只实例化当前存档（惰性加载其他存档）
+      if (currentSaveName.value) {
+        const raw = rawSaves.value.get(currentSaveName.value);
+        if (raw) {
+          try {
+            const saveData = await instantiateSaveWithEquipment(currentSaveName.value, raw);
+            saves.value.set(currentSaveName.value, saveData);
+          } catch (err) {
+            error.value = err instanceof Error ? err.message : 'Unknown error';
+            console.error(`加载当前存档失败 [${currentSaveName.value}]:`, err);
+          }
+        }
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error';
@@ -282,14 +306,11 @@ export const useSaveStore = defineStore('save', () => {
       // 从rawSaves重新生成当前存档实例
       const rawSave = rawSaves.value.get(name);
       if (rawSave) {
-        // 规范化数据，确保 key 格式正确
-        const normalizedRawSave = normalizeZodData(rawSave);
-
-        const saveData = await SaveData.fromZod(name, normalizedRawSave, dataLoaderService);
+        const saveData = await instantiateSaveWithEquipment(name, rawSave);
         saves.value.set(name, saveData);
 
         // 同步规范化后的数据回 rawSaves
-        rawSaves.value.set(name, normalizedRawSave);
+        rawSaves.value.set(name, normalizeZodData(rawSave));
       }
 
       currentSaveName.value = name;

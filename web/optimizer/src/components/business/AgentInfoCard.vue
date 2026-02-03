@@ -71,41 +71,48 @@
 
     <!-- Tab Content Container -->
     <div class="card-body p-0 bg-base-100 border-t border-base-300 flex-1 overflow-hidden relative">
-
-        <!-- Tab 1: Stats -->
-        <div v-show="activeTab === 'stats'" class="h-full overflow-y-auto p-6">
-            <PropertySetCard
-                :property-collection="agent.getCharacterCombatStats()"
-                :conversion-buffs="agent.conversion_buffs"
-            />
+        <div v-if="isLoadingDetails" class="h-full flex items-center justify-center p-6">
+            <div class="text-center text-base-content/60">
+                <span class="loading loading-spinner loading-md"></span>
+                <div class="mt-3">正在加载角色数据...</div>
+            </div>
         </div>
 
-        <!-- Tab 2: Skills -->
-        <div v-show="activeTab === 'skills'" class="h-full overflow-y-auto p-6">
-            <SkillList :agent="agent" />
-        </div>
+        <template v-else>
+            <!-- Tab 1: Stats -->
+            <div v-show="activeTab === 'stats'" class="h-full overflow-y-auto p-6">
+                <PropertySetCard
+                    :property-collection="agent.getCharacterCombatStats()"
+                    :conversion-buffs="agent.conversion_buffs"
+                />
+            </div>
 
-        <!-- Tab 3: Buffs -->
-        <div v-show="activeTab === 'buffs'" class="h-full overflow-y-auto p-6 space-y-6">
-            <!-- Active Buffs -->
-            <section>
-                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                    <span class="w-1 h-6 bg-secondary rounded"></span>
-                    BUFF
-                </h3>
-                <!-- Placeholder for buffs list -->
-                <div v-if="allBuffs.length === 0" class="text-center opacity-50 py-8 bg-base-200 rounded-lg border border-dashed border-base-300">
-                    暂无激活的 Buff
-                </div>
-                <div v-else class="flex flex-wrap gap-3">
-                    <BuffCard v-for="(buff, idx) in allBuffs" :key="idx" :buff="buff" />
-                </div>
-            </section>
-        </div>
+            <!-- Tab 2: Skills -->
+            <div v-show="activeTab === 'skills'" class="h-full overflow-y-auto p-6">
+                <SkillList :agent="agent" />
+            </div>
 
-        <!-- Tab 3: Equipment -->
+            <!-- Tab 3: Buffs -->
+            <div v-show="activeTab === 'buffs'" class="h-full overflow-y-auto p-6 space-y-6">
+                <!-- Active Buffs -->
+                <section>
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-secondary rounded"></span>
+                        BUFF
+                    </h3>
+                    <!-- Placeholder for buffs list -->
+                    <div v-if="allBuffs.length === 0" class="text-center opacity-50 py-8 bg-base-200 rounded-lg border border-dashed border-base-300">
+                        暂无激活的 Buff
+                    </div>
+                    <div v-else class="flex flex-wrap gap-3">
+                        <BuffCard v-for="(buff, idx) in allBuffs" :key="idx" :buff="buff" />
+                    </div>
+                </section>
+            </div>
 
-                <div v-show="activeTab === 'equipment'" class="h-full overflow-y-auto p-6 space-y-6">
+            <!-- Tab 3: Equipment -->
+
+                    <div v-show="activeTab === 'equipment'" class="h-full overflow-y-auto p-6 space-y-6">
 
 
 
@@ -163,10 +170,9 @@
 
 
                 </div>
+        </template>
 
-            </div>
-
-
+    </div>
 
             <!-- 装备选择弹窗 -->
 
@@ -233,6 +239,7 @@ const emit = defineEmits<{
 }>();
 
 const activeTab = ref('stats');
+const isLoadingDetails = ref(true);
 
 // Icons
 const avatarUrl = computed(() => iconService.getCharacterAvatarById(props.agent.game_id));
@@ -347,13 +354,26 @@ function selectEquipment(item: any) {
     }
 }
 
+async function ensureAgentReady() {
+    isLoadingDetails.value = true;
+    try {
+        await props.agent.ensureDetailsLoaded();
+        await props.agent.ensureEquippedDetailsLoaded();
+        await loadBuffs();
+    } catch (err) {
+        console.error('Failed to load agent details:', err);
+    } finally {
+        isLoadingDetails.value = false;
+    }
+}
+
 onMounted(async () => {
-    await loadBuffs();
+    await ensureAgentReady();
 });
 
-// 监听 agent 变化，重新加载 BUFF
+// 监听 agent 变化，重新加载详情与 BUFF
 watch(() => props.agent, async () => {
-    await loadBuffs();
+    await ensureAgentReady();
 });
 
 // Helper Functions

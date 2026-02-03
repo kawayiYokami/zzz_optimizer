@@ -158,6 +158,8 @@ export class Agent {
   // 计算属性加载状态
   private _isSelfPropertiesLoaded: boolean = false;
   private _isBuffsLoaded: boolean = false;
+  private _detailLoadPromise: Promise<void> | null = null;
+  private _skillLoadPromise: Promise<void> | null = null;
 
   // 装备属性缓存
   private _equipmentStatsCacheValid: boolean = false;
@@ -193,43 +195,42 @@ export class Agent {
    */
   getCoreSkillStats(): Map<PropertyType, number> {
     if (!this._charDetail?.ExtraLevel) {
-      console.warn('[getCoreSkillStats] _charDetail.ExtraLevel 不存在');
+      // 详情尚未加载时直接返回空，避免噪音日志
       return new Map();
     }
-    
+
     if (!this._zodData) {
-      console.warn('[getCoreSkillStats] _zodData 不存在');
       return new Map();
     }
-    
+
     const coreLevel = this._zodData.core;
-    
+
     if (!coreLevel || coreLevel < 1) {
       console.warn('[getCoreSkillStats] 核心技能等级无效:', coreLevel);
       return new Map();
     }
-    
+
     // 核心技等级 1 无数据，从等级 2 开始才有属性
     if (coreLevel === 1) {
       return new Map();
     }
-    
+
     // JSON key = 核心技等级 - 1
     const coreKey = (coreLevel - 1).toString();
     const extraData = this._charDetail.ExtraLevel[coreKey];
-    
+
     if (!extraData?.Extra) {
       console.warn('[getCoreSkillStats] ExtraLevel[' + coreKey + '].Extra 不存在');
       return new Map();
     }
-    
+
     const stats = new Map<PropertyType, number>();
     for (const bonus of Object.values(extraData.Extra) as any[]) {
       if (bonus.Name && bonus.Value !== undefined) {
         // 使用名称映射到 PropertyType
         const propertyType = this._mapCoreSkillNameToPropertyType(bonus.Name);
         let value = Number(bonus.Value) || 0;
-        
+
         // 根据 Format 转换 Value
         const format = bonus.Format || '';
         if (format.includes('%')) {
@@ -237,18 +238,18 @@ export class Agent {
           value = value / 10000;
         }
         // {0:0.#} 和 {0:0.##} 格式直接使用原始值
-        
+
         if (!propertyType) {
           console.warn(`[getCoreSkillStats] 未知核心技能属性名称: ${bonus.Name} (Prop ID: ${bonus.Prop})`);
           continue;
         }
-        
+
         // 累加相同 PropertyType 的值（例如"基础攻击力"和"攻击力"都映射到 ATK_BASE）
         const existingValue = stats.get(propertyType) || 0;
         stats.set(propertyType, existingValue + value);
       }
     }
-    
+
     return stats;
   }
 
@@ -259,7 +260,7 @@ export class Agent {
   getCoreSkillBonuses(): Array<{name: string; value: number; format: string}> {
     const stats = this.getCoreSkillStats();
     const bonuses: Array<{name: string; value: number; format: string}> = [];
-    
+
     for (const [propType, value] of stats.entries()) {
       const name = getPropertyCnName(propType);
       bonuses.push({
@@ -268,7 +269,7 @@ export class Agent {
         format: '{0}'
       });
     }
-    
+
     return bonuses;
   }
 
@@ -469,7 +470,7 @@ export class Agent {
     if (!this._charDetail?.Stats) return baseStats;
 
     const stats = this._charDetail.Stats;
-    
+
     // 属性映射配置
     const mapping: Record<string, { type: PropertyType, divisor?: number }> = {
       'BreakStun': { type: PropertyType.IMPACT },
@@ -499,7 +500,7 @@ export class Agent {
    */
   private _calculateSelfProperties(): void {
     if (!this._charDetail || !this._zodData || !this._charDetail.Stats) {
-      this._isSelfPropertiesLoaded = true;
+      // 详情未加载时不标记为完成，后续加载后再计算
       return;
     }
 
@@ -628,38 +629,94 @@ export class Agent {
 
     // 保存dataLoader引用，用于后续懒加载
     agent._dataLoader = dataLoader;
-    agent._charDetail = await dataLoader.getCharacterDetail(gameCharId);
     agent._gameCharId = gameCharId;
     agent._zodData = zodData;
 
-    // 验证 _charDetail 是否正确加载
-    if (!agent._charDetail) {
-      console.error(`[fromZodData] 加载角色详情失败: ${gameCharId}`);
-      throw new Error(`加载角色详情失败: ${gameCharId}`);
-    }
-    
-    if (!agent._charDetail.ExtraLevel) {
-      console.warn(`[fromZodData] 角色详情中缺少 ExtraLevel 数据: ${gameCharId}`);
-    }
-
-    // 验证核心技能等级
-    if (!zodData.core) {
-      console.warn(`[fromZodData] 存档中核心技能等级未设置: ${zodData.id}`);
-    } else if (zodData.core < 1 || zodData.core > 7) {
-      console.warn(`[fromZodData] 核心技能等级超出范围: ${zodData.core} (有效范围: 1-7)`);
-    }
-
-    // 加载新的技能集合（从原始游戏数据）
-    const skillLevels = {
-      normal: agent.skills.normal,
-      dodge: agent.skills.dodge,
-      assist: agent.skills.assist,
-      special: agent.skills.special,
-      chain: agent.skills.chain,
-    };
-    agent.skillSet = await dataLoader.loadAgentSkillsFromJson(agent.game_id, skillLevels);
-
     return agent;
+  }
+
+  /**
+   * 确保角色详情已加载
+   */
+  async ensureDetailsLoaded(options?: { skills?: boolean }): Promise<void> {
+    if (!this._dataLoader || !this._gameCharId) return;
+
+    if (!this._detailLoadPromise) {
+      this._detailLoadPromise = (async () => {
+        try {
+          const detail = await this._dataLoader!.getCharacterDetail(this._gameCharId!);
+          if (!detail) {
+            throw new Error(`加载角色详情失败: ${this._gameCharId}`);
+          }
+          this._charDetail = detail;
+          // 详情加载后需要重新计算
+          this._isSelfPropertiesLoaded = false;
+        } catch (err) {
+          // 清除缓存的失败 Promise，允许后续重试
+          this._detailLoadPromise = null;
+          throw err;
+        }
+      })();
+    }
+
+    await this._detailLoadPromise;
+
+    if (options?.skills !== false) {
+      await this.ensureSkillSetLoaded();
+    }
+  }
+
+  /**
+   * 确保技能集合已加载（依赖角色详情）
+   */
+  async ensureSkillSetLoaded(): Promise<void> {
+    if (this.skillSet) return;
+    if (!this._dataLoader) return;
+
+    if (!this._skillLoadPromise) {
+      this._skillLoadPromise = (async () => {
+        // 依赖角色详情
+        await this.ensureDetailsLoaded({ skills: false });
+        const skillLevels = {
+          normal: this.skills.normal,
+          dodge: this.skills.dodge,
+          assist: this.skills.assist,
+          special: this.skills.special,
+          chain: this.skills.chain,
+        };
+        this.skillSet = await this._dataLoader!.loadAgentSkillsFromJson(this.game_id, skillLevels);
+      })();
+    }
+
+    await this._skillLoadPromise;
+  }
+
+  /**
+   * 确保已装备的音擎/驱动盘详情已加载（用于Buff/套装效果）
+   */
+  async ensureEquippedDetailsLoaded(): Promise<void> {
+    const tasks: Promise<void>[] = [];
+
+    if (this.equipped_wengine && this._wengines) {
+      const wengine = this._wengines.get(this.equipped_wengine);
+      if (wengine && typeof (wengine as any).ensureDetailsLoaded === 'function') {
+        tasks.push((wengine as any).ensureDetailsLoaded());
+      }
+    }
+
+    if (this._driveDisks) {
+      for (const diskId of this.equipped_drive_disks) {
+        if (!diskId) continue;
+        const disk = this._driveDisks.get(diskId);
+        if (disk && typeof (disk as any).ensureDetailsLoaded === 'function') {
+          tasks.push((disk as any).ensureDetailsLoaded());
+        }
+      }
+    }
+
+    if (tasks.length > 0) {
+      await Promise.all(tasks);
+    }
   }
 
   /**
@@ -1067,7 +1124,7 @@ export class Agent {
   async adjustSkillLevel(skillType: 'normal' | 'dodge' | 'assist' | 'special' | 'chain', delta: number): Promise<void> {
     const current = this.skills[skillType];
     const newValue = Math.max(1, Math.min(12, current + delta));
-    
+
     if (newValue !== current) {
       this.skills[skillType] = newValue;
       // 技能等级目前不直接影响属性面板（除了核心技），但如果有被动关联技能等级，则需要清除缓存
@@ -1090,12 +1147,12 @@ export class Agent {
   adjustCoreSkillLevel(delta: number): void {
     const oldCore = this.core_skill;
     this.core_skill = Math.max(1, Math.min(7, this.core_skill + delta));
-    
+
     if (this.core_skill !== oldCore) {
       this.clearPropertyCache(); // 核心技能直接影响基础属性
       // 核心技能等级变化也可能影响 self_properties
       this._isSelfPropertiesLoaded = false;
-      
+
       if (this._zodData) {
         this._zodData.core = this.core_skill;
       }
@@ -1108,7 +1165,7 @@ export class Agent {
   adjustCinemaLevel(delta: number): void {
     const oldCinema = this.cinema;
     this.cinema = Math.max(0, Math.min(6, this.cinema + delta));
-    
+
     if (this.cinema !== oldCinema) {
       this.clearPropertyCache();
       // 影画可能解锁新的 Buff，需要重新加载 Buff
@@ -1117,7 +1174,7 @@ export class Agent {
       this.talent_buffs = [];
       this.potential_buffs = [];
       this.conversion_buffs = [];
-      
+
       if (this._zodData) {
         this._zodData.mindscape = this.cinema;
       }
