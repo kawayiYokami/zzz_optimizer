@@ -1,7 +1,7 @@
 {
   "Id": 1491,
-  "Icon": "",
-  "Name": "(Test1)千夏",
+  "Icon": "IconRole58",
+  "Name": "千夏",
   "CodeName": "Sunna",
   "Rarity": 4,
   "WeaponType": {
@@ -19,35 +19,40 @@
   },
   "Gender": 2,
   "PartnerInfo": {
-    "Birthday": "Partner_Birthday_1491",
-    "FullName": "Partner_Name_1491",
+    "Birthday": "...",
+    "FullName": "...",
     "Gender": "女",
-    "IconPath": "UI/Sprite/A1DynamicLoad/IconRoleCircle/UnPacker/IconRoleCircle57.png",
-    "ImpressionF": "Partner_Impression_f_1491",
-    "ImpressionM": "Partner_Impression_m_1491",
+    "IconPath": "UI/Sprite/A1DynamicLoad/IconRoleCircle/UnPacker/IconRoleCircle58.png",
+    "ImpressionF": "...",
+    "ImpressionM": "...",
     "Name": "",
     "OutlookDesc": "",
-    "ProfileDesc": "Partner_ProfileDesc_1491",
-    "Race": "Partner_Race_14",
-    "RoleIcon": "IconRole/UnPacker/IconRole57",
-    "Stature": "Partner_Stature_1491",
+    "ProfileDesc": "...",
+    "Race": "...",
+    "RoleIcon": "IconRole/UnPacker/IconRole58",
+    "Stature": "...",
     "UnlockCondition": [
       "获得代理人",
-      "Partner_Unlock_Condition_Chapter14",
+      "完成主线委托第二季·间章 旧梦的安可曲",
       "完成委托「安比的困扰」"
     ],
     "TrustLv": {
-      "1": "Partner_ProfileDesc_1491",
+      "1": "...",
       "2": "",
-      "3": "Partner_ProfileDesc_1491_1",
+      "3": "...",
       "4": ""
     }
   },
   "Skin": {
     "3114910": {
-      "Name": "AvatarSkin_Summer_Name_000",
-      "Desc": "AvatarSkin_Summer_Desc_000",
-      "Image": "IconRole41"
+      "Name": "千夏·妄念环响",
+      "Desc": "...",
+      "Image": "IconRole58"
+    },
+    "3114911": {
+      "Name": "千夏·午后茶歇",
+      "Desc": "...",
+      "Image": "IconRole58_01"
     }
   },
   "Stats": {
@@ -56,7 +61,7 @@
     "Attack": 108,
     "AttackGrowth": 63517,
     "AvatarPieceId": 5491,
-    "BreakStun": 83,
+    "BreakStun": 98,
     "Crit": 500,
     "CritDamage": 5000,
     "CritDmgRes": 0,
@@ -165,7 +170,7 @@
           "Prop": 12102,
           "Name": "攻击力",
           "Format": "{0:0.#%}",
-          "Value": 600
+          "Value": 700
         },
         "12101": {
           "Prop": 12101,
@@ -182,7 +187,7 @@
           "Prop": 12102,
           "Name": "攻击力",
           "Format": "{0:0.#%}",
-          "Value": 600
+          "Value": 700
         },
         "12101": {
           "Prop": 12101,
@@ -199,7 +204,7 @@
           "Prop": 12102,
           "Name": "攻击力",
           "Format": "{0:0.#%}",
-          "Value": 1200
+          "Value": 1400
         },
         "12101": {
           "Prop": 12101,
@@ -216,7 +221,7 @@
           "Prop": 12102,
           "Name": "攻击力",
           "Format": "{0:0.#%}",
-          "Value": 1200
+          "Value": 1400
         },
         "12101": {
           "Prop": 12101,
@@ -233,7 +238,7 @@
           "Prop": 12102,
           "Name": "攻击力",
           "Format": "{0:0.#%}",
-          "Value": 1800
+          "Value": 2100
         },
         "12101": {
           "Prop": 12101,
@@ -250,7 +255,7 @@
           "Prop": 12102,
           "Name": "攻击力",
           "Format": "{0:0.#%}",
-          "Value": 1800
+          "Value": 2100
         },
         "12101": {
           "Prop": 12101,
@@ -327,17 +332,17 @@
     "Basic": {
       "Description": [
         {
-          "Name": "(Test1)普通攻击：锤打脸",
-          "Desc": "(Test1)点按 <IconMap:Icon_Normal> 发动：\n向前方进行至多四段的攻击，造成<color=#F0D12B>物理伤害</color>。",
+          "Name": "普通攻击：鬼马流星锤",
+          "Desc": "点按 <IconMap:Icon_Normal> 发动：\n向前方进行至多四段的攻击，造成<color=#F0D12B>物理伤害</color>。",
           "Potential": []
         },
         {
-          "Name": "(Test1)普通攻击：猫抓脸",
-          "Desc": "(Test1)战斗中，千夏位于后场，且场上没有持有<color=#FFFFFF>[陶醉]</color>标记的敌人时，小猫会消耗千夏1点[攻击点]并自动发动攻击， 造成<color=#F0D12B>物理伤害</color>；\n队伍中任意角色开启或延长任意<color=#FFFFFF>[以太帷幕]</color>时，千夏获得3点<color=#FFFFFF>[攻击点]</color>",
+          "Name": "普通攻击：坏猫出没",
+          "Desc": "战斗中，千夏位于后场，且场上没有持有<color=#FFFFFF>[猫的凝视]</color>的敌人时，泡泡会消耗1个[磨爪器]并自动发动攻击， 造成<color=#F0D12B>物理伤害</color>；\n队伍中任意角色开启<color=#FFFFFF>[以太帷幕]</color>时，千夏获得2个<color=#FFFFFF>[磨爪器]</color>；\n队伍中任意角色对敌人施加属性异常效果时，千夏获得1个<color=#FFFFFF>[磨爪器]</color>，10秒内最多触发1次；\n泡泡可以继承千夏的初始攻击力，千夏最多持有6个<color=#FFFFFF>[磨爪器]</color>。",
           "Potential": []
         },
         {
-          "Name": "(Test1)普通攻击：锤打脸",
+          "Name": "普通攻击：鬼马流星锤",
           "Param": [
             {
               "Name": "一段伤害倍率",
@@ -349,13 +354,13 @@
                   "Format": "%",
                   "DamagePercentage": 4340,
                   "DamagePercentageGrowth": 400,
-                  "StunRatio": 3260,
-                  "StunRatioGrowth": 150,
-                  "SpRecovery": 9010,
+                  "StunRatio": 2480,
+                  "StunRatioGrowth": 120,
+                  "SpRecovery": 4510,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 69025,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 2500,
+                  "AttributeInfliction": 1250,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -375,13 +380,13 @@
                   "Format": "%",
                   "DamagePercentage": 17590,
                   "DamagePercentageGrowth": 1600,
-                  "StunRatio": 13690,
-                  "StunRatioGrowth": 630,
-                  "SpRecovery": 37910,
+                  "StunRatio": 10910,
+                  "StunRatioGrowth": 500,
+                  "SpRecovery": 18960,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 289850,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 10530,
+                  "AttributeInfliction": 5265,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -401,13 +406,13 @@
                   "Format": "%",
                   "DamagePercentage": 18120,
                   "DamagePercentageGrowth": 1650,
-                  "StunRatio": 14760,
-                  "StunRatioGrowth": 680,
-                  "SpRecovery": 40860,
+                  "StunRatio": 12360,
+                  "StunRatioGrowth": 570,
+                  "SpRecovery": 20430,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 312125,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 11349,
+                  "AttributeInfliction": 5674,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -427,13 +432,13 @@
                   "Format": "%",
                   "DamagePercentage": 40530,
                   "DamagePercentageGrowth": 3690,
-                  "StunRatio": 30280,
-                  "StunRatioGrowth": 1380,
-                  "SpRecovery": 83840,
+                  "StunRatio": 25170,
+                  "StunRatioGrowth": 1150,
+                  "SpRecovery": 41920,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 640475,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 23286,
+                  "AttributeInfliction": 11643,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -448,18 +453,18 @@
               "Desc": "{Skill:1491001, Prop:1002}",
               "Param": {
                 "1491001": {
-                  "Main": 3260,
-                  "Growth": 150,
+                  "Main": 2480,
+                  "Growth": 120,
                   "Format": "%",
                   "DamagePercentage": 4340,
                   "DamagePercentageGrowth": 400,
-                  "StunRatio": 3260,
-                  "StunRatioGrowth": 150,
-                  "SpRecovery": 9010,
+                  "StunRatio": 2480,
+                  "StunRatioGrowth": 120,
+                  "SpRecovery": 4510,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 69025,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 2500,
+                  "AttributeInfliction": 1250,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -474,18 +479,18 @@
               "Desc": "{Skill:1491002, Prop:1002}",
               "Param": {
                 "1491002": {
-                  "Main": 13690,
-                  "Growth": 630,
+                  "Main": 10910,
+                  "Growth": 500,
                   "Format": "%",
                   "DamagePercentage": 17590,
                   "DamagePercentageGrowth": 1600,
-                  "StunRatio": 13690,
-                  "StunRatioGrowth": 630,
-                  "SpRecovery": 37910,
+                  "StunRatio": 10910,
+                  "StunRatioGrowth": 500,
+                  "SpRecovery": 18960,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 289850,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 10530,
+                  "AttributeInfliction": 5265,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -500,18 +505,18 @@
               "Desc": "{Skill:1491003, Prop:1002}",
               "Param": {
                 "1491003": {
-                  "Main": 14760,
-                  "Growth": 680,
+                  "Main": 12360,
+                  "Growth": 570,
                   "Format": "%",
                   "DamagePercentage": 18120,
                   "DamagePercentageGrowth": 1650,
-                  "StunRatio": 14760,
-                  "StunRatioGrowth": 680,
-                  "SpRecovery": 40860,
+                  "StunRatio": 12360,
+                  "StunRatioGrowth": 570,
+                  "SpRecovery": 20430,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 312125,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 11349,
+                  "AttributeInfliction": 5674,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -526,18 +531,18 @@
               "Desc": "{Skill:1491004, Prop:1002}",
               "Param": {
                 "1491004": {
-                  "Main": 30280,
-                  "Growth": 1380,
+                  "Main": 25170,
+                  "Growth": 1150,
                   "Format": "%",
                   "DamagePercentage": 40530,
                   "DamagePercentageGrowth": 3690,
-                  "StunRatio": 30280,
-                  "StunRatioGrowth": 1380,
-                  "SpRecovery": 83840,
+                  "StunRatio": 25170,
+                  "StunRatioGrowth": 1150,
+                  "SpRecovery": 41920,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 640475,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 23286,
+                  "AttributeInfliction": 11643,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -551,7 +556,7 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)普通攻击：猫抓脸",
+          "Name": "普通攻击：坏猫出没",
           "Param": [
             {
               "Name": "伤害倍率",
@@ -559,32 +564,6 @@
               "Param": {
                 "1491005": {
                   "Main": 39000,
-                  "Growth": 0,
-                  "Format": "%",
-                  "DamagePercentage": 39000,
-                  "DamagePercentageGrowth": 0,
-                  "StunRatio": 0,
-                  "StunRatioGrowth": 0,
-                  "SpRecovery": 0,
-                  "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 0,
-                  "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 0,
-                  "SpConsume": 0,
-                  "AttackData": [],
-                  "RpRecovery": 0,
-                  "RpRecoveryGrowth": 0,
-                  "EtherPurify": 0
-                }
-              },
-              "Potential": []
-            },
-            {
-              "Name": "失衡倍率",
-              "Desc": "{Skill:1491005, Prop:1002}",
-              "Param": {
-                "1491005": {
-                  "Main": 0,
                   "Growth": 0,
                   "Format": "%",
                   "DamagePercentage": 39000,
@@ -661,22 +640,22 @@
     "Dodge": {
       "Description": [
         {
-          "Name": "(Test1)闪避：飞",
-          "Desc": "(Test1)点按 <IconMap:Icon_Evade> 发动：\n快速的冲刺闪避；\n招式发动期间拥有无敌效果。",
+          "Name": "闪避：打不着我",
+          "Desc": "点按 <IconMap:Icon_Evade> 发动：\n快速的冲刺闪避；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)冲刺攻击：上挑",
-          "Desc": "(Test1)闪避时，点按 <IconMap:Icon_Normal> 发动：\n挑飞前方敌人，造成<color=#F0D12B>物理伤害</color>。",
+          "Name": "冲刺攻击：冲天锤",
+          "Desc": "闪避时，点按 <IconMap:Icon_Normal> 发动：\n挑飞前方敌人，造成<color=#F0D12B>物理伤害</color>。",
           "Potential": []
         },
         {
-          "Name": "(Test1)闪避反击：三连挑",
-          "Desc": "(Test1)触发<color=#FFFFFF>[极限闪避]</color>后，点按 <IconMap:Icon_Normal> 发动：\n连续锤前方敌人，造成<color=#F0D12B>物理伤害</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "闪避反击：妄想三振",
+          "Desc": "触发<color=#FFFFFF>[极限闪避]</color>后，点按 <IconMap:Icon_Normal> 发动：\n连续锤击前方敌人，造成<color=#F0D12B>物理伤害</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)冲刺攻击：上挑",
+          "Name": "冲刺攻击：冲天锤",
           "Param": [
             {
               "Name": "伤害倍率",
@@ -694,7 +673,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 105600,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 3833,
+                  "AttributeInfliction": 1916,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -720,7 +699,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 105600,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 3833,
+                  "AttributeInfliction": 1916,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -734,7 +713,7 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)闪避反击：三连挑",
+          "Name": "闪避反击：妄想三振",
           "Param": [
             {
               "Name": "伤害倍率",
@@ -752,7 +731,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 307175,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 11169,
+                  "AttributeInfliction": 5584,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -778,7 +757,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 307175,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 11169,
+                  "AttributeInfliction": 5584,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -844,22 +823,22 @@
     "Special": {
       "Description": [
         {
-          "Name": "(Test1)特殊技：气枪",
-          "Desc": "(Test1)点按 <IconMap:Icon_Special> 发动：\n使用气枪发射小猫攻击前方敌人， 造成<color=#F0D12B>物理伤害</color>。技能发动后，如果场上没有猫，则召唤小猫。",
+          "Name": "特殊技：星星发射",
+          "Desc": "点按 <IconMap:Icon_Special> 发动：\n使用气枪发射泡泡攻击前方敌人， 造成<color=#F0D12B>物理伤害</color>；技能发动后，泡泡会加入战斗。",
           "Potential": []
         },
         {
-          "Name": "(Test1)强化特殊技：猫砸人",
-          "Desc": "(Test1)能量足够时，点按  <IconMap:Icon_SpecialReady> 发动：\n扔出小猫，砸击目标并造成<color=#F0D12B>物理伤害</color>，技能发动后，如果场上没有猫，则召唤小猫；\n技能发动时，为全队代理人添加[Fever]效果，持续40秒。\n招式重击命中敌人时，将触发<color=#FFFFFF>[快速支援]</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "强化特殊技：泡泡糖轰炸",
+          "Desc": "能量足够时，点按  <IconMap:Icon_SpecialReady> 发动：\n扔出泡泡，砸向目标并造成<color=#F0D12B>物理伤害</color>；技能发动后，泡泡会加入战斗；\n技能发动时，为全队代理人添加[天使协律]效果，持续40秒；\n招式重击命中敌人时，将触发<color=#FFFFFF>[快速支援]</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)强化特殊技：拍照合击",
-          "Desc": "(Test1)进入[Fever]状态后，点按  <IconMap:Icon_SpecialReady> 可以发动：\n与小猫一同合集目标敌人，造成<color=#F0D12B>物理伤害</color>。技能发动后，如果场上没有猫，则召唤小猫；\n重击发动时，开启<color=#FFFFFF>[以太帷幕·偶像]</color>；\n<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色攻击力额外50提升点，持续30秒，千夏重复开启<color=#FFFFFF>[以太帷幕·偶像]</color>前，将关闭已有的<color=#FFFFFF>[以太帷幕·偶像]</color>；\n招式重击命中敌人时，将触发<color=#FFFFFF>[快速支援]</color>；\n招式发动期间拥有无敌效果，每次进入[Fever]，只能发动1次<color=#FFFFFF>[强化特殊技：拍照合击]</color>。",
+          "Name": "强化特殊技：特别拍照技巧",
+          "Desc": "进入[天使协律]状态后，点按  <IconMap:Icon_SpecialReady> 可以发动，或在<color=#FFFFFF>[强化特殊技：泡泡糖轰炸]</color>发动期间，保持长按  <IconMap:Icon_SpecialReady> 快速发动：\n与泡泡协同攻击目标敌人，造成<color=#F0D12B>物理伤害</color>；技能发动后，泡泡会加入战斗；\n重击发动前，开启<color=#FFFFFF>[以太帷幕·妄想重奏]</color>，<color=#FFFFFF>[以太帷幕·妄想重奏]</color>生效期间，全队角色攻击力额外提升50点，持续40秒，千夏重复开启<color=#FFFFFF>[以太帷幕·妄想重奏]</color>前，将关闭已有的<color=#FFFFFF>[以太帷幕·妄想重奏]</color>；\n招式重击命中敌人时，将触发<color=#FFFFFF>[快速支援]</color>；\n招式发动期间拥有无敌效果，每次进入[天使协律]，只能发动1次<color=#FFFFFF>[强化特殊技：特别拍照技巧]</color>。",
           "Potential": []
         },
         {
-          "Name": "(Test1)特殊技：气枪",
+          "Name": "特殊技：星星发射",
           "Param": [
             {
               "Name": "伤害倍率",
@@ -877,7 +856,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 119350,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 4335,
+                  "AttributeInfliction": 2167,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -903,7 +882,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 119350,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 4335,
+                  "AttributeInfliction": 2167,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -917,88 +896,178 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)强化特殊技：猫砸人",
+          "Name": "强化特殊技：泡泡糖轰炸",
           "Param": [
             {
-              "Name": "伤害倍率",
-              "Desc": "{Skill:1491007, Prop:1001}",
+              "Name": "泡泡糖轰炸伤害倍率",
+              "Desc": "{{Skill:1491007, Prop:1001} + {Skill:1491018, Prop:1001}}",
               "Param": {
                 "1491007": {
-                  "Main": 110920,
-                  "Growth": 10090,
+                  "Main": 79410,
+                  "Growth": 7220,
                   "Format": "%",
-                  "DamagePercentage": 110920,
-                  "DamagePercentageGrowth": 10090,
-                  "StunRatio": 49550,
-                  "StunRatioGrowth": 2260,
+                  "DamagePercentage": 79410,
+                  "DamagePercentageGrowth": 7220,
+                  "StunRatio": 49460,
+                  "StunRatioGrowth": 2250,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 1597750,
+                  "FeverRecovery": 880275,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 41714,
+                  "AttributeInfliction": 17102,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 16497
+                  "EtherPurify": 7334
+                },
+                "1491018": {
+                  "Main": 11920,
+                  "Growth": 1090,
+                  "Format": "%",
+                  "DamagePercentage": 11920,
+                  "DamagePercentageGrowth": 1090,
+                  "StunRatio": 11920,
+                  "StunRatioGrowth": 550,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 252175,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 4581,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 9164
                 }
               },
               "Potential": []
             },
             {
-              "Name": "失衡倍率",
-              "Desc": "{Skill:1491007, Prop:1002}",
+              "Name": "泡泡糖轰炸失衡倍率",
+              "Desc": "{{Skill:1491007, Prop:1002} + {Skill:1491018, Prop:1002}}",
               "Param": {
                 "1491007": {
-                  "Main": 49550,
-                  "Growth": 2260,
+                  "Main": 49460,
+                  "Growth": 2250,
                   "Format": "%",
-                  "DamagePercentage": 110920,
-                  "DamagePercentageGrowth": 10090,
-                  "StunRatio": 49550,
-                  "StunRatioGrowth": 2260,
+                  "DamagePercentage": 79410,
+                  "DamagePercentageGrowth": 7220,
+                  "StunRatio": 49460,
+                  "StunRatioGrowth": 2250,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 1597750,
+                  "FeverRecovery": 880275,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 41714,
+                  "AttributeInfliction": 17102,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 16497
+                  "EtherPurify": 7334
+                },
+                "1491018": {
+                  "Main": 11920,
+                  "Growth": 550,
+                  "Format": "%",
+                  "DamagePercentage": 11920,
+                  "DamagePercentageGrowth": 1090,
+                  "StunRatio": 11920,
+                  "StunRatioGrowth": 550,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 252175,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 4581,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 9164
+                }
+              },
+              "Potential": []
+            },
+            {
+              "Name": "快速衔接特别拍照技巧时，泡泡糖轰炸伤害倍率",
+              "Desc": "{Skill:1491007, Prop:1001}",
+              "Param": {
+                "1491007": {
+                  "Main": 79410,
+                  "Growth": 7220,
+                  "Format": "%",
+                  "DamagePercentage": 79410,
+                  "DamagePercentageGrowth": 7220,
+                  "StunRatio": 49460,
+                  "StunRatioGrowth": 2250,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 880275,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 17102,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 7334
+                }
+              },
+              "Potential": []
+            },
+            {
+              "Name": "快速衔接特别拍照技巧时，泡泡糖轰炸失衡倍率",
+              "Desc": "{Skill:1491007, Prop:1002}",
+              "Param": {
+                "1491007": {
+                  "Main": 49460,
+                  "Growth": 2250,
+                  "Format": "%",
+                  "DamagePercentage": 79410,
+                  "DamagePercentageGrowth": 7220,
+                  "StunRatio": 49460,
+                  "StunRatioGrowth": 2250,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 880275,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 17102,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 7334
                 }
               },
               "Potential": []
             },
             {
               "Name": "能量消耗",
-              "Desc": "(Test1)60点",
+              "Desc": "70点",
               "Potential": []
             }
           ],
           "Potential": []
         },
         {
-          "Name": "(Test1)强化特殊技：拍照合击",
+          "Name": "强化特殊技：特别拍照技巧",
           "Param": [
             {
               "Name": "伤害倍率",
               "Desc": "{Skill:1491008, Prop:1001}",
               "Param": {
                 "1491008": {
-                  "Main": 82620,
-                  "Growth": 7520,
+                  "Main": 82810,
+                  "Growth": 7530,
                   "Format": "%",
-                  "DamagePercentage": 82620,
-                  "DamagePercentageGrowth": 7520,
-                  "StunRatio": 50000,
-                  "StunRatioGrowth": 2280,
+                  "DamagePercentage": 82810,
+                  "DamagePercentageGrowth": 7530,
+                  "StunRatio": 60230,
+                  "StunRatioGrowth": 2740,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 1726175,
+                  "FeverRecovery": 1003475,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 41001,
+                  "AttributeInfliction": 21716,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1013,23 +1082,113 @@
               "Desc": "{Skill:1491008, Prop:1002}",
               "Param": {
                 "1491008": {
-                  "Main": 50000,
-                  "Growth": 2280,
+                  "Main": 60230,
+                  "Growth": 2740,
                   "Format": "%",
-                  "DamagePercentage": 82620,
-                  "DamagePercentageGrowth": 7520,
-                  "StunRatio": 50000,
-                  "StunRatioGrowth": 2280,
+                  "DamagePercentage": 82810,
+                  "DamagePercentageGrowth": 7530,
+                  "StunRatio": 60230,
+                  "StunRatioGrowth": 2740,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 1726175,
+                  "FeverRecovery": 1003475,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 41001,
+                  "AttributeInfliction": 21716,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
                   "EtherPurify": 23171
+                }
+              },
+              "Potential": []
+            },
+            {
+              "Name": "伤害倍率（协同）",
+              "Desc": "{{Skill:1491008, Prop:1001} + {Skill:1491019, Prop:1001}}",
+              "Param": {
+                "1491008": {
+                  "Main": 82810,
+                  "Growth": 7530,
+                  "Format": "%",
+                  "DamagePercentage": 82810,
+                  "DamagePercentageGrowth": 7530,
+                  "StunRatio": 60230,
+                  "StunRatioGrowth": 2740,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 1003475,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 21716,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 23171
+                },
+                "1491019": {
+                  "Main": 12430,
+                  "Growth": 1130,
+                  "Format": "%",
+                  "DamagePercentage": 12430,
+                  "DamagePercentageGrowth": 1130,
+                  "StunRatio": 9040,
+                  "StunRatioGrowth": 420,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 0,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 0,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 0
+                }
+              },
+              "Potential": []
+            },
+            {
+              "Name": "失衡倍率（协同）",
+              "Desc": "{{Skill:1491008, Prop:1002} + {Skill:1491019, Prop:1002}}",
+              "Param": {
+                "1491008": {
+                  "Main": 60230,
+                  "Growth": 2740,
+                  "Format": "%",
+                  "DamagePercentage": 82810,
+                  "DamagePercentageGrowth": 7530,
+                  "StunRatio": 60230,
+                  "StunRatioGrowth": 2740,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 1003475,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 21716,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 23171
+                },
+                "1491019": {
+                  "Main": 9040,
+                  "Growth": 420,
+                  "Format": "%",
+                  "DamagePercentage": 12430,
+                  "DamagePercentageGrowth": 1130,
+                  "StunRatio": 9040,
+                  "StunRatioGrowth": 420,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 0,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 0,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 0
                 }
               },
               "Potential": []
@@ -1090,17 +1249,17 @@
     "Chain": {
       "Description": [
         {
-          "Name": "(Test1)连携技：猫冲锋",
-          "Desc": "(Test1)触发<color=#FFFFFF>[连携技]</color>时，选择对应角色发动：\n骑着猫冲撞前方敌人，造成大量<color=#F0D12B>物理伤害</color>；\n招式重击命中敌人时，将触发<color=#FFFFFF>[快速支援]</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "连携技：别惹猫咪",
+          "Desc": "触发<color=#FFFFFF>[连携技]</color>时，选择对应角色发动：\n骑着泡泡冲向前方敌人，造成大量<color=#F0D12B>物理伤害</color>；\n招式重击命中敌人时，将触发<color=#FFFFFF>[快速支援]</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)终结技：打地鼠",
-          "Desc": "(Test1)喧响等级达到<color=#FFFFFF>[极]</color>时，点按 <IconMap:Icon_UltimateReady> 发动：\n陪猫玩儿打地鼠，顺便攻击敌人，造成大量<color=#F0D12B>物理伤害</color>；\n重击发动时，开启<color=#FFFFFF>[以太帷幕·偶像]</color>；\n招式重击命中敌人时，将触发<color=#FFFFFF>[快速支援]</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "终结技：通通砸碎！",
+          "Desc": "喧响等级达到<color=#FFFFFF>[极]</color>时，点按 <IconMap:Icon_UltimateReady> 发动：\n用锤子连续攻击后，打出泡泡并引发爆炸，对范围内敌人造成大量<color=#F0D12B>物理伤害</color>；\n重击发动时，获得6个<color=#FFFFFF>[磨爪器]</color>；\n从高空下砸命中敌人时，将触发<color=#FFFFFF>[快速支援]</color>并为全队角色回复<color=#2BAD00>{CAL:-50+AvatarSkillLevel(3)*250,1,2}</color>点生命值；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)连携技：猫冲锋",
+          "Name": "连携技：别惹猫咪",
           "Param": [
             {
               "Name": "伤害倍率",
@@ -1118,7 +1277,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 2447775,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 42453,
+                  "AttributeInfliction": 21226,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1144,7 +1303,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 2447775,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 42453,
+                  "AttributeInfliction": 21226,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1158,7 +1317,7 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)终结技：打地鼠",
+          "Name": "终结技：通通砸碎！",
           "Param": [
             {
               "Name": "伤害倍率",
@@ -1176,7 +1335,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 0,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 28670,
+                  "AttributeInfliction": 14335,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1202,7 +1361,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 0,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 28670,
+                  "AttributeInfliction": 14335,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1210,6 +1369,11 @@
                   "EtherPurify": 78671
                 }
               },
+              "Potential": []
+            },
+            {
+              "Name": "生命值回复",
+              "Desc": "{CAL:-50+AvatarSkillLevel(3)*250,1,2}点",
               "Potential": []
             }
           ],
@@ -1268,22 +1432,22 @@
     "Assist": {
       "Description": [
         {
-          "Name": "(Test1)快速支援：三连挑",
-          "Desc": "(Test1)当前操作中的角色被击飞时，点按 <IconMap:Icon_Switch> 发动：\n连续锤前方敌人，造成<color=#F0D12B>物理伤害</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "快速支援：狂音连打",
+          "Desc": "当前操作中的角色被击飞时，点按 <IconMap:Icon_Switch> 发动：\n连续锤击前方敌人，造成<color=#F0D12B>物理伤害</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)招架支援：挡",
-          "Desc": "(Test1)前场角色即将被攻击时，点按 <IconMap:Icon_Switch> 发动：\n招架敌人的攻击，累积大量失衡值；\n招式发动期间拥有无敌效果。",
+          "Name": "招架支援：上台恐惧症",
+          "Desc": "前场角色即将被攻击时，点按 <IconMap:Icon_Switch> 发动：\n招架敌人的攻击，累积大量失衡值；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)支援突击：锤",
-          "Desc": "(Test1)发动<color=#FFFFFF>[招架支援]</color>后，点按 <IconMap:Icon_Normal> 发动：\n向前方连续锤击，造成大量<color=#F0D12B>物理伤害</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "支援突击：弹跳练习",
+          "Desc": "发动<color=#FFFFFF>[招架支援]</color>后，点按 <IconMap:Icon_Normal> 发动：\n骑着气锤连续跳跃，对前方敌人造成大量<color=#F0D12B>物理伤害</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)快速支援：三连挑",
+          "Name": "快速支援：狂音连打",
           "Param": [
             {
               "Name": "伤害倍率",
@@ -1301,7 +1465,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 153725,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 5584,
+                  "AttributeInfliction": 2792,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1327,7 +1491,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 153725,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 5584,
+                  "AttributeInfliction": 2792,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1341,7 +1505,7 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)招架支援：挡",
+          "Name": "招架支援：上台恐惧症",
           "Param": [
             {
               "Name": "轻招架失衡倍率",
@@ -1425,7 +1589,7 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)支援突击：锤",
+          "Name": "支援突击：弹跳练习",
           "Param": [
             {
               "Name": "伤害倍率",
@@ -1443,7 +1607,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 1268850,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 38742,
+                  "AttributeInfliction": 19371,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1469,7 +1633,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 1268850,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 38742,
+                  "AttributeInfliction": 19371,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1533,19 +1697,104 @@
       }
     }
   },
-  "SkillList": {},
+  "SkillList": {
+    "1491001": {
+      "Name": "普通攻击：鬼马流星锤",
+      "Desc": "<IconMap:Icon_Normal>",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1491002": {
+      "Name": "特殊技：星星发射",
+      "Desc": "<IconMap:Icon_Special>",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1491003": {
+      "Name": "强化特殊技：泡泡糖轰炸",
+      "Desc": "<IconMap:Icon_SpecialReady>",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1491004": {
+      "Name": "强化特殊技：特别拍照技巧",
+      "Desc": "<IconMap:Icon_SpecialReady>（天使协律）",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1491005": {
+      "Name": "强化特殊技：特别拍照技巧（快速衔接）",
+      "Desc": "<IconMap:Icon_SpecialReady>（发动[强化特殊技：泡泡糖轰炸]时，保持长按）",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1491006": {
+      "Name": "冲刺攻击：冲天锤",
+      "Desc": "<IconMap:Icon_Evade> ; <IconMap:Icon_Normal>",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1491007": {
+      "Name": "闪避反击：妄想三振",
+      "Desc": "<IconMap:Icon_Evade>（极限） ; <IconMap:Icon_Normal>",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1491008": {
+      "Name": "连携技：别惹猫咪",
+      "Desc": "<IconMap:Icon_QTE>",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1491009": {
+      "Name": "终结技：通通砸碎！",
+      "Desc": "<IconMap:Icon_UltimateReady>",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1491010": {
+      "Name": "快速支援：狂音连打",
+      "Desc": "<IconMap:Icon_Switch>（触发快速支援时）",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1491011": {
+      "Name": "招架支援：上台恐惧症",
+      "Desc": "<IconMap:Icon_Switch>（触发招架支援时）",
+      "ElementType": 0,
+      "HitType": 0,
+      "Potential": []
+    },
+    "1491012": {
+      "Name": "支援突击：弹跳练习",
+      "Desc": "<IconMap:Icon_Normal>（发动招架支援后）",
+      "ElementType": 200,
+      "HitType": 102,
+      "Potential": []
+    }
+  },
   "Passive": {
     "Level": {
       "1491049": {
         "Level": 1,
         "Id": 1491049,
         "Name": [
-          "(Test1)核心被动：千夏",
-          "(Test1)额外能力：千夏"
+          "核心被动：可爱即正义",
+          "额外能力：白日梦对位法"
         ],
         "Desc": [
-          "(Test1)处于<color=#FFFFFF>[Fever]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#2BAD00>30%</color>初始攻击力，最高不超过<color=#2BAD00>400</color>点；\n[普通攻击：猫抓脸]、[强化特殊技：猫砸人]、[强化特殊技：拍照合击]、[连携技：猫冲锋]、[终结技：打地鼠]攻击命中敌人时，为目标添加<color=#FFFFFF>[陶醉]</color>标记，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[陶醉]</color>标记的持续时间；持有<color=#FFFFFF>[陶醉]</color>标记的普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中带有<color=#FFFFFF>[陶醉]</color>标记的敌人后，重击目标，会触发并引爆<color=#FFFFFF>[陶醉]</color>标记：\n<color=#FFFFFF>[强攻]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#FFFFFF>100%</color>；\n场上有多名持有<color=#FFFFFF>[陶醉]</color>标记的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[陶醉]</color>标记，并清除其它<color=#FFFFFF>[陶醉]</color>标记。\n敌人处于失衡状态下时，<color=#FFFFFF>[陶醉]</color>标记会更快地被触发。",
-          "(Test1)队伍中存在<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色时触发：\n处于<color=#FFFFFF>[以太帷幕·偶像]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n队伍中存在<color=#FFFFFF>[强攻]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色暴击伤害增加15%；\n队伍中存在<color=#FFFFFF>[异常]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色异常精通增加30。"
+          "处于<color=#FFFFFF>[天使协律]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#FFFFFF>30%</color>初始攻击力，最高不超过<color=#2BAD00>525</color>点；当千夏的初始攻击力达到1750点时，为全队角色提供的攻击力增益效果达到最大值；\n[普通攻击：坏猫出没]、[强化特殊技：泡泡糖轰炸]、[强化特殊技：特别拍照技巧]、[连携技：别惹猫咪]、[终结技：通通砸碎！]攻击命中敌人时，为目标添加<color=#FFFFFF>[猫的凝视]</color>，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[猫的凝视]</color>的持续时间；持有<color=#FFFFFF>[猫的凝视]</color>的部分普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中持有<color=#FFFFFF>[猫的凝视]</color>的敌人时，会触发并清除<color=#FFFFFF>[猫的凝视]</color>：\n<color=#FFFFFF>[强攻]</color>角色触发时，对范围内敌人造成<color=#2BAD00>150%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色触发时，对范围内敌人造成<color=#2BAD00>240%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#2BAD00>80%</color>；\n<color=#FFFFFF>[猫的凝视]</color>造成的伤害，视为由[触发代理人]造成的伤害；\n场上存在多名持有<color=#FFFFFF>[猫的凝视]</color>的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[猫的凝视]</color>，触发时会清除全场的<color=#FFFFFF>[猫的凝视]</color>；\n敌人处于失衡状态下时，<color=#FFFFFF>[猫的凝视]</color>触发所需的攻击次数大幅减少。",
+          "队伍中存在<color=#FFFFFF>[强攻]</color>或与自身阵营相同的角色时触发：\n处于<color=#FFFFFF>[以太帷幕·妄想重奏]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n千夏进入战场时，回复15能量，在勘域模式中此效果180秒内最多触发一次。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1554,12 +1803,12 @@
         "Level": 2,
         "Id": 1491050,
         "Name": [
-          "(Test1)核心被动：千夏",
-          "(Test1)额外能力：千夏"
+          "核心被动：可爱即正义",
+          "额外能力：白日梦对位法"
         ],
         "Desc": [
-          "(Test1)处于<color=#FFFFFF>[Fever]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#2BAD00>30%</color>初始攻击力，最高不超过<color=#2BAD00>500</color>点；\n[普通攻击：猫抓脸]、[强化特殊技：猫砸人]、[强化特殊技：拍照合击]、[连携技：猫冲锋]、[终结技：打地鼠]攻击命中敌人时，为目标添加<color=#FFFFFF>[陶醉]</color>标记，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[陶醉]</color>标记的持续时间；持有<color=#FFFFFF>[陶醉]</color>标记的普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中带有<color=#FFFFFF>[陶醉]</color>标记的敌人后，重击目标，会触发并引爆<color=#FFFFFF>[陶醉]</color>标记：\n<color=#FFFFFF>[强攻]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#FFFFFF>100%</color>；\n场上有多名持有<color=#FFFFFF>[陶醉]</color>标记的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[陶醉]</color>标记，并清除其它<color=#FFFFFF>[陶醉]</color>标记。\n敌人处于失衡状态下时，<color=#FFFFFF>[陶醉]</color>标记会更快地被触发。",
-          "(Test1)队伍中存在<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色时触发：\n处于<color=#FFFFFF>[以太帷幕·偶像]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n队伍中存在<color=#FFFFFF>[强攻]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色暴击伤害增加15%；\n队伍中存在<color=#FFFFFF>[异常]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色异常精通增加30。"
+          "处于<color=#FFFFFF>[天使协律]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#FFFFFF>30%</color>初始攻击力，最高不超过<color=#2BAD00>615</color>点；当千夏的初始攻击力达到2050点时，为全队角色提供的攻击力增益效果达到最大值；\n[普通攻击：坏猫出没]、[强化特殊技：泡泡糖轰炸]、[强化特殊技：特别拍照技巧]、[连携技：别惹猫咪]、[终结技：通通砸碎！]攻击命中敌人时，为目标添加<color=#FFFFFF>[猫的凝视]</color>，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[猫的凝视]</color>的持续时间；持有<color=#FFFFFF>[猫的凝视]</color>的部分普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中持有<color=#FFFFFF>[猫的凝视]</color>的敌人时，会触发并清除<color=#FFFFFF>[猫的凝视]</color>：\n<color=#FFFFFF>[强攻]</color>角色触发时，对范围内敌人造成<color=#2BAD00>175%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色触发时，对范围内敌人造成<color=#2BAD00>280%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#2BAD00>90%</color>；\n<color=#FFFFFF>[猫的凝视]</color>造成的伤害，视为由[触发代理人]造成的伤害；\n场上存在多名持有<color=#FFFFFF>[猫的凝视]</color>的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[猫的凝视]</color>，触发时会清除全场的<color=#FFFFFF>[猫的凝视]</color>；\n敌人处于失衡状态下时，<color=#FFFFFF>[猫的凝视]</color>触发所需的攻击次数大幅减少。",
+          "队伍中存在<color=#FFFFFF>[强攻]</color>或与自身阵营相同的角色时触发：\n处于<color=#FFFFFF>[以太帷幕·妄想重奏]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n千夏进入战场时，回复15能量，在勘域模式中此效果180秒内最多触发一次。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1568,12 +1817,12 @@
         "Level": 3,
         "Id": 1491051,
         "Name": [
-          "(Test1)核心被动：千夏",
-          "(Test1)额外能力：千夏"
+          "核心被动：可爱即正义",
+          "额外能力：白日梦对位法"
         ],
         "Desc": [
-          "(Test1)处于<color=#FFFFFF>[Fever]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#2BAD00>30%</color>初始攻击力，最高不超过<color=#2BAD00>600</color>点；\n[普通攻击：猫抓脸]、[强化特殊技：猫砸人]、[强化特殊技：拍照合击]、[连携技：猫冲锋]、[终结技：打地鼠]攻击命中敌人时，为目标添加<color=#FFFFFF>[陶醉]</color>标记，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[陶醉]</color>标记的持续时间；持有<color=#FFFFFF>[陶醉]</color>标记的普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中带有<color=#FFFFFF>[陶醉]</color>标记的敌人后，重击目标，会触发并引爆<color=#FFFFFF>[陶醉]</color>标记：\n<color=#FFFFFF>[强攻]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#FFFFFF>100%</color>；\n场上有多名持有<color=#FFFFFF>[陶醉]</color>标记的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[陶醉]</color>标记，并清除其它<color=#FFFFFF>[陶醉]</color>标记。\n敌人处于失衡状态下时，<color=#FFFFFF>[陶醉]</color>标记会更快地被触发。",
-          "(Test1)队伍中存在<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色时触发：\n处于<color=#FFFFFF>[以太帷幕·偶像]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n队伍中存在<color=#FFFFFF>[强攻]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色暴击伤害增加15%；\n队伍中存在<color=#FFFFFF>[异常]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色异常精通增加30。"
+          "处于<color=#FFFFFF>[天使协律]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#FFFFFF>30%</color>初始攻击力，最高不超过<color=#2BAD00>705</color>点；当千夏的初始攻击力达到2350点时，为全队角色提供的攻击力增益效果达到最大值；\n[普通攻击：坏猫出没]、[强化特殊技：泡泡糖轰炸]、[强化特殊技：特别拍照技巧]、[连携技：别惹猫咪]、[终结技：通通砸碎！]攻击命中敌人时，为目标添加<color=#FFFFFF>[猫的凝视]</color>，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[猫的凝视]</color>的持续时间；持有<color=#FFFFFF>[猫的凝视]</color>的部分普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中持有<color=#FFFFFF>[猫的凝视]</color>的敌人时，会触发并清除<color=#FFFFFF>[猫的凝视]</color>：\n<color=#FFFFFF>[强攻]</color>角色触发时，对范围内敌人造成<color=#2BAD00>200%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色触发时，对范围内敌人造成<color=#2BAD00>320%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#2BAD00>100%</color>；\n<color=#FFFFFF>[猫的凝视]</color>造成的伤害，视为由[触发代理人]造成的伤害；\n场上存在多名持有<color=#FFFFFF>[猫的凝视]</color>的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[猫的凝视]</color>，触发时会清除全场的<color=#FFFFFF>[猫的凝视]</color>；\n敌人处于失衡状态下时，<color=#FFFFFF>[猫的凝视]</color>触发所需的攻击次数大幅减少。",
+          "队伍中存在<color=#FFFFFF>[强攻]</color>或与自身阵营相同的角色时触发：\n处于<color=#FFFFFF>[以太帷幕·妄想重奏]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n千夏进入战场时，回复15能量，在勘域模式中此效果180秒内最多触发一次。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1582,12 +1831,12 @@
         "Level": 4,
         "Id": 1491052,
         "Name": [
-          "(Test1)核心被动：千夏",
-          "(Test1)额外能力：千夏"
+          "核心被动：可爱即正义",
+          "额外能力：白日梦对位法"
         ],
         "Desc": [
-          "(Test1)处于<color=#FFFFFF>[Fever]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#2BAD00>30%</color>初始攻击力，最高不超过<color=#2BAD00>700</color>点；\n[普通攻击：猫抓脸]、[强化特殊技：猫砸人]、[强化特殊技：拍照合击]、[连携技：猫冲锋]、[终结技：打地鼠]攻击命中敌人时，为目标添加<color=#FFFFFF>[陶醉]</color>标记，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[陶醉]</color>标记的持续时间；持有<color=#FFFFFF>[陶醉]</color>标记的普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中带有<color=#FFFFFF>[陶醉]</color>标记的敌人后，重击目标，会触发并引爆<color=#FFFFFF>[陶醉]</color>标记：\n<color=#FFFFFF>[强攻]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#FFFFFF>100%</color>；\n场上有多名持有<color=#FFFFFF>[陶醉]</color>标记的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[陶醉]</color>标记，并清除其它<color=#FFFFFF>[陶醉]</color>标记。\n敌人处于失衡状态下时，<color=#FFFFFF>[陶醉]</color>标记会更快地被触发。",
-          "(Test1)队伍中存在<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色时触发：\n处于<color=#FFFFFF>[以太帷幕·偶像]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n队伍中存在<color=#FFFFFF>[强攻]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色暴击伤害增加15%；\n队伍中存在<color=#FFFFFF>[异常]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色异常精通增加30。"
+          "处于<color=#FFFFFF>[天使协律]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#FFFFFF>30%</color>初始攻击力，最高不超过<color=#2BAD00>795</color>点；当千夏的初始攻击力达到2650点时，为全队角色提供的攻击力增益效果达到最大值；\n[普通攻击：坏猫出没]、[强化特殊技：泡泡糖轰炸]、[强化特殊技：特别拍照技巧]、[连携技：别惹猫咪]、[终结技：通通砸碎！]攻击命中敌人时，为目标添加<color=#FFFFFF>[猫的凝视]</color>，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[猫的凝视]</color>的持续时间；持有<color=#FFFFFF>[猫的凝视]</color>的部分普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中持有<color=#FFFFFF>[猫的凝视]</color>的敌人时，会触发并清除<color=#FFFFFF>[猫的凝视]</color>：\n<color=#FFFFFF>[强攻]</color>角色触发时，对范围内敌人造成<color=#2BAD00>225%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色触发时，对范围内敌人造成<color=#2BAD00>360%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#2BAD00>120%</color>；\n<color=#FFFFFF>[猫的凝视]</color>造成的伤害，视为由[触发代理人]造成的伤害；\n场上存在多名持有<color=#FFFFFF>[猫的凝视]</color>的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[猫的凝视]</color>，触发时会清除全场的<color=#FFFFFF>[猫的凝视]</color>；\n敌人处于失衡状态下时，<color=#FFFFFF>[猫的凝视]</color>触发所需的攻击次数大幅减少。",
+          "队伍中存在<color=#FFFFFF>[强攻]</color>或与自身阵营相同的角色时触发：\n处于<color=#FFFFFF>[以太帷幕·妄想重奏]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n千夏进入战场时，回复15能量，在勘域模式中此效果180秒内最多触发一次。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1596,12 +1845,12 @@
         "Level": 5,
         "Id": 1491053,
         "Name": [
-          "(Test1)核心被动：千夏",
-          "(Test1)额外能力：千夏"
+          "核心被动：可爱即正义",
+          "额外能力：白日梦对位法"
         ],
         "Desc": [
-          "(Test1)处于<color=#FFFFFF>[Fever]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#2BAD00>30%</color>初始攻击力，最高不超过<color=#2BAD00>800</color>点；\n[普通攻击：猫抓脸]、[强化特殊技：猫砸人]、[强化特殊技：拍照合击]、[连携技：猫冲锋]、[终结技：打地鼠]攻击命中敌人时，为目标添加<color=#FFFFFF>[陶醉]</color>标记，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[陶醉]</color>标记的持续时间；持有<color=#FFFFFF>[陶醉]</color>标记的普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中带有<color=#FFFFFF>[陶醉]</color>标记的敌人后，重击目标，会触发并引爆<color=#FFFFFF>[陶醉]</color>标记：\n<color=#FFFFFF>[强攻]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#FFFFFF>100%</color>；\n场上有多名持有<color=#FFFFFF>[陶醉]</color>标记的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[陶醉]</color>标记，并清除其它<color=#FFFFFF>[陶醉]</color>标记。\n敌人处于失衡状态下时，<color=#FFFFFF>[陶醉]</color>标记会更快地被触发。",
-          "(Test1)队伍中存在<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色时触发：\n处于<color=#FFFFFF>[以太帷幕·偶像]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n队伍中存在<color=#FFFFFF>[强攻]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色暴击伤害增加15%；\n队伍中存在<color=#FFFFFF>[异常]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色异常精通增加30。"
+          "处于<color=#FFFFFF>[天使协律]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#FFFFFF>30%</color>初始攻击力，最高不超过<color=#2BAD00>885</color>点；当千夏的初始攻击力达到2950点时，为全队角色提供的攻击力增益效果达到最大值；\n[普通攻击：坏猫出没]、[强化特殊技：泡泡糖轰炸]、[强化特殊技：特别拍照技巧]、[连携技：别惹猫咪]、[终结技：通通砸碎！]攻击命中敌人时，为目标添加<color=#FFFFFF>[猫的凝视]</color>，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[猫的凝视]</color>的持续时间；持有<color=#FFFFFF>[猫的凝视]</color>的部分普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中持有<color=#FFFFFF>[猫的凝视]</color>的敌人时，会触发并清除<color=#FFFFFF>[猫的凝视]</color>：\n<color=#FFFFFF>[强攻]</color>角色触发时，对范围内敌人造成<color=#2BAD00>250%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色触发时，对范围内敌人造成<color=#2BAD00>400%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#2BAD00>130%</color>；\n<color=#FFFFFF>[猫的凝视]</color>造成的伤害，视为由[触发代理人]造成的伤害；\n场上存在多名持有<color=#FFFFFF>[猫的凝视]</color>的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[猫的凝视]</color>，触发时会清除全场的<color=#FFFFFF>[猫的凝视]</color>；\n敌人处于失衡状态下时，<color=#FFFFFF>[猫的凝视]</color>触发所需的攻击次数大幅减少。",
+          "队伍中存在<color=#FFFFFF>[强攻]</color>或与自身阵营相同的角色时触发：\n处于<color=#FFFFFF>[以太帷幕·妄想重奏]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n千夏进入战场时，回复15能量，在勘域模式中此效果180秒内最多触发一次。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1610,12 +1859,12 @@
         "Level": 6,
         "Id": 1491054,
         "Name": [
-          "(Test1)核心被动：千夏",
-          "(Test1)额外能力：千夏"
+          "核心被动：可爱即正义",
+          "额外能力：白日梦对位法"
         ],
         "Desc": [
-          "(Test1)处于<color=#FFFFFF>[Fever]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#2BAD00>30%</color>初始攻击力，最高不超过<color=#2BAD00>900</color>点；\n[普通攻击：猫抓脸]、[强化特殊技：猫砸人]、[强化特殊技：拍照合击]、[连携技：猫冲锋]、[终结技：打地鼠]攻击命中敌人时，为目标添加<color=#FFFFFF>[陶醉]</color>标记，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[陶醉]</color>标记的持续时间；持有<color=#FFFFFF>[陶醉]</color>标记的普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中带有<color=#FFFFFF>[陶醉]</color>标记的敌人后，重击目标，会触发并引爆<color=#FFFFFF>[陶醉]</color>标记：\n<color=#FFFFFF>[强攻]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#FFFFFF>100%</color>；\n场上有多名持有<color=#FFFFFF>[陶醉]</color>标记的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[陶醉]</color>标记，并清除其它<color=#FFFFFF>[陶醉]</color>标记。\n敌人处于失衡状态下时，<color=#FFFFFF>[陶醉]</color>标记会更快地被触发。",
-          "(Test1)队伍中存在<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色时触发：\n处于<color=#FFFFFF>[以太帷幕·偶像]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n队伍中存在<color=#FFFFFF>[强攻]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色暴击伤害增加15%；\n队伍中存在<color=#FFFFFF>[异常]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色异常精通增加30。"
+          "处于<color=#FFFFFF>[天使协律]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#FFFFFF>30%</color>初始攻击力，最高不超过<color=#2BAD00>975</color>点；当千夏的初始攻击力达到3250点时，为全队角色提供的攻击力增益效果达到最大值；\n[普通攻击：坏猫出没]、[强化特殊技：泡泡糖轰炸]、[强化特殊技：特别拍照技巧]、[连携技：别惹猫咪]、[终结技：通通砸碎！]攻击命中敌人时，为目标添加<color=#FFFFFF>[猫的凝视]</color>，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[猫的凝视]</color>的持续时间；持有<color=#FFFFFF>[猫的凝视]</color>的部分普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中持有<color=#FFFFFF>[猫的凝视]</color>的敌人时，会触发并清除<color=#FFFFFF>[猫的凝视]</color>：\n<color=#FFFFFF>[强攻]</color>角色触发时，对范围内敌人造成<color=#2BAD00>275%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色触发时，对范围内敌人造成<color=#2BAD00>440%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#2BAD00>140%</color>；\n<color=#FFFFFF>[猫的凝视]</color>造成的伤害，视为由[触发代理人]造成的伤害；\n场上存在多名持有<color=#FFFFFF>[猫的凝视]</color>的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[猫的凝视]</color>，触发时会清除全场的<color=#FFFFFF>[猫的凝视]</color>；\n敌人处于失衡状态下时，<color=#FFFFFF>[猫的凝视]</color>触发所需的攻击次数大幅减少。",
+          "队伍中存在<color=#FFFFFF>[强攻]</color>或与自身阵营相同的角色时触发：\n处于<color=#FFFFFF>[以太帷幕·妄想重奏]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n千夏进入战场时，回复15能量，在勘域模式中此效果180秒内最多触发一次。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1624,12 +1873,12 @@
         "Level": 7,
         "Id": 1491055,
         "Name": [
-          "(Test1)核心被动：千夏",
-          "(Test1)额外能力：千夏"
+          "核心被动：可爱即正义",
+          "额外能力：白日梦对位法"
         ],
         "Desc": [
-          "(Test1)处于<color=#FFFFFF>[Fever]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#2BAD00>30%</color>初始攻击力，最高不超过<color=#2BAD00>1000</color>点；\n[普通攻击：猫抓脸]、[强化特殊技：猫砸人]、[强化特殊技：拍照合击]、[连携技：猫冲锋]、[终结技：打地鼠]攻击命中敌人时，为目标添加<color=#FFFFFF>[陶醉]</color>标记，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[陶醉]</color>标记的持续时间；持有<color=#FFFFFF>[陶醉]</color>标记的普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中带有<color=#FFFFFF>[陶醉]</color>标记的敌人后，重击目标，会触发并引爆<color=#FFFFFF>[陶醉]</color>标记：\n<color=#FFFFFF>[强攻]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色引爆时，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#FFFFFF>100%</color>；\n场上有多名持有<color=#FFFFFF>[陶醉]</color>标记的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[陶醉]</color>标记，并清除其它<color=#FFFFFF>[陶醉]</color>标记。\n敌人处于失衡状态下时，<color=#FFFFFF>[陶醉]</color>标记会更快地被触发。",
-          "(Test1)队伍中存在<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色时触发：\n处于<color=#FFFFFF>[以太帷幕·偶像]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n队伍中存在<color=#FFFFFF>[强攻]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色暴击伤害增加15%；\n队伍中存在<color=#FFFFFF>[异常]</color>角色时，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色异常精通增加30。"
+          "处于<color=#FFFFFF>[天使协律]</color>状态下的角色的攻击力提升，提升数值等同于千夏<color=#FFFFFF>30%</color>初始攻击力，最高不超过<color=#2BAD00>1050</color>点；当千夏的初始攻击力达到3500点时，为全队角色提供的攻击力增益效果达到最大值；\n[普通攻击：坏猫出没]、[强化特殊技：泡泡糖轰炸]、[强化特殊技：特别拍照技巧]、[连携技：别惹猫咪]、[终结技：通通砸碎！]攻击命中敌人时，为目标添加<color=#FFFFFF>[猫的凝视]</color>，持续12秒，千夏在前场时，会不断刷新<color=#FFFFFF>[猫的凝视]</color>的持续时间；持有<color=#FFFFFF>[猫的凝视]</color>的部分普通怪物对千夏的攻击欲望降低；\n队伍中的<color=#FFFFFF>[强攻]</color>或<color=#FFFFFF>[异常]</color>角色持续攻击命中持有<color=#FFFFFF>[猫的凝视]</color>的敌人时，会触发并清除<color=#FFFFFF>[猫的凝视]</color>：\n<color=#FFFFFF>[强攻]</color>角色触发时，对范围内敌人造成<color=#2BAD00>300%</color>攻击力的代理人属性伤害；\n<color=#FFFFFF>[异常]</color>角色触发时，对范围内敌人造成<color=#2BAD00>480%</color>攻击力的代理人属性伤害，此次伤害必定暴击，且暴击伤害增加<color=#2BAD00>150%</color>；\n<color=#FFFFFF>[猫的凝视]</color>造成的伤害，视为由[触发代理人]造成的伤害；\n场上存在多名持有<color=#FFFFFF>[猫的凝视]</color>的怪物时，只会触发主要攻击目标的<color=#FFFFFF>[猫的凝视]</color>，触发时会清除全场的<color=#FFFFFF>[猫的凝视]</color>；\n敌人处于失衡状态下时，<color=#FFFFFF>[猫的凝视]</color>触发所需的攻击次数大幅减少。",
+          "队伍中存在<color=#FFFFFF>[强攻]</color>或与自身阵营相同的角色时触发：\n处于<color=#FFFFFF>[以太帷幕·妄想重奏]</color>内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒；\n千夏进入战场时，回复15能量，在勘域模式中此效果180秒内最多触发一次。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1668,13 +1917,13 @@
     "1": {
       "Level": 1,
       "Name": "《孤独侵蚀症》",
-      "Desc": "(Test1)<color=#FFFFFF>[陶醉]</color>标记爆炸命中敌人时，使目标的防御力降低5%，持续15秒，最多叠加3层，每层效果单独结算持续时间。",
-      "Desc2": "(Test1)..."
+      "Desc": "千夏进入战场时，回复15能量，在勘域模式中此效果180秒内最多触发一次；<color=#FFFFFF>[猫的凝视]</color>触发并命中敌人时，使目标的防御力降低7%，持续40秒，最多叠加3层，每层效果单独结算持续时间。",
+      "Desc2": "..."
     },
     "2": {
       "Level": 2,
       "Name": "《猫的随波逐流》",
-      "Desc": "(Test1)千夏处于任意<color=#FFFFFF>[以太帷幕]</color>内时，每10秒获得1点<color=#FFFFFF>[攻击点]</color>；<color=#FFFFFF>[陶醉]</color>标记触发时的伤害无视目标15%属性伤害抗性。",
+      "Desc": "千夏处于任意<color=#FFFFFF>[以太帷幕]</color>内时，使全队角色攻击力提升10%，每10秒获得1个<color=#FFFFFF>[磨爪器]</color>；<color=#FFFFFF>[猫的凝视]</color>触发所需的攻击次数减少；触发造成的伤害倍率提升：\n<color=#FFFFFF>[强攻]</color>角色触发时，伤害倍率增加200%；\n<color=#FFFFFF>[异常]</color>角色触发时，伤害倍率增加300%。",
       "Desc2": "..."
     },
     "3": {
@@ -1686,7 +1935,7 @@
     "4": {
       "Level": 4,
       "Name": "《妄想调查队》",
-      "Desc": "(Test1)千夏进入战场时，回复20能量，在勘域模式中此效果180秒内最多触发一次；发动<color=#FFFFFF>[强化特殊技：拍照合击]</color>时，为全队角色回复<color=#FFFFFF>2.5%</color>生命值。",
+      "Desc": "千夏发动<color=#FFFFFF>[终结技]</color>时，使全队角色造成的伤害提升<color=#FFFFFF>18%</color>，持续60秒。",
       "Desc2": "..."
     },
     "5": {
@@ -1698,11 +1947,40 @@
     "6": {
       "Level": 6,
       "Name": "《空洞大爆炸》",
-      "Desc": "(Test1)千夏发动<color=#FFFFFF>[强化特殊技]</color>时，进入<color=#FFFFFF>[大爆发]</color>状态，持续8秒；\n<color=#FFFFFF>[大爆发]</color>状态下，千夏发动的攻击必定暴击，并根据自身初始攻击力的0.02%提升自身的暴击伤害，最多提升60%；\n<color=#FFFFFF>[大爆发]</color>状态下，千夏可以触发<color=#FFFFFF>[陶醉]</color>标记，对范围内敌人造成<color=#FFFFFF>210%</color>攻击力的伤害；如果触发<color=#FFFFFF>[陶醉]</color>标记时，千夏拥有<color=#FFFFFF>[攻击点]</color>，则立即消耗<color=#FFFFFF>[攻击点]</color>并再次给敌人添加<color=#FFFFFF>[陶醉]</color>标记；\n<color=#FFFFFF>[大爆发]</color>状态下，全队触发<color=#FFFFFF>[陶醉]</color>标记造成的伤害提高<color=#FFFFFF>20%</color>",
+      "Desc": "千夏发动<color=#FFFFFF>[强化特殊技]</color>时，进入<color=#FFFFFF>[潜心创作中！]</color>状态，持续8秒；\n<color=#FFFFFF>[潜心创作中！]</color>状态下，千夏发动的攻击必定暴击，并根据自身初始攻击力的0.03%提升自身的暴击伤害，最多提升105%；\n<color=#FFFFFF>[潜心创作中！]</color>状态下，千夏抗打断等级提升，受到的伤害降低40%；\n<color=#FFFFFF>[潜心创作中！]</color>状态下，千夏可以触发<color=#FFFFFF>[猫的凝视]</color>，以<color=#FFFFFF>[强攻]</color>代理人规则结算伤害；如果触发<color=#FFFFFF>[猫的凝视]</color>时，千夏拥有<color=#FFFFFF>[磨爪器]</color>，则立即消耗<color=#FFFFFF>[磨爪器]</color>并再次给敌人添加<color=#FFFFFF>[猫的凝视]</color>；\n<color=#FFFFFF>[潜心创作中！]</color>状态下，全队触发<color=#FFFFFF>[猫的凝视]</color>造成的伤害提升<color=#FFFFFF>50%</color>。",
       "Desc2": "..."
     }
   },
-  "FairyRecommend": {},
+  "FairyRecommend": {
+    "Slot4": 33400,
+    "Slot2": 32800,
+    "SlotSub": 31600,
+    "Part4": {
+      "Prop": 30502,
+      "Name": "能量自动回复",
+      "Format": "{0:0.#%}",
+      "Icon": "UI/Sprite/A1DynamicLoad/IconAttribute/UnPacker/Role/IconSpRecover.png"
+    },
+    "Part5": {
+      "Prop": 12102,
+      "Name": "攻击力",
+      "Format": "{0:0.#%}",
+      "Icon": "UI/Sprite/A1DynamicLoad/IconAttribute/UnPacker/Role/IconAttack.png"
+    },
+    "Part6": {
+      "Prop": 31503,
+      "Name": "物理伤害加成",
+      "Format": "{0:0.#%}",
+      "Icon": "UI/Sprite/A1DynamicLoad/IconGeneralBuff/Packer/IconPhysDmg.png"
+    },
+    "PartSub": {
+      "Prop": 20103,
+      "Name": "暴击率",
+      "Format": "{0:0.#%}",
+      "Icon": "UI/Sprite/A1DynamicLoad/IconAttribute/UnPacker/Role/IconCrit.png"
+    }
+  },
   "Potential": [],
-  "PotentialDetail": {}
+  "PotentialDetail": {},
+  "Live2D": "UISpine_Qianxialeimi"
 }

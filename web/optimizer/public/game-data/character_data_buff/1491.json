@@ -1,191 +1,97 @@
 [
   {
-    "id": "1491_talent_1",
-    "name": "《孤独侵蚀症》 - 防御降低",
-    "description": "天赋1: [陶醉]标记爆炸命中敌人时，使目标的防御力降低5%，持续15秒，最多叠加3层。",
+    "id": "1491_talent_1_def_red",
+    "name": "影画1-《孤独侵蚀症》-防御降低",
+    "description": "[猫的凝视]触发并命中敌人时，使目标的防御力降低7%，持续40秒，最多叠加3层，每层效果单独结算持续时间。",
     "source": "TALENT",
-    "target": {
-      "target_enemy": true
-    },
-    "in_combat_stats": {
-      "ENEMY_DEF_RED_": 0.05
-    },
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "DEF_RED_": 0.07 },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": [
-      "[陶醉]标记爆炸命中"
-    ],
+    "trigger_conditions": "[猫的凝视]触发并命中敌人时",
     "max_stacks": 3
   },
   {
-    "id": "1491_talent_2",
-    "name": "《猫的随波逐流》 - 抗性穿透",
-    "description": "天赋2: [陶醉]标记触发时的伤害无视目标15%属性伤害抗性。此效果仅对[陶醉]标记的伤害生效，无法被当前模型精确表示。",
+    "id": "1491_talent_2_team_atk",
+    "name": "影画2-《猫的随波逐流》-攻击力提升",
+    "description": "千夏处于任意[以太帷幕]内时，使全队角色攻击力提升10%。",
     "source": "TALENT",
-    "target": {
-      "target_teammate": true
-    },
-    "in_combat_stats": {
-      "ALL_RES_SHRED_": 0.15
-    },
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "ATK_": 0.1 },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": [
-      "触发[陶醉]标记"
-    ],
+    "trigger_conditions": "处于任意[以太帷幕]内",
     "max_stacks": 1
   },
   {
-    "id": "1491_talent_6_1",
-    "name": "《空洞大爆炸》 - 必定暴击",
-    "description": "天赋6: [大爆发]状态下，千夏发动的攻击必定暴击。",
+    "id": "1491_talent_4_team_dmg",
+    "name": "影画4-《妄想调查队》-造成伤害提升",
+    "description": "千夏发动[终结技]时，使全队角色造成的伤害提升18%，持续60秒。",
     "source": "TALENT",
-    "target": {
-      "target_self": true
-    },
-    "in_combat_stats": {
-      "CRIT_": 9.99
-    },
+    "target": { "target_self": true, "target_teammate": true },
+    "in_combat_stats": { "DMG_": 0.18 },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": [
-      "大爆发"
-    ],
+    "trigger_conditions": "发动[终结技]时",
     "max_stacks": 1
   },
   {
-    "id": "1491_talent_6_2",
-    "name": "《空洞大爆炸》 - 暴伤转换",
-    "description": "天赋6: [大爆发]状态下，根据自身初始攻击力的0.02%提升自身的暴击伤害，最多提升60%。",
+    "id": "1491_talent_6_always_crit",
+    "name": "影画6-《空洞大爆炸》-必定暴击",
+    "description": "[潜心创作中！]状态下，千夏发动的攻击必定暴击。",
     "source": "TALENT",
-    "target": {
-      "target_self": true
-    },
+    "target": { "target_self": true },
+    "in_combat_stats": { "CRIT_": 9.99 },
+    "out_of_combat_stats": {},
+    "conversion": null,
+    "trigger_conditions": "[潜心创作中！]状态下",
+    "max_stacks": 1
+  },
+  {
+    "id": "1491_talent_6_crit_dmg_conv",
+    "name": "影画6-《空洞大爆炸》-暴击伤害转换",
+    "description": "[潜心创作中！]状态下，根据自身初始攻击力的0.03%提升自身的暴击伤害，最多提升105%。",
+    "source": "TALENT",
+    "target": { "target_self": true },
     "in_combat_stats": {},
     "out_of_combat_stats": {},
     "conversion": {
       "from_property": "ATK_BASE",
       "to_property": "CRIT_DMG_",
-      "conversion_ratio": 0.0002,
-      "max_value": 0.6
+      "conversion_ratio": 0.0003,
+      "max_value": 1.05
     },
-    "trigger_conditions": [
-      "大爆发"
-    ],
+    "trigger_conditions": "[潜心创作中！]状态下",
     "max_stacks": 1
   },
   {
-    "id": "1491_talent_6_3",
-    "name": "《空洞大爆炸》 - 陶醉伤害提升",
-    "description": "天赋6: [大爆发]状态下，全队触发[陶醉]标记造成的伤害提高20%。此效果仅对[陶醉]标记的伤害生效，无法被当前模型精确表示。",
-    "source": "TALENT",
-    "target": {
-      "target_teammate": true
-    },
-    "in_combat_stats": {
-      "DMG_": 0.2
-    },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": [
-      "大爆发"
-    ],
-    "max_stacks": 1
-  },
-  {
-    "id": "1491_core_passive_1",
-    "name": "核心被动 - 攻击力提升",
-    "description": "核心被动: 处于[Fever]状态下的角色的攻击力提升，提升数值等同于千夏30%初始攻击力，最高不超过1000点。当前模型无法表示从自身到队友的属性转换。",
+    "id": "1491_core_passive_team_atk_conv",
+    "name": "核心被动-可爱即正义-攻击力转换",
+    "description": "处于[天使协律]状态下的角色的攻击力提升，提升数值等同于千夏30%初始攻击力，最高不超过1050点。",
     "source": "CORE_PASSIVE",
-    "target": {
-      "target_teammate": true
-    },
+    "target": { "target_teammate": true },
     "in_combat_stats": {},
     "out_of_combat_stats": {},
     "conversion": {
       "from_property": "ATK_BASE",
-      "to_property": "ATK_FLAT",
+      "to_property": "ATK",
       "conversion_ratio": 0.3,
-      "max_value": 1000
+      "max_value": 1050
     },
-    "trigger_conditions": [
-      "Fever"
-    ],
-    "max_stacks": 1
+    "trigger_conditions": "处于[天使协律]状态下",
+    "max_stacks": 1,
+    "stack_mode": "full_only"
   },
   {
-    "id": "1491_core_passive_2",
-    "name": "核心被动 - 陶醉引爆增强",
-    "description": "核心被动: [异常]角色引爆时，此次伤害必定暴击，且暴击伤害增加100%。此效果仅对[陶醉]标记的伤害生效，无法被当前模型精确表示。",
-    "source": "CORE_PASSIVE",
-    "target": {
-      "target_teammate": true
-    },
-    "in_combat_stats": {
-      "CRIT_": 9.99,
-      "CRIT_DMG_": 1.0
-    },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": [
-      "[异常]角色引爆[陶醉]标记"
-    ],
-    "max_stacks": 1
-  },
-  {
-    "id": "1491_extra_ability_1",
-    "name": "额外能力 - 失衡易伤",
-    "description": "额外能力: 处于[以太帷幕·偶像]内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒。",
+    "id": "1491_extra_ability_enemy_daze_vuln",
+    "name": "额外能力-白日梦对位法-失衡易伤倍率",
+    "description": "处于[以太帷幕·妄想重奏]内的角色攻击命中敌人时，目标的失衡易伤倍率提升30%，持续40秒。",
     "source": "EXTRA_ABILITY",
-    "target": {
-      "target_enemy": true
-    },
-    "in_combat_stats": {
-      "ENEMY_DAZE_VULNERABILITY_": 0.3
-    },
+    "target": { "target_enemy": true },
+    "in_combat_stats": { "ENEMY_DAZE_VULNERABILITY_": 0.3 },
     "out_of_combat_stats": {},
     "conversion": null,
-    "trigger_conditions": [
-      "处于[以太帷幕·偶像]内攻击命中"
-    ],
-    "max_stacks": 1
-  },
-  {
-    "id": "1491_extra_ability_2",
-    "name": "额外能力 - 暴伤提升",
-    "description": "额外能力: 队伍中存在[强攻]角色时，[以太帷幕·偶像]生效期间，全队角色暴击伤害增加15%。",
-    "source": "EXTRA_ABILITY",
-    "target": {
-      "target_teammate": true
-    },
-    "in_combat_stats": {
-      "CRIT_DMG_": 0.15
-    },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": [
-      "[以太帷幕·偶像]生效",
-      "队伍中存在强攻角色"
-    ],
-    "max_stacks": 1
-  },
-  {
-    "id": "1491_extra_ability_3",
-    "name": "额外能力 - 异常精通提升",
-    "description": "额外能力: 队伍中存在[异常]角色时，[以太帷幕·偶像]生效期间，全队角色异常精通增加30。",
-    "source": "EXTRA_ABILITY",
-    "target": {
-      "target_teammate": true
-    },
-    "in_combat_stats": {
-      "ANOM_MAS": 30
-    },
-    "out_of_combat_stats": {},
-    "conversion": null,
-    "trigger_conditions": [
-      "[以太帷幕·偶像]生效",
-      "队伍中存在异常角色"
-    ],
+    "trigger_conditions": "处于[以太帷幕·妄想重奏]内攻击命中敌人时",
     "max_stacks": 1
   }
 ]
