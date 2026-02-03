@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-base-200 p-4 md:p-8">
     <!-- 导入进度遮罩 -->
     <div v-if="isImporting" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-      <div class="card bg-base-100 shadow-xl w-80">
+      <div class="card bg-base-100 shadow-xl w-96">
         <div class="card-body items-center text-center">
           <span class="loading loading-spinner loading-lg text-primary"></span>
           <h3 class="card-title mt-4">正在导入存档</h3>
@@ -89,40 +89,67 @@
         <div class="card-body">
           <h3 class="card-title">导入存档</h3>
           <p class="text-sm text-gray-500 mb-2">
-            从JSON文件导入存档数据，将创建新的存档
+            从JSON文件导入存档数据，支持检测重复和升级
           </p>
           <input
             type="file"
             accept=".json"
-            @change="handleFileImport"
+            @change="handleFileSelect"
             class="file-input file-input-bordered w-full max-w-xs"
-            :disabled="saveNames.length >= 5 || isImporting"
+            :disabled="isImporting"
           />
           <div v-if="saveNames.length >= 5" class="text-warning mt-2">
-            存档已满（5个），请先删除一个存档
+            存档已满（5个），只能覆盖现有存档，不能新建
           </div>
           <div v-if="importError" class="alert alert-error mt-4">
             <span>{{ importError }}</span>
           </div>
           <div v-if="importSuccess" class="alert alert-success mt-4">
-            <span>数据导入成功！</span>
+            <span>{{ importSuccessMessage }}</span>
           </div>
         </div>
       </div>
     </div>
+
+    <ImportConfigModal
+      :show="showConfigModal"
+      :fileData="pendingFileData"
+      :suggestedSaveName="pendingSaveName"
+      :saveNames="saveNames"
+      :canCreateNew="saveNames.length < 5"
+      :defaultTargetSaveName="currentSaveName || undefined"
+      :isBusy="isImporting"
+      @cancel="closeConfigModal"
+      @confirm="handleModalConfirm"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useSaveStore } from '../stores/save.store';
+import type { ImportOptions, ImportResult } from '../model/import-result';
+import { DEFAULT_IMPORT_OPTIONS } from '../model/import-result';
+import ImportConfigModal from '../components/business/ImportConfigModal.vue';
 
 const saveStore = useSaveStore();
+
+// 基础状态
 const importError = ref<string | null>(null);
 const importSuccess = ref(false);
+const importSuccessMessage = ref('数据导入成功！');
+
+// 进度状态
 const isImporting = ref(false);
 const importStatus = ref('准备中...');
 const importProgress = ref(0);
+
+// 配置对话框状态
+const showConfigModal = ref(false);
+const pendingFileData = ref<any>(null);
+const pendingSaveName = ref('');
+const targetSaveName = ref('');
+const importOptions = ref<ImportOptions>({ ...DEFAULT_IMPORT_OPTIONS });
 
 const saveNames = computed(() => saveStore.saveNames);
 const currentSaveName = computed(() => saveStore.currentSaveName);
@@ -198,7 +225,8 @@ function exportSave(name: string) {
   }
 }
 
-async function handleFileImport(event: Event) {
+// 选择文件后，先解析数据再弹出配置对话框
+async function handleFileSelect(event: Event) {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
 
@@ -206,70 +234,135 @@ async function handleFileImport(event: Event) {
     return;
   }
 
-  // 检查存档数量限制
-  if (saveNames.value.length >= 5) {
-    importError.value = '存档已满（5个），请先删除一个存档';
-    return;
-  }
-
-  // 重置状态
   importError.value = null;
   importSuccess.value = false;
-  isImporting.value = true;
-  importStatus.value = '读取文件中...';
-  importProgress.value = 10;
 
   try {
-    // 读取文件
     const content = await readFileAsText(file);
-    importProgress.value = 30;
-    importStatus.value = '解析数据中...';
-
-    // 解析 JSON
     const data = JSON.parse(content);
-    importProgress.value = 50;
-    importStatus.value = '验证数据格式...';
 
     // 生成新的存档名
     const originalName = data.name || '导入存档';
     let saveName = originalName;
     let counter = 1;
 
-    // 如果存档名已存在，添加序号
     while (saveNames.value.includes(saveName)) {
       saveName = `${originalName}_${counter}`;
       counter++;
     }
 
-    importProgress.value = 70;
-    importStatus.value = '创建存档实例...';
+    // 设置待导入数据并打开配置对话框
+    pendingFileData.value = data;
+    pendingSaveName.value = saveName;
+    targetSaveName.value = saveName; // 默认新建
+    importOptions.value = { ...DEFAULT_IMPORT_OPTIONS };
+    showConfigModal.value = true;
+  } catch (err) {
+    importError.value = err instanceof Error ? err.message : 'JSON解析失败';
+  }
 
-    // 导入数据
-    await saveStore.importZodData(data, saveName);
+  target.value = '';
+}
+
+function closeConfigModal() {
+  showConfigModal.value = false;
+  pendingFileData.value = null;
+}
+
+function handleModalConfirm(payload: { options: ImportOptions; targetSaveName: string }) {
+  importOptions.value = payload.options;
+  targetSaveName.value = payload.targetSaveName;
+  void confirmImport();
+}
+
+// 确认导入，显示进度条并执行
+async function confirmImport() {
+  if (!pendingFileData.value) return;
+
+  showConfigModal.value = false;
+  isImporting.value = true;
+  importProgress.value = 10;
+  importStatus.value = '准备导入...';
+
+  try {
+    importProgress.value = 30;
+    importStatus.value = '验证数据格式...';
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    importProgress.value = 50;
+    importStatus.value = '合并数据...';
+
+    // 使用带选项的导入方法
+    const { result } = await saveStore.importZodDataWithOptions(
+      pendingFileData.value,
+      importOptions.value,
+      targetSaveName.value
+    );
+
+    importProgress.value = 90;
+    importStatus.value = '完成处理...';
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     importProgress.value = 100;
     importStatus.value = '导入完成！';
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-    // 短暂延迟后关闭遮罩
-    await new Promise(resolve => setTimeout(resolve, 500));
-
+    // 生成成功消息
+    importSuccessMessage.value = formatResultMessage(result);
     importSuccess.value = true;
     importError.value = null;
 
     setTimeout(() => {
       importSuccess.value = false;
-    }, 3000);
+    }, 5000);
 
   } catch (err) {
-    importError.value = err instanceof Error ? err.message : 'JSON解析失败';
+    importError.value = err instanceof Error ? err.message : '导入失败';
     importSuccess.value = false;
   } finally {
     isImporting.value = false;
     importProgress.value = 0;
     importStatus.value = '准备中...';
-    // 清空文件选择
-    target.value = '';
+    pendingFileData.value = null;
   }
+}
+
+function formatResultMessage(result: ImportResult): string {
+  const parts: string[] = [];
+
+  const discNew = result.discs.new.length;
+  const discUpgraded = result.discs.upgraded.length;
+  const discUnchanged = result.discs.unchanged.length;
+  const discRemoved = result.discs.remove.length;
+
+  if (discNew > 0 || discUpgraded > 0 || discUnchanged > 0 || discRemoved > 0) {
+    const discParts: string[] = [];
+    if (discNew > 0) discParts.push(`+${discNew}新`);
+    if (discUpgraded > 0) discParts.push(`↑${discUpgraded}升级`);
+    if (discUnchanged > 0) discParts.push(`=${discUnchanged}重复`);
+    if (discRemoved > 0) discParts.push(`-${discRemoved}删除`);
+    parts.push(`驱动盘: ${discParts.join(' ')}`);
+  }
+
+  const wengineNew = result.wengines.new.length;
+  const wengineUpgraded = result.wengines.upgraded.length;
+  if (wengineNew > 0 || wengineUpgraded > 0) {
+    const wengineParts: string[] = [];
+    if (wengineNew > 0) wengineParts.push(`+${wengineNew}新`);
+    if (wengineUpgraded > 0) wengineParts.push(`↑${wengineUpgraded}升级`);
+    parts.push(`音擎: ${wengineParts.join(' ')}`);
+  }
+
+  const charNew = result.characters.new.length;
+  const charUpgraded = result.characters.upgraded.length;
+  if (charNew > 0 || charUpgraded > 0) {
+    const charParts: string[] = [];
+    if (charNew > 0) charParts.push(`+${charNew}新`);
+    if (charUpgraded > 0) charParts.push(`↑${charUpgraded}升级`);
+    parts.push(`角色: ${charParts.join(' ')}`);
+  }
+
+  return parts.length > 0 ? `导入成功！${parts.join('，')}` : '导入成功！';
 }
 
 function readFileAsText(file: File): Promise<string> {
