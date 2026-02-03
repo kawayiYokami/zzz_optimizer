@@ -4,19 +4,24 @@
  * 使用Pinia管理存档数据的状态
  *
  * ⚠️ 重要架构说明：
- * - 存档（SaveData）：持久化数据，存储在localStorage中，是数据的"真相"
+ * - 存档（SaveData）：持久化数据，存储在 IndexedDB 中（降级时使用 localStorage），是数据的"真相"
  * - 实例对象（Agent、WEngine、DriveDisk）：从存档中生成的运行时对象，用于计算
  *
  * 实例对象 ≠ 存档
  * - 实例对象包含计算缓存（self_properties、base_stats等）
  * - 实例对象是从存档数据生成的，用于运行时计算
- * - 存档是持久化数据，应该直接从localStorage读取
+ * - 存档是持久化数据，应该直接从 IndexedDB 读取
  *
  * 数据流：
- * 1. 存档（原始ZOD格式） → localStorage（持久化）
- * 2. localStorage → 原始ZOD数据 → 实例对象（运行时计算）
- * 3. 导出时：直接从localStorage读取存档数据，不使用实例对象
- * 4. 导出ZOD时：直接从localStorage读取存档数据，不使用实例对象
+ * 1. 存档（原始ZOD格式） → IndexedDB（持久化）
+ * 2. IndexedDB → 原始ZOD数据 → 实例对象（运行时计算）
+ * 3. 导出时：直接从 rawSaves 读取存档数据，不使用实例对象
+ * 4. 导出ZOD时：直接从 rawSaves 读取存档数据，不使用实例对象
+ *
+ * 存储策略：
+ * - 优先使用 IndexedDB（容量大，支持离线）
+ * - IndexedDB 不可用时降级到 localStorage
+ * - 首次启动时自动迁移 localStorage 数据到 IndexedDB
  */
 
 import { defineStore } from 'pinia';
@@ -28,6 +33,8 @@ import type { ImportOptions, ImportResult } from '../model/import-result';
 import { DEFAULT_IMPORT_OPTIONS } from '../model/import-result';
 import { mergeZodData, formatImportResultSummary } from '../services/merge.service';
 import { zodParserService } from '../services/zod-parser.service';
+import { dbService } from '../services/db.service';
+import { migrationService } from '../services/migration.service';
 
 const STORAGE_KEY = 'zzz_optimizer_saves';
 const CURRENT_SAVE_KEY = 'zzz_optimizer_current_save';
@@ -148,103 +155,220 @@ export const useSaveStore = defineStore('save', () => {
   }
 
   /**
-   * 从localStorage加载存档
+   * 从存储加载存档（优先 IndexedDB，降级 localStorage）
    */
   async function loadFromStorage(): Promise<void> {
     try {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      if (savedData) {
-        const parsed = JSON.parse(savedData);
-        const newSaves = new Map<string, SaveData>();
-        const newRawSaves = new Map<string, SaveDataZod>();
-
-        for (const [name, data] of Object.entries(parsed)) {
-          try {
-            if (isZodSaveData(data)) {
-              const normalized = normalizeZodData(data as SaveDataZod);
-              // 直接保存原始ZOD数据到rawSaves
-              newRawSaves.set(name, normalized);
-            }
-          } catch (err) {
-            console.error(`加载存档失败 [${name}]:`, err);
-            // 继续加载其他存档，不中断整个加载过程
-            // 如果是ZOD数据，仍然保存原始数据，便于调试
-            if (isZodSaveData(data)) {
-              newRawSaves.set(name, data as SaveDataZod);
-            }
-          }
+      // 检查并执行迁移（localStorage -> IndexedDB）
+      if (await migrationService.needsMigration()) {
+        const result = await migrationService.migrate();
+        if (result.success) {
+          // 迁移成功后清理 localStorage
+          migrationService.cleanupLocalStorage();
+        } else {
+          console.error('[SaveStore] 迁移失败:', result.errors);
+          // 迁移失败时降级到 localStorage
         }
-
-        saves.value = newSaves;
-        rawSaves.value = newRawSaves;
       }
 
-      const currentSave = localStorage.getItem(CURRENT_SAVE_KEY);
-      if (currentSave) {
-        currentSaveName.value = currentSave;
-      }
-
-      // 没有任何存档时，自动创建一个默认空存档（发布后首次使用/首次导入的兜底）
-      if (rawSaves.value.size === 0) {
-        const defaultName = '默认存档';
-        const newSave = new SaveData(defaultName);
-        saves.value.set(defaultName, newSave);
-        rawSaves.value.set(defaultName, newSave.toZodData());
-        currentSaveName.value = defaultName;
-        saveToStorage();
-        return;
-      }
-
-      // 有存档但没有当前存档指针时，默认选择第一个
-      if (!currentSaveName.value) {
-        currentSaveName.value = Array.from(rawSaves.value.keys())[0] ?? null;
-      }
-
-      // 只实例化当前存档（惰性加载其他存档）
-      if (currentSaveName.value) {
-        const raw = rawSaves.value.get(currentSaveName.value);
-        if (raw) {
-          try {
-            const saveData = await instantiateSaveWithEquipment(currentSaveName.value, raw);
-            saves.value.set(currentSaveName.value, saveData);
-          } catch (err) {
-            error.value = err instanceof Error ? err.message : 'Unknown error';
-            console.error(`加载当前存档失败 [${currentSaveName.value}]:`, err);
-          }
-        }
+      // 优先从 IndexedDB 加载
+      if (dbService.isAvailable) {
+        await loadFromIndexedDB();
+      } else {
+        // 降级到 localStorage
+        console.warn('[SaveStore] IndexedDB 不可用，降级到 localStorage');
+        await loadFromLocalStorage();
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error';
       console.error('Failed to load saves from storage:', err);
+      // 尝试降级到 localStorage
+      try {
+        await loadFromLocalStorage();
+      } catch (fallbackErr) {
+        console.error('Fallback to localStorage also failed:', fallbackErr);
+      }
     }
   }
 
   /**
-   * 保存存档到localStorage
+   * 从 IndexedDB 加载存档
    */
-  function saveToStorage(): void {
+  async function loadFromIndexedDB(): Promise<void> {
+    const allSaves = await dbService.getAllSaves();
+    const newSaves = new Map<string, SaveData>();
+    const newRawSaves = new Map<string, SaveDataZod>();
+
+    for (const [name, data] of allSaves.entries()) {
+      try {
+        if (isZodSaveData(data)) {
+          const normalized = normalizeZodData(data);
+          newRawSaves.set(name, normalized);
+        }
+      } catch (err) {
+        console.error(`加载存档失败 [${name}]:`, err);
+        if (isZodSaveData(data)) {
+          newRawSaves.set(name, data);
+        }
+      }
+    }
+
+    saves.value = newSaves;
+    rawSaves.value = newRawSaves;
+
+    const currentSave = await dbService.getCurrentSaveName();
+    if (currentSave) {
+      currentSaveName.value = currentSave;
+    }
+
+    // 没有任何存档时，自动创建一个默认空存档
+    if (rawSaves.value.size === 0) {
+      const defaultName = '默认存档';
+      const newSave = new SaveData(defaultName);
+      saves.value.set(defaultName, newSave);
+      rawSaves.value.set(defaultName, newSave.toZodData());
+      currentSaveName.value = defaultName;
+      await saveToStorage();
+      return;
+    }
+
+    // 有存档但没有当前存档指针时，默认选择第一个
+    if (!currentSaveName.value) {
+      currentSaveName.value = Array.from(rawSaves.value.keys())[0] ?? null;
+    }
+
+    // 只实例化当前存档（惰性加载其他存档）
+    if (currentSaveName.value) {
+      const raw = rawSaves.value.get(currentSaveName.value);
+      if (raw) {
+        try {
+          const saveData = await instantiateSaveWithEquipment(currentSaveName.value, raw);
+          saves.value.set(currentSaveName.value, saveData);
+        } catch (err) {
+          error.value = err instanceof Error ? err.message : 'Unknown error';
+          console.error(`加载当前存档失败 [${currentSaveName.value}]:`, err);
+        }
+      }
+    }
+  }
+
+  /**
+   * 从 localStorage 加载存档（降级方案）
+   */
+  async function loadFromLocalStorage(): Promise<void> {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      const newSaves = new Map<string, SaveData>();
+      const newRawSaves = new Map<string, SaveDataZod>();
+
+      for (const [name, data] of Object.entries(parsed)) {
+        try {
+          if (isZodSaveData(data)) {
+            const normalized = normalizeZodData(data as SaveDataZod);
+            newRawSaves.set(name, normalized);
+          }
+        } catch (err) {
+          console.error(`加载存档失败 [${name}]:`, err);
+          if (isZodSaveData(data)) {
+            newRawSaves.set(name, data as SaveDataZod);
+          }
+        }
+      }
+
+      saves.value = newSaves;
+      rawSaves.value = newRawSaves;
+    }
+
+    const currentSave = localStorage.getItem(CURRENT_SAVE_KEY);
+    if (currentSave) {
+      currentSaveName.value = currentSave;
+    }
+
+    // 没有任何存档时，自动创建一个默认空存档
+    if (rawSaves.value.size === 0) {
+      const defaultName = '默认存档';
+      const newSave = new SaveData(defaultName);
+      saves.value.set(defaultName, newSave);
+      rawSaves.value.set(defaultName, newSave.toZodData());
+      currentSaveName.value = defaultName;
+      saveToLocalStorage();
+      return;
+    }
+
+    // 有存档但没有当前存档指针时，默认选择第一个
+    if (!currentSaveName.value) {
+      currentSaveName.value = Array.from(rawSaves.value.keys())[0] ?? null;
+    }
+
+    // 只实例化当前存档
+    if (currentSaveName.value) {
+      const raw = rawSaves.value.get(currentSaveName.value);
+      if (raw) {
+        try {
+          const saveData = await instantiateSaveWithEquipment(currentSaveName.value, raw);
+          saves.value.set(currentSaveName.value, saveData);
+        } catch (err) {
+          error.value = err instanceof Error ? err.message : 'Unknown error';
+          console.error(`加载当前存档失败 [${currentSaveName.value}]:`, err);
+        }
+      }
+    }
+  }
+
+  /**
+   * 保存存档到存储（优先 IndexedDB，降级 localStorage）
+   */
+  async function saveToStorage(): Promise<void> {
     try {
-      // 直接保存rawSaves到localStorage，不从实例转换
-      const dataToSave = Object.fromEntries(rawSaves.value.entries());
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-
-      if (currentSaveName.value) {
-        localStorage.setItem(CURRENT_SAVE_KEY, currentSaveName.value);
+      if (dbService.isAvailable) {
+        await saveToIndexedDB();
       } else {
-        localStorage.removeItem(CURRENT_SAVE_KEY);
+        saveToLocalStorage();
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error';
-      console.error('Failed to save saves to storage:', err);
-      throw err;
+      console.error('Failed to save to IndexedDB, falling back to localStorage:', err);
+      // 降级到 localStorage
+      saveToLocalStorage();
+    }
+  }
+
+  /**
+   * 保存存档到 IndexedDB
+   */
+  async function saveToIndexedDB(): Promise<void> {
+    // 逐个保存存档
+    for (const [name, data] of rawSaves.value.entries()) {
+      await dbService.putSave(name, data);
+    }
+
+    // 保存当前存档指针
+    if (currentSaveName.value) {
+      await dbService.setCurrentSaveName(currentSaveName.value);
+    } else {
+      await dbService.setCurrentSaveName(null);
+    }
+  }
+
+  /**
+   * 保存存档到 localStorage（降级方案）
+   */
+  function saveToLocalStorage(): void {
+    const dataToSave = Object.fromEntries(rawSaves.value.entries());
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+
+    if (currentSaveName.value) {
+      localStorage.setItem(CURRENT_SAVE_KEY, currentSaveName.value);
+    } else {
+      localStorage.removeItem(CURRENT_SAVE_KEY);
     }
   }
 
   /**
    * 创建新存档
    */
-  function createSave(name: string): SaveData {
+  async function createSave(name: string): Promise<SaveData> {
     if (saves.value.has(name) || rawSaves.value.has(name)) {
       throw new Error(`Save "${name}" already exists`);
     }
@@ -257,7 +381,7 @@ export const useSaveStore = defineStore('save', () => {
     rawSaves.value.set(name, zodData);
 
     currentSaveName.value = name;
-    saveToStorage();
+    await saveToStorage();
 
     return newSave;
   }
@@ -265,7 +389,7 @@ export const useSaveStore = defineStore('save', () => {
   /**
    * 删除存档
    */
-  function deleteSave(name: string): boolean {
+  async function deleteSave(name: string): Promise<boolean> {
     if (!saves.value.has(name) && !rawSaves.value.has(name)) {
       return false;
     }
@@ -279,6 +403,11 @@ export const useSaveStore = defineStore('save', () => {
     saves.value.delete(name);
     rawSaves.value.delete(name);
 
+    // 从 IndexedDB 删除
+    if (dbService.isAvailable) {
+      await dbService.deleteSave(name);
+    }
+
     // 如果删除的是当前存档，切换到其他存档
     if (currentSaveName.value === name) {
       const remainingNames = Array.from(rawSaves.value.keys());
@@ -289,7 +418,7 @@ export const useSaveStore = defineStore('save', () => {
       }
     }
 
-    saveToStorage();
+    await saveToStorage();
 
     return true;
   }
@@ -314,7 +443,7 @@ export const useSaveStore = defineStore('save', () => {
       }
 
       currentSaveName.value = name;
-      saveToStorage();
+      await saveToStorage();
 
       return true;
     } catch (err) {
@@ -348,8 +477,8 @@ export const useSaveStore = defineStore('save', () => {
       // 设置当前存档
       currentSaveName.value = name;
 
-      // 保存到localStorage（直接保存rawSaves，不修改原始数据）
-      saveToStorage();
+      // 保存到存储
+      await saveToStorage();
 
       return newSave;
     } catch (err) {
@@ -413,11 +542,8 @@ export const useSaveStore = defineStore('save', () => {
       // 设置当前存档
       currentSaveName.value = name;
 
-      // 保存到 localStorage
-      saveToStorage();
-
-      // 输出导入摘要日志
-      console.log('[SaveStore] Import completed:', formatImportResultSummary(result));
+      // 保存到存储
+      await saveToStorage();
 
       return { saveData, result };
     } catch (err) {
@@ -636,8 +762,8 @@ export const useSaveStore = defineStore('save', () => {
         // 不需要特别处理，因为saves已经更新了
       }
 
-      // 保存到localStorage
-      saveToStorage();
+      // 保存到存储
+      await saveToStorage();
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error';
       console.error('Failed to import save data:', err);
@@ -763,7 +889,7 @@ export const useSaveStore = defineStore('save', () => {
   /**
    * 装备音擎
    */
-  function equipWengine(agentId: string, wengineId: string | null): boolean {
+  async function equipWengine(agentId: string, wengineId: string | null): Promise<boolean> {
     if (!currentSaveName.value) {
       return false;
     }
@@ -803,15 +929,15 @@ export const useSaveStore = defineStore('save', () => {
       }
     }
 
-    // 保存到localStorage
-    saveToStorage();
+    // 保存到存储
+    await saveToStorage();
     return true;
   }
 
   /**
    * 装备驱动盘
    */
-  function equipDriveDisk(agentId: string, diskId: string | null): boolean {
+  async function equipDriveDisk(agentId: string, diskId: string | null): Promise<boolean> {
     if (!currentSaveName.value) {
       return false;
     }
@@ -861,11 +987,11 @@ export const useSaveStore = defineStore('save', () => {
       }
     }
 
-    // 保存到localStorage
-    saveToStorage();
+    // 保存到存储
+    await saveToStorage();
 
     // 同步实例数据到rawSaves，确保equippedDiscs字段正确更新
-    syncInstanceToRawSave();
+    await syncInstanceToRawSave();
     return true;
   }
 
@@ -873,7 +999,7 @@ export const useSaveStore = defineStore('save', () => {
    * 同步实例数据到rawSaves
    * 确保rawSaves始终与实例数据保持一致
    */
-  function syncInstanceToRawSave(): void {
+  async function syncInstanceToRawSave(): Promise<void> {
     if (!currentSaveName.value) {
       return;
     }
@@ -941,14 +1067,14 @@ export const useSaveStore = defineStore('save', () => {
     // 同步战场数据
     rawSave.battles = save.getAllBattles();
 
-    // 保存到localStorage
-    saveToStorage();
+    // 保存到存储
+    await saveToStorage();
   }
 
   /**
    * 创建队伍
    */
-  function createTeam(name: string, frontAgentId: string, backAgent1Id?: string, backAgent2Id?: string): string | null {
+  async function createTeam(name: string, frontAgentId: string, backAgent1Id?: string, backAgent2Id?: string): Promise<string | null> {
     if (!currentSaveName.value) {
       return null;
     }
@@ -983,7 +1109,7 @@ export const useSaveStore = defineStore('save', () => {
     }
 
     // 同步到rawSaves
-    syncInstanceToRawSave();
+    await syncInstanceToRawSave();
 
     return teamId;
   }
@@ -991,7 +1117,7 @@ export const useSaveStore = defineStore('save', () => {
   /**
    * 更新队伍
    */
-  function updateTeam(teamId: string, updates: Partial<import('../model/save-data-zod').ZodTeamData>): boolean {
+  async function updateTeam(teamId: string, updates: Partial<import('../model/save-data-zod').ZodTeamData>): Promise<boolean> {
     if (!currentSaveName.value) {
       return false;
     }
@@ -1003,7 +1129,7 @@ export const useSaveStore = defineStore('save', () => {
 
     try {
       save.updateTeam(teamId, updates);
-      syncInstanceToRawSave();
+      await syncInstanceToRawSave();
       return true;
     } catch (error) {
       console.error('更新队伍失败:', error);
@@ -1014,7 +1140,7 @@ export const useSaveStore = defineStore('save', () => {
   /**
    * 删除队伍
    */
-  function deleteTeam(teamId: string): boolean {
+  async function deleteTeam(teamId: string): Promise<boolean> {
     if (!currentSaveName.value) {
       return false;
     }
@@ -1025,17 +1151,17 @@ export const useSaveStore = defineStore('save', () => {
     }
 
     save.deleteTeam(teamId);
-    syncInstanceToRawSave();
+    await syncInstanceToRawSave();
     return true;
   }
 
   /**
    * 更新队伍的优化配置
    */
-  function updateTeamOptimizationConfig(
+  async function updateTeamOptimizationConfig(
     teamId: string,
     config: import('../model/team').TeamOptimizationConfig
-  ): boolean {
+  ): Promise<boolean> {
     if (!currentSaveName.value) {
       return false;
     }
@@ -1057,7 +1183,7 @@ export const useSaveStore = defineStore('save', () => {
       team.optimizationConfig = config;
 
       // 同步到rawSaves
-      syncInstanceToRawSave();
+      await syncInstanceToRawSave();
       return true;
     } catch (error) {
       console.error('更新队伍优化配置失败:', error);
@@ -1068,10 +1194,10 @@ export const useSaveStore = defineStore('save', () => {
   /**
    * 更新队伍的优化结果缓存
    */
-  function updateTeamOptimizationResults(
+  async function updateTeamOptimizationResults(
     teamId: string,
     results: import('../optimizer/types').OptimizationBuild[]
-  ): boolean {
+  ): Promise<boolean> {
     if (!currentSaveName.value) {
       return false;
     }
@@ -1092,7 +1218,7 @@ export const useSaveStore = defineStore('save', () => {
       team.optimizationResults = results.slice(0, 10);
 
       // 同步到rawSaves
-      syncInstanceToRawSave();
+      await syncInstanceToRawSave();
       return true;
     } catch (error) {
       console.error('更新队伍优化结果失败:', error);
@@ -1164,7 +1290,7 @@ export const useSaveStore = defineStore('save', () => {
     }
 
     rawSave.wengines.push(newWengine);
-    saveToStorage();
+    await saveToStorage();
 
     // 重新生成实例对象
     return await switchSave(currentSaveName.value);
@@ -1189,7 +1315,7 @@ export const useSaveStore = defineStore('save', () => {
     }
 
     rawWengine.modification = refinement;
-    saveToStorage();
+    await saveToStorage();
 
     return await switchSave(currentSaveName.value);
   }
@@ -1253,7 +1379,7 @@ export const useSaveStore = defineStore('save', () => {
     }
 
     rawSave.discs.push(newDisk);
-    saveToStorage();
+    await saveToStorage();
 
     // 重新生成实例对象
     const success = await switchSave(currentSaveName.value);
@@ -1282,7 +1408,7 @@ export const useSaveStore = defineStore('save', () => {
     }
 
     rawDisk.substats = substats;
-    saveToStorage();
+    await saveToStorage();
 
     return await switchSave(currentSaveName.value);
   }
@@ -1311,7 +1437,7 @@ export const useSaveStore = defineStore('save', () => {
     });
 
     rawSave.discs = rawSave.discs.filter((d) => d.id !== diskId);
-    saveToStorage();
+    await saveToStorage();
 
     return await switchSave(currentSaveName.value);
   }

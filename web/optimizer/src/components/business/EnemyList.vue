@@ -35,11 +35,8 @@ const gameDataStore = useGameDataStore();
 
 const enemies = computed(() => {
   const enemyInfos = gameDataStore.allEnemies || [];
-  console.log('[EnemyList] 原始敌人数量:', enemyInfos.length);
-  
   const mappedEnemies = enemyInfos.map(info => Enemy.fromGameData(info));
-  console.log('[EnemyList] 映射后敌人数量:', mappedEnemies.length);
-  
+
   // 过滤：只保留失衡异常倍率不为0且有图标的敌人
   const filteredEnemies = mappedEnemies.filter(enemy => {
     if (enemy.stun_vulnerability_multiplier === 0) return false;

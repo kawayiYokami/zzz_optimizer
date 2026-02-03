@@ -113,34 +113,24 @@ const allWeapons = computed(() => {
 });
 
 async function handleCreate() {
-  console.log('[WEngineCreateModal] handleCreate 被调用');
-  console.log('[WEngineCreateModal] selectedWeaponId:', selectedWeaponId.value);
-
   if (!selectedWeaponId.value) {
-    console.warn('[WEngineCreateModal] 未选择音擎');
     return;
   }
 
   const weapon = allWeapons.value.find(w => w.id === selectedWeaponId.value);
-  console.log('[WEngineCreateModal] 找到的音擎:', weapon);
-  
   if (!weapon) {
-    console.warn('[WEngineCreateModal] 未找到音擎数据');
     return;
   }
 
   errorMessage.value = null;
 
   try {
-    console.log('[WEngineCreateModal] 开始创建音擎:', weapon.EN);
     const success = await saveStore.createWEngine(
       weapon.EN,
       60,
       selectedRefinement.value,
       5
     );
-
-    console.log('[WEngineCreateModal] 创建结果:', success);
 
     if (success) {
       selectedWeaponId.value = null;

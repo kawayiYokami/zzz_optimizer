@@ -781,8 +781,7 @@ export class OptimizerContext {
                 }
             }
         } else {
-            // eslint-disable-next-line no-console
-            console.log('[OptimizerContext] targetSet precompute skipped');
+            // targetSet precompute skipped
         }
 
         // ============================================================================

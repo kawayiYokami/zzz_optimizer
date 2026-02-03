@@ -333,11 +333,9 @@ export class CombatStats {
 
     // 暴击属性
     if (this.crit_rate > 0) {
-      console.log(`[DEBUG] CombatStats.format() - 暴击率原始值: ${this.crit_rate}, 格式化后: ${(this.crit_rate * 100).toFixed(2)}%`);
       stats.push(['暴击率', this.crit_rate, true]);
     }
     if (this.crit_dmg > 0) {
-      console.log(`[DEBUG] CombatStats.format() - 暴击伤害原始值: ${this.crit_dmg}, 格式化后: ${(this.crit_dmg * 100).toFixed(2)}%`);
       stats.push(['暴击伤害', this.crit_dmg, true]);
     }
 

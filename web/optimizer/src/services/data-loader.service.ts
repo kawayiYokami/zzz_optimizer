@@ -4,10 +4,16 @@
  * 负责加载：
  * 1. 游戏数据（角色、驱动盘、音擎的基础数据）
  * 2. 个人数据（从导出的JSON文件加载）
+ *
+ * 缓存策略：
+ * - 优先从 IndexedDB 缓存加载
+ * - 缓存未命中时从网络加载并写入缓存
+ * - 支持版本控制，版本更新时自动刷新缓存
  */
 
 import type { SkillSet } from "../model/skill";
 import { generateSkillSet } from "../utils/skill-converter";
+import { gameDataCacheService } from "./game-data-cache.service";
 
 /**
  * 角色基础信息
@@ -250,7 +256,6 @@ export class DataLoaderService {
     this._isLoading = true;
 
     try {
-      console.log("[DataLoaderService] 开始初始化...");
       // 并行加载所有索引文件
       const [
         characterData,
@@ -282,7 +287,6 @@ export class DataLoaderService {
       this._anomalyBarsData = new Map(Object.entries(anomalyBarsData));
 
       this._isInitialized = true;
-      console.log("[DataLoaderService] 初始化完成");
     } catch (error) {
       console.error("Failed to initialize DataLoaderService:", error);
       throw error;
@@ -292,9 +296,23 @@ export class DataLoaderService {
   }
 
   /**
-   * 加载JSON文件
+   * 加载JSON文件（优先从缓存加载）
    */
   private async loadJsonFile<T>(path: string): Promise<Record<string, T>> {
+    try {
+      // 优先从 IndexedDB 缓存加载
+      return await gameDataCacheService.loadJsonWithCache<Record<string, T>>(path);
+    } catch (err) {
+      // 缓存加载失败时直接从网络加载
+      console.warn(`[DataLoader] 缓存加载失败，直接从网络加载: ${path}`, err);
+      return this.fetchJsonFile<T>(path);
+    }
+  }
+
+  /**
+   * 直接从网络加载JSON文件
+   */
+  private async fetchJsonFile<T>(path: string): Promise<Record<string, T>> {
     const response = await fetch(path);
     if (!response.ok) {
       throw new Error(`Failed to load ${path}: ${response.statusText}`);
@@ -317,6 +335,29 @@ export class DataLoaderService {
       throw new Error(
         `Failed to parse JSON from ${path}: ${err instanceof Error ? err.message : "Unknown error"}`,
       );
+    }
+  }
+
+  /**
+   * 检查游戏数据版本并刷新缓存
+   *
+   * @returns 是否刷新了缓存
+   */
+  async checkGameDataVersion(): Promise<boolean> {
+    try {
+      // 直接从网络加载版本文件（不走缓存）
+      const versionData = await this.fetchJsonFile<any>('/game-data/version.json');
+      const newVersion = (versionData as any).version;
+
+      if (!newVersion) {
+        console.warn('[DataLoader] 版本文件格式错误，跳过版本检查');
+        return false;
+      }
+
+      return await gameDataCacheService.checkAndRefreshCache(newVersion);
+    } catch (err) {
+      console.warn('[DataLoader] 版本检查失败，使用缓存数据:', err);
+      return false;
     }
   }
 

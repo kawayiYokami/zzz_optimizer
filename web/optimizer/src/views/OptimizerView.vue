@@ -428,7 +428,6 @@ const loadTeamOptimizationConfig = (teamId: string) => {
 
     // 如果队伍没有配置，生成智能推荐配置
     if (!config) {
-      console.log(`[Optimizer] 队伍 ${team.name} 没有配置，生成智能推荐配置`);
       config = PresetGenerator.generateRecommendedConfig(team);
       // 保存到队伍
       saveStore.updateTeamOptimizationConfig(teamId, config);
@@ -459,11 +458,8 @@ const saveTeamOptimizationConfig = (teamId: string) => {
       lastUpdated: new Date().toISOString(),
     };
 
-    console.log(`[Optimizer] 保存队伍配置 - teamId: ${teamId}, selectedEnemyId: ${selectedEnemyId.value}`);
     const success = saveStore.updateTeamOptimizationConfig(teamId, config);
-    if (success) {
-      console.log(`[Optimizer] 已保存队伍配置 - selectedEnemyId: ${config.selectedEnemyId}`);
-    } else {
+    if (!success) {
       console.error(`[Optimizer] 保存队伍配置失败`);
     }
   } catch (e) {
@@ -627,10 +623,7 @@ const getWEngineName = (id: string) => {
 const currentDamage = ref(0);
 
 const onBattleEnvChange = () => {
-  if (isRunning.value) {
-    // 敌人环境改变时重新估计组合数（estimatedCombinations是响应式计算）
-    console.log('[Optimizer] 敌人环境改变，已触发重算');
-  }
+  // 敌人环境改变时重新估计组合数（estimatedCombinations是响应式计算）
 };
 
 // 一键换装
@@ -830,7 +823,6 @@ const cancelOptimization = () => {
 };
 
 onMounted(async () => {
-  console.log('[OptimizerView] onMounted 开始');
   // 游戏数据和存档已在 App.vue 中全局初始化完成
   // 这里只需要初始化优化器特有的逻辑
 

@@ -144,20 +144,16 @@ function getWeaponTypeIcon(weaponType: WeaponType): string {
 
 // 打开创建弹窗
 function openCreateModal() {
-  console.log('[WEngineView] 打开创建弹窗');
   showCreateModal.value = true;
-  console.log('[WEngineView] showCreateModal:', showCreateModal.value);
 }
 
 // 关闭创建弹窗
 function closeCreateModal() {
-  console.log('[WEngineView] 关闭创建弹窗');
   showCreateModal.value = false;
 }
 
 // 创建成功回调
 function handleCreated() {
-  console.log('[WEngineView] 创建成功回调');
   closeCreateModal();
 }
 

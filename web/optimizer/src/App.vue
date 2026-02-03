@@ -116,6 +116,8 @@ import SaveManagementView from './views/SaveManagementView.vue';
 import NavigationButton from './components/common/NavigationButton.vue';
 import { useGameDataStore } from './stores/game-data.store';
 import { useSaveStore } from './stores/save.store';
+import { dbService } from './services/db.service';
+import { dataLoaderService } from './services/data-loader.service';
 
 declare const __DEV__: boolean;
 const isDev = __DEV__;
@@ -171,17 +173,25 @@ onMounted(async () => {
   }
   updateTheme();
 
-  // 全局初始化：加载游戏数据和存档
+  // 全局初始化：数据库 → 版本检查 → 游戏数据 → 存档
   try {
-    console.log('[App] 开始全局初始化...');
+    // 1. 初始化数据库服务
+    loadingStatus.value = '正在初始化数据库...';
+    await dbService.initialize();
+
+    // 2. 检查游戏数据版本（可能触发缓存刷新）
+    loadingStatus.value = '正在检查游戏数据版本...';
+    await dataLoaderService.checkGameDataVersion();
+
+    // 3. 加载游戏数据（优先从缓存）
     loadingStatus.value = '正在加载游戏数据...';
     await gameDataStore.initialize();
-    console.log('[App] 游戏数据加载完成');
+
+    // 4. 加载存档（包含自动迁移）
     loadingStatus.value = '正在加载存档...';
     await saveStore.loadFromStorage();
-    console.log('[App] 存档加载完成');
+
     isAppInitialized.value = true;
-    console.log('[App] 全局初始化完成');
   } catch (err) {
     console.error('[App] 全局初始化失败:', err);
     loadingStatus.value = '初始化失败，请刷新页面重试';
