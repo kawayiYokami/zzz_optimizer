@@ -77,8 +77,9 @@ def update_detailed_data(category_name, json_filename):
     total = len(data)
     
     for item_id in data.keys():
-        # URL format: https://api.hakush.in/zzz/data/chs/{category}/{id}.json
-        url = f"https://api.hakush.in/zzz/data/chs/{category_name}/{item_id}.json"
+        # URL format: https://api.hakush.in/zzz/data/{lang}/{category}/{id}.json
+        # NOTE: hakush API uses "zh" for Chinese, not "chs".
+        url = f"https://api.hakush.in/zzz/data/zh/{category_name}/{item_id}.json"
         filepath = os.path.join(sub_dir, f"{item_id}.json")
         
         if download_json(url, filepath, skip_if_exists=True):

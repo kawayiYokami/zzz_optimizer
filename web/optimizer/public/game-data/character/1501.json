@@ -1,7 +1,7 @@
 {
   "Id": 1501,
-  "Icon": "",
-  "Name": "(Test1)爱芮",
+  "Icon": "IconRole57",
+  "Name": "爱芮",
   "CodeName": "Aria",
   "Rarity": 4,
   "WeaponType": {
@@ -19,35 +19,40 @@
   },
   "Gender": 2,
   "PartnerInfo": {
-    "Birthday": "Partner_Birthday_1501",
-    "FullName": "Partner_Name_1501",
+    "Birthday": "...",
+    "FullName": "...",
     "Gender": "女",
-    "IconPath": "UI/Sprite/A1DynamicLoad/IconRoleCircle/UnPacker/IconRoleCircle58.png",
-    "ImpressionF": "Partner_Impression_f_1501",
-    "ImpressionM": "Partner_Impression_m_1501",
+    "IconPath": "UI/Sprite/A1DynamicLoad/IconRoleCircle/UnPacker/IconRoleCircle57.png",
+    "ImpressionF": "...",
+    "ImpressionM": "...",
     "Name": "",
     "OutlookDesc": "",
-    "ProfileDesc": "Partner_ProfileDesc_1501",
-    "Race": "Partner_Race_14",
-    "RoleIcon": "IconRole/UnPacker/IconRole58",
-    "Stature": "Partner_Stature_1501",
+    "ProfileDesc": "...",
+    "Race": "...",
+    "RoleIcon": "IconRole/UnPacker/IconRole57",
+    "Stature": "...",
     "UnlockCondition": [
       "获得代理人",
-      "Partner_Unlock_Condition_Chapter14",
+      "完成主线委托第二季·间章 旧梦的安可曲",
       "完成委托「安比的困扰」"
     ],
     "TrustLv": {
-      "1": "Partner_ProfileDesc_1501",
+      "1": "...",
       "2": "",
-      "3": "Partner_ProfileDesc_1501_1",
+      "3": "...",
       "4": ""
     }
   },
   "Skin": {
     "3115010": {
-      "Name": "AvatarSkin_Aria_Name_000",
-      "Desc": "AvatarSkin_Aria_Desc_000",
-      "Image": "IconRole47"
+      "Name": "爱芮·元气偶像",
+      "Desc": "...",
+      "Image": "IconRole57"
+    },
+    "3115011": {
+      "Name": "爱芮·不协和音",
+      "Desc": "...",
+      "Image": "IconRole57_01"
     }
   },
   "Stats": {
@@ -63,7 +68,7 @@
     "CritRes": 0,
     "Defence": 50,
     "DefenceGrowth": 67561,
-    "ElementAbnormalPower": 140,
+    "ElementAbnormalPower": 115,
     "ElementMystery": 116,
     "Endurance": 0,
     "HpGrowth": 845544,
@@ -165,7 +170,7 @@
           "Prop": 31401,
           "Name": "异常掌控",
           "Format": "{0:0.#}",
-          "Value": 16
+          "Value": 12
         },
         "12101": {
           "Prop": 12101,
@@ -182,7 +187,7 @@
           "Prop": 31401,
           "Name": "异常掌控",
           "Format": "{0:0.#}",
-          "Value": 16
+          "Value": 12
         },
         "12101": {
           "Prop": 12101,
@@ -199,7 +204,7 @@
           "Prop": 31401,
           "Name": "异常掌控",
           "Format": "{0:0.#}",
-          "Value": 32
+          "Value": 24
         },
         "12101": {
           "Prop": 12101,
@@ -216,7 +221,7 @@
           "Prop": 31401,
           "Name": "异常掌控",
           "Format": "{0:0.#}",
-          "Value": 32
+          "Value": 24
         },
         "12101": {
           "Prop": 12101,
@@ -233,7 +238,7 @@
           "Prop": 31401,
           "Name": "异常掌控",
           "Format": "{0:0.#}",
-          "Value": 48
+          "Value": 36
         },
         "12101": {
           "Prop": 12101,
@@ -250,7 +255,7 @@
           "Prop": 31401,
           "Name": "异常掌控",
           "Format": "{0:0.#}",
-          "Value": 48
+          "Value": 36
         },
         "12101": {
           "Prop": 12101,
@@ -327,35 +332,35 @@
     "Basic": {
       "Description": [
         {
-          "Name": "(Test1)普通攻击：",
-          "Desc": "(Test1)点按 <IconMap:Icon_Normal> 发动：\n向前方进行至多四段的攻击，造成<color=#FE437E>以太伤害</color>；\n第四段攻击若命中敌人，在攻击完成后会在场上生成1根<color=#FFFFFF>[应援棒]</color>。",
+          "Name": "普通攻击：甜心律动",
+          "Desc": "点按 <IconMap:Icon_Normal> 发动：\n向前方进行至多四段的攻击，造成<color=#FE437E>以太伤害</color>；\n第四段攻击若命中敌人，在攻击完成后会在场上生成1个<color=#FFFFFF>[应援能量]</color>。",
           "Potential": []
         },
         {
-          "Name": "(Test1)蓄力攻击：",
-          "Desc": "(Test1)长按 <IconMap:Icon_Normal> 发动：\n爱芮进入蓄力状态，最多可进行三段蓄力，松开 <IconMap:Icon_Normal> 或达到最大蓄力时间时，爱芮将根据当前蓄力段数，向前方发动强力下落攻击，造成大量<color=#FE437E>以太伤害</color>；\n若爱芮在蓄力时，自身附近有<color=#FFFFFF>[应援棒]</color>，则会吸收<color=#FFFFFF>[应援棒]</color>，每成功吸收1根<color=#FFFFFF>[应援棒]</color>可立即提升蓄力等级1级，获得20点喧响值，且获得1层增益效果：下一次蓄力攻击造成的伤害提升10%，异常积蓄提升10%。该增益效果最多叠加2层，蓄力攻击结束后效果移除；\n在<color=#FFFFFF>[普通攻击]</color>第四段、<color=#FFFFFF>[特殊技：变招]</color>、<color=#FFFFFF>[强化特殊技]</color>、第三级<color=#FFFFFF>[蓄力攻击]</color>后，若附近的<color=#FFFFFF>[应援棒]</color>大于2根，则可通过长按 <IconMap:Icon_Normal> 直接快速发动第三级<color=#FFFFFF>[蓄力攻击]</color>；\n连续发动2次及以上第三级<color=#FFFFFF>[蓄力攻击]</color>后，可直接衔接<color=#FFFFFF>[普通攻击]</color>第四段；\n蓄力期间抗打断等级提升，受到的伤害降低40%，蓄力攻击期间拥有无敌效果。",
+          "Name": "普通攻击：绝对音准",
+          "Desc": "长按 <IconMap:Icon_Normal> 发动：\n爱芮进入蓄力状态，最多可进行三段蓄力，松开 <IconMap:Icon_Normal> 或达到最大蓄力时间时，爱芮将根据当前蓄力段数，向前方发动强力下落攻击，造成大量<color=#FE437E>以太伤害</color>；\n若爱芮在蓄力时，自身附近有<color=#FFFFFF>[应援能量]</color>，则会吸收<color=#FFFFFF>[应援能量]</color>，每成功吸收1个<color=#FFFFFF>[应援能量]</color>可立即提升蓄力等级1段，且获得1层增益效果：下一次<color=#FFFFFF>[普通攻击：绝对音准]</color>造成的<color=#FE437E>以太异常积蓄值</color>提升10%。该增益效果最多叠加2层，攻击结束后效果移除；\n在<color=#FFFFFF>[普通攻击：甜心律动]</color>第四段、<color=#FFFFFF>[特殊技：全糖电音·不加冰]</color>、<color=#FFFFFF>[强化特殊技]</color>、第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>、<color=#FFFFFF>[快速支援]</color>、<color=#FFFFFF>[连携技]</color>、<color=#FFFFFF>[终结技]</color>后，若附近的<color=#FFFFFF>[应援能量]</color>大于等于2个，则可通过长按 <IconMap:Icon_Normal> 消耗2个<color=#FFFFFF>[应援能量]</color>直接快速发动第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>；在第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>、<color=#FFFFFF>[连携技]</color>、<color=#FFFFFF>[终结技]</color>后，若附近的<color=#FFFFFF>[应援能量]</color>大于等于2个，也可通过在一段时间内点按 <IconMap:Icon_Normal> 消耗2个<color=#FFFFFF>[应援能量]</color>直接快速发动第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>；\n蓄力期间抗打断等级提升，受到的伤害降低40%，攻击发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)普通攻击：",
+          "Name": "普通攻击：甜心律动",
           "Param": [
             {
               "Name": "一段伤害倍率",
               "Desc": "{Skill:1501001, Prop:1001}",
               "Param": {
                 "1501001": {
-                  "Main": 4040,
-                  "Growth": 370,
+                  "Main": 3320,
+                  "Growth": 310,
                   "Format": "%",
-                  "DamagePercentage": 4040,
-                  "DamagePercentageGrowth": 370,
+                  "DamagePercentage": 3320,
+                  "DamagePercentageGrowth": 310,
                   "StunRatio": 3440,
                   "StunRatioGrowth": 160,
                   "SpRecovery": 10570,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 80850,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 2610,
+                  "AttributeInfliction": 2280,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -370,18 +375,18 @@
               "Desc": "{Skill:1501002, Prop:1001}",
               "Param": {
                 "1501002": {
-                  "Main": 8470,
-                  "Growth": 770,
+                  "Main": 7160,
+                  "Growth": 660,
                   "Format": "%",
-                  "DamagePercentage": 8470,
-                  "DamagePercentageGrowth": 770,
+                  "DamagePercentage": 7160,
+                  "DamagePercentageGrowth": 660,
                   "StunRatio": 6800,
                   "StunRatioGrowth": 310,
                   "SpRecovery": 21060,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 160875,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 5153,
+                  "AttributeInfliction": 4657,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -396,18 +401,18 @@
               "Desc": "{Skill:1501003, Prop:1001}",
               "Param": {
                 "1501003": {
-                  "Main": 10820,
-                  "Growth": 990,
+                  "Main": 9380,
+                  "Growth": 860,
                   "Format": "%",
-                  "DamagePercentage": 10820,
-                  "DamagePercentageGrowth": 990,
+                  "DamagePercentage": 9380,
+                  "DamagePercentageGrowth": 860,
                   "StunRatio": 8230,
                   "StunRatioGrowth": 380,
                   "SpRecovery": 25610,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 195800,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 6214,
+                  "AttributeInfliction": 5804,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -422,18 +427,18 @@
               "Desc": "{Skill:1501004, Prop:1001}",
               "Param": {
                 "1501004": {
-                  "Main": 22200,
-                  "Growth": 2020,
+                  "Main": 19420,
+                  "Growth": 1770,
                   "Format": "%",
-                  "DamagePercentage": 22200,
-                  "DamagePercentageGrowth": 2020,
+                  "DamagePercentage": 19420,
+                  "DamagePercentageGrowth": 1770,
                   "StunRatio": 16560,
                   "StunRatioGrowth": 760,
                   "SpRecovery": 57350,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 438075,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 13755,
+                  "AttributeInfliction": 13400,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -451,15 +456,15 @@
                   "Main": 3440,
                   "Growth": 160,
                   "Format": "%",
-                  "DamagePercentage": 4040,
-                  "DamagePercentageGrowth": 370,
+                  "DamagePercentage": 3320,
+                  "DamagePercentageGrowth": 310,
                   "StunRatio": 3440,
                   "StunRatioGrowth": 160,
                   "SpRecovery": 10570,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 80850,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 2610,
+                  "AttributeInfliction": 2280,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -477,15 +482,15 @@
                   "Main": 6800,
                   "Growth": 310,
                   "Format": "%",
-                  "DamagePercentage": 8470,
-                  "DamagePercentageGrowth": 770,
+                  "DamagePercentage": 7160,
+                  "DamagePercentageGrowth": 660,
                   "StunRatio": 6800,
                   "StunRatioGrowth": 310,
                   "SpRecovery": 21060,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 160875,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 5153,
+                  "AttributeInfliction": 4657,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -503,15 +508,15 @@
                   "Main": 8230,
                   "Growth": 380,
                   "Format": "%",
-                  "DamagePercentage": 10820,
-                  "DamagePercentageGrowth": 990,
+                  "DamagePercentage": 9380,
+                  "DamagePercentageGrowth": 860,
                   "StunRatio": 8230,
                   "StunRatioGrowth": 380,
                   "SpRecovery": 25610,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 195800,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 6214,
+                  "AttributeInfliction": 5804,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -529,15 +534,15 @@
                   "Main": 16560,
                   "Growth": 760,
                   "Format": "%",
-                  "DamagePercentage": 22200,
-                  "DamagePercentageGrowth": 2020,
+                  "DamagePercentage": 19420,
+                  "DamagePercentageGrowth": 1770,
                   "StunRatio": 16560,
                   "StunRatioGrowth": 760,
                   "SpRecovery": 57350,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 438075,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 13755,
+                  "AttributeInfliction": 13400,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -551,10 +556,10 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)蓄力攻击：",
+          "Name": "普通攻击：绝对音准",
           "Param": [
             {
-              "Name": "(Test1)一段蓄力攻击伤害倍率",
+              "Name": "一段蓄力攻击伤害倍率",
               "Desc": "{Skill:1501005, Prop:1001}",
               "Param": {
                 "1501005": {
@@ -569,7 +574,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 363000,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 10560,
+                  "AttributeInfliction": 13200,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -580,7 +585,7 @@
               "Potential": []
             },
             {
-              "Name": "(Test1)二段蓄力攻击伤害倍率",
+              "Name": "二段蓄力攻击伤害倍率",
               "Desc": "{Skill:1501006, Prop:1001}",
               "Param": {
                 "1501006": {
@@ -595,7 +600,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 414425,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 12053,
+                  "AttributeInfliction": 15066,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -606,22 +611,22 @@
               "Potential": []
             },
             {
-              "Name": "(Test1)三段蓄力攻击伤害倍率",
+              "Name": "三段蓄力攻击伤害倍率",
               "Desc": "{Skill:1501007, Prop:1001}",
               "Param": {
                 "1501007": {
-                  "Main": 25300,
-                  "Growth": 2300,
+                  "Main": 27500,
+                  "Growth": 2500,
                   "Format": "%",
-                  "DamagePercentage": 25300,
-                  "DamagePercentageGrowth": 2300,
+                  "DamagePercentage": 27500,
+                  "DamagePercentageGrowth": 2500,
                   "StunRatio": 11000,
                   "StunRatioGrowth": 500,
                   "SpRecovery": 36000,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 275000,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 14400,
+                  "AttributeInfliction": 13000,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -632,22 +637,67 @@
               "Potential": []
             },
             {
-              "Name": "(Test1)强化蓄力攻击伤害倍率",
+              "Name": "三段蓄力攻击伤害倍率（协同）",
+              "Desc": "{Skill:1501007, Prop:1001} + {Skill:1501022, Prop:1001}",
+              "Param": {
+                "1501007": {
+                  "Main": 27500,
+                  "Growth": 2500,
+                  "Format": "%",
+                  "DamagePercentage": 27500,
+                  "DamagePercentageGrowth": 2500,
+                  "StunRatio": 11000,
+                  "StunRatioGrowth": 500,
+                  "SpRecovery": 36000,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 275000,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 13000,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 10000
+                },
+                "1501022": {
+                  "Main": 4130,
+                  "Growth": 380,
+                  "Format": "%",
+                  "DamagePercentage": 4130,
+                  "DamagePercentageGrowth": 380,
+                  "StunRatio": 1650,
+                  "StunRatioGrowth": 80,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 0,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 1950,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 0
+                }
+              },
+              "Potential": []
+            },
+            {
+              "Name": "强化蓄力攻击伤害倍率",
               "Desc": "{Skill:1501008, Prop:1001}",
               "Param": {
                 "1501008": {
-                  "Main": 29890,
-                  "Growth": 2720,
+                  "Main": 32090,
+                  "Growth": 2920,
                   "Format": "%",
-                  "DamagePercentage": 29890,
-                  "DamagePercentageGrowth": 2720,
+                  "DamagePercentage": 32090,
+                  "DamagePercentageGrowth": 2920,
                   "StunRatio": 11000,
                   "StunRatioGrowth": 500,
                   "SpRecovery": 36000,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 275000,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 17733,
+                  "AttributeInfliction": 17166,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -658,7 +708,52 @@
               "Potential": []
             },
             {
-              "Name": "(Test1)一段蓄力攻击失衡倍率",
+              "Name": "强化蓄力攻击伤害倍率（协同）",
+              "Desc": "{Skill:1501008, Prop:1001} + {Skill:1501022, Prop:1001}",
+              "Param": {
+                "1501008": {
+                  "Main": 32090,
+                  "Growth": 2920,
+                  "Format": "%",
+                  "DamagePercentage": 32090,
+                  "DamagePercentageGrowth": 2920,
+                  "StunRatio": 11000,
+                  "StunRatioGrowth": 500,
+                  "SpRecovery": 36000,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 275000,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 17166,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 10000
+                },
+                "1501022": {
+                  "Main": 4130,
+                  "Growth": 380,
+                  "Format": "%",
+                  "DamagePercentage": 4130,
+                  "DamagePercentageGrowth": 380,
+                  "StunRatio": 1650,
+                  "StunRatioGrowth": 80,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 0,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 1950,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 0
+                }
+              },
+              "Potential": []
+            },
+            {
+              "Name": "一段蓄力攻击失衡倍率",
               "Desc": "{Skill:1501005, Prop:1002}",
               "Param": {
                 "1501005": {
@@ -673,7 +768,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 363000,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 10560,
+                  "AttributeInfliction": 13200,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -684,7 +779,7 @@
               "Potential": []
             },
             {
-              "Name": "(Test1)二段蓄力攻击失衡倍率",
+              "Name": "二段蓄力攻击失衡倍率",
               "Desc": "{Skill:1501006, Prop:1002}",
               "Param": {
                 "1501006": {
@@ -699,7 +794,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 414425,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 12053,
+                  "AttributeInfliction": 15066,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -710,22 +805,22 @@
               "Potential": []
             },
             {
-              "Name": "(Test1)三段蓄力攻击失衡倍率",
+              "Name": "三段蓄力攻击失衡倍率",
               "Desc": "{Skill:1501007, Prop:1002}",
               "Param": {
                 "1501007": {
                   "Main": 11000,
                   "Growth": 500,
                   "Format": "%",
-                  "DamagePercentage": 25300,
-                  "DamagePercentageGrowth": 2300,
+                  "DamagePercentage": 27500,
+                  "DamagePercentageGrowth": 2500,
                   "StunRatio": 11000,
                   "StunRatioGrowth": 500,
                   "SpRecovery": 36000,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 275000,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 14400,
+                  "AttributeInfliction": 13000,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -736,27 +831,117 @@
               "Potential": []
             },
             {
-              "Name": "(Test1)强化蓄力攻击失衡倍率",
-              "Desc": "{Skill:1501008, Prop:1002}",
+              "Name": "三段蓄力攻击失衡倍率（协同）",
+              "Desc": "{Skill:1501007, Prop:1002} + {Skill:1501022, Prop:1002}",
               "Param": {
-                "1501008": {
+                "1501007": {
                   "Main": 11000,
                   "Growth": 500,
                   "Format": "%",
-                  "DamagePercentage": 29890,
-                  "DamagePercentageGrowth": 2720,
+                  "DamagePercentage": 27500,
+                  "DamagePercentageGrowth": 2500,
                   "StunRatio": 11000,
                   "StunRatioGrowth": 500,
                   "SpRecovery": 36000,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 275000,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 17733,
+                  "AttributeInfliction": 13000,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
                   "EtherPurify": 10000
+                },
+                "1501022": {
+                  "Main": 1650,
+                  "Growth": 80,
+                  "Format": "%",
+                  "DamagePercentage": 4130,
+                  "DamagePercentageGrowth": 380,
+                  "StunRatio": 1650,
+                  "StunRatioGrowth": 80,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 0,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 1950,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 0
+                }
+              },
+              "Potential": []
+            },
+            {
+              "Name": "强化蓄力攻击失衡倍率",
+              "Desc": "{Skill:1501008, Prop:1002}",
+              "Param": {
+                "1501008": {
+                  "Main": 11000,
+                  "Growth": 500,
+                  "Format": "%",
+                  "DamagePercentage": 32090,
+                  "DamagePercentageGrowth": 2920,
+                  "StunRatio": 11000,
+                  "StunRatioGrowth": 500,
+                  "SpRecovery": 36000,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 275000,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 17166,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 10000
+                }
+              },
+              "Potential": []
+            },
+            {
+              "Name": "强化蓄力攻击失衡倍率（协同）",
+              "Desc": "{Skill:1501008, Prop:1002} + {Skill:1501022, Prop:1002}",
+              "Param": {
+                "1501008": {
+                  "Main": 11000,
+                  "Growth": 500,
+                  "Format": "%",
+                  "DamagePercentage": 32090,
+                  "DamagePercentageGrowth": 2920,
+                  "StunRatio": 11000,
+                  "StunRatioGrowth": 500,
+                  "SpRecovery": 36000,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 275000,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 17166,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 10000
+                },
+                "1501022": {
+                  "Main": 1650,
+                  "Growth": 80,
+                  "Format": "%",
+                  "DamagePercentage": 4130,
+                  "DamagePercentageGrowth": 380,
+                  "StunRatio": 1650,
+                  "StunRatioGrowth": 80,
+                  "SpRecovery": 0,
+                  "SpRecoveryGrowth": 0,
+                  "FeverRecovery": 0,
+                  "FeverRecoveryGrowth": 0,
+                  "AttributeInfliction": 1950,
+                  "SpConsume": 0,
+                  "AttackData": [],
+                  "RpRecovery": 0,
+                  "RpRecoveryGrowth": 0,
+                  "EtherPurify": 0
                 }
               },
               "Potential": []
@@ -817,22 +1002,22 @@
     "Dodge": {
       "Description": [
         {
-          "Name": "(Test1)闪避：",
-          "Desc": "(Test1)点按 <IconMap:Icon_Evade> 发动：\n快速的冲刺闪避；\n若在普通攻击中发动，此动作期间不会重置普通攻击段数；\n招式发动期间拥有无敌效果。",
+          "Name": "闪避：精准卡点",
+          "Desc": "点按 <IconMap:Icon_Evade> 发动：\n快速的冲刺闪避；\n若在<color=#FFFFFF>[普通攻击：甜心律动]</color>中发动，此动作期间不会重置普通攻击段数；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)冲刺攻击：",
-          "Desc": "(Test1)闪避时，点按 <IconMap:Icon_Normal> 发动：\n向前飞进行快速斩击，造成<color=#FE437E>以太伤害</color>；\n若在普通攻击中发动，此动作期间不会重置普通攻击段数。",
+          "Name": "冲刺攻击：丝滑小连招",
+          "Desc": "闪避时，点按 <IconMap:Icon_Normal> 发动：\n向前飞进行快速斩击，造成<color=#FE437E>以太伤害</color>；\n若在<color=#FFFFFF>[普通攻击：甜心律动]</color>中发动，此动作期间不会重置普通攻击段数。",
           "Potential": []
         },
         {
-          "Name": "(Test1)闪避反击：",
-          "Desc": "(Test1)触发<color=#FFFFFF>[极限闪避]</color>后，点按 <IconMap:Icon_Normal> 发动：\n对目标发动强力斩击，造成<color=#FE437E>以太伤害</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "闪避反击：滑动变奏",
+          "Desc": "触发<color=#FFFFFF>[极限闪避]</color>后，点按 <IconMap:Icon_Normal> 发动：\n对目标发动强力斩击，造成<color=#FE437E>以太伤害</color>；\n招式发动后，可直接衔接第三段<color=#FFFFFF>[普通攻击：甜心律动]</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)冲刺攻击：",
+          "Name": "冲刺攻击：丝滑小连招",
           "Param": [
             {
               "Name": "伤害倍率",
@@ -850,7 +1035,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 57475,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 1665,
+                  "AttributeInfliction": 2081,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -876,7 +1061,7 @@
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 57475,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 1665,
+                  "AttributeInfliction": 2081,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -890,30 +1075,30 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)闪避反击：",
+          "Name": "闪避反击：滑动变奏",
           "Param": [
             {
               "Name": "伤害倍率",
               "Desc": "{Skill:1501014, Prop:1001}",
               "Param": {
                 "1501014": {
-                  "Main": 25780,
-                  "Growth": 2350,
+                  "Main": 24120,
+                  "Growth": 2200,
                   "Format": "%",
-                  "DamagePercentage": 25780,
-                  "DamagePercentageGrowth": 2350,
-                  "StunRatio": 22370,
-                  "StunRatioGrowth": 1020,
-                  "SpRecovery": 37200,
+                  "DamagePercentage": 24120,
+                  "DamagePercentageGrowth": 2200,
+                  "StunRatio": 21090,
+                  "StunRatioGrowth": 960,
+                  "SpRecovery": 33020,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 284350,
+                  "FeverRecovery": 252175,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 8266,
+                  "AttributeInfliction": 9169,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 25334
+                  "EtherPurify": 24170
                 }
               },
               "Potential": []
@@ -923,23 +1108,23 @@
               "Desc": "{Skill:1501014, Prop:1002}",
               "Param": {
                 "1501014": {
-                  "Main": 22370,
-                  "Growth": 1020,
+                  "Main": 21090,
+                  "Growth": 960,
                   "Format": "%",
-                  "DamagePercentage": 25780,
-                  "DamagePercentageGrowth": 2350,
-                  "StunRatio": 22370,
-                  "StunRatioGrowth": 1020,
-                  "SpRecovery": 37200,
+                  "DamagePercentage": 24120,
+                  "DamagePercentageGrowth": 2200,
+                  "StunRatio": 21090,
+                  "StunRatioGrowth": 960,
+                  "SpRecovery": 33020,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 284350,
+                  "FeverRecovery": 252175,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 8266,
+                  "AttributeInfliction": 9169,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 25334
+                  "EtherPurify": 24170
                 }
               },
               "Potential": []
@@ -1000,45 +1185,45 @@
     "Special": {
       "Description": [
         {
-          "Name": "(Test1)特殊技：",
-          "Desc": "(Test1)点按 <IconMap:Icon_Special> 发动：\n向前方发动踢击， 造成<color=#FE437E>以太伤害</color>；\n招式发动期间抗打断等级提升。",
+          "Name": "特殊技：全糖电音",
+          "Desc": "点按 <IconMap:Icon_Special> 发动：\n向前方发动踢击，造成<color=#FE437E>以太伤害</color>；\n招式发动期间抗打断等级提升。",
           "Potential": []
         },
         {
-          "Name": "(Test1)特殊技：变招",
-          "Desc": "(Test1)在<color=#FFFFFF>[普通攻击]</color>第四段、第三级<color=#FFFFFF>[蓄力攻击]</color>、<color=#FFFFFF>[闪避反击]</color>、<color=#FFFFFF>[快速支援]</color>、<color=#FFFFFF>[支援突击]</color>、<color=#FFFFFF>[连携技]</color>和<color=#FFFFFF>[终结技]</color>后，点按 <IconMap:Icon_Special> 发动：\n向前方发动更加迅捷的踢击， 造成<color=#FE437E>以太伤害</color>，若攻击命中敌人，在攻击完成后会在场上生成1根<color=#FFFFFF>[应援棒]</color>；\n招式发动期间抗打断等级提升。",
+          "Name": "特殊技：全糖电音·不加冰",
+          "Desc": "在<color=#FFFFFF>[普通攻击：甜心律动]</color>第四段、<color=#FFFFFF>[支援突击]</color>、<color=#FFFFFF>[连携技]</color>和<color=#FFFFFF>[终结技]</color>后，点按 <IconMap:Icon_Special> 发动：\n向前方发动更加迅捷的踢击，造成<color=#FE437E>以太伤害</color>，若攻击命中敌人，在攻击完成后会在场上生成1个<color=#FFFFFF>[应援能量]</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)强化特殊技：",
-          "Desc": "(Test1)能量足够时，点按  <IconMap:Icon_SpecialReady> 发动：\n向前方进行强力踢击并追加音波攻击，造成<color=#FE437E>以太伤害</color>，若攻击命中敌人，在攻击完成后会在场上生成3根<color=#FFFFFF>[应援棒]</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "强化特殊技：坠入妄想",
+          "Desc": "能量足够时，点按  <IconMap:Icon_SpecialReady> 发动：\n向前方进行强力踢击并追加音波攻击，造成<color=#FE437E>以太伤害</color>，若攻击命中敌人，在攻击完成后会在场上生成3个<color=#FFFFFF>[应援能量]</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)强化特殊技：二段",
-          "Desc": "(Test1)<color=#FFFFFF>[强化特殊技：]</color>发动后，能量足够时，点按 <IconMap:Icon_SpecialReady> 发动：\n向前方追加强力下落攻击，造成<color=#FE437E>以太伤害</color>，若攻击命中敌人，在攻击完成后会在场上生成3根<color=#FFFFFF>[应援棒]</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "强化特殊技：光速入坑",
+          "Desc": "<color=#FFFFFF>[强化特殊技：坠入妄想]</color>发动后，能量足够时，点按 <IconMap:Icon_SpecialReady> 发动：\n向前方追加强力下落攻击，造成<color=#FE437E>以太伤害</color>，若攻击命中敌人，在攻击完成后会在场上生成3个<color=#FFFFFF>[应援能量]</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)特殊技：",
+          "Name": "特殊技：全糖电音",
           "Param": [
             {
               "Name": "伤害倍率",
               "Desc": "{Skill:1501009, Prop:1001}",
               "Param": {
                 "1501009": {
-                  "Main": 6790,
-                  "Growth": 620,
+                  "Main": 5430,
+                  "Growth": 500,
                   "Format": "%",
-                  "DamagePercentage": 6790,
-                  "DamagePercentageGrowth": 620,
+                  "DamagePercentage": 5430,
+                  "DamagePercentageGrowth": 500,
                   "StunRatio": 6790,
                   "StunRatioGrowth": 310,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 169675,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 4934,
+                  "AttributeInfliction": 6168,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1056,15 +1241,15 @@
                   "Main": 6790,
                   "Growth": 310,
                   "Format": "%",
-                  "DamagePercentage": 6790,
-                  "DamagePercentageGrowth": 620,
+                  "DamagePercentage": 5430,
+                  "DamagePercentageGrowth": 500,
                   "StunRatio": 6790,
                   "StunRatioGrowth": 310,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 169675,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 4934,
+                  "AttributeInfliction": 6168,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1078,30 +1263,30 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)特殊技：变招",
+          "Name": "特殊技：全糖电音·不加冰",
           "Param": [
             {
               "Name": "伤害倍率",
               "Desc": "{Skill:1501010, Prop:1001}",
               "Param": {
                 "1501010": {
-                  "Main": 10250,
-                  "Growth": 940,
+                  "Main": 6480,
+                  "Growth": 590,
                   "Format": "%",
-                  "DamagePercentage": 10250,
-                  "DamagePercentageGrowth": 940,
-                  "StunRatio": 7890,
-                  "StunRatioGrowth": 360,
-                  "SpRecovery": 25800,
+                  "DamagePercentage": 6480,
+                  "DamagePercentageGrowth": 590,
+                  "StunRatio": 6710,
+                  "StunRatioGrowth": 310,
+                  "SpRecovery": 20640,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 197175,
+                  "FeverRecovery": 157850,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 6245,
+                  "AttributeInfliction": 4453,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 7167
+                  "EtherPurify": 5734
                 }
               },
               "Potential": []
@@ -1111,23 +1296,23 @@
               "Desc": "{Skill:1501010, Prop:1002}",
               "Param": {
                 "1501010": {
-                  "Main": 7890,
-                  "Growth": 360,
+                  "Main": 6710,
+                  "Growth": 310,
                   "Format": "%",
-                  "DamagePercentage": 10250,
-                  "DamagePercentageGrowth": 940,
-                  "StunRatio": 7890,
-                  "StunRatioGrowth": 360,
-                  "SpRecovery": 25800,
+                  "DamagePercentage": 6480,
+                  "DamagePercentageGrowth": 590,
+                  "StunRatio": 6710,
+                  "StunRatioGrowth": 310,
+                  "SpRecovery": 20640,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 197175,
+                  "FeverRecovery": 157850,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 6245,
+                  "AttributeInfliction": 4453,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 7167
+                  "EtherPurify": 5734
                 }
               },
               "Potential": []
@@ -1136,25 +1321,25 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)强化特殊技：",
+          "Name": "强化特殊技：坠入妄想",
           "Param": [
             {
               "Name": "伤害倍率",
               "Desc": "{Skill:1501011, Prop:1001}",
               "Param": {
                 "1501011": {
-                  "Main": 60290,
-                  "Growth": 5490,
+                  "Main": 51120,
+                  "Growth": 4650,
                   "Format": "%",
-                  "DamagePercentage": 60290,
-                  "DamagePercentageGrowth": 5490,
-                  "StunRatio": 49430,
-                  "StunRatioGrowth": 2250,
+                  "DamagePercentage": 51120,
+                  "DamagePercentageGrowth": 4650,
+                  "StunRatio": 40270,
+                  "StunRatioGrowth": 1840,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 1778425,
+                  "FeverRecovery": 1396450,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 39893,
+                  "AttributeInfliction": 45700,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1169,18 +1354,18 @@
               "Desc": "{Skill:1501011, Prop:1002}",
               "Param": {
                 "1501011": {
-                  "Main": 49430,
-                  "Growth": 2250,
+                  "Main": 40270,
+                  "Growth": 1840,
                   "Format": "%",
-                  "DamagePercentage": 60290,
-                  "DamagePercentageGrowth": 5490,
-                  "StunRatio": 49430,
-                  "StunRatioGrowth": 2250,
+                  "DamagePercentage": 51120,
+                  "DamagePercentageGrowth": 4650,
+                  "StunRatio": 40270,
+                  "StunRatioGrowth": 1840,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 1778425,
+                  "FeverRecovery": 1396450,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 39893,
+                  "AttributeInfliction": 45700,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1192,32 +1377,32 @@
             },
             {
               "Name": "能量消耗",
-              "Desc": "(Test1)60点",
+              "Desc": "40点",
               "Potential": []
             }
           ],
           "Potential": []
         },
         {
-          "Name": "(Test1)强化特殊技：二段",
+          "Name": "强化特殊技：光速入坑",
           "Param": [
             {
               "Name": "伤害倍率",
               "Desc": "{Skill:1501012, Prop:1001}",
               "Param": {
                 "1501012": {
-                  "Main": 63620,
-                  "Growth": 5790,
+                  "Main": 54450,
+                  "Growth": 4950,
                   "Format": "%",
-                  "DamagePercentage": 63620,
-                  "DamagePercentageGrowth": 5790,
-                  "StunRatio": 52530,
-                  "StunRatioGrowth": 2390,
+                  "DamagePercentage": 54450,
+                  "DamagePercentageGrowth": 4950,
+                  "StunRatio": 43360,
+                  "StunRatioGrowth": 1980,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 1867800,
+                  "FeverRecovery": 1485825,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 42229,
+                  "AttributeInfliction": 48620,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1232,18 +1417,18 @@
               "Desc": "{Skill:1501012, Prop:1002}",
               "Param": {
                 "1501012": {
-                  "Main": 52530,
-                  "Growth": 2390,
+                  "Main": 43360,
+                  "Growth": 1980,
                   "Format": "%",
-                  "DamagePercentage": 63620,
-                  "DamagePercentageGrowth": 5790,
-                  "StunRatio": 52530,
-                  "StunRatioGrowth": 2390,
+                  "DamagePercentage": 54450,
+                  "DamagePercentageGrowth": 4950,
+                  "StunRatio": 43360,
+                  "StunRatioGrowth": 1980,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 1867800,
+                  "FeverRecovery": 1485825,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 42229,
+                  "AttributeInfliction": 48620,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1255,7 +1440,7 @@
             },
             {
               "Name": "能量消耗",
-              "Desc": "(Test1)60点",
+              "Desc": "40点",
               "Potential": []
             }
           ],
@@ -1314,35 +1499,35 @@
     "Chain": {
       "Description": [
         {
-          "Name": "(Test1)连携技：",
-          "Desc": "(Test1)触发<color=#FFFFFF>[连携技]</color>时，选择对应角色发动：\n向前方进行连续攻击，造成大量<color=#FE437E>以太伤害</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "连携技：梦幻联动",
+          "Desc": "触发<color=#FFFFFF>[连携技]</color>时，选择对应角色发动：\n向前方进行连续攻击，造成大量<color=#FE437E>以太伤害</color>，技能发动时在场上生成4个<color=#FFFFFF>[应援能量]</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)终结技：",
-          "Desc": "(Test1)喧响等级达到<color=#FFFFFF>[极]</color>时，点按 <IconMap:Icon_UltimateReady> 发动：\n释放自身全力，进入<color=#FFFFFF>[强化状态]</color>并对目标发动多段强力射击，造成大量<color=#FE437E>以太伤害</color>；\n进入<color=#FFFFFF>[强化状态]</color>时解锁<color=#FFFFFF>[强化槽]</color>，并获得最大数量的<color=#FFFFFF>[超级应援棒]</color>，同时开启<color=#FFFFFF>[以太帷幕·偶像]</color>，<color=#FFFFFF>[以太帷幕·偶像]</color>生效期间，全队角色攻击力额外提升50点，持续30秒，爱芮重复开启<color=#FFFFFF>[以太帷幕·偶像]</color>前，将关闭已有的<color=#FFFFFF>[以太帷幕·偶像]</color>；\n爱芮在蓄力时，若自身持有<color=#FFFFFF>[超级应援棒]</color>，则优先消耗<color=#FFFFFF>[超级应援棒]</color>进行蓄力，每根<color=#FFFFFF>[超级应援棒]</color>可提升2级蓄力等级；\n在进入<color=#FFFFFF>[强化状态]</color>时，若自身已持有<color=#FFFFFF>[超级应援棒]</color>，则会先将剩余<color=#FFFFFF>[超级应援棒]</color>转化为<color=#FFFFFF>[应援棒]</color>生成在场上，每根<color=#FFFFFF>[超级应援棒]</color>可转化为2根<color=#FFFFFF>[应援棒]</color>；\n<color=#FFFFFF>[强化状态]</color>最大持续15秒，在<color=#FFFFFF>[强化状态]</color>期间，爱芮的第三级<color=#FFFFFF>[蓄力攻击]</color>将会提升为强化版；\n退出<color=#FFFFFF>[强化状态]</color>时，若有没有使用的<color=#FFFFFF>[超级应援棒]</color>，也会将剩余<color=#FFFFFF>[超级应援棒]</color>转化为<color=#FFFFFF>[应援棒]</color>生成在场上，每根<color=#FFFFFF>[超级应援棒]</color>可转化为2根<color=#FFFFFF>[应援棒]</color>，并且<color=#FFFFFF>[强化槽]</color>会回到锁定状态，无法使用；\n招式发动期间拥有无敌效果。",
+          "Name": "终结技：元气百分百",
+          "Desc": "喧响等级达到<color=#FFFFFF>[极]</color>时，点按 <IconMap:Icon_UltimateReady> 发动：\n释放自身全力，进入<color=#FFFFFF>[妄想时刻]</color>并对目标发动多段强力射击，造成大量<color=#FE437E>以太伤害</color>；\n进入<color=#FFFFFF>[妄想时刻]</color>时爱芮获得3层<color=#FFFFFF>[全场应援]</color>效果，同时开启<color=#FFFFFF>[以太帷幕·妄想重奏]</color>，<color=#FFFFFF>[以太帷幕·妄想重奏]</color>生效期间，全队角色攻击力额外提升50点，持续30秒，爱芮重复开启<color=#FFFFFF>[以太帷幕·妄想重奏]</color>前，将关闭已有的<color=#FFFFFF>[以太帷幕·妄想重奏]</color>；\n爱芮在蓄力时，若自身有<color=#FFFFFF>[全场应援]</color>效果，则优先消耗<color=#FFFFFF>[全场应援]</color>进行蓄力，每消耗1层<color=#FFFFFF>[全场应援]</color>可提升2段蓄力等级；\n在进入<color=#FFFFFF>[妄想时刻]</color>时，若自身已有<color=#FFFFFF>[全场应援]</color>效果，则会先将剩余层数的<color=#FFFFFF>[全场应援]</color>转化为<color=#FFFFFF>[应援能量]</color>生成在场上，每层<color=#FFFFFF>[全场应援]</color>可转化为2个<color=#FFFFFF>[应援能量]</color>；\n<color=#FFFFFF>[妄想时刻]</color>最大持续15秒，在<color=#FFFFFF>[妄想时刻]</color>期间，爱芮的第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>将会提升为强化版；\n退出<color=#FFFFFF>[妄想时刻]</color>时，若自身有<color=#FFFFFF>[全场应援]</color>效果，也会将剩余层数<color=#FFFFFF>[全场应援]</color>转化为<color=#FFFFFF>[应援能量]</color>生成在场上，每层<color=#FFFFFF>[全场应援]</color>可转化为2个<color=#FFFFFF>[应援能量]</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)连携技：",
+          "Name": "连携技：梦幻联动",
           "Param": [
             {
               "Name": "伤害倍率",
               "Desc": "{Skill:1501015, Prop:1001}",
               "Param": {
                 "1501015": {
-                  "Main": 66990,
-                  "Growth": 6090,
+                  "Main": 81620,
+                  "Growth": 7420,
                   "Format": "%",
-                  "DamagePercentage": 66990,
-                  "DamagePercentageGrowth": 6090,
+                  "DamagePercentage": 81620,
+                  "DamagePercentageGrowth": 7420,
                   "StunRatio": 23100,
                   "StunRatioGrowth": 1050,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 2406250,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 32757,
+                  "AttributeInfliction": 54246,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1360,15 +1545,15 @@
                   "Main": 23100,
                   "Growth": 1050,
                   "Format": "%",
-                  "DamagePercentage": 66990,
-                  "DamagePercentageGrowth": 6090,
+                  "DamagePercentage": 81620,
+                  "DamagePercentageGrowth": 7420,
                   "StunRatio": 23100,
                   "StunRatioGrowth": 1050,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 2406250,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 32757,
+                  "AttributeInfliction": 54246,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
@@ -1382,30 +1567,30 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)终结技：",
+          "Name": "终结技：元气百分百",
           "Param": [
             {
               "Name": "伤害倍率",
               "Desc": "{Skill:1501016, Prop:1001}",
               "Param": {
                 "1501016": {
-                  "Main": 166380,
-                  "Growth": 15130,
+                  "Main": 162250,
+                  "Growth": 14750,
                   "Format": "%",
-                  "DamagePercentage": 166380,
-                  "DamagePercentageGrowth": 15130,
-                  "StunRatio": 23100,
-                  "StunRatioGrowth": 1050,
+                  "DamagePercentage": 162250,
+                  "DamagePercentageGrowth": 14750,
+                  "StunRatio": 19800,
+                  "StunRatioGrowth": 900,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 0,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 16799,
+                  "AttributeInfliction": 145699,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 71000
+                  "EtherPurify": 68000
                 }
               },
               "Potential": []
@@ -1415,23 +1600,23 @@
               "Desc": "{Skill:1501016, Prop:1002}",
               "Param": {
                 "1501016": {
-                  "Main": 23100,
-                  "Growth": 1050,
+                  "Main": 19800,
+                  "Growth": 900,
                   "Format": "%",
-                  "DamagePercentage": 166380,
-                  "DamagePercentageGrowth": 15130,
-                  "StunRatio": 23100,
-                  "StunRatioGrowth": 1050,
+                  "DamagePercentage": 162250,
+                  "DamagePercentageGrowth": 14750,
+                  "StunRatio": 19800,
+                  "StunRatioGrowth": 900,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
                   "FeverRecovery": 0,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 16799,
+                  "AttributeInfliction": 145699,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 71000
+                  "EtherPurify": 68000
                 }
               },
               "Potential": []
@@ -1492,45 +1677,45 @@
     "Assist": {
       "Description": [
         {
-          "Name": "(Test1)快速支援：",
-          "Desc": "(Test1)当前操作中的角色被击飞时，点按 <IconMap:Icon_Switch> 发动：\n对目标发动强力斩击，造成<color=#FE437E>以太伤害</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "快速支援：破碎幻梦",
+          "Desc": "当前操作中的角色被击飞时，点按 <IconMap:Icon_Switch> 发动：\n对目标发动强力斩击，造成<color=#FE437E>以太伤害</color>；\n招式发动后，可直接衔接第三段<color=#FFFFFF>[普通攻击：甜心律动]</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)招架支援：",
-          "Desc": "(Test1)前场角色即将被攻击时，点按 <IconMap:Icon_Switch> 发动：\n招架敌人的攻击，累积大量失衡值；\n招式发动期间拥有无敌效果。",
+          "Name": "招架支援：极限救场",
+          "Desc": "前场角色即将被攻击时，点按 <IconMap:Icon_Switch> 发动：\n招架敌人的攻击，累积大量失衡值；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)支援突击：",
-          "Desc": "(Test1)发动<color=#FFFFFF>[招架支援]</color>后，点按 <IconMap:Icon_Normal> 发动：\n对目标发动强力连续斩击，造成大量<color=#FE437E>以太伤害</color>；\n招式发动期间拥有无敌效果。",
+          "Name": "支援突击：安可曲目",
+          "Desc": "发动<color=#FFFFFF>[招架支援]</color>后，点按 <IconMap:Icon_Normal> 发动：\n对目标发动强力连续斩击，造成大量<color=#FE437E>以太伤害</color>；\n招式发动期间拥有无敌效果。",
           "Potential": []
         },
         {
-          "Name": "(Test1)快速支援：",
+          "Name": "快速支援：破碎幻梦",
           "Param": [
             {
               "Name": "伤害倍率",
               "Desc": "{Skill:1501017, Prop:1001}",
               "Param": {
                 "1501017": {
-                  "Main": 5690,
-                  "Growth": 520,
+                  "Main": 4960,
+                  "Growth": 460,
                   "Format": "%",
-                  "DamagePercentage": 5690,
-                  "DamagePercentageGrowth": 520,
-                  "StunRatio": 5690,
-                  "StunRatioGrowth": 260,
-                  "SpRecovery": 18600,
+                  "DamagePercentage": 4960,
+                  "DamagePercentageGrowth": 460,
+                  "StunRatio": 4960,
+                  "StunRatioGrowth": 230,
+                  "SpRecovery": 16210,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 142175,
+                  "FeverRecovery": 124025,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 4133,
+                  "AttributeInfliction": 4501,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 5167
+                  "EtherPurify": 4502
                 }
               },
               "Potential": []
@@ -1540,23 +1725,23 @@
               "Desc": "{Skill:1501017, Prop:1002}",
               "Param": {
                 "1501017": {
-                  "Main": 5690,
-                  "Growth": 260,
+                  "Main": 4960,
+                  "Growth": 230,
                   "Format": "%",
-                  "DamagePercentage": 5690,
-                  "DamagePercentageGrowth": 520,
-                  "StunRatio": 5690,
-                  "StunRatioGrowth": 260,
-                  "SpRecovery": 18600,
+                  "DamagePercentage": 4960,
+                  "DamagePercentageGrowth": 460,
+                  "StunRatio": 4960,
+                  "StunRatioGrowth": 230,
+                  "SpRecovery": 16210,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 142175,
+                  "FeverRecovery": 124025,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 4133,
+                  "AttributeInfliction": 4501,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 5167
+                  "EtherPurify": 4502
                 }
               },
               "Potential": []
@@ -1565,7 +1750,7 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)招架支援：",
+          "Name": "招架支援：极限救场",
           "Param": [
             {
               "Name": "轻招架失衡倍率",
@@ -1649,30 +1834,30 @@
           "Potential": []
         },
         {
-          "Name": "(Test1)支援突击：",
+          "Name": "支援突击：安可曲目",
           "Param": [
             {
               "Name": "伤害倍率",
               "Desc": "{Skill:1501021, Prop:1001}",
               "Param": {
                 "1501021": {
-                  "Main": 44570,
-                  "Growth": 4060,
+                  "Main": 36350,
+                  "Growth": 3310,
                   "Format": "%",
-                  "DamagePercentage": 44570,
-                  "DamagePercentageGrowth": 4060,
-                  "StunRatio": 39200,
-                  "StunRatioGrowth": 1790,
+                  "DamagePercentage": 36350,
+                  "DamagePercentageGrowth": 3310,
+                  "StunRatio": 31570,
+                  "StunRatioGrowth": 1440,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 1248225,
+                  "FeverRecovery": 1028225,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 30457,
+                  "AttributeInfliction": 30872,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 21001
+                  "EtherPurify": 15667
                 }
               },
               "Potential": []
@@ -1682,23 +1867,23 @@
               "Desc": "{Skill:1501021, Prop:1002}",
               "Param": {
                 "1501021": {
-                  "Main": 39200,
-                  "Growth": 1790,
+                  "Main": 31570,
+                  "Growth": 1440,
                   "Format": "%",
-                  "DamagePercentage": 44570,
-                  "DamagePercentageGrowth": 4060,
-                  "StunRatio": 39200,
-                  "StunRatioGrowth": 1790,
+                  "DamagePercentage": 36350,
+                  "DamagePercentageGrowth": 3310,
+                  "StunRatio": 31570,
+                  "StunRatioGrowth": 1440,
                   "SpRecovery": 0,
                   "SpRecoveryGrowth": 0,
-                  "FeverRecovery": 1248225,
+                  "FeverRecovery": 1028225,
                   "FeverRecoveryGrowth": 0,
-                  "AttributeInfliction": 30457,
+                  "AttributeInfliction": 30872,
                   "SpConsume": 0,
                   "AttackData": [],
                   "RpRecovery": 0,
                   "RpRecoveryGrowth": 0,
-                  "EtherPurify": 21001
+                  "EtherPurify": 15667
                 }
               },
               "Potential": []
@@ -1757,19 +1942,104 @@
       }
     }
   },
-  "SkillList": {},
+  "SkillList": {
+    "1501001": {
+      "Name": "普通攻击：甜心律动",
+      "Desc": "<IconMap:Icon_Normal>",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1501002": {
+      "Name": "普通攻击：绝对音准",
+      "Desc": "<IconMap:Icon_Normal>（长按）",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1501003": {
+      "Name": "特殊技：全糖电音",
+      "Desc": "<IconMap:Icon_Special>",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1501004": {
+      "Name": "强化特殊技：坠入妄想",
+      "Desc": "<IconMap:Icon_SpecialReady>",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1501005": {
+      "Name": "强化特殊技：光速入坑",
+      "Desc": "<IconMap:Icon_SpecialReady> ; <IconMap:Icon_SpecialReady>",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1501006": {
+      "Name": "冲刺攻击：丝滑小连招",
+      "Desc": "<IconMap:Icon_Evade> ; <IconMap:Icon_Normal>",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1501007": {
+      "Name": "闪避反击：滑动变奏",
+      "Desc": "<IconMap:Icon_Evade>（极限） ; <IconMap:Icon_Normal>",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1501008": {
+      "Name": "连携技：梦幻联动",
+      "Desc": "<IconMap:Icon_QTE>",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1501009": {
+      "Name": "终结技：元气百分百",
+      "Desc": "<IconMap:Icon_UltimateReady>",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1501010": {
+      "Name": "快速支援：破碎幻梦",
+      "Desc": "<IconMap:Icon_Switch>（触发快速支援时）",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    },
+    "1501011": {
+      "Name": "招架支援：极限救场",
+      "Desc": "<IconMap:Icon_Switch>（触发招架支援时）",
+      "ElementType": 0,
+      "HitType": 0,
+      "Potential": []
+    },
+    "1501012": {
+      "Name": "支援突击：安可曲目",
+      "Desc": "<IconMap:Icon_Normal>（发动招架支援后）",
+      "ElementType": 205,
+      "HitType": 102,
+      "Potential": []
+    }
+  },
   "Passive": {
     "Level": {
       "1501049": {
         "Level": 1,
         "Id": 1501049,
         "Name": [
-          "(Test1)核心被动：爱芮",
-          "(Test1)额外能力：爱芮"
+          "核心被动：控场核心",
+          "额外能力：合作舞台"
         ],
         "Desc": [
-          "(Test1)爱芮的第三级<color=#FFFFFF>[蓄力攻击]</color>命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>3.1%</color>/<color=#2EB6FF>1.6%</color>/<color=#FF5521>4%</color>/<color=#F0D12B>0.3%</color>/<color=#98EFF0>0.4%</color>；\n当爱芮在队伍中时，敌人进入<color=#FE437E>以太异常状态</color>时会同时进入<color=#FFFFFF>[异常虚弱状态]</color>，状态持续20秒，重复触发时刷新持续时间；若爱芮对处于<color=#FFFFFF>[异常虚弱状态]</color>的敌人再次触发<color=#FE437E>以太异常状态</color>，会立即触发一次更为强力的<color=#FFFFFF>[异放]</color>，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>6.2%</color>",
-          "(Test1)队伍中存在<color=#FFFFFF>[击破]</color>或<color=#FFFFFF>[支援]</color>角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成2根<color=#FFFFFF>[应援棒]</color>，15秒内最多触发1次；\n当场上有精英或头目敌人进入失衡状态时，会在场上生成4根<color=#FFFFFF>[应援棒]</color>，25秒内最多触发1次；\n若爱芮的异常掌控大于180点，每超过1点异常掌控会提升1.5点异常精通。"
+          "爱芮的异常精通提升<color=#2BAD00>45</color>点；\n爱芮的第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>重击命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点初始异常掌控<color=#FE437E>13.8%</color>/<color=#2EB6FF>7.2%</color>/<color=#FF5521>17.9%</color>/<color=#F0D12B>1.25%</color>/<color=#98EFF0>1.8%</color>，当目标处于失衡状态下时，该伤害比例额外提升<color=#FFFFFF>50%</color>。\n",
+          "队伍中存在<color=#FFFFFF>[击破]</color>、<color=#FFFFFF>[支援]</color>或与自身阵营相同的角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成4个<color=#FFFFFF>[应援能量]</color>，1秒内最多触发1次；\n队伍中任意角色对敌人施加<color=#FE437E>[侵蚀]</color>效果时，该效果的持续时间提升3秒。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1778,12 +2048,12 @@
         "Level": 2,
         "Id": 1501050,
         "Name": [
-          "(Test1)核心被动：爱芮",
-          "(Test1)额外能力：爱芮"
+          "核心被动：控场核心",
+          "额外能力：合作舞台"
         ],
         "Desc": [
-          "(Test1)爱芮的第三级<color=#FFFFFF>[蓄力攻击]</color>命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>3.6%</color>/<color=#2EB6FF>1.9%</color>/<color=#FF5521>4.7%</color>/<color=#F0D12B>0.35%</color>/<color=#98EFF0>0.5%</color>；\n当爱芮在队伍中时，敌人进入<color=#FE437E>以太异常状态</color>时会同时进入<color=#FFFFFF>[异常虚弱状态]</color>，状态持续20秒，重复触发时刷新持续时间；若爱芮对处于<color=#FFFFFF>[异常虚弱状态]</color>的敌人再次触发<color=#FE437E>以太异常状态</color>，会立即触发一次更为强力的<color=#FFFFFF>[异放]</color>，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>7.2%</color>",
-          "(Test1)队伍中存在<color=#FFFFFF>[击破]</color>或<color=#FFFFFF>[支援]</color>角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成2根<color=#FFFFFF>[应援棒]</color>，15秒内最多触发1次；\n当场上有精英或头目敌人进入失衡状态时，会在场上生成4根<color=#FFFFFF>[应援棒]</color>，25秒内最多触发1次；\n若爱芮的异常掌控大于180点，每超过1点异常掌控会提升1.5点异常精通。"
+          "爱芮的异常精通提升<color=#2BAD00>52</color>点；\n爱芮的第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>重击命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点初始异常掌控<color=#FE437E>16%</color>/<color=#2EB6FF>8.3%</color>/<color=#FF5521>20.8%</color>/<color=#F0D12B>1.46%</color>/<color=#98EFF0>2.1%</color>，当目标处于失衡状态下时，该伤害比例额外提升<color=#FFFFFF>50%</color>。\n",
+          "队伍中存在<color=#FFFFFF>[击破]</color>、<color=#FFFFFF>[支援]</color>或与自身阵营相同的角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成4个<color=#FFFFFF>[应援能量]</color>，1秒内最多触发1次；\n队伍中任意角色对敌人施加<color=#FE437E>[侵蚀]</color>效果时，该效果的持续时间提升3秒。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1792,12 +2062,12 @@
         "Level": 3,
         "Id": 1501051,
         "Name": [
-          "(Test1)核心被动：爱芮",
-          "(Test1)额外能力：爱芮"
+          "核心被动：控场核心",
+          "额外能力：合作舞台"
         ],
         "Desc": [
-          "(Test1)爱芮的第三级<color=#FFFFFF>[蓄力攻击]</color>命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>4.1%</color>/<color=#2EB6FF>2.1%</color>/<color=#FF5521>5.3%</color>/<color=#F0D12B>0.4%</color>/<color=#98EFF0>0.5%</color>；\n当爱芮在队伍中时，敌人进入<color=#FE437E>以太异常状态</color>时会同时进入<color=#FFFFFF>[异常虚弱状态]</color>，状态持续20秒，重复触发时刷新持续时间；若爱芮对处于<color=#FFFFFF>[异常虚弱状态]</color>的敌人再次触发<color=#FE437E>以太异常状态</color>，会立即触发一次更为强力的<color=#FFFFFF>[异放]</color>，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>8.2%</color>",
-          "(Test1)队伍中存在<color=#FFFFFF>[击破]</color>或<color=#FFFFFF>[支援]</color>角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成2根<color=#FFFFFF>[应援棒]</color>，15秒内最多触发1次；\n当场上有精英或头目敌人进入失衡状态时，会在场上生成4根<color=#FFFFFF>[应援棒]</color>，25秒内最多触发1次；\n若爱芮的异常掌控大于180点，每超过1点异常掌控会提升1.5点异常精通。"
+          "爱芮的异常精通提升<color=#2BAD00>60</color>点；\n爱芮的第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>重击命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点初始异常掌控<color=#FE437E>18.3%</color>/<color=#2EB6FF>9.5%</color>/<color=#FF5521>23.8%</color>/<color=#F0D12B>1.67%</color>/<color=#98EFF0>2.4%</color>，当目标处于失衡状态下时，该伤害比例额外提升<color=#FFFFFF>50%</color>。\n",
+          "队伍中存在<color=#FFFFFF>[击破]</color>、<color=#FFFFFF>[支援]</color>或与自身阵营相同的角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成4个<color=#FFFFFF>[应援能量]</color>，1秒内最多触发1次；\n队伍中任意角色对敌人施加<color=#FE437E>[侵蚀]</color>效果时，该效果的持续时间提升3秒。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1806,12 +2076,12 @@
         "Level": 4,
         "Id": 1501052,
         "Name": [
-          "(Test1)核心被动：爱芮",
-          "(Test1)额外能力：爱芮"
+          "核心被动：控场核心",
+          "额外能力：合作舞台"
         ],
         "Desc": [
-          "(Test1)爱芮的第三级<color=#FFFFFF>[蓄力攻击]</color>命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>4.7%</color>/<color=#2EB6FF>2.4%</color>/<color=#FF5521>6%</color>/<color=#F0D12B>0.45%</color>/<color=#98EFF0>0.6%</color>；\n当爱芮在队伍中时，敌人进入<color=#FE437E>以太异常状态</color>时会同时进入<color=#FFFFFF>[异常虚弱状态]</color>，状态持续20秒，重复触发时刷新持续时间；若爱芮对处于<color=#FFFFFF>[异常虚弱状态]</color>的敌人再次触发<color=#FE437E>以太异常状态</color>，会立即触发一次更为强力的<color=#FFFFFF>[异放]</color>，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>9.2%</color>",
-          "(Test1)队伍中存在<color=#FFFFFF>[击破]</color>或<color=#FFFFFF>[支援]</color>角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成2根<color=#FFFFFF>[应援棒]</color>，15秒内最多触发1次；\n当场上有精英或头目敌人进入失衡状态时，会在场上生成4根<color=#FFFFFF>[应援棒]</color>，25秒内最多触发1次；\n若爱芮的异常掌控大于180点，每超过1点异常掌控会提升1.5点异常精通。"
+          "爱芮的异常精通提升<color=#2BAD00>67</color>点；\n爱芮的第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>重击命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点初始异常掌控<color=#FE437E>20.6%</color>/<color=#2EB6FF>10.7%</color>/<color=#FF5521>26.8%</color>/<color=#F0D12B>1.88%</color>/<color=#98EFF0>2.7%</color>，当目标处于失衡状态下时，该伤害比例额外提升<color=#FFFFFF>50%</color>。\n",
+          "队伍中存在<color=#FFFFFF>[击破]</color>、<color=#FFFFFF>[支援]</color>或与自身阵营相同的角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成4个<color=#FFFFFF>[应援能量]</color>，1秒内最多触发1次；\n队伍中任意角色对敌人施加<color=#FE437E>[侵蚀]</color>效果时，该效果的持续时间提升3秒。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1820,12 +2090,12 @@
         "Level": 5,
         "Id": 1501053,
         "Name": [
-          "(Test1)核心被动：爱芮",
-          "(Test1)额外能力：爱芮"
+          "核心被动：控场核心",
+          "额外能力：合作舞台"
         ],
         "Desc": [
-          "(Test1)爱芮的第三级<color=#FFFFFF>[蓄力攻击]</color>命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>5.2%</color>/<color=#2EB6FF>2.7%</color>/<color=#FF5521>6.7%</color>/<color=#F0D12B>0.5%</color>/<color=#98EFF0>0.7%</color>；\n当爱芮在队伍中时，敌人进入<color=#FE437E>以太异常状态</color>时会同时进入<color=#FFFFFF>[异常虚弱状态]</color>，状态持续20秒，重复触发时刷新持续时间；若爱芮对处于<color=#FFFFFF>[异常虚弱状态]</color>的敌人再次触发<color=#FE437E>以太异常状态</color>，会立即触发一次更为强力的<color=#FFFFFF>[异放]</color>，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>10.3%</color>",
-          "(Test1)队伍中存在<color=#FFFFFF>[击破]</color>或<color=#FFFFFF>[支援]</color>角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成2根<color=#FFFFFF>[应援棒]</color>，15秒内最多触发1次；\n当场上有精英或头目敌人进入失衡状态时，会在场上生成4根<color=#FFFFFF>[应援棒]</color>，25秒内最多触发1次；\n若爱芮的异常掌控大于180点，每超过1点异常掌控会提升1.5点异常精通。"
+          "爱芮的异常精通提升<color=#2BAD00>75</color>点；\n爱芮的第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>重击命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点初始异常掌控<color=#FE437E>22.9%</color>/<color=#2EB6FF>11.9%</color>/<color=#FF5521>29.8%</color>/<color=#F0D12B>2.08%</color>/<color=#98EFF0>3%</color>，当目标处于失衡状态下时，该伤害比例额外提升<color=#FFFFFF>50%</color>。\n",
+          "队伍中存在<color=#FFFFFF>[击破]</color>、<color=#FFFFFF>[支援]</color>或与自身阵营相同的角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成4个<color=#FFFFFF>[应援能量]</color>，1秒内最多触发1次；\n队伍中任意角色对敌人施加<color=#FE437E>[侵蚀]</color>效果时，该效果的持续时间提升3秒。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1834,12 +2104,12 @@
         "Level": 6,
         "Id": 1501054,
         "Name": [
-          "(Test1)核心被动：爱芮",
-          "(Test1)额外能力：爱芮"
+          "核心被动：控场核心",
+          "额外能力：合作舞台"
         ],
         "Desc": [
-          "(Test1)爱芮的第三级<color=#FFFFFF>[蓄力攻击]</color>命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>5.7%</color>/<color=#2EB6FF>2.9%</color>/<color=#FF5521>7.3%</color>/<color=#F0D12B>0.55%</color>/<color=#98EFF0>0.7%</color>；\n当爱芮在队伍中时，敌人进入<color=#FE437E>以太异常状态</color>时会同时进入<color=#FFFFFF>[异常虚弱状态]</color>，状态持续20秒，重复触发时刷新持续时间；若爱芮对处于<color=#FFFFFF>[异常虚弱状态]</color>的敌人再次触发<color=#FE437E>以太异常状态</color>，会立即触发一次更为强力的<color=#FFFFFF>[异放]</color>，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>11.3%</color>",
-          "(Test1)队伍中存在<color=#FFFFFF>[击破]</color>或<color=#FFFFFF>[支援]</color>角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成2根<color=#FFFFFF>[应援棒]</color>，15秒内最多触发1次；\n当场上有精英或头目敌人进入失衡状态时，会在场上生成4根<color=#FFFFFF>[应援棒]</color>，25秒内最多触发1次；\n若爱芮的异常掌控大于180点，每超过1点异常掌控会提升1.5点异常精通。"
+          "爱芮的异常精通提升<color=#2BAD00>82</color>点；\n爱芮的第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>重击命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点初始异常掌控<color=#FE437E>25.2%</color>/<color=#2EB6FF>13.1%</color>/<color=#FF5521>32.7%</color>/<color=#F0D12B>2.29%</color>/<color=#98EFF0>3.3%</color>，当目标处于失衡状态下时，该伤害比例额外提升<color=#FFFFFF>50%</color>。\n",
+          "队伍中存在<color=#FFFFFF>[击破]</color>、<color=#FFFFFF>[支援]</color>或与自身阵营相同的角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成4个<color=#FFFFFF>[应援能量]</color>，1秒内最多触发1次；\n队伍中任意角色对敌人施加<color=#FE437E>[侵蚀]</color>效果时，该效果的持续时间提升3秒。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1848,12 +2118,12 @@
         "Level": 7,
         "Id": 1501055,
         "Name": [
-          "(Test1)核心被动：爱芮",
-          "(Test1)额外能力：爱芮"
+          "核心被动：控场核心",
+          "额外能力：合作舞台"
         ],
         "Desc": [
-          "(Test1)爱芮的第三级<color=#FFFFFF>[蓄力攻击]</color>命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>6.2%</color>/<color=#2EB6FF>3.2%</color>/<color=#FF5521>8%</color>/<color=#F0D12B>0.6%</color>/<color=#98EFF0>0.8%</color>；\n当爱芮在队伍中时，敌人进入<color=#FE437E>以太异常状态</color>时会同时进入<color=#FFFFFF>[异常虚弱状态]</color>，状态持续20秒，重复触发时刷新持续时间；若爱芮对处于<color=#FFFFFF>[异常虚弱状态]</color>的敌人再次触发<color=#FE437E>以太异常状态</color>，会立即触发一次更为强力的<color=#FFFFFF>[异放]</color>，相对于原属性异常伤害的比例为每10点异常精通<color=#FE437E>12.3%</color>",
-          "(Test1)队伍中存在<color=#FFFFFF>[击破]</color>或<color=#FFFFFF>[支援]</color>角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成2根<color=#FFFFFF>[应援棒]</color>，15秒内最多触发1次；\n当场上有精英或头目敌人进入失衡状态时，会在场上生成4根<color=#FFFFFF>[应援棒]</color>，25秒内最多触发1次；\n若爱芮的异常掌控大于180点，每超过1点异常掌控会提升1.5点异常精通。"
+          "爱芮的异常精通提升<color=#2BAD00>90</color>点；\n爱芮的第三段<color=#FFFFFF>[普通攻击：绝对音准]</color>重击命中处于<color=#FE437E>以太异常状态</color>、<color=#2EB6FF>电属性异常状态</color>、<color=#FF5521>火属性异常状态</color>、<color=#F0D12B>物理属性异常状态</color>、<color=#98EFF0>冰属性异常状态</color>的目标时，触发一次<color=#FFFFFF>[异放]</color>：额外结算一次属性异常伤害，相对于原属性异常伤害的比例为每10点初始异常掌控<color=#FE437E>27.5%</color>/<color=#2EB6FF>14.3%</color>/<color=#FF5521>35.7%</color>/<color=#F0D12B>2.5%</color>/<color=#98EFF0>3.6%</color>，当目标处于失衡状态下时，该伤害比例额外提升<color=#FFFFFF>50%</color>。\n",
+          "队伍中存在<color=#FFFFFF>[击破]</color>、<color=#FFFFFF>[支援]</color>或与自身阵营相同的角色时触发：\n当有<color=#FFFFFF>[以太帷幕]</color>开启时，会在场上生成4个<color=#FFFFFF>[应援能量]</color>，1秒内最多触发1次；\n队伍中任意角色对敌人施加<color=#FE437E>[侵蚀]</color>效果时，该效果的持续时间提升3秒。"
         ],
         "ExtraProperty": {},
         "Potential": []
@@ -1891,42 +2161,71 @@
   "Talent": {
     "1": {
       "Level": 1,
-      "Name": "(Test1)天赋一",
-      "Desc": "(Test1)爱芮的<color=#FFFFFF>[普通攻击]</color>、<color=#FFFFFF>[特殊技]</color>，<color=#FFFFFF>[强化特殊技]</color>对敌人造成伤害时，无视目标10%的<color=#FE437E>以太异常积蓄抗性</color>；且自身触发异放时有概率触发暴击：基础暴击率为40%，暴击伤害为30%；若异常掌控大于180点，每超过1点异常掌控会使该效果的暴击率额外提升0.4%。",
-      "Desc2": "(Test1)PlaceHolder"
+      "Name": "元气声浪",
+      "Desc": "爱芮的<color=#FFFFFF>[普通攻击]</color>、<color=#FFFFFF>[特殊技]</color>，<color=#FFFFFF>[强化特殊技]</color>对敌人造成伤害时，无视目标10%的<color=#FE437E>以太异常积蓄抗性</color>；且自身触发<color=#FFFFFF>[异放]</color>时有概率触发暴击：基础暴击率为25%，暴击伤害为25%；若初始异常掌控大于100点，每超过1点初始异常掌控会使该效果的暴击率额外提升0.5%。",
+      "Desc2": "..."
     },
     "2": {
       "Level": 2,
-      "Name": "(Test1)天赋二",
-      "Desc": "(Test1)<color=#FFFFFF>[强化状态]</color>的持续时间提升至30秒，<color=#FFFFFF>[超级应援棒]</color>的数量上限提升至6根；且<color=#FFFFFF>[强化状态]</color>持续时间内，爱芮的攻击无视目标25%防御力。",
-      "Desc2": "(Test1)PlaceHolder"
+      "Name": "梦幻节拍",
+      "Desc": "爱芮攻击和触发<color=#FFFFFF>[异放]</color>时无视目标16%防御力；在<color=#FFFFFF>[妄想时刻]</color>持续时间内，攻击和触发<color=#FFFFFF>[异放]</color>时额外无视目标8%防御力。",
+      "Desc2": "..."
     },
     "3": {
       "Level": 3,
-      "Name": "(Test1)天赋三",
+      "Name": "梦想家",
       "Desc": "<color=#FFFFFF>[普通攻击]</color>、<color=#FFFFFF>[闪避]</color>、<color=#FFFFFF>[支援技]</color>、<color=#FFFFFF>[特殊技]</color>、<color=#FFFFFF>[连携技]</color> 技能等级+2",
-      "Desc2": "(Test1)PlaceHolder"
+      "Desc2": "..."
     },
     "4": {
       "Level": 4,
-      "Name": "(Test1)天赋四",
-      "Desc": "(Test1)爱芮触发异放时，自身获得3点能量和60点喧响值，10秒内最多触发一次。",
-      "Desc2": "(Test1)PlaceHolder"
+      "Name": "机械天使",
+      "Desc": "爱芮触发<color=#FFFFFF>[异放]</color>时，自身获得4点能量和70点喧响值，10秒内最多触发一次。",
+      "Desc2": "..."
     },
     "5": {
       "Level": 5,
-      "Name": "(Test1)天赋五",
+      "Name": "雨中之泪",
       "Desc": "<color=#FFFFFF>[普通攻击]</color>、<color=#FFFFFF>[闪避]</color>、<color=#FFFFFF>[支援技]</color>、<color=#FFFFFF>[特殊技]</color>、<color=#FFFFFF>[连携技]</color> 技能等级+2",
-      "Desc2": "(Test1)PlaceHolder"
+      "Desc2": "..."
     },
     "6": {
       "Level": 6,
-      "Name": "(Test1)天赋六",
-      "Desc": "(Test1)进入战场时，爱芮立即获得1500点喧响值，且爱芮进入强化状态后将不会退出，<color=#FFFFFF>[强化蓄力攻击]</color>造成的<color=#FE437E>以太伤害</color>提升20%；当爱芮对处于<color=#FFFFFF>[异常虚弱状态]</color>的敌人再次触发<color=#FE437E>以太异常状态</color>时，自身获得2根<color=#FFFFFF>[超级应援棒]</color>。",
-      "Desc2": "(Test1)PlaceHolder"
+      "Name": "构造体之梦",
+      "Desc": "进入战场时，爱芮立即获得1200点喧响值，在勘域模式中此效果180秒内最多触发一次；且爱芮进入<color=#FFFFFF>[妄想时刻]</color>后将不会退出，<color=#FFFFFF>强化版[普通攻击：绝对音准]</color>和<color=#FFFFFF>[终结技]</color>造成的<color=#FE437E>以太伤害</color>提升40%；当爱芮处于<color=#FFFFFF>[妄想时刻]</color>时，若场上有敌人进入属性异常状态，爱芮获得1层<color=#FFFFFF>[全场应援]</color>，该效果6秒内最多触发一次；在获得<color=#FFFFFF>[全场应援]</color>效果时，若自身已有3层<color=#FFFFFF>[全场应援]</color>效果，则会将溢出的<color=#FFFFFF>[全场应援]</color>效果转化为2个<color=#FFFFFF>[应援能量]</color>生成在场上。",
+      "Desc2": "..."
     }
   },
-  "FairyRecommend": {},
+  "FairyRecommend": {
+    "Slot4": 33600,
+    "Slot2": 33000,
+    "SlotSub": 31300,
+    "Part4": {
+      "Prop": 31402,
+      "Name": "异常掌控",
+      "Format": "{0:0.#%}",
+      "Icon": "UI/Sprite/A1DynamicLoad/IconAttribute/UnPacker/Role/IconElementAbnormalPower.png"
+    },
+    "Part5": {
+      "Prop": 31203,
+      "Name": "异常精通",
+      "Format": "{0:0}",
+      "Icon": "UI/Sprite/A1DynamicLoad/IconAttribute/UnPacker/Role/IconElementMystery.png"
+    },
+    "Part6": {
+      "Prop": 31903,
+      "Name": "以太伤害加成",
+      "Format": "{0:0.#%}",
+      "Icon": "UI/Sprite/A1DynamicLoad/IconGeneralBuff/Packer/IconDungeonBuffEther.png"
+    },
+    "PartSub": {
+      "Prop": 12102,
+      "Name": "攻击力",
+      "Format": "{0:0.#%}",
+      "Icon": "UI/Sprite/A1DynamicLoad/IconAttribute/UnPacker/Role/IconAttack.png"
+    }
+  },
   "Potential": [],
-  "PotentialDetail": {}
+  "PotentialDetail": {},
+  "Live2D": "UISpineAria"
 }
