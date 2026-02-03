@@ -28,13 +28,15 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { SaveData } from '../model/save-data-instance';
 import { dataLoaderService } from '../services/data-loader.service';
-import type { SaveDataZod, ZodDiscData, ZodWengineData } from '../model/save-data-zod';
+import type { SaveDataZod, ZodDiscData } from '../model/save-data-zod';
 import type { ImportOptions, ImportResult } from '../model/import-result';
 import { DEFAULT_IMPORT_OPTIONS } from '../model/import-result';
-import { mergeZodData, formatImportResultSummary } from '../services/merge.service';
-import { zodParserService } from '../services/zod-parser.service';
 import { dbService } from '../services/db.service';
 import { migrationService } from '../services/migration.service';
+import { saveDataService } from '../services/save-data.service';
+import { itemFactoryService } from '../services/item-factory.service';
+import { equipmentService } from '../services/equipment.service';
+import { importExportService } from '../services/import-export.service';
 
 const STORAGE_KEY = 'zzz_optimizer_saves';
 const CURRENT_SAVE_KEY = 'zzz_optimizer_current_save';
@@ -136,7 +138,7 @@ export const useSaveStore = defineStore('save', () => {
     name: string,
     rawData: SaveDataZod
   ): Promise<SaveData> {
-    const normalized = normalizeZodData(rawData);
+    const normalized = saveDataService.normalizeZodData(rawData);
     const saveData = await SaveData.fromZod(name, normalized, dataLoaderService);
 
     // 为所有Agent设置装备引用
@@ -201,13 +203,13 @@ export const useSaveStore = defineStore('save', () => {
 
     for (const [name, data] of allSaves.entries()) {
       try {
-        if (isZodSaveData(data)) {
-          const normalized = normalizeZodData(data);
+        if (saveDataService.isZodSaveData(data)) {
+          const normalized = saveDataService.normalizeZodData(data);
           newRawSaves.set(name, normalized);
         }
       } catch (err) {
         console.error(`加载存档失败 [${name}]:`, err);
-        if (isZodSaveData(data)) {
+        if (saveDataService.isZodSaveData(data)) {
           newRawSaves.set(name, data);
         }
       }
@@ -264,13 +266,13 @@ export const useSaveStore = defineStore('save', () => {
 
       for (const [name, data] of Object.entries(parsed)) {
         try {
-          if (isZodSaveData(data)) {
-            const normalized = normalizeZodData(data as SaveDataZod);
+          if (saveDataService.isZodSaveData(data)) {
+            const normalized = saveDataService.normalizeZodData(data as SaveDataZod);
             newRawSaves.set(name, normalized);
           }
         } catch (err) {
           console.error(`加载存档失败 [${name}]:`, err);
-          if (isZodSaveData(data)) {
+          if (saveDataService.isZodSaveData(data)) {
             newRawSaves.set(name, data as SaveDataZod);
           }
         }
@@ -439,7 +441,7 @@ export const useSaveStore = defineStore('save', () => {
         saves.value.set(name, saveData);
 
         // 同步规范化后的数据回 rawSaves
-        rawSaves.value.set(name, normalizeZodData(rawSave));
+        rawSaves.value.set(name, saveDataService.normalizeZodData(rawSave));
       }
 
       currentSaveName.value = name;
@@ -462,10 +464,10 @@ export const useSaveStore = defineStore('save', () => {
 
     try {
       const name = saveName ?? `import_${Date.now()}`;
-      if (!isZodSaveData(data)) {
+      if (!saveDataService.isZodSaveData(data)) {
         throw new Error('Invalid ZOD data');
       }
-      const normalized = normalizeZodData(data as SaveDataZod);
+      const normalized = saveDataService.normalizeZodData(data as SaveDataZod);
 
       // 直接保存原始ZOD数据到rawSaves
       rawSaves.value.set(name, normalized);
@@ -507,17 +509,17 @@ export const useSaveStore = defineStore('save', () => {
     error.value = null;
 
     try {
-      if (!isZodSaveData(data)) {
+      if (!saveDataService.isZodSaveData(data)) {
         throw new Error('Invalid ZOD data');
       }
 
-      const importData = normalizeZodData(data as SaveDataZod);
+      const importData = saveDataService.normalizeZodData(data as SaveDataZod);
       const name = targetSaveName ?? currentSaveName.value ?? `import_${Date.now()}`;
 
       // 获取现有数据
       const existingData = rawSaves.value.get(name);
 
-      const { merged, result } = await computeZodImportMerge(importData, existingData, options);
+      const { merged, result } = await importExportService.computeMerge(importData, existingData, options);
 
       // 保存原始 ZOD 数据
       rawSaves.value.set(name, merged);
@@ -565,168 +567,20 @@ export const useSaveStore = defineStore('save', () => {
     options: ImportOptions = DEFAULT_IMPORT_OPTIONS,
     targetSaveName?: string
   ): Promise<{ result: ImportResult }> {
-    if (!isZodSaveData(data)) {
+    if (!saveDataService.isZodSaveData(data)) {
       throw new Error('Invalid ZOD data');
     }
 
-    const importData = normalizeZodData(data as SaveDataZod);
+    const importData = saveDataService.normalizeZodData(data as SaveDataZod);
     const name = targetSaveName ?? currentSaveName.value ?? `import_${Date.now()}`;
     const existingData = rawSaves.value.get(name);
 
-    const { result } = await computeZodImportMerge(importData, existingData, options);
+    const { result } = await importExportService.computeMerge(importData, existingData, options);
     return { result };
   }
 
-  async function computeZodImportMerge(
-    importData: SaveDataZod,
-    existingData: SaveDataZod | undefined,
-    options: ImportOptions
-  ): Promise<{ merged: SaveDataZod; result: ImportResult }> {
-    // 先解析导入数据，收集解析错误
-    const parseResult = await zodParserService.parseZodDataWithErrors(importData);
-    const parseErrors = parseResult.errors;
-
-    // 安全保护：如果存在解析失败条目，"删除导入中不存在项" 会导致误删（导入文件里有但解析失败的项会被当作“不在导入中”）
-    if (options.deleteNotInImport && parseErrors.length > 0) {
-      throw new Error('导入文件存在解析失败条目：为避免误删，请先关闭“删除导入中不存在的项”，或修复导入文件后再尝试。');
-    }
-
-    // 过滤掉无法解析的条目：避免 SaveData.fromZod 在生成实例时崩溃
-    const sanitizedImportData: SaveDataZod = {
-      ...importData,
-      discs: (importData.discs ?? []).filter((d) => parseResult.driveDisks.has(d.id)),
-      characters: (importData.characters ?? []).filter((c) => parseResult.agents.has(c.id)),
-      wengines: (importData.wengines ?? []).filter((w) => parseResult.wengines.has(w.id)),
-    };
-
-    // 合并数据（传入解析错误，用于 UI 展示）
-    const { merged, result } = mergeZodData(sanitizedImportData, existingData, options, parseErrors);
-
-    // 修正统计：import 计数应该以文件原始数量为准；invalid 列表用于 UI 展示“被跳过”的条目。
-    result.discs.import = importData.discs?.length ?? 0;
-    result.characters.import = importData.characters?.length ?? 0;
-    result.wengines.import = importData.wengines?.length ?? 0;
-
-    const invalidDiscs: any[] = [];
-    const invalidCharacters: any[] = [];
-    const invalidWengines: any[] = [];
-
-    for (const e of parseErrors) {
-      if (e.type === 'disc') invalidDiscs.push(e.rawData);
-      if (e.type === 'character') invalidCharacters.push(e.rawData);
-      if (e.type === 'wengine') invalidWengines.push(e.rawData);
-    }
-
-    result.discs.invalid = invalidDiscs as any;
-    result.characters.invalid = invalidCharacters as any;
-    result.wengines.invalid = invalidWengines as any;
-
-    return { merged, result };
-  }
-
   /**
-   * 导出当前存档（实例格式）
-   *
-   * ⚠️ 重要说明：
-   * - 实例对象（Agent、WEngine、DriveDisk）是从存档中生成的运行时对象，用于计算
-   * - 实例对象包含计算缓存（self_properties、base_stats等），不是存档本身
-   * - 存档是持久化数据，存储在localStorage中
-   *
-   * 此方法直接从localStorage读取存档数据，不使用实例对象
-   * 这样确保导出的数据与存储的数据完全一致
-   *
-   * 数据流：localStorage → 存档JSON → 导出
-   */
-  function exportSaveData(): string {
-    if (!currentSaveName.value) {
-      throw new Error('No current save to export');
-    }
-
-    try {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      if (!savedData) {
-        throw new Error('No save data found in localStorage');
-      }
-
-      const parsed = JSON.parse(savedData);
-      const saveData = parsed[currentSaveName.value];
-
-      if (!saveData) {
-        throw new Error(`Save "${currentSaveName.value}" not found in storage`);
-      }
-
-      return JSON.stringify(saveData, null, 2);
-    } catch (err) {
-      throw new Error(`Failed to export save: ${err instanceof Error ? err.message : 'Unknown error'}`);
-    }
-  }
-
-  /**
-   * 导出为ZOD格式（直接从原始数据读取）
-   *
-   * ⚠️ 重要说明：
-   * - 直接从rawSaves或localStorage读取原始ZOD数据
-   * - 不使用实例对象转换，确保导出的数据与导入的数据格式一致
-   * - 存档是持久化数据，存储在localStorage中，是数据的"真相"
-   *
-   * 数据流：rawSaves → 导出
-   */
-  function exportAsZod(): string {
-    if (!currentSaveName.value) {
-      throw new Error('No current save to export');
-    }
-
-    // 优先从rawSaves读取
-    const rawSave = rawSaves.value.get(currentSaveName.value);
-    if (rawSave) {
-      return JSON.stringify(rawSave, null, 2);
-    }
-
-    // 如果rawSaves中没有，从localStorage读取
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      const parsed = JSON.parse(savedData);
-      const saveData = parsed[currentSaveName.value];
-      if (saveData) {
-        return JSON.stringify(saveData, null, 2);
-      }
-    }
-
-    throw new Error(`Save "${currentSaveName.value}" not found in storage`);
-  }
-
-  /**
-   * 导出当前存档（实例格式，从实例对象生成）
-   *
-   * ⚠️ 重要说明：
-   * - 实例对象（Agent、WEngine、DriveDisk）是从存档中生成的运行时对象，用于计算
-   * - 实例对象包含计算缓存（self_properties、base_stats等），不是存档本身
-   * - 存档是持久化数据，存储在localStorage中
-   *
-   * 此方法从实例对象重新生成JSON，可能与localStorage中的数据不同步
-   * 仅用于调试目的，不推荐用于生产环境
-   *
-   * 数据流：实例对象 → 重新生成JSON → 导出（可能不同步）
-   */
-  function exportSaveDataAsInstance(): string {
-    if (!currentSave.value) {
-      throw new Error('No current save to export');
-    }
-
-    return JSON.stringify(currentSave.value.toDict(), null, 2);
-  }
-
-  /**
-   * 导出所有存档（直接从原始数据读取）
-   */
-  function exportAllSaves(): string {
-    // 直接从rawSaves读取所有原始数据
-    const dataToSave = Object.fromEntries(rawSaves.value.entries());
-    return JSON.stringify(dataToSave, null, 2);
-  }
-
-  /**
-   * 导出单个存档（直接从原始数据读取）
+   * 导出当前存档为 ZOD 格式
    */
   function exportSingleSave(name: string): string {
     const rawSave = rawSaves.value.get(name);
@@ -787,102 +641,6 @@ export const useSaveStore = defineStore('save', () => {
     localStorage.removeItem(CURRENT_SAVE_KEY);
   }
 
-  function isZodSaveData(data: any): data is SaveDataZod {
-    return data && typeof data === 'object' && typeof data.format === 'string' && data.format === 'ZOD';
-  }
-
-  function normalizeZodData(data: SaveDataZod): SaveDataZod {
-    const cloned: SaveDataZod = JSON.parse(JSON.stringify(data));
-    cloned.characters = (cloned.characters ?? []).map((char) => ({
-      ...char,
-      key: normalizeCharacterKey(char.key),
-    }));
-    cloned.wengines = (cloned.wengines ?? []).map((wengine) => ({
-      ...wengine,
-      key: normalizeWengineKey(wengine.key),
-    }));
-    cloned.discs = (cloned.discs ?? []).map((disc) => ({
-      ...disc,
-      setKey: normalizeDiscSetKey(disc.setKey),
-    }));
-    return cloned;
-  }
-
-  function normalizeCharacterKey(key: string): string {
-    const normalized = keyNormalizer(key);
-    const charData = dataLoaderService.characterData;
-    if (!charData) {
-      return key;
-    }
-
-    for (const info of charData.values()) {
-      const candidates = [
-        info.code,
-        info.EN,
-        info.CHS,
-        info.JP,
-        info.KR,
-      ].filter(Boolean) as string[];
-
-      for (const candidate of candidates) {
-        if (keyNormalizer(candidate) === normalized) {
-          return info.code || candidate;
-        }
-      }
-    }
-
-    return key;
-  }
-
-  function normalizeWengineKey(key: string): string {
-    const normalized = keyNormalizer(key);
-    const weaponData = dataLoaderService.weaponData;
-    if (!weaponData) {
-      return key;
-    }
-
-    for (const info of weaponData.values()) {
-      const candidates = [info.EN, info.CHS, info.JP, info.KR].filter(Boolean) as string[];
-      for (const candidate of candidates) {
-        if (keyNormalizer(candidate) === normalized) {
-          return info.EN || candidate;
-        }
-      }
-    }
-
-    return key;
-  }
-
-  function normalizeDiscSetKey(key: string): string {
-    const normalized = keyNormalizer(key);
-    const equipmentData = dataLoaderService.equipmentData;
-    if (!equipmentData) {
-      return key;
-    }
-
-    for (const info of equipmentData.values()) {
-      const names: string[] = [];
-      if (info.EN?.name) names.push(info.EN.name);
-      if (info.CHS?.name) names.push(info.CHS.name);
-      if (info.JP?.name) names.push(info.JP.name);
-      if (info.KR?.name) names.push(info.KR.name);
-
-      for (const name of names) {
-        if (keyNormalizer(name) === normalized) {
-          return info.EN?.name || name;
-        }
-      }
-    }
-
-    return key;
-  }
-
-  function keyNormalizer(value: string): string {
-    return value
-      ? value.replace(/[\s'\-]/g, '').toLowerCase()
-      : '';
-  }
-
   // 不在模块初始化时自动加载，由应用显式控制加载顺序
   // loadFromStorage();
 
@@ -900,38 +658,11 @@ export const useSaveStore = defineStore('save', () => {
       return false;
     }
 
-    const agent = save.getAgent(agentId);
-    if (!agent) {
-      return false;
+    const success = equipmentService.equipWengine(save as SaveData, rawSave, agentId, wengineId);
+    if (success) {
+      await saveToStorage();
     }
-
-    // 修改实例对象
-    agent.equipped_wengine = wengineId;
-
-    // 更新rawSaves中的数据
-    const character = rawSave.characters?.find(c => c.id === agentId);
-    if (character) {
-      character.equippedWengine = wengineId || '';
-
-      // 更新音擎的装备状态
-      if (agent.equipped_wengine) {
-        // 查找并更新之前装备的音擎
-        const oldWengine = rawSave.wengines?.find(w => w.location === agentId);
-        if (oldWengine) {
-          oldWengine.location = '';
-        }
-
-        // 更新新装备的音擎
-        const newWengine = rawSave.wengines?.find(w => w.id === wengineId);
-        if (newWengine) {
-          newWengine.location = agentId;
-        }
-      }
-    }
-
-    // 保存到存储
-    await saveToStorage();
-    return true;
+    return success;
   }
 
   /**
@@ -948,51 +679,12 @@ export const useSaveStore = defineStore('save', () => {
       return false;
     }
 
-    const agent = save.getAgent(agentId);
-    if (!agent) {
-      return false;
+    const success = equipmentService.equipDriveDisk(save as SaveData, rawSave, agentId, diskId);
+    if (success) {
+      await saveToStorage();
+      await syncInstanceToRawSave();
     }
-
-    // 调用 Agent 类的 equipDriveDisk 方法（自动根据驱动盘位置装备）
-    if (diskId) {
-      agent.equipDriveDisk(diskId);
-
-      // 更新 rawSave 中的驱动盘 location
-      if (rawSave.discs) {
-        // 只清除该角色当前装备位置的驱动盘（不是所有位置）
-        const diskToEquip = rawSave.discs.find(d => d.id === diskId);
-        if (diskToEquip) {
-          // 从 slotKey 转换为 position
-          const position = parseInt(diskToEquip.slotKey.replace('slot', ''));
-
-          rawSave.discs.forEach(disk => {
-            const diskPosition = parseInt(disk.slotKey.replace('slot', ''));
-            if (disk.location === agentId && diskPosition === position) {
-              disk.location = '';
-            }
-          });
-          diskToEquip.location = agentId;
-        } else {
-          console.warn(`[saveStore] 找不到驱动盘: ${diskId}`);
-        }
-      }
-    } else {
-      // 卸下驱动盘
-      if (rawSave.discs) {
-        rawSave.discs.forEach(disk => {
-          if (disk.location === agentId) {
-            disk.location = '';
-          }
-        });
-      }
-    }
-
-    // 保存到存储
-    await saveToStorage();
-
-    // 同步实例数据到rawSaves，确保equippedDiscs字段正确更新
-    await syncInstanceToRawSave();
-    return true;
+    return success;
   }
 
   /**
@@ -1010,64 +702,7 @@ export const useSaveStore = defineStore('save', () => {
       return;
     }
 
-    // 同步角色数据
-    save.getAllAgents().forEach(agent => {
-      const character = rawSave.characters?.find(c => c.id === agent.id);
-      if (character) {
-        // 更新角色基本信息
-        character.level = agent.level;
-        character.promotion = agent.breakthrough;
-        character.mindscape = agent.cinema;
-        character.core = agent.core_skill;
-        character.basic = agent.skills.normal;
-        character.dodge = agent.skills.dodge;
-        character.assist = agent.skills.assist;
-        character.special = agent.skills.special;
-        character.chain = agent.skills.chain;
-
-        // 更新装备信息
-        character.equippedWengine = agent.equipped_wengine || '';
-
-        // 更新驱动盘装备
-        const discs: Record<string, string> = {
-          '1': agent.equipped_drive_disks[0] || '',
-          '2': agent.equipped_drive_disks[1] || '',
-          '3': agent.equipped_drive_disks[2] || '',
-          '4': agent.equipped_drive_disks[3] || '',
-          '5': agent.equipped_drive_disks[4] || '',
-          '6': agent.equipped_drive_disks[5] || '',
-        };
-        character.equippedDiscs = discs;
-      }
-    });
-
-    // 同步音擎数据
-    save.getAllWEngines().forEach(wengine => {
-      const rawWengine = rawSave.wengines?.find(w => w.id === wengine.id);
-      if (rawWengine) {
-        rawWengine.level = wengine.level;
-        rawWengine.modification = wengine.refinement;
-        rawWengine.promotion = wengine.breakthrough;
-        rawWengine.location = wengine.equipped_agent || '';
-      }
-    });
-
-    // 同步驱动盘数据
-    save.getAllDriveDisks().forEach(disk => {
-      const rawDisk = rawSave.discs?.find(d => d.id === disk.id);
-      if (rawDisk) {
-        rawDisk.level = disk.level;
-        rawDisk.location = disk.equipped_agent || '';
-      }
-    });
-
-    // 同步队伍数据
-    rawSave.teams = save.getAllTeams();
-
-    // 同步战场数据
-    rawSave.battles = save.getAllBattles();
-
-    // 保存到存储
+    equipmentService.syncInstanceToRaw(save as SaveData, rawSave);
     await saveToStorage();
   }
 
@@ -1248,26 +883,6 @@ export const useSaveStore = defineStore('save', () => {
   /**
    * 创建音擎
    */
-  function buildZodWengineData(
-    key: string,
-    level: number = 60,
-    refinement: number = 1,
-    promotion: number = 5
-  ): ZodWengineData {
-    const normalizedKey = normalizeWengineKey(key);
-    const id = `wengine_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-
-    return {
-      id,
-      key: normalizedKey,
-      level,
-      modification: refinement,
-      promotion,
-      location: '',
-      lock: false,
-    };
-  }
-
   async function createWEngine(
     key: string,
     level: number = 60,
@@ -1283,7 +898,7 @@ export const useSaveStore = defineStore('save', () => {
       return false;
     }
 
-    const newWengine = buildZodWengineData(key, level, refinement, promotion);
+    const newWengine = itemFactoryService.buildZodWengineData(key, level, refinement, promotion);
 
     if (!rawSave.wengines) {
       rawSave.wengines = [];
@@ -1323,38 +938,6 @@ export const useSaveStore = defineStore('save', () => {
   /**
    * 创建驱动盘
    */
-  function buildZodDiscData(
-    setKey: string,
-    rarity: string,
-    level: number = 60,
-    slotKey: string,
-    mainStatKey: string,
-    substats: ZodDiscData['substats'] = []
-  ): ZodDiscData {
-    // 规范化 setKey
-    const normalizedSetKey = normalizeDiscSetKey(setKey);
-
-    // slotKey 兼容：
-    // - ZOD 导出规范： "1".."6"
-    // - UI 可能传: "slot1".."slot6"
-    const slotStr = slotKey.startsWith('slot') ? slotKey.replace('slot', '') : slotKey;
-
-    const id = `disk_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-
-    return {
-      id,
-      setKey: normalizedSetKey,
-      rarity,
-      level,
-      slotKey: slotStr,
-      mainStatKey,
-      substats,
-      location: '',
-      lock: false,
-      trash: false,
-    };
-  }
-
   async function createDriveDisk(
     setKey: string,
     rarity: string,
@@ -1372,7 +955,7 @@ export const useSaveStore = defineStore('save', () => {
       return false;
     }
 
-    const newDisk = buildZodDiscData(setKey, rarity, level, slotKey, mainStatKey, substats);
+    const newDisk = itemFactoryService.buildZodDiscData(setKey, rarity, level, slotKey, mainStatKey, substats);
 
     if (!rawSave.discs) {
       rawSave.discs = [];
@@ -1382,8 +965,7 @@ export const useSaveStore = defineStore('save', () => {
     await saveToStorage();
 
     // 重新生成实例对象
-    const success = await switchSave(currentSaveName.value);
-    return success;
+    return await switchSave(currentSaveName.value);
   }
 
   /**
@@ -1469,10 +1051,6 @@ export const useSaveStore = defineStore('save', () => {
     switchSave,
     importZodData,           // 导入ZOD格式数据
     importZodDataWithOptions, // 带去重选项的导入
-    exportSaveData,           // 导出实例格式（直接从localStorage读取）
-    exportAsZod,              // 导出ZOD格式（直接从原始数据读取）
-    exportSaveDataAsInstance, // 导出实例格式（从实例生成，调试用）
-    exportAllSaves,           // 导出所有存档（直接从原始数据读取）
     exportSingleSave,         // 导出单个存档
     importSaveData,           // 导入存档数据（覆盖或新建）
     reset,
@@ -1491,8 +1069,17 @@ export const useSaveStore = defineStore('save', () => {
     updateDriveDiskSubstats,      // 更新驱动盘副词条（编辑用）
     deleteDriveDisk,              // 删除驱动盘（编辑用）
     updateWEngineRefinement,      // 更新音擎精炼（编辑用）
-    normalizeZodData,             // 规范化ZOD数据
-    isZodSaveData,                // 校验ZOD数据格式
     previewZodImportWithOptions,  // 预览导入结果（不落盘）
+
+    // 委托到服务的方法（保持向后兼容）
+    normalizeZodData: saveDataService.normalizeZodData.bind(saveDataService),
+    isZodSaveData: saveDataService.isZodSaveData.bind(saveDataService),
+    exportAsZod: () => {
+      if (!currentSaveName.value) throw new Error('No current save to export');
+      const rawSave = rawSaves.value.get(currentSaveName.value);
+      if (!rawSave) throw new Error(`Save "${currentSaveName.value}" not found`);
+      return importExportService.exportAsZod(rawSave);
+    },
+    exportAllSaves: () => importExportService.exportAll(rawSaves.value),
   };
 });
