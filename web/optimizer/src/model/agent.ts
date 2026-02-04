@@ -1313,6 +1313,18 @@ export class Agent {
    * 获取当前角色的默认有效词条
    */
   getDefaultEffectiveStats(): PropertyType[] {
+    // 星见雅特殊处理：虽然是异常角色，但烈霜机制需要双爆
+    if (this.game_id === '1091') {
+      return [
+        PropertyType.ATK_,
+        PropertyType.CRIT_,
+        PropertyType.CRIT_DMG_,
+        PropertyType.ANOM_PROF,
+        PropertyType.ANOM_MAS_,
+        PropertyType.PEN_,
+        PropertyType.ICE_DMG_,
+      ];
+    }
     return Agent.getDefaultEffectiveStats(this.weapon_type, this.element);
   }
 

@@ -182,6 +182,8 @@ class EquipmentService {
       if (rawDisk) {
         rawDisk.level = disk.level;
         rawDisk.location = disk.equipped_agent || '';
+        rawDisk.lock = disk.locked;
+        rawDisk.trash = disk.trash;
       }
     });
 

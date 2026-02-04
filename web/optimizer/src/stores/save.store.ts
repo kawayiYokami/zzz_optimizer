@@ -1051,6 +1051,70 @@ export const useSaveStore = defineStore('save', () => {
     return true;
   }
 
+  /**
+   * 更新驱动盘锁定状态
+   */
+  async function updateDriveDiskLocked(diskId: string, locked: boolean): Promise<boolean> {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!save || !rawSave) {
+      return false;
+    }
+
+    // 更新实例对象
+    const disk = save.getAllDriveDisks().find(d => d.id === diskId);
+    if (!disk) {
+      return false;
+    }
+    disk.locked = locked;
+
+    // 更新原始数据
+    const rawDisk = rawSave.discs?.find(d => d.id === diskId);
+    if (!rawDisk) {
+      return false;
+    }
+    rawDisk.lock = locked;
+
+    await saveToStorage();
+    return true;
+  }
+
+  /**
+   * 更新驱动盘弃置状态
+   */
+  async function updateDriveDiskTrash(diskId: string, trash: boolean): Promise<boolean> {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!save || !rawSave) {
+      return false;
+    }
+
+    // 更新实例对象
+    const disk = save.getAllDriveDisks().find(d => d.id === diskId);
+    if (!disk) {
+      return false;
+    }
+    disk.trash = trash;
+
+    // 更新原始数据
+    const rawDisk = rawSave.discs?.find(d => d.id === diskId);
+    if (!rawDisk) {
+      return false;
+    }
+    rawDisk.trash = trash;
+
+    await saveToStorage();
+    return true;
+  }
+
   return {
     // 状态
     saves,
@@ -1098,6 +1162,8 @@ export const useSaveStore = defineStore('save', () => {
     updateWEngineRefinement,      // 更新音擎精炼（编辑用）
     previewZodImportWithOptions,  // 预览导入结果（不落盘）
     updateAgentEffectiveStats,    // 更新角色有效词条
+    updateDriveDiskLocked,        // 更新驱动盘锁定状态
+    updateDriveDiskTrash,         // 更新驱动盘弃置状态
 
     // 委托到服务的方法（保持向后兼容）
     normalizeZodData: saveDataService.normalizeZodData.bind(saveDataService),

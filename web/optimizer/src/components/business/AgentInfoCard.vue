@@ -155,23 +155,35 @@
 
                     <section>
 
-                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                            <span class="w-1 h-6 bg-info rounded"></span>
-                            驱动盘
-                        </h3>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <div v-for="(disk, idx) in equippedDriveDisks" :key="idx">
-                                <DriveDiskCard
-                                    v-if="disk"
-                                    :disk="disk"
-                                    class="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
-                                    @click="openEquipmentSelector('drive-disk', idx as DriveDiskPosition)"
-                                />
-                                <div v-else class="aspect-4/3 bg-base-200 rounded-lg border border-base-300 flex flex-col items-center justify-center relative p-2 hover:border-primary transition-colors cursor-pointer group" @click="openEquipmentSelector('drive-disk', idx as DriveDiskPosition)">
-                                    <span class="absolute top-2 left-2 text-xs font-mono opacity-40">{{ idx + 1 }}</span>
-                                    <span class="text-2xl opacity-20 font-bold">+</span>
-                                    <span class="text-xs opacity-40">点击装备</span>
-                                </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold flex items-center gap-2">
+                                <span class="w-1 h-6 bg-info rounded"></span>
+                                驱动盘
+                            </h3>
+                            <button
+                                class="btn btn-sm btn-ghost gap-2 hover:bg-base-200 text-base-content/70 hover:text-base-content"
+                                @click="lockBetterDisks"
+                                title="锁定同部位同套装且有效词条更高的驱动盘"
+                            >
+                                <i class="ri-lock-2-line text-base"></i>
+                                <span>一键锁定更好的</span>
+                            </button>
+                        </div>
+                        <div class="flex justify-center">
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <template v-for="(disk, idx) in equippedDriveDisks" :key="idx">
+                                    <DriveDiskCard
+                                        v-if="disk"
+                                        :disk="disk"
+                                        class="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                                        @click="openEquipmentSelector('drive-disk', idx as DriveDiskPosition)"
+                                    />
+                                    <div v-else class="aspect-4/3 bg-base-200 rounded-lg border border-base-300 flex flex-col items-center justify-center relative p-2 hover:border-primary transition-colors cursor-pointer group" @click="openEquipmentSelector('drive-disk', idx as DriveDiskPosition)">
+                                        <span class="absolute top-2 left-2 text-xs font-mono opacity-40">{{ idx + 1 }}</span>
+                                        <span class="text-2xl opacity-20 font-bold">+</span>
+                                        <span class="text-xs opacity-40">点击装备</span>
+                                    </div>
+                                </template>
                             </div>
                         </div>
 
@@ -486,6 +498,83 @@ function setCinemaLevel(level: number): void {
         if (delta !== 0) {
             props.agent.adjustCinemaLevel(delta);
         }
+    }
+}
+
+// 一键锁定比当前更好的驱动盘
+async function lockBetterDisks() {
+    const effectiveStats = props.agent.effective_stats;
+    if (effectiveStats.length === 0) {
+        alert('请先设置有效词条');
+        return;
+    }
+
+    // 收集需要锁定的驱动盘
+    const disksToLock: Array<{ diskId: string; diskScore: number }> = [];
+
+    // 遍历当前装备的6个驱动盘
+    for (let i = 0; i < 6; i++) {
+        const currentDiskId = props.agent.equipped_drive_disks[i];
+        if (!currentDiskId) continue;
+
+        const currentDisk = saveStore.driveDisks.find(d => d.id === currentDiskId);
+        if (!currentDisk) continue;
+
+        const currentScore = currentDisk.getEffectiveStatCounts(effectiveStats);
+
+        // 找出同部位、同套装、得分更高的驱动盘
+        const betterDisks = saveStore.driveDisks.filter(d =>
+            d.position === currentDisk.position &&
+            d.game_id === currentDisk.game_id &&
+            d.id !== currentDisk.id &&
+            !d.locked &&
+            d.getEffectiveStatCounts(effectiveStats) > currentScore
+        );
+
+        // 收集这些驱动盘
+        for (const disk of betterDisks) {
+            disksToLock.push({ diskId: disk.id, diskScore: disk.getEffectiveStatCounts(effectiveStats) });
+        }
+    }
+
+    if (disksToLock.length === 0) {
+        alert('没有找到更好的驱动盘');
+        return;
+    }
+
+    // 并行锁定所有驱动盘
+    try {
+        const lockPromises = disksToLock.map(({ diskId }) =>
+            saveStore.updateDriveDiskLocked(diskId, true)
+        );
+
+        const results = await Promise.allSettled(lockPromises);
+
+        let lockedCount = 0;
+        const failures: string[] = [];
+
+        results.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+                if (result.value) {
+                    lockedCount++;
+                } else {
+                    failures.push(`驱动盘 ${disksToLock[index].diskId} 持久化失败`);
+                }
+            } else {
+                failures.push(`驱动盘 ${disksToLock[index].diskId}: ${result.reason}`);
+            }
+        });
+
+        // 显示结果提示
+        if (failures.length > 0) {
+            console.error('锁定失败:', failures);
+            alert(`已锁定 ${lockedCount}/${disksToLock.length} 个驱动盘\n失败: ${failures.join(', ')}`);
+        } else {
+            alert(`已成功锁定 ${lockedCount} 个更好的驱动盘`);
+        }
+    } catch (error) {
+        console.error('锁定驱动盘时出错:', error);
+        alert(`锁定过程出错: ${error instanceof Error ? error.message : '未知错误'}`);
     }
 }
 </script>

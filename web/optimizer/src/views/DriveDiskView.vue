@@ -63,6 +63,8 @@
             :key="disk.id"
             :disk="disk"
             @edit="openEditModal"
+            @update:locked="handleUpdateLocked"
+            @update:trash="handleUpdateTrash"
           />
         </div>
 
@@ -235,6 +237,16 @@ function handleEdited() {
 
 function handleDeleted() {
   closeEditModal();
+}
+
+// 处理锁定状态更新
+async function handleUpdateLocked(diskId: string, locked: boolean) {
+  await saveStore.updateDriveDiskLocked(diskId, locked);
+}
+
+// 处理弃置状态更新
+async function handleUpdateTrash(diskId: string, trash: boolean) {
+  await saveStore.updateDriveDiskTrash(diskId, trash);
 }
 
 // 生命周期

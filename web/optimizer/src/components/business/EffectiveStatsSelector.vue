@@ -1,15 +1,18 @@
 <template>
-  <div class="card bg-base-100 shadow border border-base-300">
-    <div class="card-body p-4 gap-3">
-      <!-- 标题 -->
+  <div class="card bg-base-100 shadow border border-base-200 overflow-hidden">
+    <!-- 顶部渐变装饰 -->
+    <div class="h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
+
+    <div class="card-body p-5 gap-4">
+      <!-- 标题区域 -->
       <div class="flex items-center justify-between">
-        <h3 class="font-bold text-base flex items-center gap-2">
-          <i class="ri-focus-3-line text-secondary"></i>
-          有效词条
-        </h3>
+        <div>
+          <h3 class="font-bold text-base-content">有效词条</h3>
+          <p class="text-xs text-base-content/50 mt-0.5">用于驱动盘排序和优化</p>
+        </div>
         <button
           v-if="hasChanges"
-          class="btn btn-xs btn-ghost text-base-content/50"
+          class="btn btn-sm btn-ghost gap-1.5 hover:bg-base-200"
           @click="resetToDefault"
           title="重置为默认"
         >
@@ -18,118 +21,113 @@
         </button>
       </div>
 
-      <!-- 已选词条 -->
-      <div class="bg-base-200/50 rounded-lg p-3">
-        <div v-if="selectedStats.length > 0" class="flex flex-wrap gap-2">
-          <button
-            v-for="stat in selectedStats"
-            :key="stat.value"
-            class="badge badge-lg badge-primary gap-1 cursor-pointer hover:badge-error transition-colors"
-            @click="toggleStat(stat.value)"
-            :title="`点击移除 ${stat.label}`"
-          >
-            {{ stat.label }}
-            <i class="ri-close-line text-xs"></i>
-          </button>
+      <!-- 已选词条区域 -->
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl -z-10"></div>
+        <div class="bg-base-100/80 backdrop-blur-sm rounded-xl p-4 border border-primary/10">
+          <div v-if="selectedStats.length > 0" class="flex flex-wrap gap-2">
+            <button
+              v-for="stat in selectedStats"
+              :key="stat.value"
+              class="group badge badge-lg gap-1.5 px-3 py-2 cursor-pointer hover:badge-error transition-all duration-200 hover:scale-105 shadow-sm"
+              :class="getStatBadgeClass(stat.group)"
+              @click="toggleStat(stat.value)"
+              :title="`点击移除 ${stat.label}`"
+            >
+              {{ stat.label }}
+              <i class="ri-close-circle-fill text-base-content/40 group-hover:text-base-content transition-colors"></i>
+            </button>
+          </div>
+          <div v-else class="flex flex-col items-center justify-center py-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-base-200 flex items-center justify-center mb-2">
+              <i class="ri-information-line text-2xl text-base-content/30"></i>
+            </div>
+            <p class="text-sm text-base-content/50 font-medium">未选择有效词条</p>
+          </div>
         </div>
-        <div v-else class="text-sm text-base-content/50 text-center py-2">
-          <i class="ri-information-line mr-1"></i>
-          未选择有效词条
-        </div>
-      </div>
-
-      <!-- 分隔线 -->
-      <div class="divider my-0 text-xs text-base-content/40">
-        <i class="ri-add-circle-line mr-1"></i>
-        点击添加
       </div>
 
       <!-- 可选词条分组 -->
-      <div class="space-y-3">
+      <div class="space-y-5">
         <!-- 基础属性 -->
-        <div v-if="groupedUnselected.basic.length > 0">
-          <div class="text-xs text-base-content/50 mb-1.5 font-medium">基础属性</div>
-          <div class="flex flex-wrap gap-1.5">
+        <template v-if="groupedUnselected.basic.length > 0">
+          <div class="divider my-0 text-xs text-base-content/50 font-medium">基础属性</div>
+          <div class="grid grid-cols-4 gap-2">
             <button
               v-for="stat in groupedUnselected.basic"
               :key="stat.value"
-              class="badge badge-outline badge-sm gap-1 cursor-pointer hover:badge-primary transition-colors"
+              class="btn btn-sm btn-outline border-base-300 hover:border-primary hover:bg-primary/5 hover:text-primary gap-2 justify-start transition-all duration-200 group"
               @click="toggleStat(stat.value)"
-              :title="`点击添加 ${stat.label}`"
             >
-              {{ stat.label }}
-              <i class="ri-add-line text-xs opacity-50"></i>
+              <span class="truncate">{{ stat.label }}</span>
+              <i class="ri-add-line text-base-content/20 group-hover:text-primary ml-auto transition-colors"></i>
             </button>
           </div>
-        </div>
+        </template>
 
         <!-- 暴击属性 -->
-        <div v-if="groupedUnselected.crit.length > 0">
-          <div class="text-xs text-base-content/50 mb-1.5 font-medium">暴击属性</div>
-          <div class="flex flex-wrap gap-1.5">
+        <template v-if="groupedUnselected.crit.length > 0">
+          <div class="divider my-0 text-xs text-base-content/50 font-medium">暴击属性</div>
+          <div class="grid grid-cols-4 gap-2">
             <button
               v-for="stat in groupedUnselected.crit"
               :key="stat.value"
-              class="badge badge-outline badge-sm gap-1 cursor-pointer hover:badge-warning transition-colors"
+              class="btn btn-sm btn-outline border-base-300 hover:border-warning hover:bg-warning/5 hover:text-warning gap-2 justify-start transition-all duration-200 group"
               @click="toggleStat(stat.value)"
-              :title="`点击添加 ${stat.label}`"
             >
-              {{ stat.label }}
-              <i class="ri-add-line text-xs opacity-50"></i>
+              <span class="truncate">{{ stat.label }}</span>
+              <i class="ri-add-line text-base-content/20 group-hover:text-warning ml-auto transition-colors"></i>
             </button>
           </div>
-        </div>
+        </template>
 
         <!-- 异常属性 -->
-        <div v-if="groupedUnselected.anomaly.length > 0">
-          <div class="text-xs text-base-content/50 mb-1.5 font-medium">异常属性</div>
-          <div class="flex flex-wrap gap-1.5">
+        <template v-if="groupedUnselected.anomaly.length > 0">
+          <div class="divider my-0 text-xs text-base-content/50 font-medium">异常属性</div>
+          <div class="grid grid-cols-4 gap-2">
             <button
               v-for="stat in groupedUnselected.anomaly"
               :key="stat.value"
-              class="badge badge-outline badge-sm gap-1 cursor-pointer hover:badge-accent transition-colors"
+              class="btn btn-sm btn-outline border-base-300 hover:border-accent hover:bg-accent/5 hover:text-accent gap-2 justify-start transition-all duration-200 group"
               @click="toggleStat(stat.value)"
-              :title="`点击添加 ${stat.label}`"
             >
-              {{ stat.label }}
-              <i class="ri-add-line text-xs opacity-50"></i>
+              <span class="truncate">{{ stat.label }}</span>
+              <i class="ri-add-line text-base-content/20 group-hover:text-accent ml-auto transition-colors"></i>
             </button>
           </div>
-        </div>
+        </template>
 
         <!-- 属性伤害 -->
-        <div v-if="groupedUnselected.element.length > 0">
-          <div class="text-xs text-base-content/50 mb-1.5 font-medium">属性伤害</div>
-          <div class="flex flex-wrap gap-1.5">
+        <template v-if="groupedUnselected.element.length > 0">
+          <div class="divider my-0 text-xs text-base-content/50 font-medium">属性伤害</div>
+          <div class="grid grid-cols-4 gap-2">
             <button
               v-for="stat in groupedUnselected.element"
               :key="stat.value"
-              class="badge badge-outline badge-sm gap-1 cursor-pointer hover:badge-info transition-colors"
+              class="btn btn-sm btn-outline border-base-300 hover:border-info hover:bg-info/5 hover:text-info gap-2 justify-start transition-all duration-200 group"
               @click="toggleStat(stat.value)"
-              :title="`点击添加 ${stat.label}`"
             >
-              {{ stat.label }}
-              <i class="ri-add-line text-xs opacity-50"></i>
+              <span class="truncate">{{ stat.label }}</span>
+              <i class="ri-add-line text-base-content/20 group-hover:text-info ml-auto transition-colors"></i>
             </button>
           </div>
-        </div>
+        </template>
 
         <!-- 其他属性 -->
-        <div v-if="groupedUnselected.other.length > 0">
-          <div class="text-xs text-base-content/50 mb-1.5 font-medium">其他属性</div>
-          <div class="flex flex-wrap gap-1.5">
+        <template v-if="groupedUnselected.other.length > 0">
+          <div class="divider my-0 text-xs text-base-content/50 font-medium">其他属性</div>
+          <div class="grid grid-cols-4 gap-2">
             <button
               v-for="stat in groupedUnselected.other"
               :key="stat.value"
-              class="badge badge-outline badge-sm gap-1 cursor-pointer hover:badge-secondary transition-colors"
+              class="btn btn-sm btn-outline border-base-300 hover:border-secondary hover:bg-secondary/5 hover:text-secondary gap-2 justify-start transition-all duration-200 group"
               @click="toggleStat(stat.value)"
-              :title="`点击添加 ${stat.label}`"
             >
-              {{ stat.label }}
-              <i class="ri-add-line text-xs opacity-50"></i>
+              <span class="truncate">{{ stat.label }}</span>
+              <i class="ri-add-line text-base-content/20 group-hover:text-secondary ml-auto transition-colors"></i>
             </button>
           </div>
-        </div>
+        </template>
       </div>
     </div>
   </div>
@@ -231,4 +229,19 @@ function resetToDefault() {
     emit('update:selectedStats', [...props.defaultStats]);
   }
 }
+
+// 获取属性badge样式类
+function getStatBadgeClass(group: string) {
+  const classMap: Record<string, string> = {
+    basic: 'badge-neutral',
+    crit: 'badge-warning',
+    anomaly: 'badge-accent',
+    element: 'badge-info',
+    other: 'badge-secondary',
+  };
+  return classMap[group] || 'badge-ghost';
+}
 </script>
+
+<style scoped>
+</style>

@@ -45,6 +45,29 @@
           </div>
         </div>
 
+        <!-- 评估模式开关（仅驱动盘且有角色时显示） -->
+        <div v-if="type === 'drive-disk' && currentAgentEffectiveStats && currentAgentEffectiveStats.length > 0" class="flex items-center gap-2">
+          <span class="text-sm font-semibold text-base-content/70">评估模式</span>
+          <div class="flex items-center gap-1 bg-base-200 rounded-lg p-1">
+            <button
+              @click="evaluateAsMaxLevel = true"
+              class="btn btn-xs gap-1.5"
+              :class="evaluateAsMaxLevel ? 'btn-primary text-white' : 'btn-ghost text-base-content/60'"
+            >
+              <i class="ri-bar-chart-fill text-sm"></i>
+              <span>满级</span>
+            </button>
+            <button
+              @click="evaluateAsMaxLevel = false"
+              class="btn btn-xs gap-1.5"
+              :class="!evaluateAsMaxLevel ? 'btn-primary text-white' : 'btn-ghost text-base-content/60'"
+            >
+              <i class="ri-line-chart-fill text-sm"></i>
+              <span>成长</span>
+            </button>
+          </div>
+        </div>
+
         <!-- 武器类型筛选（仅音擎） -->
         <div v-if="type === 'wengine'" class="flex items-center gap-2">
           <span class="text-sm font-semibold">武器类型：</span>
@@ -72,6 +95,8 @@
             v-for="disk in filteredItems"
             :key="disk.id"
             :disk="disk"
+            :effective-stats="currentAgentEffectiveStats"
+            :show-ideal-by-default="!evaluateAsMaxLevel"
             class="cursor-pointer hover:ring-2 hover:ring-primary relative"
             :class="{ 'ring-2 ring-success': isEquippedByCurrentAgent(disk) }"
             @click="selectItem(disk)"
@@ -107,7 +132,7 @@ import DriveDiskCard from './DriveDiskCard.vue';
 import WEngineCard from './WEngineCard.vue';
 import { DriveDiskPosition, DriveDisk } from '../../model/drive-disk';
 import { WEngine } from '../../model/wengine';
-import { WeaponType } from '../../model/base';
+import { WeaponType, PropertyType, Rarity } from '../../model/base';
 import { iconService } from '../../services/icon.service';
 
 const props = defineProps<{
@@ -129,6 +154,38 @@ const filters = ref({
   positions: [] as DriveDiskPosition[],
   weaponTypes: [] as WeaponType[],
 });
+
+// 评估模式：是否按满级评估
+const evaluateAsMaxLevel = ref(true);
+
+// 获取当前角色的有效词条
+const currentAgentEffectiveStats = computed((): PropertyType[] => {
+  if (!props.agentId) return [];
+  const agent = saveStore.agents.find(a => a.id === props.agentId);
+  return agent?.effective_stats ?? [];
+});
+
+// 计算驱动盘得分
+function getDiskScore(disk: DriveDisk): number {
+  const effectiveStats = currentAgentEffectiveStats.value;
+  if (effectiveStats.length === 0) return 0;
+
+  if (evaluateAsMaxLevel.value) {
+    // 满级模式：直接比较当前有效词条得分
+    return disk.getEffectiveStatCounts(effectiveStats);
+  } else {
+    // 非满级模式：计算完美成长期望得分
+    const growth = disk.getPerfectGrowthStats(effectiveStats);
+    // 根据完美成长后的副词条计算有效词条得分
+    let score = 0;
+    for (const [prop, value] of growth.subStats.entries()) {
+      if (effectiveStats.includes(prop)) {
+        score += value; // value 是强化次数
+      }
+    }
+    return score;
+  }
+}
 
 // 当指定了部位时，自动设置过滤条件
 watch(() => props.position, (newPosition) => {
@@ -209,8 +266,31 @@ const filteredItems = computed(() => {
       result = result.filter((disk: DriveDisk) => disk.position === props.position);
     }
 
-    // 排序
+    // 根据评估模式过滤等级
+    if (currentAgentEffectiveStats.value.length > 0) {
+      if (evaluateAsMaxLevel.value) {
+        // 满级模式：只显示满级驱动盘
+        result = result.filter((disk: DriveDisk) => {
+          const rarityStr = Rarity[disk.rarity] as 'S' | 'A' | 'B';
+          const maxLevel = { 'S': 15, 'A': 12, 'B': 9 }[rarityStr] ?? 0;
+          if (maxLevel === 0) {
+            console.warn(`Unknown rarity for disk ${disk.id}: ${disk.rarity}`);
+            return false;
+          }
+          return disk.level >= maxLevel;
+        });
+      }
+      // 成长模式：显示所有驱动盘（包括未满级的）
+    }
+
+    // 排序：优先按有效词条得分降序，然后按套装名、部位、稀有度
     result.sort((a: DriveDisk, b: DriveDisk) => {
+      // 如果有有效词条配置，优先按得分排序
+      if (currentAgentEffectiveStats.value.length > 0) {
+        const scoreA = getDiskScore(a);
+        const scoreB = getDiskScore(b);
+        if (scoreA !== scoreB) return scoreB - scoreA;
+      }
       const setCompare = a.set_name.localeCompare(b.set_name);
       if (setCompare !== 0) return setCompare;
       if (a.position !== b.position) return a.position - b.position;

@@ -134,6 +134,7 @@ export class DriveDisk {
   // 装备状态
   equipped_agent: string | null = null;
   locked: boolean = false;
+  trash: boolean = false;
 
   // 套装属性和Buff（从游戏数据加载）
   set_properties: Buff[] = []; // 2件套属性（静态，直接加面板）
@@ -467,6 +468,7 @@ export class DriveDisk {
       sub_stats: subStatsDict,
       equipped_agent: this.equipped_agent,
       locked: this.locked,
+      trash: this.trash,
     };
   }
 
@@ -512,6 +514,7 @@ export class DriveDisk {
     // 恢复装备状态
     disk.equipped_agent = data.equipped_agent;
     disk.locked = data.locked || false;
+    disk.trash = data.trash || false;
 
     // 从游戏数据加载套装名称
     const equipInfo = dataLoader.equipmentData?.get(data.game_id);
@@ -637,7 +640,8 @@ export class DriveDisk {
     const equipmentInfo = equipmentMap!.get(gameEquipId)!;
     disk.set_name = equipmentInfo.CHS?.name || equipmentInfo.EN?.name || zodData.setKey;
     disk.equipped_agent = zodData.location || null;
-    disk.locked = zodData.lock;
+    disk.locked = zodData.lock ?? false;
+    disk.trash = zodData.trash ?? false;
     disk._dataLoader = dataLoader;
     disk._detailsLoaded = false;
 
