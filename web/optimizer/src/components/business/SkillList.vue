@@ -29,10 +29,10 @@
           <div v-for="(seg, idx) in skill.segments" :key="idx" class="card bg-base-200 shadow-sm mb-2">
             <div class="card-body p-4">
               <div class="flex justify-between items-start gap-4">
-                <span class="font-semibold min-w-[8em]">{{ seg.segmentName || `段${idx + 1}` }}</span>
+                <span class="font-semibold min-w-[8em]">{{ seg.segmentName || `段${(idx as number) + 1}` }}</span>
                 <div class="flex flex-wrap gap-2 justify-end">
-                  <div class="badge badge-primary badge-lg">伤害: {{ calculateDamage(seg, group.level) }}%</div>
-                  <div class="badge badge-secondary badge-lg">失衡: {{ calculateStun(seg, group.level) }}%</div>
+                  <div class="badge badge-primary badge-lg">伤害: {{ calculateDamage(seg) }}%</div>
+                  <div class="badge badge-secondary badge-lg">失衡: {{ calculateStun(seg) }}%</div>
                   <div v-if="seg.spRecovery > 0" class="badge badge-info badge-lg">能量: {{ seg.spRecovery }}</div>
                   <div v-if="seg.anomalyBuildup > 0" class="badge badge-accent badge-lg">积蓄: {{ seg.anomalyBuildup }}</div>
                 </div>

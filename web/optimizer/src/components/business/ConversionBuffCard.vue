@@ -41,12 +41,12 @@
 </template>
 
 <script setup lang="ts">
-import type { ConversionBuffRule } from '../../optimizer/types/precomputed';
+import type { ConversionBuffData } from '../../optimizer/types/precomputed';
 import { IDX_TO_PROP_TYPE } from '../../optimizer/types/property-index';
 import { PropertyType, getPropertyCnName } from '../../model/base';
 
 const props = withDefaults(defineProps<{
-  rules: ConversionBuffRule[];
+  rules: ConversionBuffData[];
   title?: string;
 }>(), {
   rules: () => [],

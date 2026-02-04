@@ -1,7 +1,7 @@
 <template>
   <div class="card bg-base-100 shadow border border-base-200 overflow-hidden">
     <!-- 顶部渐变装饰 -->
-    <div class="h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
+    <div class="h-1 bg-linear-to-r from-primary via-secondary to-accent"></div>
 
     <div class="card-body p-5 gap-4">
       <!-- 标题区域 -->
@@ -23,7 +23,7 @@
 
       <!-- 已选词条区域 -->
       <div class="relative">
-        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl -z-10"></div>
+        <div class="absolute inset-0 bg-linear-to-br from-primary/5 to-secondary/5 rounded-xl -z-10"></div>
         <div class="bg-base-100/80 backdrop-blur-sm rounded-xl p-4 border border-primary/10">
           <div v-if="selectedStats.length > 0" class="flex flex-wrap gap-2">
             <button

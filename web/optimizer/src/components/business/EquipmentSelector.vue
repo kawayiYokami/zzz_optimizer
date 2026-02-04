@@ -92,7 +92,7 @@
         <div class="flex flex-wrap justify-center gap-4">
           <DriveDiskCard
             v-if="type === 'drive-disk'"
-            v-for="disk in filteredItems"
+            v-for="disk in filteredItems as DriveDisk[]"
             :key="disk.id"
             :disk="disk"
             :effective-stats="currentAgentEffectiveStats"
@@ -103,7 +103,7 @@
           />
           <WEngineCard
             v-if="type === 'wengine'"
-            v-for="wengine in filteredItems"
+            v-for="wengine in filteredItems as WEngine[]"
             :key="wengine.id"
             :wengine="wengine"
             class="cursor-pointer hover:ring-2 hover:ring-primary relative"
@@ -249,28 +249,30 @@ const filteredItems = computed(() => {
   if (props.type === 'drive-disk') {
     // 应用套装筛选
     if (filters.value.sets.length > 0) {
-      result = result.filter((disk: DriveDisk) =>
-        filters.value.sets.includes(disk.set_name)
+      result = result.filter((item): item is DriveDisk =>
+        'set_name' in item && filters.value.sets.includes(item.set_name)
       );
     }
 
     // 应用部位筛选
     if (filters.value.positions.length > 0) {
-      result = result.filter((disk: DriveDisk) =>
-        filters.value.positions.includes(disk.position)
+      result = result.filter((item): item is DriveDisk =>
+        'position' in item && filters.value.positions.includes(item.position)
       );
     }
 
     // 如果指定了部位，只显示该部位的驱动盘
     if (props.position !== undefined) {
-      result = result.filter((disk: DriveDisk) => disk.position === props.position);
+      result = result.filter((item): item is DriveDisk => 'position' in item && item.position === props.position);
     }
 
     // 根据评估模式过滤等级
     if (currentAgentEffectiveStats.value.length > 0) {
       if (evaluateAsMaxLevel.value) {
         // 满级模式：只显示满级驱动盘
-        result = result.filter((disk: DriveDisk) => {
+        result = result.filter((item): item is DriveDisk => {
+          if (!('rarity' in item)) return false;
+          const disk = item as DriveDisk;
           const rarityStr = Rarity[disk.rarity] as 'S' | 'A' | 'B';
           const maxLevel = { 'S': 15, 'A': 12, 'B': 9 }[rarityStr] ?? 0;
           if (maxLevel === 0) {
@@ -284,30 +286,34 @@ const filteredItems = computed(() => {
     }
 
     // 排序：优先按有效词条得分降序，然后按套装名、部位、稀有度
-    result.sort((a: DriveDisk, b: DriveDisk) => {
+    result.sort((a, b) => {
+      const diskA = a as DriveDisk;
+      const diskB = b as DriveDisk;
       // 如果有有效词条配置，优先按得分排序
       if (currentAgentEffectiveStats.value.length > 0) {
-        const scoreA = getDiskScore(a);
-        const scoreB = getDiskScore(b);
+        const scoreA = getDiskScore(diskA);
+        const scoreB = getDiskScore(diskB);
         if (scoreA !== scoreB) return scoreB - scoreA;
       }
-      const setCompare = a.set_name.localeCompare(b.set_name);
+      const setCompare = diskA.set_name.localeCompare(diskB.set_name);
       if (setCompare !== 0) return setCompare;
-      if (a.position !== b.position) return a.position - b.position;
-      return b.rarity - a.rarity;
+      if (diskA.position !== diskB.position) return diskA.position - diskB.position;
+      return diskB.rarity - diskA.rarity;
     });
   } else {
     // 音擎筛选
     if (filters.value.weaponTypes.length > 0) {
-      result = result.filter((wengine: WEngine) =>
-        filters.value.weaponTypes.includes(wengine.weapon_type)
+      result = result.filter((item): item is WEngine =>
+        'weapon_type' in item && filters.value.weaponTypes.includes(item.weapon_type)
       );
     }
 
     // 排序
-    result.sort((a: WEngine, b: WEngine) => {
-      if (a.level !== b.level) return b.level - a.level;
-      return b.id.localeCompare(a.id);
+    result.sort((a, b) => {
+      const wengineA = a as WEngine;
+      const wengineB = b as WEngine;
+      if (wengineA.level !== wengineB.level) return wengineB.level - wengineA.level;
+      return wengineB.id.localeCompare(wengineA.id);
     });
   }
 
@@ -335,7 +341,7 @@ function getWeaponTypeIcon(weaponType: WeaponType): string {
 }
 
 // 选择装备
-function selectItem(item: DriveDisk | WEngine | null) {
+function selectItem(item: DriveDisk | WEngine) {
   emit('select', item);
   emit('close');
 }

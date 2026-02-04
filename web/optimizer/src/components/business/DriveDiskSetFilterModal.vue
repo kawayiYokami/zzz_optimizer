@@ -97,12 +97,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // Emits
-interface Emits {
-  'update:modelValue': (value: boolean) => void;
-  'update:targetSetId': (setId: string) => void;
-}
-
-const emit = defineEmits<Emits>();
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean];
+  'update:targetSetId': [setId: string];
+}>();
 
 // 状态
 const gameDataStore = useGameDataStore();
@@ -178,15 +176,17 @@ onMounted(() => {
 <style scoped>
 .line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
 }
 
 .line-clamp-3 {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   overflow: hidden;
 }
 </style>

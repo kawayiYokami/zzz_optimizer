@@ -33,15 +33,15 @@
         <!-- Team Members Slots (Horizontal) -->
         <div class="flex items-center justify-between px-4">
           <template v-for="(agentId, index) in teamAgentIds" :key="index">
-            
+
             <!-- Character Slot -->
             <div class="flex flex-col items-center gap-2">
-              <div 
+              <div
                 class="relative group cursor-pointer transition-all hover:scale-105"
                 @click="openSelector(index)"
               >
                 <!-- Avatar Circle -->
-                <div 
+                <div
                   class="w-24 h-24 rounded-full border-4 overflow-hidden bg-base-200 flex items-center justify-center shadow-lg"
                   :class="agentId ? 'border-primary/20 group-hover:border-primary' : 'border-dashed border-base-300 group-hover:border-base-content/30'"
                 >
@@ -62,7 +62,7 @@
                   前台
                 </div>
               </div>
-              
+
               <!-- Name Label -->
               <div class="text-sm font-medium h-5 mt-1 text-center min-w-[4em]">
                 {{ agentId ? getAgent(agentId)?.name_cn : '空置' }}
@@ -123,7 +123,7 @@
         <div class="flex-1 overflow-y-auto p-4">
           <div class="grid grid-cols-5 gap-3">
             <!-- Remove Option -->
-            <button 
+            <button
               class="aspect-square rounded-xl border-2 border-dashed border-error/30 hover:border-error hover:bg-error/5 flex flex-col items-center justify-center gap-2 transition-all"
               @click="selectAgent('')"
             >
@@ -200,7 +200,7 @@ const availableAgents = computed(() => {
   const otherUsedIds = new Set(
     teamAgentIds.value.filter((id, index) => index !== selectingSlotIndex.value && !!id)
   );
-  
+
   return saveStore.agents.filter(a => !otherUsedIds.has(a.id));
 });
 
@@ -281,7 +281,7 @@ function compactTeam() {
   ];
 }
 
-function save() {
+async function save() {
   if (!canSave.value) {
     showStatus('请至少设置前台角色并填写队伍名称', 'error');
     return;
@@ -298,7 +298,7 @@ function save() {
       showStatus('队伍已更新', 'success');
       setTimeout(() => emit('saved', props.teamId!), 500);
     } else {
-      const newId = saveStore.createTeam(
+      const newId = await saveStore.createTeam(
         teamName.value.trim(),
         teamAgentIds.value[0],
         teamAgentIds.value[1],
@@ -321,13 +321,15 @@ function save() {
 
 function deleteTeam() {
   if (!props.teamId || !confirm(`确定要删除队伍"${teamName.value}"吗？`)) return;
-  
-  if (saveStore.deleteTeam(props.teamId)) {
-    showStatus('队伍已删除', 'success');
-    setTimeout(() => emit('deleted', props.teamId!), 500);
-  } else {
-    showStatus('删除失败', 'error');
-  }
+
+  saveStore.deleteTeam(props.teamId).then((success) => {
+    if (success) {
+      showStatus('队伍已删除', 'success');
+      setTimeout(() => emit('deleted', props.teamId!), 500);
+    } else {
+      showStatus('删除失败', 'error');
+    }
+  });
 }
 
 function cancel() {
