@@ -407,6 +407,7 @@ export class OptimizerService {
         buffStatusMap?: Map<string, { isActive: boolean }>;
         topN?: number;
         estimatedTotal?: number;  // UI计算的有效组合数
+        workerCount?: number;  // 并行 Worker 数量
         callbacks?: OptimizationCallbacks;
     }): Promise<void> {
         if (this.status === 'running') {
@@ -414,7 +415,7 @@ export class OptimizerService {
         }
 
         if (this.fastWorkers.length === 0) {
-            this.initializeFastWorkers();
+            this.initializeFastWorkers(options.workerCount);
         }
 
         // 重置状态

@@ -153,7 +153,7 @@ const progress = ref<AggregatedProgress | null>(null);
 const results = ref<OptimizationBuild[]>([]);
 const totalTime = ref(0);
 const presets = ref<OptimizationPreset[]>([]);
-const workerCount = ref(16);
+const workerCount = ref(parseInt(localStorage.getItem('optimizer_worker_count') || '16'));
 const minDiscLevel = ref(15); // 默认只用15级盘
 
 const battleInfoCardRef = ref<InstanceType<typeof BattleInfoCard> | null>(null);
@@ -817,6 +817,7 @@ const startOptimization = async () => {
       buffStatusMap: battleService.getBuffStatusMap(),
       topN: 10,
       estimatedTotal: estimatedCombinations.value.total,  // 传入UI计算的有效组合数
+      workerCount: workerCount.value,  // 传入并行 Worker 数量
       callbacks: {
         onProgress: (p) => {
           progress.value = p;
@@ -879,6 +880,12 @@ watch([constraints, selectedSkillKeys, selectedEnemyId], () => {
     saveTeamOptimizationConfig(selectedTeamId.value);
   }
 }, { deep: true });
+
+// 监听 workerCount 变化并保存到 localStorage
+watch(workerCount, (newCount) => {
+  localStorage.setItem('optimizer_worker_count', String(newCount));
+  optimizerService.initializeFastWorkers(newCount);
+});
 
 // 监听队伍列表/选择变化：
 // - 兜底：localStorage 里记住了不存在的 teamId 时，自动切到一个有效队伍
