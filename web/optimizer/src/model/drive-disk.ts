@@ -679,6 +679,131 @@ export class DriveDisk {
   }
 
   /**
+   * 计算完美成长属性
+   *
+   * 给定有效词条列表，计算驱动盘升到满级时，每次强化都命中有效词条后的属性。
+   *
+   * 强化规则：
+   * - 每3级强化一次副词条
+   * - 如果副词条不足4条，强化时会新增一条（从有效词条中随机选择）
+   * - 如果副词条已满4条，强化时会随机选择一条已有副词条提升
+   * - 完美成长：每次强化都命中有效词条（如果可以命中）
+   *
+   * @param effectiveStats 有效词条列表
+   * @returns 完美成长结果
+   */
+  getPerfectGrowthStats(effectiveStats: PropertyType[]): PerfectGrowthResult {
+    const rarityStr = Rarity[this.rarity] as 'S' | 'A' | 'B';
+    const maxLevel = DriveDiskStats.MAX_LEVELS[rarityStr];
+
+    // 复制当前副词条（属性类型 -> 强化次数）
+    const newSubStats = new Map<PropertyType, number>();
+    for (const [prop, statValue] of this.sub_stats.entries()) {
+      newSubStats.set(prop, statValue.value);
+    }
+
+    // 计算当前已强化次数和剩余强化次数
+    const currentUpgrades = Math.min(5, Math.floor(this.level / 3));
+    const maxUpgrades = Math.min(5, Math.floor(maxLevel / 3));
+    const remainingUpgrades = maxUpgrades - currentUpgrades;
+
+    // 记录新增的副词条
+    const addedSubStats: PropertyType[] = [];
+
+    // 可用的副词条类型（不能与主词条重复）
+    const allowedSubStats = new Set([
+      PropertyType.HP,
+      PropertyType.ATK,
+      PropertyType.DEF,
+      PropertyType.PEN,
+      PropertyType.ANOM_PROF,
+      PropertyType.HP_,
+      PropertyType.ATK_,
+      PropertyType.DEF_,
+      PropertyType.CRIT_,
+      PropertyType.CRIT_DMG_,
+    ]);
+    allowedSubStats.delete(this.main_stat);
+
+    // 过滤出有效且可用的副词条类型
+    const validEffectiveStats = effectiveStats.filter(stat => allowedSubStats.has(stat));
+
+    // 模拟每次强化
+    let unusedUpgrades = 0;
+    for (let i = 0; i < remainingUpgrades; i++) {
+      const currentSubStatCount = newSubStats.size;
+
+      if (currentSubStatCount < 4) {
+        // 副词条不足4条，需要新增一条
+        // 从有效词条中选择一个尚未存在的
+        const availableNewStats = validEffectiveStats.filter(stat => !newSubStats.has(stat));
+
+        if (availableNewStats.length > 0) {
+          // 随机选择一个有效词条新增
+          const newStat = availableNewStats[0]; // 完美成长：选第一个有效词条
+          newSubStats.set(newStat, 1);
+          addedSubStats.push(newStat);
+        } else {
+          // 没有可用的有效词条，从其他允许的副词条中选择
+          const availableOtherStats = Array.from(allowedSubStats).filter(stat => !newSubStats.has(stat));
+          if (availableOtherStats.length > 0) {
+            const newStat = availableOtherStats[0];
+            newSubStats.set(newStat, 1);
+            addedSubStats.push(newStat);
+          }
+        }
+      } else {
+        // 副词条已满4条，强化已有副词条
+        // 找出已有的有效词条
+        const existingEffectiveStats = Array.from(newSubStats.keys()).filter(stat =>
+          validEffectiveStats.includes(stat)
+        );
+
+        if (existingEffectiveStats.length > 0) {
+          // 完美成长：随机选择一个有效词条强化
+          const statToUpgrade = existingEffectiveStats[Math.floor(Math.random() * existingEffectiveStats.length)];
+          newSubStats.set(statToUpgrade, (newSubStats.get(statToUpgrade) ?? 0) + 1);
+        } else {
+          // 没有有效词条可强化，记录未使用的强化次数
+          unusedUpgrades++;
+          // 仍然需要强化一个副词条（游戏机制）
+          const anySubStat = Array.from(newSubStats.keys())[0];
+          if (anySubStat !== undefined) {
+            newSubStats.set(anySubStat, (newSubStats.get(anySubStat) ?? 0) + 1);
+          }
+        }
+      }
+    }
+
+    // 计算完美成长后的属性
+    const outOfCombat = new Map<PropertyType, number>();
+    const inCombat = new Map<PropertyType, number>();
+
+    // 1. 计算满级主词条数值
+    const mainStatKey = this.propertyTypeToKey(this.main_stat);
+    if (mainStatKey && (DriveDiskStats.MAIN_STAT_MAX_VALUES[rarityStr] as any)[mainStatKey] !== undefined) {
+      const mainStatValue = DriveDiskStats.calculateMainStatValue(rarityStr, mainStatKey, maxLevel);
+      outOfCombat.set(this.main_stat, mainStatValue);
+    }
+
+    // 2. 计算完美成长后的副词条数值
+    for (const [prop, rolls] of newSubStats.entries()) {
+      const subStatKey = this.propertyTypeToKey(prop);
+      if (subStatKey && (DriveDiskStats.SUB_STAT_BASE_VALUES[rarityStr] as any)[subStatKey] !== undefined) {
+        const subStatValue = DriveDiskStats.calculateSubStatValue(rarityStr, subStatKey, rolls);
+        outOfCombat.set(prop, (outOfCombat.get(prop) ?? 0) + subStatValue);
+      }
+    }
+
+    return {
+      subStats: newSubStats,
+      stats: new PropertyCollection(outOfCombat, inCombat),
+      remainingUpgrades: unusedUpgrades,
+      addedSubStats,
+    };
+  }
+
+  /**
    * 校验 ZOD 驱动盘数据是否合法
    *
    * 规则来源：docs/ZZZ_DISC_STATS.md
@@ -855,6 +980,20 @@ function parsePropertyType(key: string): PropertyType {
 
   console.warn(`未知的属性类型: ${key}`);
   return PropertyType.HP;
+}
+
+/**
+ * 完美成长结果
+ */
+export interface PerfectGrowthResult {
+  /** 完美成长后的副词条（属性类型 -> 强化次数） */
+  subStats: Map<PropertyType, number>;
+  /** 完美成长后的属性集合 */
+  stats: PropertyCollection;
+  /** 剩余强化次数（无法命中有效词条时） */
+  remainingUpgrades: number;
+  /** 新增的副词条类型 */
+  addedSubStats: PropertyType[];
 }
 
 function normalizeZodStatKey(key: string): string {

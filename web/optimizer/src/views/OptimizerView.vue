@@ -261,8 +261,8 @@ const optimizedDiscs = computed(() => {
     discs = discs.filter(d => !excludedSet.has(d.id));
   }
 
-  // 步骤3：支配关系剪枝
-  const effectiveStats = constraints.value.effectiveStatPruning?.effectiveStats ?? [];
+  // 步骤3：支配关系剪枝（从角色读取有效词条）
+  const effectiveStats = targetAgent.value?.effective_stats ?? [];
   if (effectiveStats.length > 0) {
     discs = OptimizerContext.applyDominancePruning(discs, effectiveStats);
   }
@@ -339,15 +339,15 @@ const effectiveStatOptions = [
   { value: PropertyType.ETHER_DMG_, label: '以太伤害' },
 ];
 
-// 已选词条
+// 已选词条（从角色读取）
 const selectedStats = computed(() => {
-  const stats = constraints.value.effectiveStatPruning?.effectiveStats ?? [];
+  const stats = targetAgent.value?.effective_stats ?? [];
   return effectiveStatOptions.filter(opt => stats.includes(opt.value));
 });
 
-// 未选词条
+// 未选词条（从角色读取）
 const unselectedStats = computed(() => {
-  const stats = constraints.value.effectiveStatPruning?.effectiveStats ?? [];
+  const stats = targetAgent.value?.effective_stats ?? [];
   return effectiveStatOptions.filter(opt => !stats.includes(opt.value));
 });
 
@@ -518,14 +518,15 @@ const selectTargetAgent = (agentId: string) => {
 };
 
 const toggleEffectiveStat = (stat: PropertyType) => {
-  if (!constraints.value.effectiveStatPruning) return;
-  const stats = constraints.value.effectiveStatPruning.effectiveStats;
-  const index = stats.indexOf(stat);
+  if (!targetAgent.value) return;
+  const current = [...targetAgent.value.effective_stats];
+  const index = current.indexOf(stat);
   if (index >= 0) {
-    stats.splice(index, 1);
+    current.splice(index, 1);
   } else {
-    stats.push(stat);
+    current.push(stat);
   }
+  saveStore.updateAgentEffectiveStats(targetAgent.value.id, current);
 };
 
 // 处理主词条限定器更新

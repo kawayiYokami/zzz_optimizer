@@ -137,6 +137,9 @@ export class Agent {
   // 新的技能集合（已根据等级计算）
   skillSet: SkillSet | null = null;
 
+  // 有效词条列表（用于优化器剪枝）
+  effective_stats: PropertyType[] = [];
+
   constructor(
     id: string,
     gameId: string,
@@ -631,6 +634,20 @@ export class Agent {
     agent._dataLoader = dataLoader;
     agent._gameCharId = gameCharId;
     agent._zodData = zodData;
+
+    // 解析有效词条（如果没有存储则使用默认值）
+    if (zodData.effectiveStats && Array.isArray(zodData.effectiveStats) && zodData.effectiveStats.length > 0) {
+      agent.effective_stats = zodData.effectiveStats
+        .map(key => {
+          // 将字符串键名转换为 PropertyType
+          const propType = (PropertyType as any)[key];
+          return propType !== undefined ? propType : null;
+        })
+        .filter((p): p is PropertyType => p !== null);
+    } else {
+      // 使用默认有效词条
+      agent.effective_stats = agent.getDefaultEffectiveStats();
+    }
 
     return agent;
   }
@@ -1229,6 +1246,74 @@ export class Agent {
       }
     }
     return total;
+  }
+
+  /**
+   * 根据角色类型和元素获取默认有效词条
+   *
+   * 规则：
+   * - 强攻角色：攻击、暴击率、暴击伤害、穿透、自身属性伤害
+   * - 命破角色：生命、暴击率、暴击伤害、自身属性伤害
+   * - 异常角色：攻击、异常精通、异常掌控%、穿透、自身属性伤害
+   * - 其他角色：攻击、暴击率、暴击伤害、自身属性伤害
+   */
+  static getDefaultEffectiveStats(weaponType: WeaponType, element: ElementType): PropertyType[] {
+    // 元素对应的属性伤害
+    const elementDmgMap: Record<ElementType, PropertyType> = {
+      [ElementType.PHYSICAL]: PropertyType.PHYSICAL_DMG_,
+      [ElementType.FIRE]: PropertyType.FIRE_DMG_,
+      [ElementType.ICE]: PropertyType.ICE_DMG_,
+      [ElementType.ELECTRIC]: PropertyType.ELECTRIC_DMG_,
+      [ElementType.ETHER]: PropertyType.ETHER_DMG_,
+    };
+    const elementDmg = elementDmgMap[element];
+
+    switch (weaponType) {
+      case WeaponType.ATTACK:
+        // 强攻角色：攻击、暴击率、暴击伤害、穿透、自身属性伤害
+        return [
+          PropertyType.ATK_,
+          PropertyType.CRIT_,
+          PropertyType.CRIT_DMG_,
+          PropertyType.PEN_,
+          elementDmg,
+        ].filter(Boolean);
+
+      case WeaponType.RUPTURE:
+        // 命破角色：生命、暴击率、暴击伤害、自身属性伤害
+        return [
+          PropertyType.HP_,
+          PropertyType.CRIT_,
+          PropertyType.CRIT_DMG_,
+          elementDmg,
+        ].filter(Boolean);
+
+      case WeaponType.ANOMALY:
+        // 异常角色：攻击、异常精通、异常掌控%、穿透、自身属性伤害
+        return [
+          PropertyType.ATK_,
+          PropertyType.ANOM_PROF,
+          PropertyType.ANOM_MAS_,
+          PropertyType.PEN_,
+          elementDmg,
+        ].filter(Boolean);
+
+      default:
+        // 其他角色（击破、支援、防护）：攻击、暴击率、暴击伤害、自身属性伤害
+        return [
+          PropertyType.ATK_,
+          PropertyType.CRIT_,
+          PropertyType.CRIT_DMG_,
+          elementDmg,
+        ].filter(Boolean);
+    }
+  }
+
+  /**
+   * 获取当前角色的默认有效词条
+   */
+  getDefaultEffectiveStats(): PropertyType[] {
+    return Agent.getDefaultEffectiveStats(this.weapon_type, this.element);
   }
 
 

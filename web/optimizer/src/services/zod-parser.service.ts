@@ -48,6 +48,7 @@ export interface ZodCharacterData {
   equippedDiscs: Record<string, string>;
   equippedWengine: string;
   id: string;
+  effectiveStats?: string[];  // 有效词条键名数组，如 ["ATK_", "CRIT_", "CRIT_DMG_"]
 }
 
 /**

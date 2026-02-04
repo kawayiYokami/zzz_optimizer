@@ -37,6 +37,7 @@ import { saveDataService } from '../services/save-data.service';
 import { itemFactoryService } from '../services/item-factory.service';
 import { equipmentService } from '../services/equipment.service';
 import { importExportService } from '../services/import-export.service';
+import { PropertyType } from '../model/base';
 
 const STORAGE_KEY = 'zzz_optimizer_saves';
 const CURRENT_SAVE_KEY = 'zzz_optimizer_current_save';
@@ -1024,6 +1025,32 @@ export const useSaveStore = defineStore('save', () => {
     return await switchSave(currentSaveName.value);
   }
 
+  /**
+   * 更新角色的有效词条
+   */
+  async function updateAgentEffectiveStats(agentId: string, stats: PropertyType[]): Promise<boolean> {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!save || !rawSave) {
+      return false;
+    }
+
+    // 更新实例对象
+    const agent = save.getAgent(agentId);
+    if (!agent) {
+      return false;
+    }
+    agent.effective_stats = stats;
+
+    // 同步到存档
+    await syncInstanceToRawSave();
+    return true;
+  }
+
   return {
     // 状态
     saves,
@@ -1070,6 +1097,7 @@ export const useSaveStore = defineStore('save', () => {
     deleteDriveDisk,              // 删除驱动盘（编辑用）
     updateWEngineRefinement,      // 更新音擎精炼（编辑用）
     previewZodImportWithOptions,  // 预览导入结果（不落盘）
+    updateAgentEffectiveStats,    // 更新角色有效词条
 
     // 委托到服务的方法（保持向后兼容）
     normalizeZodData: saveDataService.normalizeZodData.bind(saveDataService),

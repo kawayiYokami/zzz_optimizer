@@ -114,28 +114,38 @@
 
                     <div v-show="activeTab === 'equipment'" class="h-full overflow-y-auto p-6 space-y-6">
 
+                    <!-- W-Engine + Effective Stats Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <!-- W-Engine Section -->
+                      <section class="lg:col-span-1">
+                          <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                              <span class="w-1 h-6 bg-accent rounded"></span>
+                              音擎
+                          </h3>
 
+                          <WEngineCard
+                              v-if="equippedWEngine"
+                              :wengine="equippedWEngine"
+                              class="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                              @click="openEquipmentSelector('wengine')"
+                          />
+                          <div v-else class="card bg-base-200 border border-base-300 cursor-pointer hover:border-primary transition-colors" @click="openEquipmentSelector('wengine')">
+                              <div class="card-body p-6 items-center text-center">
+                                  <i class="ri-disc-line text-4xl opacity-30"></i>
+                                  <span class="text-sm opacity-50">点击装备音擎</span>
+                              </div>
+                          </div>
+                      </section>
 
-                    <!-- W-Engine Section -->
-
-                    <section>
-                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                            <span class="w-1 h-6 bg-accent rounded"></span>
-                            音擎
-                        </h3>
-
-                        <WEngineCard
-                            v-if="equippedWEngine"
-                            :wengine="equippedWEngine"
-                            class="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
-                            @click="openEquipmentSelector('wengine')"
-                        />
-                        <div v-else class="alert alert-warning shadow-sm cursor-pointer hover:alert-info transition-colors" @click="openEquipmentSelector('wengine')">
-                            <span>点击装备音擎</span>
-                        </div>
-                    </section>
-
-
+                      <!-- Effective Stats Section - 占用2列 -->
+                      <section class="lg:col-span-2">
+                          <EffectiveStatsSelector
+                              :selected-stats="props.agent.effective_stats"
+                              :default-stats="props.agent.getDefaultEffectiveStats()"
+                              @update:selected-stats="updateEffectiveStats"
+                          />
+                      </section>
+                    </div>
 
                     <div class="divider"></div>
 
@@ -224,6 +234,7 @@ import EquipmentSelector from './EquipmentSelector.vue';
 import WEngineCard from './WEngineCard.vue';
 import DriveDiskCard from './DriveDiskCard.vue';
 import BuffCard from './BuffCard.vue';
+import EffectiveStatsSelector from './EffectiveStatsSelector.vue';
 import { DriveDiskPosition } from '../../model/drive-disk';
 
 const saveStore = useSaveStore();
@@ -352,6 +363,11 @@ function selectEquipment(item: any) {
         // 清除属性缓存
         props.agent.clearPropertyCache();
     }
+}
+
+// 更新有效词条
+function updateEffectiveStats(stats: PropertyType[]) {
+    saveStore.updateAgentEffectiveStats(props.agent.id, stats);
 }
 
 async function ensureAgentReady() {

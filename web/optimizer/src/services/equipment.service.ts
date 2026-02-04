@@ -6,6 +6,7 @@
 
 import type { SaveDataZod } from '../model/save-data-zod';
 import type { SaveData } from '../model/save-data-instance';
+import { PropertyType } from '../model/base';
 
 /**
  * 装备管理服务
@@ -158,6 +159,9 @@ class EquipmentService {
           '6': agent.equipped_drive_disks[5] || '',
         };
         character.equippedDiscs = discs;
+
+        // 同步有效词条
+        character.effectiveStats = agent.effective_stats.map(stat => PropertyType[stat]);
       }
     });
 
