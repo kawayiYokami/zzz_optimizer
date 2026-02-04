@@ -71,6 +71,7 @@
                 <DriveDiskCard
                   v-if="getDiscInfo(discId)"
                   :disk="getDiscInfo(discId)!"
+                  readonly
                 />
                 <div v-else class="card bg-base-100 shadow-sm border border-base-300 w-52">
                   <div class="card-body p-3 flex items-center justify-center text-base-content/40">

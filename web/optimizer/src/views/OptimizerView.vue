@@ -72,6 +72,7 @@
             :battle-service="battleService"
             :selected-agent="targetAgent"
             :enemy="selectedEnemy"
+            :team-id="selectedTeamId"
             @update:selected-enemy-id="selectedEnemyId = $event"
             @change="onBattleEnvChange"
             @update:env-version="battleEnvVersion = $event"
@@ -261,9 +262,10 @@ const optimizedDiscs = computed(() => {
     discs = discs.filter(d => !excludedSet.has(d.id));
   }
 
-  // 步骤3：支配关系剪枝（从角色读取有效词条）
-  const effectiveStats = targetAgent.value?.effective_stats ?? [];
-  if (effectiveStats.length > 0) {
+  // 步骤3：支配关系剪枝（使用约束配置的有效词条）
+  const pruningConfig = constraints.value.effectiveStatPruning;
+  const effectiveStats = pruningConfig?.effectiveStats ?? [];
+  if (pruningConfig?.enabled && effectiveStats.length > 0) {
     discs = OptimizerContext.applyDominancePruning(discs, effectiveStats);
   }
 
@@ -503,6 +505,7 @@ const onTeamChange = async () => {
     // BattleInfoCard 已精简，内部无 refresh 逻辑
     // 加载队伍的优化配置
     loadTeamOptimizationConfig(team.id);
+    syncEffectiveStatsToConstraints();
     // 加载队伍的优化结果缓存
     if (team.optimizationResults && team.optimizationResults.length > 0) {
       results.value = team.optimizationResults;
@@ -515,6 +518,20 @@ const onTeamChange = async () => {
 const selectTargetAgent = (agentId: string) => {
   optimizerService.setTargetAgent(agentId);
   targetAgentId.value = agentId;
+  syncEffectiveStatsToConstraints();
+};
+
+const syncEffectiveStatsToConstraints = () => {
+  if (!targetAgent.value) return;
+  if (!constraints.value.effectiveStatPruning) {
+    constraints.value.effectiveStatPruning = {
+      enabled: true,
+      effectiveStats: [],
+      mainStatScore: 10,
+      pruneThreshold: 10,
+    };
+  }
+  constraints.value.effectiveStatPruning.effectiveStats = [...targetAgent.value.effective_stats];
 };
 
 const toggleEffectiveStat = (stat: PropertyType) => {
@@ -527,6 +544,7 @@ const toggleEffectiveStat = (stat: PropertyType) => {
     current.push(stat);
   }
   saveStore.updateAgentEffectiveStats(targetAgent.value.id, current);
+  syncEffectiveStatsToConstraints();
 };
 
 // 处理主词条限定器更新
@@ -565,6 +583,16 @@ const updateBattleService = async () => {
   // 设置队伍（不依赖敌人）
   if (team) {
     await battleService.setTeam(team);
+
+    // 加载队伍的自选BUFF
+    const customBuffs = saveStore.getTeamCustomBuffs(team.id);
+    battleService.clearManualBuffs();
+    for (const customBuff of customBuffs) {
+      if (customBuff.isActive) {
+        const buff = BattleService.createBuffFromCustomBuff(customBuff);
+        battleService.addManualBuff(buff);
+      }
+    }
   }
 
   // 设置敌人（可选）
@@ -625,6 +653,18 @@ const currentDamage = ref(0);
 
 const onBattleEnvChange = () => {
   // 敌人环境改变时重新估计组合数（estimatedCombinations是响应式计算）
+  // 重新加载自选BUFF（当BUFF激活状态改变时）
+  if (currentTeam.value) {
+    const customBuffs = saveStore.getTeamCustomBuffs(currentTeam.value.id);
+    battleService.clearManualBuffs();
+    for (const customBuff of customBuffs) {
+      if (customBuff.isActive) {
+        const buff = BattleService.createBuffFromCustomBuff(customBuff);
+        battleService.addManualBuff(buff);
+      }
+    }
+    buffsVersion.value++;
+  }
 };
 
 // 一键换装
@@ -762,7 +802,7 @@ const startOptimization = async () => {
       anomalyBuildup: (skill.defaultAnomaly || 0) * (skill.count ?? 1),
     }));
 
-    optimizerService.startFastOptimization({
+    await optimizerService.startFastOptimization({
       agent,
       weapon,  // 角色已装备的武器
       skills: skillParams,

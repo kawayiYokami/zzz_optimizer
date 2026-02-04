@@ -1115,6 +1115,110 @@ export const useSaveStore = defineStore('save', () => {
     return true;
   }
 
+  // ==================== 自选BUFF管理 ====================
+
+  /**
+   * 添加自选BUFF到指定队伍
+   */
+  async function addCustomBuff(
+    teamId: string,
+    buff: Omit<import('../model/save-data-zod').ZodCustomBuff, 'id'>
+  ): Promise<string | null> {
+    if (!currentSaveName.value) return null;
+
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!rawSave) return null;
+
+    const team = rawSave.teams?.find(t => t.id === teamId);
+    if (!team) return null;
+
+    // 生成唯一ID
+    const buffId = `custom_buff_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    const newBuff: import('../model/save-data-zod').ZodCustomBuff = {
+      id: buffId,
+      ...buff,
+    };
+
+    if (!team.customBuffs) {
+      team.customBuffs = [];
+    }
+    team.customBuffs.push(newBuff);
+
+    await saveToStorage();
+    return buffId;
+  }
+
+  /**
+   * 更新自选BUFF
+   */
+  async function updateCustomBuff(
+    teamId: string,
+    buffId: string,
+    updates: Partial<Omit<import('../model/save-data-zod').ZodCustomBuff, 'id'>>
+  ): Promise<boolean> {
+    if (!currentSaveName.value) return false;
+
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!rawSave) return false;
+
+    const team = rawSave.teams?.find(t => t.id === teamId);
+    if (!team?.customBuffs) return false;
+
+    const buffIndex = team.customBuffs.findIndex(b => b.id === buffId);
+    if (buffIndex === -1) return false;
+
+    team.customBuffs[buffIndex] = {
+      ...team.customBuffs[buffIndex],
+      ...updates,
+    };
+
+    await saveToStorage();
+    return true;
+  }
+
+  /**
+   * 删除自选BUFF
+   */
+  async function deleteCustomBuff(teamId: string, buffId: string): Promise<boolean> {
+    if (!currentSaveName.value) return false;
+
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!rawSave) return false;
+
+    const team = rawSave.teams?.find(t => t.id === teamId);
+    if (!team?.customBuffs) return false;
+
+    team.customBuffs = team.customBuffs.filter(b => b.id !== buffId);
+
+    await saveToStorage();
+    return true;
+  }
+
+  /**
+   * 切换自选BUFF激活状态
+   */
+  async function toggleCustomBuffActive(
+    teamId: string,
+    buffId: string,
+    isActive: boolean
+  ): Promise<boolean> {
+    return updateCustomBuff(teamId, buffId, { isActive });
+  }
+
+  /**
+   * 获取队伍的自选BUFF列表
+   */
+  function getTeamCustomBuffs(teamId: string): import('../model/save-data-zod').ZodCustomBuff[] {
+    if (!currentSaveName.value) return [];
+
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!rawSave) return [];
+
+    const team = rawSave.teams?.find(t => t.id === teamId);
+    return team?.customBuffs ?? [];
+  }
+
   return {
     // 状态
     saves,
@@ -1164,6 +1268,11 @@ export const useSaveStore = defineStore('save', () => {
     updateAgentEffectiveStats,    // 更新角色有效词条
     updateDriveDiskLocked,        // 更新驱动盘锁定状态
     updateDriveDiskTrash,         // 更新驱动盘弃置状态
+    addCustomBuff,                // 添加自选BUFF
+    updateCustomBuff,             // 更新自选BUFF
+    deleteCustomBuff,             // 删除自选BUFF
+    toggleCustomBuffActive,       // 切换自选BUFF激活状态
+    getTeamCustomBuffs,           // 获取队伍的自选BUFF列表
 
     // 委托到服务的方法（保持向后兼容）
     normalizeZodData: saveDataService.normalizeZodData.bind(saveDataService),

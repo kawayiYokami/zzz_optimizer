@@ -659,7 +659,7 @@ export class OptimizerContext {
      * - conversionBuffs: 转换类 Buff 规则（运行时在快照3应用）
      * - otherSetTwoPiece: 非目标套装 2 件套静态属性缓存
      */
-    static buildFastRequest(options: {
+    static async buildFastRequest(options: {
         agent: Agent;
         weapon: WEngine | null;
         skills: SkillParams[];
@@ -681,7 +681,7 @@ export class OptimizerContext {
             progressInterval?: number;
             pruneThreshold?: number;
         };
-    }): FastOptimizationRequest {
+    }): Promise<FastOptimizationRequest> {
         // eslint-disable-next-line no-console
         const {
             agent,
@@ -701,6 +701,23 @@ export class OptimizerContext {
 
         const targetSetId = constraints.targetSetId || '';
         // (debug logs removed)
+
+        // ========================================================================
+        // 0. 确保驱动盘详情已加载（2pc/4pc Buff 依赖 set_properties / set_buffs）
+        // - getSetBuff() 在 details 未加载时只会触发异步加载，不会阻塞
+        // - 这里显式 await，避免 otherSetTwoPiece/targetSetTwoPiece 为空导致 2pc 丢失
+        // ========================================================================
+        if (discs.length > 0) {
+            const loadTasks: Promise<void>[] = [];
+            for (const disc of discs) {
+                if (disc && typeof (disc as any).ensureDetailsLoaded === 'function') {
+                    loadTasks.push((disc as any).ensureDetailsLoaded());
+                }
+            }
+            if (loadTasks.length > 0) {
+                await Promise.all(loadTasks);
+            }
+        }
 
         // ============================================================================
         // 1. 创建 mergedStats 并合并所有静态属性（仅 out_of_combat）
@@ -767,6 +784,9 @@ export class OptimizerContext {
 
             // 3a. 2件套静态属性（仅 out_of_combat）
             const twoPieceProps = targetSetDisc.getSetBuff(DriveDiskSetBonus.TWO_PIECE);
+            if (twoPieceProps.out_of_combat.size === 0) {
+                console.warn(`[Optimizer] 目标套装 2pc 为空，可能是驱动盘详情未加载: ${targetSetId}`);
+            }
             for (const [prop, value] of twoPieceProps.out_of_combat.entries()) {
                 addToPropArray(targetSetTwoPiece, prop, value);
             }
@@ -895,6 +915,9 @@ export class OptimizerContext {
 
             const twoPiece = createPropArray();
             const twoPieceProps = disc.getSetBuff(DriveDiskSetBonus.TWO_PIECE);
+            if (twoPieceProps.out_of_combat.size === 0) {
+                console.warn(`[Optimizer] 非目标套装 2pc 为空，可能是驱动盘详情未加载: ${setId}`);
+            }
             for (const [prop, value] of twoPieceProps.out_of_combat.entries()) {
                 addToPropArray(twoPiece, prop, value);
             }

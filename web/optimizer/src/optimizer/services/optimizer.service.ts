@@ -392,7 +392,7 @@ export class OptimizerService {
      * - 使用预计算数据结构
      * - 更高的计算性能
      */
-    startFastOptimization(options: {
+    async startFastOptimization(options: {
         agent: Agent;
         weapon: WEngine | null;  // 固定音擎（可选）
         skills: SkillParams[];  // 支持多个技能
@@ -408,7 +408,7 @@ export class OptimizerService {
         topN?: number;
         estimatedTotal?: number;  // UI计算的有效组合数
         callbacks?: OptimizationCallbacks;
-    }): void {
+    }): Promise<void> {
         if (this.status === 'running') {
             throw new Error('优化器正在运行中');
         }
@@ -429,7 +429,7 @@ export class OptimizerService {
         this.callbacks = options.callbacks ?? {};
 
         // 构建快速优化请求
-        const baseRequest = OptimizerContext.buildFastRequest({
+        const baseRequest = await OptimizerContext.buildFastRequest({
             agent: options.agent,
             weapon: options.weapon,
             skills: options.skills,

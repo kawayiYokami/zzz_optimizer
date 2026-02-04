@@ -65,6 +65,17 @@ class ImportExportService {
     const parseResult = await zodParserService.parseZodDataWithErrors(importData);
     const parseErrors = parseResult.errors;
 
+    const invalidDiscIds = new Set<string>();
+    const invalidCharacterIds = new Set<string>();
+    const invalidWengineIds = new Set<string>();
+
+    for (const e of parseErrors) {
+      if (!e.id) continue;
+      if (e.type === 'disc') invalidDiscIds.add(e.id);
+      if (e.type === 'character') invalidCharacterIds.add(e.id);
+      if (e.type === 'wengine') invalidWengineIds.add(e.id);
+    }
+
     // 安全保护：如果存在解析失败条目，"删除导入中不存在项" 会导致误删
     if (options.deleteNotInImport && parseErrors.length > 0) {
       throw new Error('导入文件存在解析失败条目：为避免误删，请先关闭"删除导入中不存在的项"，或修复导入文件后再尝试。');
@@ -78,8 +89,18 @@ class ImportExportService {
       wengines: (importData.wengines ?? []).filter((w) => parseResult.wengines.has(w.id)),
     };
 
+    // 同步剔除已有数据中与“导入非法条目”同 ID 的记录，避免被 keepNotInImport 重新保留
+    const sanitizedExistingData: SaveDataZod | undefined = existingData
+      ? {
+          ...existingData,
+          discs: (existingData.discs ?? []).filter((d) => !invalidDiscIds.has(d.id)),
+          characters: (existingData.characters ?? []).filter((c) => !invalidCharacterIds.has(c.id)),
+          wengines: (existingData.wengines ?? []).filter((w) => !invalidWengineIds.has(w.id)),
+        }
+      : existingData;
+
     // 合并数据（传入解析错误，用于 UI 展示）
-    const { merged, result } = mergeZodData(sanitizedImportData, existingData, options, parseErrors);
+    const { merged, result } = mergeZodData(sanitizedImportData, sanitizedExistingData, options, parseErrors);
 
     // 修正统计：import 计数应该以文件原始数量为准
     result.discs.import = importData.discs?.length ?? 0;

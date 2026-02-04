@@ -10,7 +10,7 @@ import { Buff, BuffSource, BuffTarget } from '../model/buff';
 import { Team } from '../model/team';
 import { PropertyCollection } from '../model/property-collection';
 import { PropertyType, ElementType, WeaponType, getPropertyCnName } from '../model/base';
-import type { ZodBattleData } from '../model/save-data-zod';
+import type { ZodBattleData, ZodCustomBuff } from '../model/save-data-zod';
 import type { WEngine } from '../model/wengine';
 import type { DriveDisk } from '../model/drive-disk';
 import { OptimizerContext } from '../optimizer/services/optimizer-context';
@@ -133,6 +133,39 @@ export class BattleService {
 
   constructor() {
     // 初始化
+  }
+
+  /**
+   * 从ZodCustomBuff创建Buff实例
+   * 用于将存档中的自选BUFF转换为运行时Buff对象
+   */
+  static createBuffFromCustomBuff(customBuff: ZodCustomBuff): Buff {
+    const inCombatStats = new Map<PropertyType, number>();
+
+    for (const [propName, value] of Object.entries(customBuff.in_combat_stats)) {
+      const propType = (PropertyType as any)[propName];
+      if (propType !== undefined) {
+        inCombatStats.set(propType, value);
+      }
+    }
+
+    // 自选BUFF默认对自己生效
+    const target = new BuffTarget();
+    target.target_self = true;
+
+    return new Buff(
+      BuffSource.TEAM_MATE,  // 使用TEAM_MATE作为自选BUFF的来源标识（区分于角色/装备BUFF）
+      inCombatStats,
+      undefined,  // out_of_combat_stats
+      undefined,  // conversion (不支持转换类)
+      target,
+      1,  // max_stacks
+      'linear',  // stack_mode
+      customBuff.id,
+      customBuff.name,
+      customBuff.description ?? '',
+      ''  // trigger_conditions
+    );
   }
 
   /**

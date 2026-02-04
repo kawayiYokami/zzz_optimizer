@@ -52,6 +52,18 @@ export interface ZodDiscData {
 }
 
 /**
+ * 自选BUFF数据（存储格式）
+ * 不支持转换类BUFF，只支持普通属性加成
+ */
+export interface ZodCustomBuff {
+  id: string;                              // 唯一ID: "custom_buff_{timestamp}_{random}"
+  name: string;                            // BUFF名称
+  description?: string;                    // 描述（可选）
+  in_combat_stats: Record<string, number>; // 属性加成，key为PropertyType字符串名
+  isActive: boolean;                       // 是否激活
+}
+
+/**
  * 队伍数据
  */
 export interface ZodTeamData {
@@ -82,6 +94,12 @@ export interface ZodTeamData {
    * 存储前10组优化结果
    */
   optimizationResults?: OptimizationBuild[];
+
+  /**
+   * 自选BUFF列表（可选）
+   * 每个队伍可以有独立的自选BUFF
+   */
+  customBuffs?: ZodCustomBuff[];
 }
 
 /**

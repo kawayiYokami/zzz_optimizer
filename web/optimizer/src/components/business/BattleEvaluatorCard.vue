@@ -408,7 +408,7 @@ interface DiscInfo {
 
 const debugData = ref<DebugData | null>(null);
 const discInfo = ref<DiscInfo[]>([]);
-const debugRequest = ref<ReturnType<typeof OptimizerContext.buildFastRequest> | null>(null);
+const debugRequest = ref<Awaited<ReturnType<typeof OptimizerContext.buildFastRequest>> | null>(null);
 const calcError = ref<string | null>(null);
 const onEnterZonesTab = () => runDebugCalc();
 const isDev = import.meta.env.DEV;
@@ -559,7 +559,7 @@ const createEmptyDiscData = (slot: number): DiscData => ({
   isTargetSet: false,
 });
 
-const runDebugCalc = () => {
+const runDebugCalc = async () => {
   // 清除之前的错误
   calcError.value = null;
 
@@ -616,7 +616,7 @@ const runDebugCalc = () => {
     anomalyBuildup: (s.defaultAnomaly ?? 0) * count,
   }));
 
-  const request = OptimizerContext.buildFastRequest({
+  const request = await OptimizerContext.buildFastRequest({
     agent: props.agent,
     weapon: props.weapon,
     skills: skillParams,
