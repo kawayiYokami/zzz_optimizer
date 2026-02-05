@@ -22,6 +22,8 @@ export interface ZodCharacterData {
   equippedWengine: string;
   id: string;
   effectiveStats?: string[];  // 有效词条键名数组，如 ["ATK_", "CRIT_", "CRIT_DMG_"]
+  targetFourPieceSetId?: string;      // 目标四件套 ID（单选）
+  targetTwoPieceSetIds?: string[];    // 目标两件套 ID 列表（多选）
 }
 
 export interface ZodWengineData {

@@ -699,7 +699,8 @@ export class OptimizerContext {
             config = {},
         } = options;
 
-        const targetSetId = constraints.targetSetId || '';
+        const targetSetId = constraints.targetFourPieceSetId || constraints.targetSetId || '';
+        const targetTwoPieceSetIds = constraints.targetTwoPieceSetIds || [];
         // (debug logs removed)
 
         // ========================================================================

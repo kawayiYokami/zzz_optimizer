@@ -140,6 +140,10 @@ export class Agent {
   // 有效词条列表（用于优化器剪枝）
   effective_stats: PropertyType[] = [];
 
+  // 目标套装配置（用于优化器）
+  target_four_piece_set_id: string = '';
+  target_two_piece_set_ids: string[] = [];
+
   constructor(
     id: string,
     gameId: string,
@@ -647,6 +651,14 @@ export class Agent {
     } else {
       // 使用默认有效词条
       agent.effective_stats = agent.getDefaultEffectiveStats();
+    }
+
+    // 解析目标套装配置
+    if (zodData.targetFourPieceSetId) {
+      agent.target_four_piece_set_id = zodData.targetFourPieceSetId;
+    }
+    if (zodData.targetTwoPieceSetIds && Array.isArray(zodData.targetTwoPieceSetIds)) {
+      agent.target_two_piece_set_ids = zodData.targetTwoPieceSetIds;
     }
 
     return agent;

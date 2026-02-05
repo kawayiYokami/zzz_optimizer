@@ -197,8 +197,20 @@ export interface OptimizationConstraints {
      * 目标四件套 ID
      * 必须选择一个目标套装才能开始优化
      * 空字符串表示未选择
+     * @deprecated 使用 targetFourPieceSetId 替代
      */
     targetSetId: string;
+
+    /**
+     * 目标四件套 ID（新字段，等价于 targetSetId）
+     */
+    targetFourPieceSetId?: string;
+
+    /**
+     * 目标两件套 ID 列表（多选）
+     * 用于预筛选，只保留允许的套装
+     */
+    targetTwoPieceSetIds?: string[];
 
     /**
      * 优化目标（互斥）

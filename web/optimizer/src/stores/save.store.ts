@@ -1052,6 +1052,41 @@ export const useSaveStore = defineStore('save', () => {
   }
 
   /**
+   * 更新角色目标套装配置
+   */
+  async function updateAgentTargetSets(agentId: string, config: {
+    fourPieceSetId?: string;
+    twoPieceSetIds?: string[];
+  }): Promise<boolean> {
+    if (!currentSaveName.value) {
+      return false;
+    }
+
+    const save = saves.value.get(currentSaveName.value);
+    const rawSave = rawSaves.value.get(currentSaveName.value);
+    if (!save || !rawSave) {
+      return false;
+    }
+
+    // 更新实例对象
+    const agent = save.getAgent(agentId);
+    if (!agent) {
+      return false;
+    }
+
+    if (config.fourPieceSetId !== undefined) {
+      agent.target_four_piece_set_id = config.fourPieceSetId;
+    }
+    if (config.twoPieceSetIds !== undefined) {
+      agent.target_two_piece_set_ids = config.twoPieceSetIds;
+    }
+
+    // 同步到存档
+    await syncInstanceToRawSave();
+    return true;
+  }
+
+  /**
    * 更新驱动盘锁定状态
    */
   async function updateDriveDiskLocked(diskId: string, locked: boolean): Promise<boolean> {
@@ -1266,6 +1301,7 @@ export const useSaveStore = defineStore('save', () => {
     updateWEngineRefinement,      // 更新音擎精炼（编辑用）
     previewZodImportWithOptions,  // 预览导入结果（不落盘）
     updateAgentEffectiveStats,    // 更新角色有效词条
+    updateAgentTargetSets,        // 更新角色目标套装配置
     updateDriveDiskLocked,        // 更新驱动盘锁定状态
     updateDriveDiskTrash,         // 更新驱动盘弃置状态
     addCustomBuff,                // 添加自选BUFF

@@ -266,6 +266,7 @@ export const useGameDataStore = defineStore('gameData', () => {
     name: string;            // 套装中文名称
     icon: string;            // 套装图标URL
     fourPieceDescription: string; // 4件套效果描述
+    twoPieceDescription: string;  // 2件套效果描述
   }
 
   /**
@@ -298,19 +299,26 @@ export const useGameDataStore = defineStore('gameData', () => {
       const setName = equipInfo.CHS?.name || equipInfo.EN?.name || setId;
 
       try {
-        // 加载Buff数据获取4件套描述
+        // 加载Buff数据获取4件套和2件套描述
         const buffs = await dataLoaderService.getEquipmentBuff(setId);
 
         let fourPieceDescription = '无4件套效果';
-        if (buffs && buffs.four_piece_effect) {
-          fourPieceDescription = buffs.four_piece_effect;
+        let twoPieceDescription = '无2件套效果';
+        if (buffs) {
+          if (buffs.four_piece_effect) {
+            fourPieceDescription = buffs.four_piece_effect;
+          }
+          if (buffs.two_piece_effect) {
+            twoPieceDescription = buffs.two_piece_effect;
+          }
         }
 
         setsMap.set(setId, {
           id: setId,
           name: setName,
           icon: equipInfo.icon,
-          fourPieceDescription: fourPieceDescription
+          fourPieceDescription: fourPieceDescription,
+          twoPieceDescription: twoPieceDescription
         });
       } catch (err) {
         console.warn(`加载驱动盘套装Buff数据失败: ${setId}`, err);
@@ -319,7 +327,8 @@ export const useGameDataStore = defineStore('gameData', () => {
           id: setId,
           name: setName,
           icon: equipInfo.icon,
-          fourPieceDescription: '加载失败'
+          fourPieceDescription: '加载失败',
+          twoPieceDescription: '加载失败'
         });
       }
     }

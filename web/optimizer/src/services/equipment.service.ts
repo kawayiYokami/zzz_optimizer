@@ -162,6 +162,12 @@ class EquipmentService {
 
         // 同步有效词条
         character.effectiveStats = agent.effective_stats.map(stat => PropertyType[stat]);
+
+        // 同步目标套装配置
+        character.targetFourPieceSetId = agent.target_four_piece_set_id || undefined;
+        character.targetTwoPieceSetIds = agent.target_two_piece_set_ids.length > 0
+          ? agent.target_two_piece_set_ids
+          : undefined;
       }
     });
 

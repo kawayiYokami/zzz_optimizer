@@ -37,10 +37,11 @@
 
       <!-- 目标套装 -->
               <div class="divider text-xs font-bold text-base-content/50 my-2">目标套装</div>      <div class="flex flex-col gap-2 mt-2">
-        <!-- 当前选中的套装徽章 -->
-        <div class="flex flex-wrap gap-1">
+        <!-- 四件套徽章 -->
+        <div class="flex flex-wrap gap-1 items-center">
+          <span class="text-xs text-base-content/60 mr-1">4件套:</span>
           <!-- 无选择时 -->
-          <div v-if="!targetSetId" class="badge badge-warning">
+          <div v-if="!targetSetId" class="badge badge-warning badge-sm">
             请选择目标四件套
           </div>
           <!-- 有选择时 -->
@@ -53,10 +54,34 @@
             <img
               v-if="getSetIconUrl(targetSetId)"
               :src="getSetIconUrl(targetSetId)"
-              class="w-5 h-5 rounded"
+              class="w-4 h-4 rounded"
               :alt="getSetName(targetSetId)"
             />
             {{ getSetName(targetSetId) }}
+          </div>
+        </div>
+        <!-- 两件套徽章 -->
+        <div class="flex flex-wrap gap-1 items-center">
+          <span class="text-xs text-base-content/60 mr-1">2件套:</span>
+          <!-- 无选择时 -->
+          <div v-if="targetTwoPieceSetIds.length === 0" class="badge badge-ghost badge-sm">
+            未限定
+          </div>
+          <!-- 有选择时 -->
+          <div
+            v-for="setId in targetTwoPieceSetIds"
+            :key="setId"
+            class="badge badge-secondary badge-outline cursor-pointer hover:badge-error gap-1"
+            @click="openSetFilter"
+            :title="'点击编辑: ' + getSetName(setId)"
+          >
+            <img
+              v-if="getSetIconUrl(setId)"
+              :src="getSetIconUrl(setId)"
+              class="w-4 h-4 rounded"
+              :alt="getSetName(setId)"
+            />
+            {{ getSetName(setId) }}
           </div>
         </div>
         <!-- 配置按钮 -->
@@ -72,7 +97,9 @@
       <DriveDiskSetFilterModal
         v-model="showSetFilterModal"
         :target-set-id="targetSetId"
+        :target-two-piece-set-ids="targetTwoPieceSetIds"
         @update:target-set-id="emit('update:targetSetId', $event)"
+        @update:target-two-piece-set-ids="emit('update:targetTwoPieceSetIds', $event)"
       />
 
       <!-- 有效词条 -->
@@ -280,6 +307,7 @@ interface Props {
   estimatedCombinations: CombinationEstimate;
   canStart: boolean;
   targetSetId: string; // 目标四件套ID（单选）
+  targetTwoPieceSetIds: string[]; // 目标两件套ID列表（多选）
   objective?: 'skill' | 'atk' | 'hp'; // 优化目标（互斥）
   optimizedDiscs: any[]; // 优化后的驱动盘（已完成所有过滤）
   allDiscs: any[]; // 所有驱动盘
@@ -300,6 +328,7 @@ const props = withDefaults(defineProps<Props>(), {
   estimatedCombinations: () => ({ total: 0, breakdown: {} }),
   canStart: false,
   targetSetId: '',
+  targetTwoPieceSetIds: () => [],
   objective: 'skill',
   optimizedDiscs: () => [],
   allDiscs: () => [],
@@ -314,6 +343,7 @@ interface Emits {
   'startOptimization': [];
   'cancelOptimization': [];
   'update:targetSetId': [setId: string];
+  'update:targetTwoPieceSetIds': [setIds: string[]];
   'update:objective': [objective: 'skill' | 'atk' | 'hp'];
   'update:mainStatFilters': [filters: any]; // 更新主词条限定器
   'update:excludedTeamIds': [teamIds: string[]]; // 更新排除的队伍ID列表

@@ -35,7 +35,8 @@
             :pruning-stats="pruningStats"
             :estimated-combinations="estimatedCombinations"
             :can-start="canStart"
-            :target-set-id="constraints.targetSetId"
+            :target-set-id="targetFourPieceSetId"
+            :target-two-piece-set-ids="targetTwoPieceSetIds"
             :objective="constraints.objective"
             :optimized-discs="optimizedDiscs"
             :all-discs="saveStore.driveDisks"
@@ -48,7 +49,8 @@
             @toggle-effective-stat="toggleEffectiveStat"
             @start-optimization="startOptimization"
             @cancel-optimization="cancelOptimization"
-            @update:target-set-id="constraints.targetSetId = $event"
+            @update:target-set-id="updateTargetFourPieceSet"
+            @update:target-two-piece-set-ids="updateTargetTwoPieceSets"
             @update:objective="constraints.objective = $event"
             @update:main-stat-filters="handleMainStatFiltersUpdate"
             @update:excluded-team-ids="handleExcludedTeamIdsUpdate"
@@ -262,14 +264,24 @@ const optimizedDiscs = computed(() => {
     discs = discs.filter(d => !excludedSet.has(d.id));
   }
 
-  // 步骤3：支配关系剪枝（使用约束配置的有效词条）
+  // 步骤3：目标套装预筛选（只保留允许的套装）
+  const fourPieceSetId = targetFourPieceSetId.value;
+  const twoPieceSetIds = targetTwoPieceSetIds.value;
+  if (fourPieceSetId || twoPieceSetIds.length > 0) {
+    const allowedSetIds = new Set<string>();
+    if (fourPieceSetId) allowedSetIds.add(fourPieceSetId);
+    for (const setId of twoPieceSetIds) allowedSetIds.add(setId);
+    discs = discs.filter(d => allowedSetIds.has(d.game_id));
+  }
+
+  // 步骤4：支配关系剪枝（使用约束配置的有效词条）
   const pruningConfig = constraints.value.effectiveStatPruning;
   const effectiveStats = pruningConfig?.effectiveStats ?? [];
   if (pruningConfig?.enabled && effectiveStats.length > 0) {
     discs = OptimizerContext.applyDominancePruning(discs, effectiveStats);
   }
 
-  // 步骤4：主词条限定剪枝
+  // 步骤5：主词条限定剪枝
   const mainStatFilters = constraints.value.mainStatFilters ?? {};
   if (Object.keys(mainStatFilters).length > 0) {
     discs = OptimizerContext.applyMainStatFilterPruning(discs, mainStatFilters);
@@ -351,6 +363,16 @@ const selectedStats = computed(() => {
 const unselectedStats = computed(() => {
   const stats = targetAgent.value?.effective_stats ?? [];
   return effectiveStatOptions.filter(opt => !stats.includes(opt.value));
+});
+
+// 目标四件套（从角色读取）
+const targetFourPieceSetId = computed(() => {
+  return targetAgent.value?.target_four_piece_set_id ?? '';
+});
+
+// 目标两件套（从角色读取）
+const targetTwoPieceSetIds = computed(() => {
+  return targetAgent.value?.target_two_piece_set_ids ?? [];
 });
 
 const selectedSkillCountMap = computed(() => {
@@ -532,6 +554,11 @@ const syncEffectiveStatsToConstraints = () => {
     };
   }
   constraints.value.effectiveStatPruning.effectiveStats = [...targetAgent.value.effective_stats];
+
+  // 同步目标套装配置到 constraints
+  constraints.value.targetSetId = targetAgent.value.target_four_piece_set_id || '';
+  constraints.value.targetFourPieceSetId = targetAgent.value.target_four_piece_set_id || '';
+  constraints.value.targetTwoPieceSetIds = targetAgent.value.target_two_piece_set_ids || [];
 };
 
 const toggleEffectiveStat = (stat: PropertyType) => {
@@ -545,6 +572,27 @@ const toggleEffectiveStat = (stat: PropertyType) => {
   }
   saveStore.updateAgentEffectiveStats(targetAgent.value.id, current);
   syncEffectiveStatsToConstraints();
+};
+
+// 更新目标四件套
+const updateTargetFourPieceSet = (setId: string) => {
+  if (!targetAgent.value) return;
+  saveStore.updateAgentTargetSets(targetAgent.value.id, {
+    fourPieceSetId: setId,
+  });
+  // 同步到 constraints（用于优化器）
+  constraints.value.targetSetId = setId;
+  constraints.value.targetFourPieceSetId = setId;
+};
+
+// 更新目标两件套
+const updateTargetTwoPieceSets = (setIds: string[]) => {
+  if (!targetAgent.value) return;
+  saveStore.updateAgentTargetSets(targetAgent.value.id, {
+    twoPieceSetIds: setIds,
+  });
+  // 同步到 constraints（用于优化器）
+  constraints.value.targetTwoPieceSetIds = setIds;
 };
 
 // 处理主词条限定器更新
@@ -729,11 +777,17 @@ const startOptimization = async () => {
   const agent = targetAgent.value;
   if (!agent) return;
 
-  // 检查是否选择了目标套装
-  if (!constraints.value.targetSetId) {
+  // 检查是否选择了目标套装（从 Agent 读取）
+  const fourPieceSetId = agent.target_four_piece_set_id;
+  if (!fourPieceSetId) {
     alert('请选择目标四件套');
     return;
   }
+
+  // 同步到 constraints（确保优化器使用最新配置）
+  constraints.value.targetSetId = fourPieceSetId;
+  constraints.value.targetFourPieceSetId = fourPieceSetId;
+  constraints.value.targetTwoPieceSetIds = agent.target_two_piece_set_ids || [];
 
   // 获取角色已装备的武器（如果没有则使用 null）
   const weapon = equippedWeapon.value;
