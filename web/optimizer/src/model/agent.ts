@@ -144,6 +144,12 @@ export class Agent {
   target_four_piece_set_id: string = '';
   target_two_piece_set_ids: string[] = [];
 
+  // 优化配置（绑定到角色）
+  objective: 'skill' | 'atk' | 'hp' = 'skill';
+  main_stat_filters: Partial<Record<number, PropertyType[]>> = {};
+  pinned_slots: Partial<Record<number, string>> = {};
+  selected_skill_keys: string[] = [];
+
   constructor(
     id: string,
     gameId: string,
@@ -659,6 +665,30 @@ export class Agent {
     }
     if (zodData.targetTwoPieceSetIds && Array.isArray(zodData.targetTwoPieceSetIds)) {
       agent.target_two_piece_set_ids = zodData.targetTwoPieceSetIds;
+    }
+
+    // 解析优化配置（绑定到角色）
+    if (zodData.objective) {
+      agent.objective = zodData.objective;
+    }
+    if (zodData.mainStatFilters) {
+      agent.main_stat_filters = Object.fromEntries(
+        Object.entries(zodData.mainStatFilters).map(([k, v]) => [
+          parseInt(k),
+          (v as string[]).map(key => {
+            const propType = (PropertyType as any)[key];
+            return propType !== undefined ? propType : null;
+          }).filter((p): p is PropertyType => p !== null)
+        ])
+      );
+    }
+    if (zodData.pinnedSlots) {
+      agent.pinned_slots = Object.fromEntries(
+        Object.entries(zodData.pinnedSlots).map(([k, v]) => [parseInt(k), v as string])
+      );
+    }
+    if (zodData.selectedSkillKeys && Array.isArray(zodData.selectedSkillKeys)) {
+      agent.selected_skill_keys = zodData.selectedSkillKeys;
     }
 
     return agent;

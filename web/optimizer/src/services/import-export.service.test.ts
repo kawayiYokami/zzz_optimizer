@@ -106,7 +106,7 @@ describe('ImportExportService.computeMerge', () => {
       battles: [],
     };
 
-    const parseErrors = [
+    const parseErrors: import('../model/import-result').ParseErrorEntry[] = [
       { type: 'disc', id: 'disc_bad', rawData: importData.discs![0], errorMessage: 'bad disc', displayName: 'bad disc' },
       { type: 'character', id: 'char_bad', rawData: importData.characters![0], errorMessage: 'bad char', displayName: 'bad char' },
       { type: 'wengine', id: 'wen_bad', rawData: importData.wengines![0], errorMessage: 'bad wen', displayName: 'bad wen' },

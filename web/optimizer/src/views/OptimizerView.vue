@@ -186,13 +186,9 @@ const constraints = ref<OptimizationConstraints>({
   mainStatFilters: { 4: [], 5: [], 6: [] }, // 主词条限定器
   requiredSets: [],
   pinnedSlots: {},
-  setMode: 'any',
-  selectedWeaponIds: [],
   effectiveStatPruning: {
-    enabled: true,
     effectiveStats: [],
     mainStatScore: 10,
-    pruneThreshold: 10,
   },
   targetSetId: '', // 目标四件套ID（单选）
   objective: 'skill',
@@ -439,7 +435,7 @@ const unselectedBuffs = computed(() => {
   return availableBuffs.value.filter(b => !activeIds.has(b.id));
 });
 
-// 从队伍加载配置
+// 从队伍加载配置（从前台角色读取优化配置）
 const loadTeamOptimizationConfig = (teamId: string) => {
   isLoadingConfig.value = true;
   try {
@@ -449,19 +445,39 @@ const loadTeamOptimizationConfig = (teamId: string) => {
       return;
     }
 
-    let config = team.optimizationConfig;
-
-    // 如果队伍没有配置，生成智能推荐配置
-    if (!config) {
-      config = PresetGenerator.generateRecommendedConfig(team);
-      // 保存到队伍
-      saveStore.updateTeamOptimizationConfig(teamId, config);
+    const frontAgent = team.frontAgent;
+    if (!frontAgent) {
+      console.warn(`[Optimizer] 队伍 ${teamId} 没有前台角色`);
+      return;
     }
 
-    // 应用配置到界面
-    constraints.value = config.constraints;
-    selectedSkillKeys.value = config.selectedSkillKeys;
+    // 如果角色还没有有效词条，生成默认配置
+    if (frontAgent.effective_stats.length === 0) {
+      PresetGenerator.generateRecommendedConfigForAgent(frontAgent);
+    }
+
+    // 从前台角色读取优化配置
+    constraints.value.objective = frontAgent.objective || 'skill';
+    constraints.value.mainStatFilters = frontAgent.main_stat_filters || {};
+    constraints.value.pinnedSlots = frontAgent.pinned_slots || {};
+    selectedSkillKeys.value = frontAgent.selected_skill_keys || [];
+
+    // 敌人选择仍然保留在队伍配置中
+    let config = team.optimizationConfig;
+    if (!config) {
+      // 创建默认的队伍配置（仅包含敌人选择）
+      config = {
+        constraints: {},
+        selectedSkillKeys: [],
+        selectedEnemyId: '',
+        lastUpdated: new Date().toISOString(),
+      };
+      saveStore.updateTeamOptimizationConfig(teamId, config);
+    }
     selectedEnemyId.value = config.selectedEnemyId;
+
+    // 同步目标套装和有效词条
+    syncEffectiveStatsToConstraints();
 
     // 增加 buffsVersion 触发 Buff UI 更新
     buffsVersion.value++;
@@ -473,12 +489,30 @@ const loadTeamOptimizationConfig = (teamId: string) => {
   }
 };
 
-// 保存配置到当前队伍
+// 保存配置到当前队伍（优化配置保存到前台角色）
 const saveTeamOptimizationConfig = (teamId: string) => {
   try {
+    const team = teams.value.find(t => t.id === teamId);
+    if (!team) {
+      console.error(`[Optimizer] 队伍 ${teamId} 不存在`);
+      return;
+    }
+
+    const frontAgent = team.frontAgent;
+    if (!frontAgent) {
+      return; // 没有前台角色，无法保存
+    }
+
+    // 保存优化配置到前台角色
+    frontAgent.objective = constraints.value.objective || 'skill';
+    frontAgent.main_stat_filters = constraints.value.mainStatFilters;
+    frontAgent.pinned_slots = constraints.value.pinnedSlots;
+    frontAgent.selected_skill_keys = selectedSkillKeys.value;
+
+    // 敌人选择仍然保存到队伍配置
     const config = {
-      constraints: constraints.value,
-      selectedSkillKeys: selectedSkillKeys.value,
+      constraints: {},
+      selectedSkillKeys: [],
       selectedEnemyId: selectedEnemyId.value,
       lastUpdated: new Date().toISOString(),
     };
@@ -548,10 +582,8 @@ const syncEffectiveStatsToConstraints = () => {
   if (!targetAgent.value) return;
   if (!constraints.value.effectiveStatPruning) {
     constraints.value.effectiveStatPruning = {
-      enabled: true,
       effectiveStats: [],
       mainStatScore: 10,
-      pruneThreshold: 10,
     };
   }
   constraints.value.effectiveStatPruning.effectiveStats = [...targetAgent.value.effective_stats];

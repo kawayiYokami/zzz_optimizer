@@ -446,7 +446,6 @@ export class OptimizerService {
             config: {
                 topN: this.topN,
                 progressInterval: 10000,
-                pruneThreshold: options.constraints.effectiveStatPruning?.pruneThreshold ?? 10,
             },
         });
 
@@ -703,28 +702,22 @@ export class OptimizerService {
      */
     estimateCombinations(config: {
         weapons: WEngine[];
-        selectedWeaponIds: string[];
         discs: DriveDisk[];
         constraints: OptimizationConstraints;
     }): {
         total: number;
         breakdown: Record<string, number>;
     } {
-        // 手动选择的武器
-        const selectedWeapons = config.selectedWeaponIds.length > 0
-            ? config.weapons.filter(w => config.selectedWeaponIds.includes(w.id))
-            : config.weapons;
-
         // 驱动盘已在 OptimizerView 中完成所有过滤，直接按位置分组
         const discsBySlot = this.groupDiscsBySlot(config.discs);
 
         // 计算各位置数量
         const breakdown: Record<string, number> = {
-            weapons: selectedWeapons.length
+            weapons: config.weapons.length
         };
 
         // 统一计算全量组合数（目标套装过滤在 Worker 内部进行）
-        let total = selectedWeapons.length || 1;
+        let total = config.weapons.length || 1;
         for (let slot = 1; slot <= 6; slot++) {
             const slotKey = `slot${slot}`;
             if (config.constraints.pinnedSlots[slot]) {
@@ -749,13 +742,9 @@ export class OptimizerService {
             mainStatFilters: {},
             requiredSets: [],
             pinnedSlots: {},
-            setMode: 'any',
-            selectedWeaponIds: [],
             effectiveStatPruning: {
-                enabled: false,
                 effectiveStats: [],
                 mainStatScore: 10,
-                pruneThreshold: 10,
             },
             targetSetId: '',
         };

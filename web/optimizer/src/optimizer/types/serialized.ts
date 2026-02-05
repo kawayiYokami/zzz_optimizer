@@ -144,17 +144,14 @@ export interface SerializedSetBonus {
 // ============================================================================
 
 /**
- * 有效词条剪枝配置
+ * 有效词条配置
+ * 用于计算驱动盘有效得分，用于排序
  */
 export interface EffectiveStatPruningConfig {
-    /** 启用有效词条剪枝 */
-    enabled: boolean;
     /** 用户选择的有效词条类型 */
     effectiveStats: PropertyType[];
     /** 主词条得分（默认 10） */
     mainStatScore: number;
-    /** 剪枝阈值（与 TopN 最后一名的差距，默认 10） */
-    pruneThreshold: number;
 }
 
 /**
@@ -178,17 +175,6 @@ export interface OptimizationConstraints {
      * 锁定的位置不参与优化，使用指定的驱动盘
      */
     pinnedSlots: Partial<Record<number, string>>;
-    /**
-     * 套装模式
-     * - 'any': 不限制套装组合
-     * - 'complete': 只考虑完整套装组合 (2+4 或 2+2+2)
-     */
-    setMode: 'any' | 'complete';
-    /**
-     * 选中参与优化的武器 ID 列表（手动选择）
-     * 空数组或 undefined 表示使用所有可用武器
-     */
-    selectedWeaponIds?: string[];
     /**
      * 有效词条剪枝配置
      */

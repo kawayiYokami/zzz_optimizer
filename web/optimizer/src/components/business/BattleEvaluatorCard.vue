@@ -630,8 +630,10 @@ const runDebugCalc = async () => {
       mainStatFilters: {},
       requiredSets: [],
       pinnedSlots: {},
-      setMode: 'any',
-      selectedWeaponIds: [],
+      effectiveStatPruning: {
+        effectiveStats: [],
+        mainStatScore: 10,
+      },
       targetSetId,
     },
     externalBuffs: props.externalBuffs || [],

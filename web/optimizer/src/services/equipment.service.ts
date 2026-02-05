@@ -168,6 +168,21 @@ class EquipmentService {
         character.targetTwoPieceSetIds = agent.target_two_piece_set_ids.length > 0
           ? agent.target_two_piece_set_ids
           : undefined;
+
+        // 同步优化配置（绑定到角色）
+        character.objective = agent.objective;
+        character.mainStatFilters = Object.fromEntries(
+          Object.entries(agent.main_stat_filters).filter(([, v]) => v).map(([k, v]) => [
+            k,
+            v!.map(stat => PropertyType[stat])
+          ])
+        );
+        character.pinnedSlots = Object.fromEntries(
+          Object.entries(agent.pinned_slots).filter(([, v]) => v !== undefined)
+        ) as Record<number, string>;
+        character.selectedSkillKeys = agent.selected_skill_keys.length > 0
+          ? agent.selected_skill_keys
+          : undefined;
       }
     });
 

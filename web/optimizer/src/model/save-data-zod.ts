@@ -24,6 +24,11 @@ export interface ZodCharacterData {
   effectiveStats?: string[];  // 有效词条键名数组，如 ["ATK_", "CRIT_", "CRIT_DMG_"]
   targetFourPieceSetId?: string;      // 目标四件套 ID（单选）
   targetTwoPieceSetIds?: string[];    // 目标两件套 ID 列表（多选）
+  // 优化配置（绑定到角色）
+  objective?: 'skill' | 'atk' | 'hp';  // 优化目标
+  mainStatFilters?: Record<number, string[]>;  // 主词条筛选（位置 -> 属性类型数组）
+  pinnedSlots?: Record<number, string>;  // 驱动盘锁定位置（位置 -> 驱动盘ID）
+  selectedSkillKeys?: string[];  // 选中的技能键列表
 }
 
 export interface ZodWengineData {

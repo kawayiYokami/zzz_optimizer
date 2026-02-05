@@ -940,7 +940,7 @@ export class OptimizerContext {
         };
 
         const getStatScore = (statType: PropertyType, isMainStat: boolean): number => {
-            if (!pruningConfig?.enabled || !pruningConfig.effectiveStats.length) return 0;
+            if (!pruningConfig?.effectiveStats.length) return 0;
 
             if (pruningConfig.effectiveStats.includes(statType)) {
                 return isMainStat ? pruningConfig.mainStatScore : 1;
