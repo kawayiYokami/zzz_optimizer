@@ -328,25 +328,46 @@ export class SaveData {
   }
 
   private _wengineToZod(wengine: WEngine): ZodWengineData {
-    const base: ZodWengineData = {
-      key: this.zodWengineKeyMap.get(wengine.id) ?? wengine.wengine_id,
-      id: wengine.id,
-      level: wengine.level,
-      modification: wengine.refinement,
-      promotion: wengine.breakthrough,
-      location: wengine.equipped_agent ?? '',
-    };
 
-    const phase = this.zodWenginePhaseMap.get(wengine.id);
-    if (phase !== undefined) {
-      base.phase = phase;
-    }
-    if (this.zodWengineLockMap.has(wengine.id)) {
-      base.lock = this.zodWengineLockMap.get(wengine.id);
-    }
+  
 
-    return base;
-  }
+      const base: ZodWengineData = {
+
+        key: this.zodWengineKeyMap.get(wengine.id) ?? wengine.wengine_id,
+
+        id: wengine.id,
+
+        level: wengine.level,
+
+        modification: wengine.refinement,
+
+        promotion: wengine.breakthrough,
+
+        location: wengine.equipped_agent ?? '',
+
+      };
+
+  
+
+      const phase = this.zodWenginePhaseMap.get(wengine.id);
+
+      if (phase !== undefined) {
+
+        base.phase = phase;
+
+      }
+
+      if (this.zodWengineLockMap.has(wengine.id)) {
+
+        base.lock = this.zodWengineLockMap.get(wengine.id);
+
+      }
+
+  
+
+      return base;
+
+    }
 
   private _propertyTypeToZodKey(prop: PropertyType): string {
     switch (prop) {

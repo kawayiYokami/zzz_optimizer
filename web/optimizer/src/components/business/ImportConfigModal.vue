@@ -191,6 +191,7 @@ const targetSaveName = ref('');
 const previewResult = ref<ImportResult | null>(null);
 const isParsingPreview = ref(false);
 const previewError = ref<string | null>(null);
+const isInitializing = ref(false);
 
 const isBusy = computed(() => !!props.isBusy);
 const fileData = computed(() => props.fileData);
@@ -203,6 +204,9 @@ watch(
   (show) => {
     if (!show) return;
 
+    // 标记正在初始化，避免触发预览
+    isInitializing.value = true;
+
     options.value = { ...DEFAULT_IMPORT_OPTIONS };
     if (props.defaultTargetSaveName) {
       targetSaveName.value = props.defaultTargetSaveName;
@@ -213,6 +217,12 @@ watch(
     }
     previewResult.value = null;
     previewError.value = null;
+
+    // 初始化完成，手动调用一次预览
+    setTimeout(async () => {
+      isInitializing.value = false;
+      await generatePreview();
+    }, 0);
   }
 );
 
@@ -310,7 +320,11 @@ async function generatePreview() {
 
 watch(
   () => [props.show, props.fileData, targetSaveName.value, options.value.detectDups, options.value.deleteNotInImport] as const,
-  async ([show]) => {
+  async ([show], [oldShow]) => {
+    // 如果是 show 从 false 变为 true（对话框刚打开），跳过预览（由重置逻辑处理）
+    if (show && !oldShow && isInitializing.value) {
+      return;
+    }
     if (!show) return;
     if (isBusy.value) return;
     await generatePreview();

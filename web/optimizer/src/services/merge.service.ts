@@ -110,6 +110,27 @@ export function mergeDiscs(
 
     for (const importDisc of importDiscs) {
         let finalDisc = { ...importDisc };
+
+        // 根据副词条数自动修正等级
+        // - 初始（0级）：4个副词条
+        // - 每3级：+1个副词条
+        // - 3级：5个，6级：6个，9级：7个，12级：8个，15级：9个
+        if (finalDisc.substats && finalDisc.substats.length > 0) {
+            const totalLines = finalDisc.substats.reduce((sum, s) => sum + (s.upgrades || 0), 0);
+            if (totalLines >= 4) {
+                const extraLines = totalLines - 4;
+                if (extraLines > 0 && extraLines <= 5) {
+                    const correctedLevel = extraLines * 3;
+                    if (finalDisc.level < correctedLevel) {
+                        console.warn(
+                            `驱动盘等级与副词条数不匹配，自动修正等级: ${finalDisc.level} -> ${correctedLevel} (副词条数: ${totalLines})`
+                        );
+                        finalDisc.level = correctedLevel;
+                    }
+                }
+            }
+        }
+
         let foundDupOrUpgrade = false;
 
         if (!result.ignoreDups) {
@@ -155,11 +176,11 @@ export function mergeDiscs(
 
                 idsToRemove.delete(match.id);
 
-                // 保留已有位置（如果导入文件没有位置信息）
+                // 优先使用导入装备的 location，如果没有则保留现有装备的 location
                 finalDisc = {
-                    ...importDisc,
-                    id: match.id, // 复用旧 ID
-                    location: hasLocation ? importDisc.location : match.location,
+                    ...finalDisc,  // 使用 finalDisc 以保留修正后的等级
+                    id: match.id,  // 复用旧 ID
+                    location: importDisc.location || match.location,
                 };
             }
         }
@@ -277,7 +298,7 @@ export function mergeWengines(
                 finalWengine = {
                     ...importWengine,
                     id: match.id,
-                    location: hasLocation ? importWengine.location : match.location,
+                    location: importWengine.location || match.location,
                 };
             }
         }
@@ -388,6 +409,8 @@ export function mergeZodData(
     options: ImportOptions,
     parseErrors: ParseErrorEntry[] = []
 ): { merged: SaveDataZod; result: ImportResult } {
+    const callId = Date.now() + Math.random().toString(36).substr(2, 9);
+    console.log(`[mergeZodData] 开始合并, callId=${callId}, 角色数=${(importData.characters ?? []).length}, 音擎数=${(importData.wengines ?? []).length}`);
     const source = importData.source ?? 'Unknown';
     const keepNotInImport = !options.deleteNotInImport;
     const ignoreDups = !options.detectDups;
@@ -436,7 +459,82 @@ export function mergeZodData(
         battles: mergedBattles,
     };
 
+    // 根据装备的 location 同步角色的装备信息
+    console.log(`[mergeZodData] 准备调用 syncEquipmentFromLocation, callId=${callId}`);
+    syncEquipmentFromLocation(merged);
+    console.log(`[mergeZodData] 完成 syncEquipmentFromLocation, callId=${callId}`);
+
     return { merged, result };
+}
+
+/**
+ * 根据装备的 location 字段同步角色的装备信息
+ *
+ * 确保装备的 location 与角色的 equippedWengine/equippedDiscs 保持一致
+ *
+ * 优先级：location 字段 > 角色记录
+ * - 如果装备有 location，优先按 location 装备
+ * - 如果角色记录的装备与 location 冲突，以 location 为准
+ *
+ * 注意：会将装备的 location 从角色 key 转换为角色 ID
+ */
+function syncEquipmentFromLocation(data: SaveDataZod): void {
+    console.log('[syncEquipmentFromLocation] 开始同步 ZOD 数据中的装备关联');
+
+    // 创建 key -> 角色的映射
+    const keyToCharMap = new Map<string, ZodCharacterData>();
+    for (const char of data.characters ?? []) {
+        keyToCharMap.set(char.key, char);
+        console.log(`[syncEquipmentFromLocation] 映射: ${char.key} -> ${char.id}`);
+    }
+
+    // 1. 先清空所有角色的装备记录
+    for (const char of data.characters ?? []) {
+        char.equippedWengine = '';
+        char.equippedDiscs = {};
+    }
+
+    // 2. 遍历所有音擎，根据 location 装备到角色
+    let wengineCount = 0;
+    for (const wengine of data.wengines ?? []) {
+        if (wengine.location) {
+            console.log(`[syncEquipmentFromLocation] 音擎 ${wengine.id} 的 location: ${wengine.location}`);
+            const char = keyToCharMap.get(wengine.location);
+            if (char) {
+                console.log(`[syncEquipmentFromLocation] 找到角色: ${char.key} (ID: ${char.id})`);
+                char.equippedWengine = wengine.id;
+                // 将 location 从角色 key 转换为角色 ID
+                wengine.location = char.id;
+                wengineCount++;
+            } else {
+                console.warn(`[syncEquipmentFromLocation] 未找到角色 key: ${wengine.location}`);
+                wengine.location = '';
+            }
+        }
+    }
+    console.log(`[syncEquipmentFromLocation] 成功装备 ${wengineCount} 个音擎`);
+
+    // 3. 遍历所有驱动盘，根据 location 装备到角色
+    let diskCount = 0;
+    for (const disc of data.discs ?? []) {
+        if (disc.location) {
+            console.log(`[syncEquipmentFromLocation] 驱动盘 ${disc.id} 的 location: ${disc.location}`);
+            const char = keyToCharMap.get(disc.location);
+            if (char) {
+                console.log(`[syncEquipmentFromLocation] 找到角色: ${char.key} (ID: ${char.id})`);
+                const slotKey = disc.slotKey;
+                char.equippedDiscs[slotKey] = disc.id;
+                // 将 location 从角色 key 转换为角色 ID
+                disc.location = char.id;
+                diskCount++;
+            } else {
+                console.warn(`[syncEquipmentFromLocation] 未找到角色 key: ${disc.location}`);
+                disc.location = '';
+            }
+        }
+    }
+    console.log(`[syncEquipmentFromLocation] 成功装备 ${diskCount} 个驱动盘`);
+    console.log('[syncEquipmentFromLocation] 同步完成');
 }
 
 // ============================================================================

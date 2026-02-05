@@ -559,8 +559,28 @@ export class DriveDisk {
     zodData: ZodDiscData,
     dataLoader: typeof dataLoaderService
   ): Promise<DriveDisk> {
+    // 根据副词条数自动修正等级
+    // - 初始（0级）：4个副词条
+    // - 每3级：+1个副词条
+    // - 3级：5个，6级：6个，9级：7个，12级：8个，15级：9个
+    let actualLevel = zodData.level;
+    if (zodData.substats && zodData.substats.length > 0) {
+      const totalLines = zodData.substats.reduce((sum, s) => sum + (s.upgrades || 0), 0);
+      if (totalLines >= 4) {
+        const extraLines = totalLines - 4;
+        if (extraLines > 0 && extraLines <= 5) {
+          const correctedLevel = extraLines * 3;
+          if (zodData.level < correctedLevel) {
+            actualLevel = correctedLevel;
+          }
+        }
+      }
+    }
+
     // Basic validity check (throws with a human-readable message when invalid)
-    DriveDisk.validateZodData(zodData);
+    // 传入修正后的等级数据进行验证
+    const zodDataWithCorrectedLevel = { ...zodData, level: actualLevel };
+    DriveDisk.validateZodData(zodDataWithCorrectedLevel);
 
     // 1. 根据setKey查找游戏数据中的驱动盘套装ID
     let gameEquipId: string | null = null;
@@ -630,7 +650,7 @@ export class DriveDisk {
       gameEquipId,
       position,
       rarity,
-      zodData.level,
+      actualLevel,
       mainStat,
       mainStatValue,
       subStats
@@ -881,15 +901,17 @@ export class DriveDisk {
     // - max enhancement times is 5, so total lines never exceeds 8~9
     // - A disc has at most 4 substat TYPES; extra lines must be allocated as upgrades among the existing 4.
     // - If substat TYPES < 4, then you cannot allocate extra lines; total lines must equal types count.
-    const extraLines = Math.min(5, Math.floor((zodData.level ?? 0) / 3));
-    const maxTotalLines = 4 + extraLines;
-
     const typeCount = subs.length;
     if (typeCount < 0 || typeCount > 4) {
       throw new Error(`驱动盘副词条种类数量不合法: count=${typeCount}, expected=0~4`);
     }
 
     const totalLines = subs.reduce((sum, s) => sum + (Number(s.upgrades) || 0), 0);
+
+    // 计算允许的最大副词条数（基于等级）
+    const extraLines = Math.min(5, Math.floor((zodData.level ?? 0) / 3));
+    const maxTotalLines = 4 + extraLines;
+
     if (totalLines > maxTotalLines) {
       throw new Error(
         `驱动盘副词条总条数不合法: level=${zodData.level}, total=${totalLines}, max=${maxTotalLines}`
