@@ -9,6 +9,12 @@
           @click="showTeamSelector = true"
           :clickable="true"
         />
+        <!-- 交换按钮 -->
+        <div class="flex gap-2 mt-2">
+          <button class="btn btn-sm btn-ghost flex-1" disabled>前台</button>
+          <button class="btn btn-sm btn-outline flex-1" @click="swapTeamPosition(0, 1)">↔ 后台1</button>
+          <button class="btn btn-sm btn-outline flex-1" @click="swapTeamPosition(0, 2)">↔ 后台2</button>
+        </div>
       </div>
       <div v-else class="mt-2 text-sm text-base-content/60 text-center py-4">
         暂无队伍，请先创建队伍
@@ -195,6 +201,7 @@ interface Emits {
   'decSkill': [skillKey: string];
   'toggleBuff': [buffId: string];
   'createTeam': [];
+  'teamUpdated': [];
 }
 
 const emit = defineEmits<Emits>();
@@ -204,6 +211,42 @@ const showTeamSelector = ref(false);
 const showTeamEditModal = ref(false);
 const editingTeamId = ref<string | undefined>();
 // 敌人选择已迁移到「战斗环境」卡片
+
+// 交换队伍位置
+async function swapTeamPosition(frontIndex: number, backIndex: number) {
+  if (!props.currentTeam) return;
+
+  // 获取当前队伍的所有角色
+  const agents = [
+    props.currentTeam.frontAgent,
+    ...props.currentTeam.backAgents
+  ];
+
+  // 检查索引是否有效
+  if (frontIndex < 0 || frontIndex >= agents.length || backIndex < 0 || backIndex >= agents.length) {
+    return;
+  }
+
+  // 构建新的队伍数据
+  const newAgents = [...agents];
+  const temp = newAgents[frontIndex];
+  newAgents[frontIndex] = newAgents[backIndex];
+  newAgents[backIndex] = temp;
+
+  // 更新队伍
+  const { useSaveStore } = await import('../../stores/save.store');
+  const saveStore = useSaveStore();
+  const success = await saveStore.updateTeam(props.currentTeam.id, {
+    frontCharacterId: newAgents[0]?.id || '',
+    backCharacter1Id: newAgents[1]?.id || '',
+    backCharacter2Id: newAgents[2]?.id || '',
+  });
+
+  if (success) {
+    // 通知父组件刷新
+    emit('teamUpdated');
+  }
+}
 
 // === 技能分组逻辑（上：已激活；下：可选） ===
 

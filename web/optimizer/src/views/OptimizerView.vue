@@ -22,6 +22,7 @@
              @dec-skill="decSkill"
              @toggle-buff="toggleBuff"
              @create-team="onTeamChange"
+             @team-updated="onTeamChange"
            />
 
           <!-- 计算设置和组合明细 -->
@@ -986,5 +987,10 @@ watch(selectedEnemyId, () => {
 
 onUnmounted(() => {
   optimizerService.terminateWorkers();
+});
+
+// 暴露方法供子组件调用
+defineExpose({
+  onTeamChange,
 });
 </script>
