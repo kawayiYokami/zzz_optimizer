@@ -321,6 +321,13 @@ function runFastOptimization(request: FastOptimizationRequest): void {
   const startIdx = Math.floor(slot0Count * workerId / totalWorkers);
   const endIdx = Math.floor(slot0Count * (workerId + 1) / totalWorkers);
 
+  // ============================================================================
+  // [调试用] 伤害验证日志 - 用于检验特定组合的伤害计算是否正确
+  // 使用方法：取消注释 debugTargetIds 和下方两处 isTargetCombo 检查块
+  // 注意：此日志输出的 damage 不含通用乘区(resMult/dmgTakenMult等)，最终结果会更高
+  // ============================================================================
+  // const debugTargetIds = new Set(['zzz_disc_175', 'zzz_disc_183', 'zzz_disc_225', 'zzz_disc_239', 'zzz_disc_195', 'zzz_disc_207']);
+
   // 主循环：遍历所有组合（无音擎循环）
   for (let i0 = startIdx; i0 < endIdx && !shouldCancel; i0++) {
     evaluator.beginIncrementalSearch();
@@ -391,6 +398,22 @@ function runFastOptimization(request: FastOptimizationRequest): void {
                   evaluator.popDiscIncremental(disc5);
                   continue;
                 }
+
+                // [调试用] 伤害验证日志 - 检查目标组合（计算前状态）
+                // const isTargetCombo = debugTargetIds.has(disc0.id) && debugTargetIds.has(disc1.id) && debugTargetIds.has(disc2.id) && debugTargetIds.has(disc3.id) && debugTargetIds.has(disc4.id) && debugTargetIds.has(disc5.id);
+                // if (isTargetCombo) {
+                //   console.error(`[Worker ${workerId}] Level5 ACCEPTED: path=[${disc0.id}, ${disc1.id}, ${disc2.id}, ${disc3.id}, ${disc4.id}, ${disc5.id}], targetCount=${targetCount5}`);
+                //   const twoPieceStats = evaluator.getTwoPieceStats();
+                //   console.error(`[Worker ${workerId}] Active 2-piece sets:`, JSON.stringify(twoPieceStats));
+                //   const dynamicBufferNonZero: Record<string, number> = {};
+                //   const twoPieceBuffer = evaluator.getDynamicTwoPieceBuffer();
+                //   for (let i = 0; i < twoPieceBuffer.length; i++) {
+                //     if (twoPieceBuffer[i] !== 0) {
+                //       dynamicBufferNonZero[`idx${i}`] = twoPieceBuffer[i];
+                //     }
+                //   }
+                //   console.error(`[Worker ${workerId}] dynamicTwoPieceBuffer non-zero values:`, JSON.stringify(dynamicBufferNonZero));
+                // }
               }
 
               // 填充盘数组
@@ -436,6 +459,40 @@ function runFastOptimization(request: FastOptimizationRequest): void {
               // 更新 TopN
               topNHeap.tryPush(result.damage, discIndices, result.multipliers);
 
+              // [调试用] 伤害验证日志 - 检查目标组合（计算后状态）
+              // const isTargetCombo2 = debugTargetIds.has(disc0.id) && debugTargetIds.has(disc1.id) && debugTargetIds.has(disc2.id) && debugTargetIds.has(disc3.id) && debugTargetIds.has(disc4.id) && debugTargetIds.has(disc5.id);
+              // if (isTargetCombo2) {
+              //   console.error(`[Worker ${workerId}] Target combo calculated damage: ${result.damage}`);
+              //   console.error(`[Worker ${workerId}] snapshot1Atk: ${result.snapshots.snapshot1.atk}, snapshot2Atk: ${result.snapshots.snapshot2.atk}, snapshot3Atk: ${result.snapshots.snapshot3.atk}`);
+              //   const twoPieceBufferNonZero: Record<string, number> = {};
+              //   const twoPieceBuffer = evaluator.getDynamicTwoPieceBuffer();
+              //   for (let i = 0; i < twoPieceBuffer.length; i++) {
+              //     if (twoPieceBuffer[i] !== 0) {
+              //       twoPieceBufferNonZero[`idx${i}`] = twoPieceBuffer[i];
+              //     }
+              //   }
+              //   console.error(`[Worker ${workerId}] dynamicTwoPieceBuffer non-zero:`, JSON.stringify(twoPieceBufferNonZero));
+              //   const finalStats = evaluator.getEvalBufferSnapshot();
+              //   const nonZeroStats: Record<string, number> = {};
+              //   const propMap: Record<string, number> = {
+              //     'HP_BASE': 0, 'ATK_BASE': 1, 'DEF_BASE': 2,
+              //     'HP': 4, 'HP_': 5, 'ATK': 6, 'ATK_': 7, 'DEF': 8, 'DEF_': 9,
+              //     'PEN': 10, 'PEN_': 11, 'SHEER_FORCE': 12,
+              //     'RES_IGN_': 14, 'DEF_IGN_': 15,
+              //     'CRIT_': 16, 'CRIT_DMG_': 17,
+              //     'ANOM_PROF': 29, 'ANOM_CRIT_': 36, 'ANOM_CRIT_DMG_': 37,
+              //     'COMMON_DMG_': 47, 'DMG_': 48,
+              //     'PHYSICAL_DMG_': 59, 'ETHER_DMG_': 60,
+              //     'ELECTRIC_DMG_': 61, 'ICE_DMG_': 62, 'FIRE_DMG_': 63
+              //   };
+              //   Object.entries(propMap).forEach(([name, idx]) => {
+              //     if (finalStats[idx] !== 0) {
+              //       nonZeroStats[name] = finalStats[idx];
+              //     }
+              //   });
+              //   console.error(`[Worker ${workerId}] finalStats:`, JSON.stringify(nonZeroStats));
+              // }
+
               processedCount++;
 
               // 定期上报进度
@@ -459,6 +516,7 @@ function runFastOptimization(request: FastOptimizationRequest): void {
                 lastProgressTime = currentTime;
               }
 
+              evaluator.restoreEvalBuffer();
               evaluator.popDiscIncremental(disc5);
 
               // 调试：检查 slot5 pop 后状态是否回到 slot0..slot4 的 prefix

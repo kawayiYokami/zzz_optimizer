@@ -77,6 +77,15 @@ export class FastEvaluator {
   /** Worker 复用的普通 buff 合并（mergedBuff + target 4pc buff） */
   private workerMergedBuff: Float64Array;
 
+  /** Worker 复用的动态两件套缓冲区（非目标套装） */
+  private dynamicTwoPieceBuffer: Float64Array;
+
+  /** 用于保存/恢复 evalBuffer 的预分配缓冲区（防止状态污染） */
+  private evalBufferSave: Float64Array;
+
+  /** 预分配的 accumulatorWithTwoPiece 缓冲区（避免热路径分配） */
+  private accumulatorWithTwoPiece: Float64Array;
+
   /** 非目标套装计数（用于2件套判断；Worker 热路径避免 Map/string） */
   private otherSetCounts: Int8Array;
   /** 本组合中实际出现过的 setIdx（最多 6 个，避免扫描 entire counts） */
@@ -112,8 +121,11 @@ export class FastEvaluator {
     this.hasMingpo = precomputed.skillsParams.some(s => s?.isMingpo === true || s?.isPenetration === true);
     this.accumulator = new Float64Array(PROP_IDX.TOTAL_PROPS);
     this.evalBuffer = new Float64Array(PROP_IDX.TOTAL_PROPS);
+    this.evalBufferSave = new Float64Array(PROP_IDX.TOTAL_PROPS);
+    this.accumulatorWithTwoPiece = new Float64Array(PROP_IDX.TOTAL_PROPS);
     this.workerBaseStats = new Float64Array(PROP_IDX.TOTAL_PROPS);
     this.workerMergedBuff = new Float64Array(PROP_IDX.TOTAL_PROPS);
+    this.dynamicTwoPieceBuffer = new Float64Array(PROP_IDX.TOTAL_PROPS);
     const maxSetIdx = this.getMaxSetIdx(precomputed.discsBySlot);
     this.otherSetCounts = new Int8Array(maxSetIdx + 1);
     this.otherSetUsed = new Int16Array(6);
@@ -203,6 +215,10 @@ export class FastEvaluator {
       this.otherSetCounts[this.otherSetUsed[i]] = 0;
     }
     this.otherSetUsedCount = 0;
+    // 重置动态两件套缓冲区
+    for (let i = 0; i < PROP_IDX.TOTAL_PROPS; i++) {
+      this.dynamicTwoPieceBuffer[i] = 0;
+    }
     this.debugVerifyEvalBuffer();
   }
 
@@ -241,14 +257,12 @@ export class FastEvaluator {
       if (sparse2pc) {
         const idx2 = sparse2pc.idx;
         const val2 = sparse2pc.val;
-        this.applySparseTo(this.accumulator, idx2, val2, 1);
-        this.applySparseTo(this.evalBuffer, idx2, val2, 1);
+        this.applySparseTo(this.dynamicTwoPieceBuffer, idx2, val2, 1);
       } else {
         const twoPiece = this.otherSetTwoPieceByIdx[setIdx];
         if (twoPiece) {
           for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
-            this.accumulator[j] += twoPiece[j];
-            this.evalBuffer[j] += twoPiece[j];
+            this.dynamicTwoPieceBuffer[j] += twoPiece[j];
           }
         }
       }
@@ -280,14 +294,12 @@ export class FastEvaluator {
         if (sparse2pc) {
           const idx2 = sparse2pc.idx;
           const val2 = sparse2pc.val;
-          this.applySparseTo(this.accumulator, idx2, val2, -1);
-          this.applySparseTo(this.evalBuffer, idx2, val2, -1);
+          this.applySparseTo(this.dynamicTwoPieceBuffer, idx2, val2, -1);
         } else {
           const twoPiece = this.otherSetTwoPieceByIdx[setIdx];
           if (twoPiece) {
             for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
-              this.accumulator[j] -= twoPiece[j];
-              this.evalBuffer[j] -= twoPiece[j];
+              this.dynamicTwoPieceBuffer[j] -= twoPiece[j];
             }
           }
         }
@@ -467,6 +479,11 @@ export class FastEvaluator {
     }
 
     // ========================================================================
+    // 保存 evalBuffer 快照（用于方法结束时恢复，防止状态污染）
+    // ========================================================================
+    this.evalBufferSave.set(this.evalBuffer);
+
+    // ========================================================================
     // 2-4. 累加器/套装2pc 已在增量枚举阶段维护完毕：
     // - beginIncrementalSearch(): accumulator = workerBaseStats
     // - pushDiscIncremental/popDiscIncremental(): 叠加/回滚盘属性，并在 1->2 / 2->1 时即时应用/撤销非目标2pc
@@ -480,24 +497,33 @@ export class FastEvaluator {
     // ========================================================================
 
     // ========================================================================
-    // 5. 生成快照1（局外 → 局内基础属性；不含 Buff）
-    // - 生成面板 ATK/HP/DEF/IMPACT（基于 accumulator 而非 evalBuffer，因为快照1不含 buff）
+    // 5. 应用动态两件套（在快照1计算之前）
+    // - 使用预分配缓冲区 accumulatorWithTwoPiece = accumulator + dynamicTwoPieceBuffer
+    // - 这样 snapshot1 就能正确包含两件套属性，而不修改原始 accumulator
+    // ========================================================================
+    for (let i = 0; i < PROP_IDX.TOTAL_PROPS; i++) {
+      this.accumulatorWithTwoPiece[i] = this.accumulator[i] + this.dynamicTwoPieceBuffer[i];
+    }
+
+    // ========================================================================
+    // 5.5 生成快照1（局外 → 局内基础属性；不含 Buff）
+    // - 生成面板 ATK/HP/DEF/IMPACT（基于 accumulatorWithTwoPiece）
     // ========================================================================
     const snapshot1Atk =
-      this.accumulator[PROP_IDX.ATK_BASE] *
-        (1 + this.accumulator[PROP_IDX.ATK_]) +
-      this.accumulator[PROP_IDX.ATK];
+      this.accumulatorWithTwoPiece[PROP_IDX.ATK_BASE] *
+        (1 + this.accumulatorWithTwoPiece[PROP_IDX.ATK_]) +
+      this.accumulatorWithTwoPiece[PROP_IDX.ATK];
     const snapshot1Hp =
-      this.accumulator[PROP_IDX.HP_BASE] *
-        (1 + this.accumulator[PROP_IDX.HP_]) +
-      this.accumulator[PROP_IDX.HP];
+      this.accumulatorWithTwoPiece[PROP_IDX.HP_BASE] *
+        (1 + this.accumulatorWithTwoPiece[PROP_IDX.HP_]) +
+      this.accumulatorWithTwoPiece[PROP_IDX.HP];
     const snapshot1Def =
-      this.accumulator[PROP_IDX.DEF_BASE] *
-        (1 + this.accumulator[PROP_IDX.DEF_]) +
-      this.accumulator[PROP_IDX.DEF];
+      this.accumulatorWithTwoPiece[PROP_IDX.DEF_BASE] *
+        (1 + this.accumulatorWithTwoPiece[PROP_IDX.DEF_]) +
+      this.accumulatorWithTwoPiece[PROP_IDX.DEF];
     const snapshot1Impact =
-      this.accumulator[PROP_IDX.IMPACT] *
-        (1 + this.accumulator[PROP_IDX.IMPACT_]);
+      this.accumulatorWithTwoPiece[PROP_IDX.IMPACT] *
+        (1 + this.accumulatorWithTwoPiece[PROP_IDX.IMPACT_]);
 
     // 注意：快照1/2/3 的面板值计算使用局外三元组（*_BASE/*_/*）作为输入，
     // 但不要把 accumulator 的三元组维度“污染”成面板值，否则 finalStats 会同时出现
@@ -962,6 +988,36 @@ export class FastEvaluator {
    */
   getEvalBufferSnapshot(): Float64Array {
     return new Float64Array(this.evalBuffer);
+  }
+
+  /**
+   * 恢复 evalBuffer 到上次 calculateDamageWithMultipliers 调用前的状态
+   * 在 worker 循环中每次评估后调用，防止状态污染
+   */
+  restoreEvalBuffer(): void {
+    this.evalBuffer.set(this.evalBufferSave);
+  }
+
+  /**
+   * 获取当前激活的两件套统计（用于调试）
+   */
+  getTwoPieceStats(): { setIdx: number; count: number }[] {
+    const activeSets: { setIdx: number; count: number }[] = [];
+    for (let i = 0; i < this.otherSetUsedCount; i++) {
+      const setIdx = this.otherSetUsed[i];
+      const count = this.otherSetCounts[setIdx];
+      if (count >= 2) {
+        activeSets.push({ setIdx, count });
+      }
+    }
+    return activeSets;
+  }
+
+  /**
+   * 获取动态两件套缓冲区（用于调试）
+   */
+  getDynamicTwoPieceBuffer(): Float64Array {
+    return new Float64Array(this.dynamicTwoPieceBuffer);
   }
 
   /**
