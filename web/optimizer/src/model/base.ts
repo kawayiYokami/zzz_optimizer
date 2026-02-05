@@ -135,6 +135,7 @@ export enum PropertyType {
 
   // 能量
   ENER_REGEN_ = 30503, // 能量自动回复%
+  ENERGY_REGEN_ = 30503, // 能量自动回复%（别名，与ENER_REGEN_相同）
   ENER_REGEN = 30501, // 能量自动回复
   BASE_ENER_REGEN = 30500, // 基础能量自动回复
   ENER_EFF_ = 30504, // 能量获得效率%
@@ -191,6 +192,7 @@ export enum PropertyType {
   DASH_ATK_DMG_ = 33014, // 冲刺攻击伤害加成
   DODGE_COUNTER_DMG_ = 33015, // 闪避反击伤害加成
   ASSIST_ATK_DMG_ = 33016, // 支援攻击伤害加成
+  SUPPORT_ATK_DMG_ = 33016, // 支援攻击伤害加成（别名，与ASSIST_ATK_DMG_相同）
   ADDL_ATK_DMG_ = 33017, // 追加攻击伤害加成
   SPECIAL_ATK_DMG_ = 33018, // 特殊技伤害加成
 
