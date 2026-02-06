@@ -21,6 +21,7 @@ import {
   getDisorderRatio,
   STANDARD_BUILDUP_THRESHOLD,
 } from './anomaly-constants';
+import { getSpecialDisorderRatio } from './special-rules';
 
 /**
  * 简化伤害结果
@@ -609,12 +610,9 @@ export class DamageCalculator {
   static getDisorderDamageRatio(element: string, remainingTime: number): number {
     const T = remainingTime;
     const elementLower = element.toLowerCase();
-    
-    // 烈霜特殊处理
-    if (elementLower === 'lieshuang') {
-      // 烈霜属性造成的[霜寒]紊乱伤害：伤害倍率 = 600% + floor(T)×75%
-      return 6.0 + Math.floor(T) * 0.75;
-    }
+
+    const specialRatio = getSpecialDisorderRatio(elementLower, T);
+    if (specialRatio !== null) return specialRatio;
     
     // 元素伤害倍率计算映射
     const damageRatioMap: Record<string, (time: number) => number> = {

@@ -15,6 +15,7 @@ import type { WEngine } from '../model/wengine';
 import type { DriveDisk } from '../model/drive-disk';
 import { OptimizerContext } from '../optimizer/services/optimizer-context';
 import { optimizerService } from '../optimizer/services/optimizer.service';
+import { getAgentSpecialRuleByCnName } from '../utils/special-rules';
 
 /**
  * 技能伤害参数（用于 DamageCalculator / Worker 口径）
@@ -826,9 +827,8 @@ export class BattleService {
   }
 
   getIsEnemyStunned(): boolean {
-    // 叶瞬光：强制视为失衡
-    const isYeShunGuang = this.team?.frontAgent?.name_cn === '叶瞬光';
-    return isYeShunGuang ? true : this.isEnemyStunned;
+    const frontAgentRule = getAgentSpecialRuleByCnName(this.team?.frontAgent?.name_cn);
+    return frontAgentRule?.forceStunned === true ? true : this.isEnemyStunned;
   }
 
   getEnemyHasCorruptionShield(): boolean {
@@ -888,9 +888,14 @@ export class BattleService {
 
     const baseMult = 1 + (this.enemy.stun_vulnerability_multiplier ?? 0);
 
-    // 叶瞬光：强制失衡 + 上限 2.1
-    const isYeShunGuang = this.team?.frontAgent?.name_cn === '叶瞬光';
-    if (isYeShunGuang) return Math.min(2.1, Math.max(1.0, baseMult));
+    const frontAgentRule = getAgentSpecialRuleByCnName(this.team?.frontAgent?.name_cn);
+    if (frontAgentRule?.forceStunned) {
+      const cap = frontAgentRule.stunVulnerabilityCap;
+      if (typeof cap === 'number') {
+        return Math.min(cap, Math.max(1.0, baseMult));
+      }
+      return Math.max(1.0, baseMult);
+    }
 
     if (!this.isEnemyStunned) return 1.0;
     return Math.max(1.0, baseMult);
