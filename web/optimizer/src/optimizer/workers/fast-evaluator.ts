@@ -112,7 +112,7 @@ export class FastEvaluator {
   // Debug 开关：校验 evalBuffer 是否始终满足
   // evalBuffer[i] == accumulator[i] + workerMergedBuff[i]
   // 默认关闭，避免任何性能影响。
-  private static readonly DEBUG_VERIFY_EVAL_BUFFER = false;
+  private static readonly DEBUG_VERIFY_EVAL_BUFFER = true;  // 临时开启用于验证两件套是否生效
   private static readonly DEBUG_VERIFY_INTERVAL_MASK = 0xfffff; // 每约 1,048,576 次触发一次
   private debugVerifyCounter = 0;
 
@@ -209,7 +209,7 @@ export class FastEvaluator {
     // evalBuffer 直接维护为“局内最终属性底座”（= accumulator + workerMergedBuff）
     // 这样 leaf eval 不再需要做 94 维合并
     for (let i = 0; i < PROP_IDX.TOTAL_PROPS; i++) {
-      this.evalBuffer[i] = this.accumulator[i] + this.workerMergedBuff[i];
+      this.evalBuffer[i] = this.accumulator[i] + this.workerMergedBuff[i] + this.dynamicTwoPieceBuffer[i];
     }
     for (let i = 0; i < this.otherSetUsedCount; i++) {
       this.otherSetCounts[this.otherSetUsed[i]] = 0;
@@ -258,11 +258,13 @@ export class FastEvaluator {
         const idx2 = sparse2pc.idx;
         const val2 = sparse2pc.val;
         this.applySparseTo(this.dynamicTwoPieceBuffer, idx2, val2, 1);
+        this.applySparseTo(this.evalBuffer, idx2, val2, 1);  // 同步更新 evalBuffer
       } else {
         const twoPiece = this.otherSetTwoPieceByIdx[setIdx];
         if (twoPiece) {
           for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
             this.dynamicTwoPieceBuffer[j] += twoPiece[j];
+            this.evalBuffer[j] += twoPiece[j];  // 同步更新 evalBuffer
           }
         }
       }
@@ -295,11 +297,13 @@ export class FastEvaluator {
           const idx2 = sparse2pc.idx;
           const val2 = sparse2pc.val;
           this.applySparseTo(this.dynamicTwoPieceBuffer, idx2, val2, -1);
+          this.applySparseTo(this.evalBuffer, idx2, val2, -1);  // 同步更新 evalBuffer
         } else {
           const twoPiece = this.otherSetTwoPieceByIdx[setIdx];
           if (twoPiece) {
             for (let j = 0; j < PROP_IDX.TOTAL_PROPS; j++) {
               this.dynamicTwoPieceBuffer[j] -= twoPiece[j];
+              this.evalBuffer[j] -= twoPiece[j];  // 同步更新 evalBuffer
             }
           }
         }
@@ -660,26 +664,30 @@ export class FastEvaluator {
 
     const { critRate, critDmg } = this.calculateCommonMultipliers();
 
+    // DEBUG: 输出暴击相关数据
+    console.log('[FastEvaluator] CRIT_ from evalBuffer:', this.evalBuffer[PROP_IDX.CRIT_].toFixed(3));
+    console.log('[FastEvaluator] CRIT_DMG_ from evalBuffer:', this.evalBuffer[PROP_IDX.CRIT_DMG_].toFixed(3));
+    console.log('[FastEvaluator] critZone:', (1 + critRate * critDmg).toFixed(3));
+
     // ========================================================================
     // 10. 对每个技能计算伤害
     // ========================================================================
-    let totalVariableDamage = 0;
-    for (const skillParams of skillsParams) {
-      const dmgBonus = this.calculateDamageBonus(skillParams);
-      const critZone = 1 + critRate * critDmg;
+        let totalVariableDamage = 0;
+        for (const skillParams of skillsParams) {
+          const dmgBonus = this.calculateDamageBonus(skillParams);
+          const critZone = 1 + critRate * critDmg;
 
-      // 直伤（区分贯穿和常规）
-      let variableDirectDamage: number;
-
-      if (skillParams.isPenetration) {
-        const sheerForce = this.evalBuffer[PROP_IDX.SHEER_FORCE];
-        const pierceBonus = 1 + this.evalBuffer[PROP_IDX.SHEER_DMG_];
-        variableDirectDamage = sheerForce * skillParams.ratio * dmgBonus * critZone * pierceBonus;
-      } else {
-        const baseDamage = finalAtkAfterConv * skillParams.ratio;
-        variableDirectDamage = baseDamage * dmgBonus * critZone * defMult;
-      }
-
+          // 直伤（区分贯穿和常规）
+          let variableDirectDamage: number;
+    
+          if (skillParams.isPenetration) {
+            const sheerForce = this.evalBuffer[PROP_IDX.SHEER_FORCE];
+            const pierceBonus = 1 + this.evalBuffer[PROP_IDX.SHEER_DMG_];
+            variableDirectDamage = sheerForce * skillParams.ratio * dmgBonus * critZone * pierceBonus;
+          } else {
+            const baseDamage = finalAtkAfterConv * skillParams.ratio;
+            variableDirectDamage = baseDamage * dmgBonus * critZone * defMult;
+          }
       // 异常伤害
       let variableAnomalyDamage = 0;
       let variableDisorderDamage = 0;
@@ -1017,7 +1025,20 @@ export class FastEvaluator {
    * 获取动态两件套缓冲区（用于调试）
    */
   getDynamicTwoPieceBuffer(): Float64Array {
-    return new Float64Array(this.dynamicTwoPieceBuffer);
+    // 返回所有2件套效果（目标套装 + 非目标套装）
+    const result = new Float64Array(PROP_IDX.TOTAL_PROPS);
+    // 1. 添加目标套装的2件套（在 workerBaseStats 中）
+    //    workerBaseStats = mergedStats + targetSetTwoPiece
+    //    所以我们需要提取出 targetSetTwoPiece 部分
+    const { mergedStats, targetSetTwoPiece } = this.precomputed;
+    for (let i = 0; i < PROP_IDX.TOTAL_PROPS; i++) {
+      result[i] = (targetSetTwoPiece?.[i] ?? 0);
+    }
+    // 2. 添加非目标套装的2件套（在 dynamicTwoPieceBuffer 中）
+    for (let i = 0; i < PROP_IDX.TOTAL_PROPS; i++) {
+      result[i] += this.dynamicTwoPieceBuffer[i];
+    }
+    return result;
   }
 
   /**
@@ -1185,6 +1206,7 @@ export class FastEvaluator {
         dmgBonus,
       },
       defMult,
+      actualTwoPieceStats: this.getDynamicTwoPieceBuffer(),
       setInfo: {
         twoPieceSets,
         fourPieceSet,

@@ -146,16 +146,16 @@
 
               <div class="card bg-base-200/30 shadow w-full">
                 <div class="card-body p-4">
-                  <div class="font-bold text-sm">目标套装（Worker 复用输入）</div>
-                  <div class="text-xs text-base-content/60 mt-1">2件套静态属性 + 4件套普通 Buff</div>
+                  <div class="font-bold text-sm">实际套装效果（计算结果）</div>
+                  <div class="text-xs text-base-content/60 mt-1">基于当前装备组合实际计算出的所有2件套效果</div>
                   <div class="mt-3 space-y-3">
                     <div class="bg-base-100 rounded p-3">
-                      <div class="font-bold text-sm">目标2件套（静态属性集）</div>
+                      <div class="font-bold text-sm">2件套（静态属性，所有生效套装）</div>
                       <div class="mt-2 text-sm space-y-1">
-                        <div v-for="row in targetTwoPieceRows" :key="row.key">
+                        <div v-for="row in actualTwoPieceRows" :key="row.key">
                           {{ row.key }}: {{ row.value }}
                         </div>
-                        <div v-if="targetTwoPieceRows.length === 0" class="opacity-60">（空）</div>
+                        <div v-if="actualTwoPieceRows.length === 0" class="opacity-60">（未触发2件套）</div>
                       </div>
                     </div>
                     <BuffCard :buff="targetFourPieceBuffCard" />
@@ -397,6 +397,11 @@ interface DebugData {
     snapshot2: { atk: number; hp: number; def: number; impact: number };
     snapshot3: { atk: number; hp: number; def: number; impact: number };
   };
+  actualTwoPieceStats?: Float64Array;
+  setInfo?: {
+    twoPieceSets: string[];
+    fourPieceSet: string | null;
+  };
 }
 
 interface DiscInfo {
@@ -516,6 +521,29 @@ const targetTwoPieceRows = computed(() => {
     if (prop === undefined) continue;
     rows.push({ key: PropertyType[prop] ?? String(prop), value: formatValue(prop, v) });
   }
+  rows.sort((a, b) => a.key.localeCompare(b.key));
+  return rows;
+});
+
+// 实际计算出的所有2件套效果（包括目标套装和非目标套装）
+const actualTwoPieceRows = computed(() => {
+  const rows: Array<{ key: string; value: string }> = [];
+  const actualTwoPieceStats = debugData.value?.actualTwoPieceStats;
+
+  if (!actualTwoPieceStats) return rows;
+
+  // 遍历 actualTwoPieceStats，提取非零属性
+  for (let i = 0; i < actualTwoPieceStats.length; i++) {
+    const v = actualTwoPieceStats[i];
+    if (!v || Math.abs(v) < 0.0001) continue;
+    const prop = IDX_TO_PROP_TYPE[i];
+    if (prop === undefined) continue;
+    rows.push({
+      key: PropertyType[prop] ?? String(prop),
+      value: formatValue(prop, v)
+    });
+  }
+
   rows.sort((a, b) => a.key.localeCompare(b.key));
   return rows;
 });
@@ -782,6 +810,8 @@ const runDebugCalc = async () => {
     anomalyProf3: finalStats3[PROP_IDX.ANOM_PROF],
     _finalStats3: finalStats3,
     snapshots: fullResult.snapshots,
+    actualTwoPieceStats: fullResult.actualTwoPieceStats,
+    setInfo: fullResult.setInfo,
   };
 
   // 将 battle 卡片实际算出的 worker 口径伤害上报给父组件（用于优化结果提升率对比）

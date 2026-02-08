@@ -296,6 +296,8 @@ export interface OptimizationBuildResult {
   multipliers: DamageMultipliers;
   /** 防御区（本次组合实际使用的 defMult，含盘穿透/减防） */
   defMult?: number;
+  /** 实际应用的2件套属性（dynamicTwoPieceBuffer） */
+  actualTwoPieceStats?: Float64Array;
   /** 套装信息 */
   setInfo: {
     twoPieceSets: string[];
