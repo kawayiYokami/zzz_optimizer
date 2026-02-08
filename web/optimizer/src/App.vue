@@ -14,6 +14,7 @@
               tabindex="-1"
               class="menu dropdown-content bg-base-100 text-base-content rounded-box z-1 mt-3 w-52 p-2 shadow text-base font-bold">
               <NavigationButton label="优化" icon="ri-rocket-2-line" :is-active="currentView === 'optimizer'" @click="currentView = 'optimizer'" />
+              <NavigationButton label="配装" icon="ri-settings-3-line" :is-active="currentView === 'build-advisor'" @click="currentView = 'build-advisor'" />
               <NavigationButton label="角色" icon="ri-user-3-line" :is-active="currentView === 'characters'" @click="currentView = 'characters'" />
               <NavigationButton label="队伍" icon="ri-team-line" :is-active="currentView === 'teams'" @click="currentView = 'teams'" />
               <NavigationButton label="音擎" icon="ri-sword-line" :is-active="currentView === 'wengines'" @click="currentView = 'wengines'" />
@@ -29,6 +30,7 @@
         <div class="navbar-center hidden lg:flex">
           <ul class="menu menu-horizontal px-1 gap-2 text-lg font-bold">
             <NavigationButton label="优化" icon="ri-rocket-2-line" :is-active="currentView === 'optimizer'" @click="currentView = 'optimizer'" />
+            <NavigationButton label="配装" icon="ri-settings-3-line" :is-active="currentView === 'build-advisor'" @click="currentView = 'build-advisor'" />
             <NavigationButton label="角色" icon="ri-user-3-line" :is-active="currentView === 'characters'" @click="currentView = 'characters'" />
             <NavigationButton label="队伍" icon="ri-team-line" :is-active="currentView === 'teams'" @click="currentView = 'teams'" />
             <NavigationButton label="音擎" icon="ri-sword-line" :is-active="currentView === 'wengines'" @click="currentView = 'wengines'" />
@@ -113,6 +115,7 @@ import TeamView from './views/TeamView.vue';
 import DriveDiskView from './views/DriveDiskView.vue';
 import WEngineView from './views/WEngineView.vue';
 import SaveManagementView from './views/SaveManagementView.vue';
+import BuildAdvisorView from './views/BuildAdvisorView.vue';
 import NavigationButton from './components/common/NavigationButton.vue';
 import { useGameDataStore } from './stores/game-data.store';
 import { useSaveStore } from './stores/save.store';
@@ -139,6 +142,7 @@ const activeComponent = computed(() => {
   if (currentView.value === 'wengines') return WEngineView;
   if (currentView.value === 'drive-disks') return DriveDiskView;
   if (currentView.value === 'saves') return SaveManagementView;
+  if (currentView.value === 'build-advisor') return BuildAdvisorView;
   return OptimizerView;
 });
 
