@@ -745,6 +745,11 @@ export class SaveData {
   addTeam(team: ZodTeamData): void {
     if (!team.id) {
       team.id = this.getNextTeamId();
+    } else {
+      const numericTeamId = Number.parseInt(team.id, 10);
+      if (!Number.isNaN(numericTeamId) && numericTeamId >= this._metadata.next_team_id) {
+        this._metadata.next_team_id = numericTeamId + 1;
+      }
     }
 
     // 先验证并创建 Team 实例；失败则不落盘到 teams，避免产生“有队伍但实例为空”的状态
