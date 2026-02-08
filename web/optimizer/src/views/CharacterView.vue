@@ -331,12 +331,12 @@ const displayAgentList = computed(() => {
         equipped_drive_disks: [null, null, null, null, null, null],
       } as any;
       
-      // 根据角色信息设置属性
-      if (charInfo.element === 1) tempAgent.element = ElementType.PHYSICAL;
-      else if (charInfo.element === 2) tempAgent.element = ElementType.FIRE;
-      else if (charInfo.element === 3) tempAgent.element = ElementType.ICE;
-      else if (charInfo.element === 4) tempAgent.element = ElementType.ELECTRIC;
-      else if (charInfo.element === 5) tempAgent.element = ElementType.ETHER;
+      // 根据角色信息设置属性（游戏数据中元素值为 200/201/202/203/205）
+      if (charInfo.element === ElementType.PHYSICAL) tempAgent.element = ElementType.PHYSICAL;
+      else if (charInfo.element === ElementType.FIRE) tempAgent.element = ElementType.FIRE;
+      else if (charInfo.element === ElementType.ICE) tempAgent.element = ElementType.ICE;
+      else if (charInfo.element === ElementType.ELECTRIC) tempAgent.element = ElementType.ELECTRIC;
+      else if (charInfo.element === ElementType.ETHER) tempAgent.element = ElementType.ETHER;
       
       if (charInfo.type === 1) tempAgent.weapon_type = WeaponType.ATTACK;
       else if (charInfo.type === 2) tempAgent.weapon_type = WeaponType.STUN;
