@@ -6,6 +6,10 @@
 
 import type { Agent } from '../model/agent';
 import { PropertyType, WeaponType, ElementType } from '../model/base';
+import {
+  hasCharacterEffectiveStatsConfig,
+  getCharacterEffectiveStatsConfig
+} from '../config/character-effective-stats.config';
 
 /**
  * 角色分析器
@@ -17,6 +21,12 @@ export class CharacterAnalyzer {
    * @returns 推荐的有效词条列表
    */
   static recommendEffectiveStats(agent: Agent): PropertyType[] {
+    // 优先使用专门的角色配置
+    if (hasCharacterEffectiveStatsConfig(agent.id)) {
+      return getCharacterEffectiveStatsConfig(agent.id)!;
+    }
+
+    // 没有专门配置，使用默认逻辑
     const stats: PropertyType[] = [];
 
     // 根据武器类型推荐核心词条
@@ -38,23 +48,25 @@ export class CharacterAnalyzer {
 
       case WeaponType.STUN: // 击破型
         stats.push(
+          PropertyType.CRIT_,       // 暴击率
           PropertyType.IMPACT_,     // 冲击力
-          PropertyType.ATK_         // 攻击力%（提升击破伤害）
+          PropertyType.ATK_         // 攻击力%
         );
         break;
 
       case WeaponType.SUPPORT: // 支援型
         stats.push(
-          PropertyType.ENER_REGEN_, // 能量回复
-          PropertyType.HP_          // 生命值%
+          PropertyType.ATK_,        // 攻击力%
+          PropertyType.HP_,         // 生命值%
+          PropertyType.ENER_REGEN_  // 能量回复
         );
         break;
 
       case WeaponType.DEFENSE: // 防护型
         stats.push(
           PropertyType.HP_,         // 生命值%
-          PropertyType.DEF_,        // 防御力%
-          PropertyType.IMPACT_      // 冲击力
+          PropertyType.ATK_,        // 攻击力%
+          PropertyType.ENER_REGEN_  // 能量回复
         );
         break;
 
@@ -138,11 +150,11 @@ export class CharacterAnalyzer {
       case WeaponType.ANOMALY:
         return '异常型角色通过异常伤害输出，推荐堆叠异常掌控和异常精通';
       case WeaponType.STUN:
-        return '击破型角色负责打击破盾，推荐堆叠冲击力和攻击力';
+        return '击破型角色负责打击破盾，推荐堆叠暴击率、冲击力和攻击力';
       case WeaponType.SUPPORT:
-        return '支援型角色提供辅助效果，推荐堆叠能量回复和生命值';
+        return '支援型角色提供辅助效果，推荐堆叠攻击力、生命值和能量回复';
       case WeaponType.DEFENSE:
-        return '防护型角色承担坦克职责，推荐堆叠生命值、防御力和冲击力';
+        return '防护型角色承担坦克职责，推荐堆叠生命值、攻击力和能量回复';
       default:
         return '推荐通用输出词条';
     }

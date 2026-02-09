@@ -1297,7 +1297,9 @@ export class Agent {
    * - 强攻角色：攻击、暴击率、暴击伤害、穿透、自身属性伤害
    * - 命破角色：生命、暴击率、暴击伤害、自身属性伤害
    * - 异常角色：攻击、异常精通、异常掌控%、穿透、自身属性伤害
-   * - 其他角色：攻击、暴击率、暴击伤害、自身属性伤害
+   * - 击破角色：冲击力、攻击力%、自身属性伤害
+   * - 支援角色：能量回复、生命值%、自身属性伤害
+   * - 防护角色：生命值%、防御力%、冲击力、自身属性伤害
    */
   static getDefaultEffectiveStats(weaponType: WeaponType, element: ElementType): PropertyType[] {
     // 元素对应的属性伤害
@@ -1340,8 +1342,32 @@ export class Agent {
           elementDmg,
         ].filter(Boolean);
 
+      case WeaponType.STUN:
+        // 击破角色：暴击率、冲击力、攻击力%
+        return [
+          PropertyType.CRIT_,
+          PropertyType.IMPACT_,
+          PropertyType.ATK_,
+        ];
+
+      case WeaponType.SUPPORT:
+        // 支援角色：攻击力%、生命值%、能量回复
+        return [
+          PropertyType.ATK_,
+          PropertyType.HP_,
+          PropertyType.ENER_REGEN_,
+        ];
+
+      case WeaponType.DEFENSE:
+        // 防护角色：生命值%、攻击力%、能量回复
+        return [
+          PropertyType.HP_,
+          PropertyType.ATK_,
+          PropertyType.ENER_REGEN_,
+        ];
+
       default:
-        // 其他角色（击破、支援、防护）：攻击、暴击率、暴击伤害、自身属性伤害
+        // 未知类型，推荐通用词条
         return [
           PropertyType.ATK_,
           PropertyType.CRIT_,
