@@ -418,6 +418,261 @@ export class DriveDisk {
   }
 
   /**
+   * 获取当前副词条数量
+   * 用于判断初始是3条还是4条（S级0级盘）
+   */
+  getSubStatCount(): number {
+    return this.sub_stats.size;
+  }
+
+  /**
+   * 获取当前有效副词条数量
+   */
+  getEffectiveSubStatCount(effectiveStats: PropertyType[]): number {
+    // 固定值到百分比的映射
+    const flatToPercentMap: Partial<Record<PropertyType, PropertyType>> = {
+      [PropertyType.ATK]: PropertyType.ATK_,
+      [PropertyType.HP]: PropertyType.HP_,
+      [PropertyType.DEF]: PropertyType.DEF_,
+      [PropertyType.PEN]: PropertyType.PEN_,
+    };
+
+    const isEffectiveStat = (prop: PropertyType): boolean => {
+      if (effectiveStats.includes(prop)) return true;
+      const percentType = flatToPercentMap[prop];
+      return percentType !== undefined && effectiveStats.includes(percentType);
+    };
+
+    let count = 0;
+    for (const [prop] of this.sub_stats.entries()) {
+      if (isEffectiveStat(prop)) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  /**
+   * 计算期望满级得分（考虑强化随机性）
+   * 
+   * 期望模型：
+   * - 每次强化命中有效词条的概率 = 有效副词条数 / 4
+   * - 新增词条时，命中有效词条的概率 = 可用有效词条数 / 可用副词条总数
+   * 
+   * @param effectiveStats 有效词条列表
+   * @returns 期望得分
+   */
+  calculateExpectedMaxScore(effectiveStats: PropertyType[]): number {
+    const rarityStr = Rarity[this.rarity] as 'S' | 'A' | 'B';
+    const maxLevel = DriveDiskStats.MAX_LEVELS[rarityStr];
+
+    // 当前得分（主词条部分）
+    let expectedScore = 0;
+
+    // 固定值到百分比的映射
+    const flatToPercentMap: Partial<Record<PropertyType, PropertyType>> = {
+      [PropertyType.ATK]: PropertyType.ATK_,
+      [PropertyType.HP]: PropertyType.HP_,
+      [PropertyType.DEF]: PropertyType.DEF_,
+      [PropertyType.PEN]: PropertyType.PEN_,
+    };
+
+    const isEffectiveStat = (prop: PropertyType): boolean => {
+      if (effectiveStats.includes(prop)) return true;
+      const percentType = flatToPercentMap[prop];
+      return percentType !== undefined && effectiveStats.includes(percentType);
+    };
+
+    // 主词条得分（满级）：10分
+    if (isEffectiveStat(this.main_stat)) {
+      expectedScore += 10;
+    }
+
+    // 可用的副词条类型（不能与主词条重复）
+    const allowedSubStats = new Set([
+      PropertyType.HP, PropertyType.ATK, PropertyType.DEF, PropertyType.PEN,
+      PropertyType.ANOM_PROF, PropertyType.HP_, PropertyType.ATK_, PropertyType.DEF_,
+      PropertyType.CRIT_, PropertyType.CRIT_DMG_,
+    ]);
+    allowedSubStats.delete(this.main_stat);
+
+    // 有效且可用的副词条类型
+    const validEffectiveStats = effectiveStats.filter(stat => allowedSubStats.has(stat));
+
+    // 当前副词条状态
+    let currentSubStatCount = this.sub_stats.size;
+    let currentEffectiveCount = this.getEffectiveSubStatCount(effectiveStats);
+
+    // 统计当前有效副词条的rolls总和
+    let currentEffectiveRolls = 0;
+    for (const [prop, statValue] of this.sub_stats.entries()) {
+      if (isEffectiveStat(prop)) {
+        // 考虑固定值折算
+        const getEffectiveStatType = (p: PropertyType): PropertyType | null => {
+          if (effectiveStats.includes(p)) return p;
+          const percentType = flatToPercentMap[p];
+          if (percentType !== undefined && effectiveStats.includes(percentType)) {
+            return percentType;
+          }
+          return null;
+        };
+        const effectiveType = getEffectiveStatType(prop);
+        const shouldDiscount = effectiveType !== null && flatToPercentMap[prop] === effectiveType;
+        const count = shouldDiscount ? statValue.value / 3 : statValue.value;
+        currentEffectiveRolls += count;
+      }
+    }
+
+    expectedScore += currentEffectiveRolls;
+
+    // 计算剩余强化次数
+    const currentUpgrades = Math.min(5, Math.floor(this.level / 3));
+    const maxUpgrades = Math.min(5, Math.floor(maxLevel / 3));
+    const remainingUpgrades = maxUpgrades - currentUpgrades;
+
+    // 模拟剩余强化的期望值
+    let effectiveSubStats = currentEffectiveCount;
+    let totalSubStats = currentSubStatCount;
+
+    for (let i = 0; i < remainingUpgrades; i++) {
+      if (totalSubStats < 4) {
+        // 新增词条阶段
+        // 已存在的副词条类型不能再新增
+        const existingTypes = new Set(this.sub_stats.keys());
+        const availableNewEffective = validEffectiveStats.filter(s => !existingTypes.has(s));
+        const availableNewTotal = Array.from(allowedSubStats).filter(s => !existingTypes.has(s));
+
+        // 新增有效词条的概率
+        const probAddEffective = availableNewTotal.length > 0 
+          ? availableNewEffective.length / availableNewTotal.length 
+          : 0;
+
+        // 期望得分增加 = 新增1条 × 命中有效的概率
+        expectedScore += probAddEffective;
+        effectiveSubStats += probAddEffective;
+        totalSubStats = 4;
+      } else {
+        // 强化阶段：命中有效词条的概率 = 有效副词条数 / 4
+        if (effectiveSubStats > 0) {
+          expectedScore += effectiveSubStats / 4;
+        }
+      }
+    }
+
+    return expectedScore;
+  }
+
+  /**
+   * 计算乐观满级得分（假设完美强化）
+   * 
+   * @param effectiveStats 有效词条列表
+   * @returns 乐观得分
+   */
+  calculateOptimisticMaxScore(effectiveStats: PropertyType[]): number {
+    const perfectGrowth = this.getPerfectGrowthStats(effectiveStats);
+    return this.calculateScoreFromSubStats(perfectGrowth.subStats, effectiveStats);
+  }
+
+  /**
+   * 计算悲观满级得分（假设全歪）
+   * 
+   * @param effectiveStats 有效词条列表
+   * @returns 悲观得分（等于当前得分，因为假设后续强化都到无效词条）
+   */
+  calculatePessimisticScore(effectiveStats: PropertyType[]): number {
+    // 悲观情况：后续强化全部歪到无效词条
+    // 但主词条得分按满级计算
+    let score = 0;
+
+    // 固定值到百分比的映射
+    const flatToPercentMap: Partial<Record<PropertyType, PropertyType>> = {
+      [PropertyType.ATK]: PropertyType.ATK_,
+      [PropertyType.HP]: PropertyType.HP_,
+      [PropertyType.DEF]: PropertyType.DEF_,
+      [PropertyType.PEN]: PropertyType.PEN_,
+    };
+
+    const isEffectiveStat = (prop: PropertyType): boolean => {
+      if (effectiveStats.includes(prop)) return true;
+      const percentType = flatToPercentMap[prop];
+      return percentType !== undefined && effectiveStats.includes(percentType);
+    };
+
+    // 主词条（满级）
+    if (isEffectiveStat(this.main_stat)) {
+      score += 10;
+    }
+
+    // 副词条（只算当前）
+    for (const [prop, statValue] of this.sub_stats.entries()) {
+      if (!isEffectiveStat(prop)) continue;
+
+      const getEffectiveStatType = (p: PropertyType): PropertyType | null => {
+        if (effectiveStats.includes(p)) return p;
+        const percentType = flatToPercentMap[p];
+        if (percentType !== undefined && effectiveStats.includes(percentType)) {
+          return percentType;
+        }
+        return null;
+      };
+      const effectiveType = getEffectiveStatType(prop);
+      const shouldDiscount = effectiveType !== null && flatToPercentMap[prop] === effectiveType;
+      const count = shouldDiscount ? statValue.value / 3 : statValue.value;
+      score += count;
+    }
+
+    return score;
+  }
+
+  /**
+   * 从副词条Map计算得分
+   */
+  private calculateScoreFromSubStats(
+    subStats: Map<PropertyType, number>,
+    effectiveStats: PropertyType[]
+  ): number {
+    let score = 0;
+
+    const flatToPercentMap: Partial<Record<PropertyType, PropertyType>> = {
+      [PropertyType.ATK]: PropertyType.ATK_,
+      [PropertyType.HP]: PropertyType.HP_,
+      [PropertyType.DEF]: PropertyType.DEF_,
+      [PropertyType.PEN]: PropertyType.PEN_,
+    };
+
+    const isEffectiveStat = (prop: PropertyType): boolean => {
+      if (effectiveStats.includes(prop)) return true;
+      const percentType = flatToPercentMap[prop];
+      return percentType !== undefined && effectiveStats.includes(percentType);
+    };
+
+    // 主词条
+    if (isEffectiveStat(this.main_stat)) {
+      score += 10;
+    }
+
+    // 副词条
+    for (const [prop, rolls] of subStats.entries()) {
+      if (!isEffectiveStat(prop)) continue;
+
+      const getEffectiveStatType = (p: PropertyType): PropertyType | null => {
+        if (effectiveStats.includes(p)) return p;
+        const percentType = flatToPercentMap[p];
+        if (percentType !== undefined && effectiveStats.includes(percentType)) {
+          return percentType;
+        }
+        return null;
+      };
+      const effectiveType = getEffectiveStatType(prop);
+      const shouldDiscount = effectiveType !== null && flatToPercentMap[prop] === effectiveType;
+      const count = shouldDiscount ? rolls / 3 : rolls;
+      score += count;
+    }
+
+    return score;
+  }
+
+  /**
    * 获取套装Buff
    *
    * @param setBonus 套装加成类型
