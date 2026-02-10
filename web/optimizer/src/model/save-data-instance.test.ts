@@ -55,5 +55,22 @@ describe('SaveData teams', () => {
     expect(persisted?.frontCharacterId).toBe('a1');
     expect(save.getTeamInstance('t1')?.frontAgent.id).toBe('a1');
   });
+
+  it('advances next team id when adding a team with explicit numeric id', () => {
+    const save = new SaveData('test');
+    save.addAgent(new Agent('a1', 'g1'));
+
+    const importedTeam: ZodTeamData = {
+      id: '40001',
+      name: 'Imported',
+      priority: 0,
+      frontCharacterId: 'a1',
+      backCharacter1Id: '',
+      backCharacter2Id: '',
+    };
+    save.addTeam(importedTeam);
+
+    expect(save.getNextTeamId()).toBe('40002');
+  });
 });
 
